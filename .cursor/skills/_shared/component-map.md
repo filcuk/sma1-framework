@@ -36,6 +36,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-menus.css` | combo, dropdown, dropdown-toggle |
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
 | `controls-file.css` | file-dropzone, file-download |
+| `controls-image.css` | image-preview |
 | `rich-text-editor.css` | rich-text-editor (+ `app/toastui-editor.css`) |
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
@@ -78,8 +79,9 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | progress-indicator | `app/components/progress-indicator.js` | `controls-disclosure.css` | — | — | `dom` | |
 | file-dropzone | `app/components/file-dropzone.js` | `controls-file.css` | — | Markup: `upload`; JS: `error` | `dom`, `icons` | |
 | file-download | `app/components/file-download.js` | `controls-file.css` | — | `download` | `icons` | |
+| image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`; download uses `file-download`; maximise: expandable-surface | Checkerboard host; `setSvg` / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
 | code-block | `app/components/code-block.js` | `code-block.css` | `app/vendor/prism/`, `app/prism.css` | `clear`, `copy`, `paste`, `lines`, `highlight`, `fullscreen` | `dom`, `clipboard`, `icons` | Load Prism scripts on the page |
-| expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions` |
+| expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
 | table | `app/components/table.js` | `table.css` | — | `chevron-up` (sort) | `dom`, `icons` | |
 | tabular-input | `app/components/tabular-input.js` | `controls-tabular-input.css` | — | `copy`, `paste`, `paste-special`, `plus`, `delete`, `remove`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `menu`, `icons`, `clipboard`; closes `tooltip` | |
 | rich-text-editor | `app/components/rich-text-editor.js`, `toastui-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control |

@@ -22,6 +22,7 @@ import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
 import { initFileDropzone } from "./components/file-dropzone.js";
 import { initFileDownload } from "./components/file-download.js";
+import { initImagePreview } from "./components/image-preview.js";
 import { initDatePicker } from "./components/date-picker/index.js";
 import { initTimePicker } from "./components/time-picker.js";
 import { initDurationInput } from "./components/duration-input.js";
@@ -46,6 +47,11 @@ initShell();
 initExpands(document);
 initTabs(document);
 const codeBlockInstances = initCodeBlocks(document);
+
+const demoImagePreview = initImagePreview(
+  document.getElementById("demo-image-preview")
+);
+
 initExpandableSurfaces(document);
 
 const demoCodeBlock = codeBlockInstances[0] ?? null;
@@ -96,6 +102,12 @@ initFileDownload(document.getElementById("demo-file-download"), {
     },
   ],
 });
+
+fetch(new URL("./res/demo-image-preview.svg", import.meta.url))
+  .then((response) => response.text())
+  .then((markup) => {
+    demoImagePreview?.setSvg(markup);
+  });
 
 initDatePicker(document.getElementById("demo-date-picker"));
 initDatePicker(document.getElementById("demo-date-picker-time"));
