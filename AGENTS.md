@@ -103,7 +103,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initProgressBar()` / `initProgressBars()` | Progress bar with optional percent or fraction label |
 | `initSpinner()` / `initSpinners()` | Loading spinner; optional blocking overlay on a host |
 | `initStepper()` / `initSteppers()` | Numeric nudger with decrement/increment buttons |
-| `initColorInput()` / `initColorInputs()` | Hex colour input with inline swatch preview; optional alpha; optional `openOnClick` to open a paired colour set / picker |
+| `initColorInput()` / `initColorInputs()` | Hex colour input with inline swatch preview; optional alpha; optional `openOnClick` / `openTrigger` for a paired colour set / picker |
 | `initColorSet()` / `initColorSets()` | Named palette gallery; popup or embedded; optional set whitelist |
 | `initColorPicker()` / `initColorPickers()` | Spectrum / channel colour picker; format-dependent UI; optional colour set |
 | `initToggle()` / `initToggles()` | On/off switch control; optional `data-toggle-tristate` for off → on → mixed |

@@ -140,11 +140,56 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
+/* Full-height sets divider: drop popup padding and pad the columns instead. */
+.color-picker--sets-open .color-picker-popup {
+  padding: 0;
+}
+
 .color-picker-shell {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 0.75rem;
+}
+
+.color-picker--sets-open .color-picker-shell {
+  display: grid;
+  /* Panel content stays 16.5rem; +1.5rem for column padding (border-box). */
+  grid-template-columns: calc(16.5rem + 1.5rem) 1px calc(14rem + 1.5rem);
+  column-gap: 0;
+  align-items: stretch;
+}
+
+.color-picker-sets-divider {
+  display: none;
+}
+
+.color-picker--sets-open .color-picker-sets-divider {
+  display: block;
+  grid-column: 2;
+  width: 1px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  align-self: stretch;
+  background-color: var(--border);
+}
+
+.color-picker--sets-open .color-picker-panel {
+  grid-column: 1;
+  box-sizing: border-box;
+  width: calc(16.5rem + 1.5rem);
+  min-width: calc(16.5rem + 1.5rem);
+  max-width: none;
+  padding: 0.75rem;
+}
+
+.color-picker--sets-open .color-picker-sets {
+  grid-column: 3;
+  box-sizing: border-box;
+  width: calc(14rem + 1.5rem);
+  max-width: calc(14rem + 1.5rem);
+  padding: 0.75rem;
 }
 
 .color-picker--embedded > .color-picker-shell {
@@ -213,10 +258,8 @@
   border: none;
   border-radius: 6px;
   outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--accent) 18%, var(--surface)),
-    0 1px 2px rgba(31, 35, 40, 0.18);
+  outline-offset: 0;
+  box-shadow: none;
   transform: translate(-50%, -50%);
   pointer-events: none;
   background-color: var(--surface);
@@ -232,12 +275,6 @@
   background-size: auto, 6px 6px, 6px 6px, 6px 6px, 6px 6px;
   background-position: 0 0, 0 0, 0 3px, 3px -3px, -3px 0;
   background-clip: padding-box;
-}
-
-:root[data-theme="dark"] .color-picker-thumb {
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--accent) 18%, var(--surface)),
-    0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* Match `.slider-range` chrome; rainbow track instead of accent progress. */
@@ -376,18 +413,26 @@
 }
 
 .color-picker-fields .color-picker-channel-slider {
+  flex-direction: row;
+  align-items: center;
   max-width: none;
-  gap: 0.2rem;
+  gap: 0.5rem;
 }
 
 .color-picker-fields .color-picker-channel-slider .slider-row {
+  flex: 1;
+  min-width: 0;
   gap: 0.5rem;
 }
 
 .color-picker-fields .color-picker-channel-slider .field-label {
+  flex-shrink: 0;
+  width: 1.1rem;
+  margin: 0;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--muted);
+  line-height: 1;
 }
 
 .color-picker-fields .color-picker-channel-slider .slider-input {
@@ -439,8 +484,20 @@
 .color-picker-value-row {
   display: flex;
   align-items: stretch;
-  gap: 0.5rem;
+  gap: 0;
   min-width: 0;
+}
+
+.color-picker-value-row > .color-picker-sets-toggle {
+  flex-shrink: 0;
+  align-self: stretch;
+  margin-left: 0.5rem;
+}
+
+.color-picker-sets-toggle.is-active,
+.color-picker-sets-toggle[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
 }
 
 .color-picker-preview {
@@ -448,7 +505,8 @@
   height: var(--control-height);
   flex-shrink: 0;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
   overflow: hidden;
   background-color: var(--surface);
   background-image:
@@ -472,13 +530,16 @@
   flex: 1;
   min-width: 0;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-right: none;
+  border-radius: 0;
   background: var(--input-bg);
   color: var(--text);
   min-height: var(--control-height);
 }
 
-.color-picker-hex-field:focus-within {
+.color-picker-hex-field:has(.color-picker-hex:focus) {
+  z-index: 1;
+  border-right: 1px solid var(--accent);
   outline: 2px solid var(--accent);
   outline-offset: -1px;
   border-color: var(--accent);
@@ -489,10 +550,20 @@
   min-width: 0;
   width: auto;
   border: none;
-  border-radius: 6px 0 0 6px;
+  border-radius: 0;
   background: transparent;
   box-shadow: none;
   min-height: calc(var(--control-height) - 2px);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: inherit;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.color-picker-hex::placeholder {
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: inherit;
 }
 
 .color-picker-hex:focus {
@@ -505,30 +576,20 @@
   display: flex;
   align-items: stretch;
   align-self: stretch;
-  border-left: 1px solid var(--border);
 }
 
 .color-picker-format-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.15rem;
-  margin: 0;
-  padding: 0 0.55rem;
-  border: none;
+  align-self: stretch;
+  min-height: 0;
+  height: auto;
+  padding: 0 0.75rem;
   border-radius: 0 6px 6px 0;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  cursor: pointer;
-}
-
-.color-picker-format-trigger:hover:not(:disabled) {
-  color: var(--text);
-  background: color-mix(in srgb, var(--text) 6%, transparent);
 }
 
 .color-picker-format-trigger:focus {
@@ -536,8 +597,9 @@
 }
 
 .color-picker-format-trigger:focus-visible {
-  color: var(--text);
-  box-shadow: inset 0 0 0 2px var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  z-index: 1;
 }
 
 .color-picker-format-label {
@@ -568,18 +630,20 @@
   display: none;
 }
 
-.color-picker-sets-toggle.is-active,
-.color-picker-sets-toggle[aria-pressed="true"] {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
-}
-
 .color-picker-sets.color-set {
   max-width: 14rem;
 }
 
+.color-picker--sets-open .color-picker-sets.color-set {
+  max-width: calc(14rem + 1.5rem);
+}
+
 .color-picker-sets.color-set--embedded {
   max-width: 14rem;
+}
+
+.color-picker--sets-open .color-picker-sets.color-set--embedded {
+  max-width: calc(14rem + 1.5rem);
 }
 
 .color-picker-sets.color-set--embedded .color-set-panel {
@@ -587,8 +651,4 @@
   border: none;
   border-radius: 0;
   background: transparent;
-}
-
-.color-picker--sets-open .color-picker-sets {
-  width: 14rem;
 }

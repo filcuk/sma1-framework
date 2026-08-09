@@ -10,8 +10,7 @@
  *         <div class="color-picker-panel"></div>
  *         <div class="color-set color-picker-sets hidden" data-color-set-embedded hidden>
  *           <div class="color-set-panel">
- *             <label class="field-label" for="…">Palette</label>
- *             <select id="…" class="input color-set-select"></select>
+ *             <select id="…" class="input color-set-select" aria-label="Colour set"></select>
  *             <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
  *           </div>
  *         </div>
@@ -148,6 +147,9 @@ export function initColorPicker(
     };
   }
 
+  /** @type {HTMLElement | null} */
+  let setsDivider = null;
+
   function syncSetsVisibility() {
     pickerEl.classList.toggle("color-picker--sets-open", setsOpen);
     if (setsHost) setHidden(setsHost, !setsOpen);
@@ -198,6 +200,26 @@ export function initColorPicker(
   }
 
   if (enableColorSet && setsHost) {
+    const dividerHost = shell || setsHost.parentElement;
+    setsDivider =
+      dividerHost?.querySelector(":scope > .color-picker-sets-divider") || null;
+    if (setsDivider && setsDivider.tagName === "HR") {
+      const replacement = document.createElement("div");
+      replacement.className = "color-picker-sets-divider";
+      replacement.setAttribute("aria-hidden", "true");
+      replacement.setAttribute("role", "presentation");
+      setsDivider.replaceWith(replacement);
+      setsDivider = replacement;
+    }
+    if (!setsDivider && dividerHost) {
+      setsDivider = document.createElement("div");
+      setsDivider.className = "color-picker-sets-divider";
+      setsDivider.setAttribute("aria-hidden", "true");
+      setsDivider.setAttribute("role", "presentation");
+      dividerHost.insertBefore(setsDivider, setsHost);
+    }
+    // Visibility is driven by `.color-picker--sets-open` CSS (keeps grid stretch reliable).
+
     colorSetApi = initColorSet(setsHost, {
       embedded: true,
       alpha: allowAlpha,
@@ -221,12 +243,15 @@ export function initColorPicker(
   mountPanel();
   syncSetsVisibility();
 
-  function open() {
+  /**
+   * @param {{ focus?: boolean }} [options]
+   */
+  function open({ focus = true } = {}) {
     if (isEmbedded || isOpen || !popup) return;
     isOpen = true;
     setHidden(popup, false);
     trigger?.setAttribute("aria-expanded", "true");
-    panelEl.querySelector("select, input, button")?.focus?.();
+    if (focus) panelEl.querySelector("select, input, button")?.focus?.();
   }
 
   function close() {
@@ -258,6 +283,8 @@ export function initColorPicker(
   const removeOutside = onDocumentClickOutside((event) => {
     if (!isOpen) return;
     if (pickerEl.contains(event.target)) return;
+    const hostInput = pickerEl.closest(".color-input");
+    if (hostInput?.contains(event.target)) return;
     close();
   });
 

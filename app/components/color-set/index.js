@@ -7,8 +7,8 @@
  *       aria-label="Open colour set">Colour set</button>
  *     <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
  *       <div class="color-set-panel">
- *         <label class="field-label" for="my-color-set-select">Palette</label>
- *         <select id="my-color-set-select" class="input color-set-select"></select>
+ *         <select id="my-color-set-select" class="input color-set-select"
+ *           aria-label="Colour set"></select>
  *         <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
  *       </div>
  *     </div>
@@ -196,12 +196,15 @@ export function initColorSet(
     });
   }
 
-  function open() {
+  /**
+   * @param {{ focus?: boolean }} [options]
+   */
+  function open({ focus = true } = {}) {
     if (isEmbedded || isOpen || !popup) return;
     isOpen = true;
     setHidden(popup, false);
     trigger?.setAttribute("aria-expanded", "true");
-    selectEl?.focus();
+    if (focus) selectEl?.focus();
   }
 
   function close() {
@@ -228,6 +231,8 @@ export function initColorSet(
   const removeOutside = onDocumentClickOutside((event) => {
     if (!isOpen) return;
     if (colorSetEl.contains(event.target)) return;
+    const hostInput = colorSetEl.closest(".color-input");
+    if (hostInput?.contains(event.target)) return;
     close();
   });
 

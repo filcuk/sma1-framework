@@ -458,7 +458,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/progress-bar.js`](app/progress-bar.js). |
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/spinner.js`](app/spinner.js). |
 | **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/stepper.js`](app/stepper.js). |
-| **Colour input** | Hex text input with inline swatch preview; optional alpha (`#RRGGBBAA`); optional swatch `openOnClick` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
+| **Colour input** | Hex text input with inline swatch preview; optional alpha (`#RRGGBBAA`); optional `openOnClick` + `openTrigger` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
 | **Colour set** | Named palette gallery (popup or embedded); built-in sets as one module each. [`app/components/color-set/`](app/components/color-set/). |
 | **Colour picker** | Spectrum / channel colour selector (HEX / RGB / HSL / HSV / CMYK); optional alpha and adjacent colour set. [`app/components/color-picker/`](app/components/color-picker/). |
 | **Date picker** | Calendar popup with optional time field. [`app/components/date-picker/`](app/components/date-picker/). |
@@ -1800,7 +1800,9 @@ initSteppers(document); // all `.stepper` blocks
 
 Hex colour field with a swatch inside the input on the left. Accepts `#RGB` or `#RRGGBB` (with or without `#` while typing). Values normalise to uppercase `#RRGGBB` on commit. With `data-color-input-alpha` (or `alpha: true`), also accepts `#RGBA` / `#RRGGBBAA`; if no alpha digits are given, commit normalises to full opacity (`#RRGGBBFF`). The swatch shows a checkerboard when empty, incomplete, or under a semi-transparent value.
 
-Optional `data-color-input-open` / `openOnClick`: `none` (default), `picker`, `set`, or `both`. When not `none`, the swatch opens a nested (or passed) **colour set** and/or **colour picker**; values stay in sync. Colour input remains the hex field — picker and set are separate components.
+Optional `data-color-input-open` / `openOnClick`: `none` (default), `picker`, `set`, or `both`. When not `none`, a nested (or passed) **colour set** and/or **colour picker** opens and stays in sync. Colour input remains the hex field — picker and set are separate components.
+
+Optional `data-color-input-open-trigger` / `openTrigger` (when open is not `none`): `either` (default — swatch click or field focus), `swatch` (swatch only), or `input` (field focus only). Aliases: `image` → `swatch`, `field` → `input`. Opening from field focus keeps the caret in the hex input (`open({ focus: false })` on the partner); opening from the swatch still moves focus into the popup.
 
 ```html
 <div class="color-input" id="my-color-input" data-color-input-default="#0969da">
@@ -1839,8 +1841,8 @@ Optional `data-color-input-open` / `openOnClick`: `none` (default), `picker`, `s
       aria-label="Open colour set">Colour set</button>
     <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
       <div class="color-set-panel">
-        <label class="field-label" for="my-color-input-set-select">Palette</label>
-        <select id="my-color-input-set-select" class="input color-set-select"></select>
+        <select id="my-color-input-set-select" class="input color-set-select"
+          aria-label="Colour set"></select>
         <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
       </div>
     </div>
@@ -1872,13 +1874,14 @@ const alphaInput = initColorInput(document.getElementById("my-color-input-alpha"
 alphaInput?.allowsAlpha(); // true
 
 // Nested `.color-set` / `.color-picker` are initialised automatically when openOnClick is set.
+// openTrigger defaults to "either" (swatch or field focus). Or pass: { openTrigger: "swatch" | "input" }
 // Or pass existing instances: initColorInput(el, { openOnClick: "picker", picker: pickerApi })
 initColorInput(document.getElementById("my-color-input-set"));
 
 initColorInputs(document); // all `.color-input` blocks
 ```
 
-`data-color-input-default`, `data-color-input-alpha`, `data-color-input-disabled`, and `data-color-input-open` mirror the JS options. `parseHexColor(value, { alpha })` is exported from colour input and from [`app/utils/color.js`](app/utils/color.js).
+`data-color-input-default`, `data-color-input-alpha`, `data-color-input-disabled`, `data-color-input-open`, and `data-color-input-open-trigger` mirror the JS options. `parseHexColor(value, { alpha })` is exported from colour input and from [`app/utils/color.js`](app/utils/color.js).
 
 ### Colour set
 
@@ -1890,8 +1893,8 @@ Named palette gallery. Default mode is a trigger button that opens a popup (date
     aria-label="Open colour set">Colour set</button>
   <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
     <div class="color-set-panel">
-      <label class="field-label" for="my-color-set-select">Palette</label>
-      <select id="my-color-set-select" class="input color-set-select"></select>
+      <select id="my-color-set-select" class="input color-set-select"
+        aria-label="Colour set"></select>
       <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
     </div>
   </div>
@@ -1900,8 +1903,8 @@ Named palette gallery. Default mode is a trigger button that opens a popup (date
 <div class="color-set" id="my-color-set-embedded" data-color-set-embedded
   data-color-set-sets="basic,material,metro" data-color-set-default="basic">
   <div class="color-set-panel">
-    <label class="field-label" for="my-color-set-embedded-select">Palette</label>
-    <select id="my-color-set-embedded-select" class="input color-set-select"></select>
+    <select id="my-color-set-embedded-select" class="input color-set-select"
+      aria-label="Colour set"></select>
     <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
   </div>
 </div>
@@ -1939,7 +1942,7 @@ registerColorSet({
 
 ### Colour picker
 
-Spectrum / channel colour selector. Default mode is a trigger that opens a popup. Set `data-color-picker-embedded` for an always-visible panel. The value row shows the current swatch, a hex field (shared input styling), and a format dropdown on the field (HEX / RGB / HSL / HSV / CMYK) in the same pattern as the tabular-input type menu. Switching format changes the visual above: HSV and HEX use a saturation/value plane + hue slider; HSL uses saturation/lightness + hue; RGB and CMYK use the shared **slider** component for each channel (range + editable value). Optional `data-color-picker-alpha` adds an alpha channel via the same slider. Optional `data-color-picker-color-set` shows a **Colour sets** toggle that opens an adjacent colour-set panel (requires a `.color-picker-sets` host in markup).
+Spectrum / channel colour selector. Default mode is a trigger that opens a popup. Set `data-color-picker-embedded` for an always-visible panel. The value row shows the current swatch, a hex field (shared input styling), and a format dropdown on the field (HEX / RGB / HSL / HSV / CMYK) in the same pattern as the tabular-input type menu. The hex field updates the colour live while typing (same as colour input) once the value is a valid hex; blur / Enter normalises or reverts invalid text. Switching format changes the visual above: HSV and HEX use a saturation/value plane + hue slider; HSL uses saturation/lightness + hue; RGB and CMYK use the shared **slider** component for each channel (range + editable value). Optional `data-color-picker-alpha` adds an alpha channel via the same slider. Optional `data-color-picker-color-set` shows a palette icon button on the value row that toggles an adjacent colour-set panel (requires a `.color-picker-sets` host in markup).
 
 ```html
 <div class="color-picker" id="my-color-picker" data-color-picker-default="#0969da"
@@ -1951,8 +1954,8 @@ Spectrum / channel colour selector. Default mode is a trigger that opens a popup
       <div class="color-picker-panel"></div>
       <div class="color-set color-picker-sets hidden" data-color-set-embedded hidden>
         <div class="color-set-panel">
-          <label class="field-label" for="my-color-picker-set-select">Palette</label>
-          <select id="my-color-picker-set-select" class="input color-set-select"></select>
+          <select id="my-color-picker-set-select" class="input color-set-select"
+            aria-label="Colour set"></select>
           <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
         </div>
       </div>

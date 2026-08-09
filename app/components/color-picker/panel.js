@@ -4,6 +4,7 @@
 
 import {
   parseHexColor,
+  isPartialHexInput,
   rgbToHex,
   hexToRgb,
   rgbToHsl,
@@ -168,10 +169,26 @@ export function mountColorPickerPanel(
   hexInput.spellcheck = false;
   hexInput.autocomplete = "off";
   hexInput.setAttribute("aria-label", "Hex");
+  hexInput.addEventListener("input", () => {
+    const raw = String(hexInput.value).trim();
+    if (!raw) {
+      hexInput.removeAttribute("aria-invalid");
+      return;
+    }
+    if (!isPartialHexInput(raw, alpha)) {
+      hexInput.setAttribute("aria-invalid", "true");
+      return;
+    }
+    hexInput.removeAttribute("aria-invalid");
+    const parsed = parseHexColor(raw, { alpha });
+    if (!parsed) return;
+    emit(rgbaFromHex(parsed, { alpha }), "hex");
+  });
   hexInput.addEventListener("change", () => {
     const parsed = parseHexColor(hexInput.value, { alpha });
     if (!parsed) {
       hexInput.value = hexFromRgba(rgba, { alpha });
+      hexInput.removeAttribute("aria-invalid");
       return;
     }
     emit(rgbaFromHex(parsed, { alpha }), "hex");
@@ -189,7 +206,7 @@ export function mountColorPickerPanel(
 
   const formatTrigger = document.createElement("button");
   formatTrigger.type = "button";
-  formatTrigger.className = "color-picker-format-trigger dropdown-trigger";
+  formatTrigger.className = "btn color-picker-format-trigger dropdown-trigger";
   formatTrigger.setAttribute("aria-label", "Colour format");
   formatTrigger.setAttribute("aria-haspopup", "menu");
   formatTrigger.setAttribute("aria-expanded", "false");
@@ -226,8 +243,8 @@ export function mountColorPickerPanel(
   }
 
   formatSlot.append(formatTrigger, formatMenu);
-  hexField.append(hexInput, formatSlot);
-  valueRow.append(preview, hexField);
+  hexField.append(hexInput);
+  valueRow.append(preview, hexField, formatSlot);
 
   const footer = document.createElement("div");
   footer.className = "color-picker-footer";
@@ -237,13 +254,16 @@ export function mountColorPickerPanel(
   if (showSetsToggle) {
     setsBtn = document.createElement("button");
     setsBtn.type = "button";
-    setsBtn.className = "btn color-picker-sets-toggle";
-    setsBtn.textContent = "Colour sets";
+    setsBtn.className = "btn btn-icon btn-toggle color-picker-sets-toggle";
+    setsBtn.setAttribute("aria-label", "Colour sets");
+    setsBtn.setAttribute("aria-pressed", setsOpen ? "true" : "false");
+    setsBtn.dataset.tooltip = "Colour sets";
+    setsBtn.append(createIcon("palette", { className: "btn-icon-svg" }));
     setsBtn.addEventListener("click", (event) => {
       event.stopPropagation();
       onSetsToggle?.();
     });
-    footer.append(setsBtn);
+    valueRow.append(setsBtn);
   }
 
   panelEl.append(spectrum, fields, valueRow, footer);
@@ -595,7 +615,7 @@ export function mountColorPickerPanel(
       const label = document.createElement("label");
       label.className = "field-label";
       label.htmlFor = `${sliderId}-range`;
-      label.textContent = "Alpha";
+      label.textContent = "A";
 
       const row = document.createElement("div");
       row.className = "slider-row";

@@ -243,7 +243,7 @@ export const COMPONENTS = {
     ],
     css: ["controls-color.css", "controls-menus.css", "controls-widgets.css"],
     vendor: [],
-    icons: ["chevron-down"],
+    icons: ["chevron-down", "palette"],
     infra: ["dom", "document-listeners", "color", "menu", "icons"],
     notes: "Uses slider for RGB/CMYK/alpha channels; optional adjacent colour set via color-set",
   },

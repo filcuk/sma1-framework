@@ -5,6 +5,8 @@
 
 const HEX_OPAQUE_PATTERN = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const HEX_ALPHA_PATTERN = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+const PARTIAL_HEX_OPAQUE_PATTERN = /^#?[0-9a-fA-F]{0,6}$/;
+const PARTIAL_HEX_ALPHA_PATTERN = /^#?[0-9a-fA-F]{0,8}$/;
 
 function expandShortHex(hex) {
   if (hex.length === 3 || hex.length === 4) {
@@ -31,6 +33,17 @@ export function parseHexColor(value, { alpha = false } = {}) {
     hex += "FF";
   }
   return `#${hex}`;
+}
+
+/**
+ * Whether `value` looks like an in-progress hex string (not necessarily complete).
+ * @param {string} value
+ * @param {boolean} [alpha]
+ * @returns {boolean}
+ */
+export function isPartialHexInput(value, alpha = false) {
+  const pattern = alpha ? PARTIAL_HEX_ALPHA_PATTERN : PARTIAL_HEX_OPAQUE_PATTERN;
+  return pattern.test(String(value ?? "").trim());
 }
 
 /**

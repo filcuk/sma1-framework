@@ -12,8 +12,10 @@
  *     </div>
  *   </div>
  *
- * Optional open-on-swatch (nest a `.color-set` and/or `.color-picker`, or pass APIs):
+ * Optional open target (nest a `.color-set` and/or `.color-picker`, or pass APIs):
  *   data-color-input-open="none" | "picker" | "set" | "both"
+ * Optional open trigger (when open is not none):
+ *   data-color-input-open-trigger="either" | "swatch" | "input"  (default either)
  *
  * data-color-input-default — initial hex value (#RGB / #RRGGBB; with alpha also #RGBA / #RRGGBBAA)
  * data-color-input-alpha — allow 4- and 8-digit hex with alpha
@@ -21,23 +23,17 @@
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
-import { parseHexColor } from "../utils/color.js";
+import { isPartialHexInput, parseHexColor } from "../utils/color.js";
 import { initColorSet } from "./color-set/index.js";
 import { initColorPicker } from "./color-picker/index.js";
 
 export { parseHexColor };
 
-const PARTIAL_HEX_OPAQUE_PATTERN = /^#?[0-9a-fA-F]{0,6}$/;
-const PARTIAL_HEX_ALPHA_PATTERN = /^#?[0-9a-fA-F]{0,8}$/;
 const OPEN_MODES = new Set(["none", "picker", "set", "both"]);
+const OPEN_TRIGGERS = new Set(["either", "swatch", "input"]);
 
 function formatDisplayValue(value) {
   return value ?? "";
-}
-
-function isPartialHexInput(value, alpha) {
-  const pattern = alpha ? PARTIAL_HEX_ALPHA_PATTERN : PARTIAL_HEX_OPAQUE_PATTERN;
-  return pattern.test(String(value ?? "").trim());
 }
 
 function resolveDisabled(colorInputEl, disabledOption) {
@@ -59,6 +55,21 @@ function resolveOpenOnClick(colorInputEl, openOnClickOption) {
     openOnClickOption ?? colorInputEl?.dataset.colorInputOpen ?? "none";
   const value = String(raw).trim().toLowerCase();
   return OPEN_MODES.has(value) ? /** @type {"none" | "picker" | "set" | "both"} */ (value) : "none";
+}
+
+/**
+ * @param {unknown} raw
+ * @returns {"either" | "swatch" | "input"}
+ */
+function resolveOpenTrigger(colorInputEl, openTriggerOption) {
+  const raw =
+    openTriggerOption ?? colorInputEl?.dataset.colorInputOpenTrigger ?? "either";
+  const value = String(raw).trim().toLowerCase();
+  if (value === "image") return "swatch";
+  if (value === "field") return "input";
+  return OPEN_TRIGGERS.has(value)
+    ? /** @type {"either" | "swatch" | "input"} */ (value)
+    : "either";
 }
 
 function syncSwatch(swatchEl, color) {
@@ -103,6 +114,7 @@ export function initColorInput(
     alpha,
     disabled,
     openOnClick,
+    openTrigger,
     colorSet,
     picker,
     onChange,
@@ -119,8 +131,15 @@ export function initColorInput(
 
   const allowAlpha = resolveAlpha(colorInputEl, alpha);
   const openMode = resolveOpenOnClick(colorInputEl, openOnClick);
-  colorInputEl.classList.toggle("color-input--alpha", allowAlpha);
+  const triggerMode =
+    openMode === "none" ? "either" : resolveOpenTrigger(colorInputEl, openTrigger);
+  const swatchOpens = openMode !== "none" && (triggerMode === "swatch" || triggerMode === "either");
+  const inputOpens = openMode !== "none" && (triggerMode === "input" || triggerMode === "either");
+
   colorInputEl.classList.toggle("color-input--open", openMode !== "none");
+  colorInputEl.classList.toggle("color-input--open-swatch", swatchOpens);
+  colorInputEl.classList.toggle("color-input--open-input", inputOpens);
+  colorInputEl.classList.toggle("color-input--alpha", allowAlpha);
 
   const parse = (value) => parseHexColor(value, { alpha: allowAlpha });
 
@@ -228,9 +247,9 @@ export function initColorInput(
     return true;
   }
 
-  function openTargets() {
-    if (openMode === "set" || openMode === "both") colorSetApi?.open?.();
-    if (openMode === "picker" || openMode === "both") pickerApi?.open?.();
+  function openTargets({ focus = true } = {}) {
+    if (openMode === "set" || openMode === "both") colorSetApi?.open?.({ focus });
+    if (openMode === "picker" || openMode === "both") pickerApi?.open?.({ focus });
   }
 
   function closeTargets() {
@@ -306,27 +325,37 @@ export function initColorInput(
         : openMode === "picker"
           ? "Open colour picker"
           : "Open colour set and picker";
-    swatchEl.dataset.tooltip = openLabel;
-    swatchEl.setAttribute("role", "button");
-    swatchEl.setAttribute("aria-label", openLabel);
-    swatchEl.tabIndex = 0;
-    swatchEl.removeAttribute("aria-hidden");
 
-    const onSwatchActivate = (event) => {
-      if (isDisabled) return;
-      event.preventDefault();
-      event.stopPropagation();
-      toggleTargets();
-    };
+    if (swatchOpens) {
+      swatchEl.dataset.tooltip = openLabel;
+      swatchEl.setAttribute("role", "button");
+      swatchEl.setAttribute("aria-label", openLabel);
+      swatchEl.tabIndex = 0;
+      swatchEl.removeAttribute("aria-hidden");
 
-    swatchEl.addEventListener("click", onSwatchActivate);
-    swatchEl.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") onSwatchActivate(event);
-    });
+      const onSwatchActivate = (event) => {
+        if (isDisabled) return;
+        event.preventDefault();
+        event.stopPropagation();
+        toggleTargets();
+      };
+
+      swatchEl.addEventListener("click", onSwatchActivate);
+      swatchEl.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") onSwatchActivate(event);
+      });
+    }
   }
 
   textInput.addEventListener("focus", () => {
     isEditing = true;
+    if (isDisabled || !inputOpens) return;
+    // Defer so the focusing click is not treated as an outside click by the popup.
+    window.setTimeout(() => {
+      if (isDisabled || document.activeElement !== textInput) return;
+      // Keep caret in the hex field — popup open must not steal focus.
+      openTargets({ focus: false });
+    }, 0);
   });
 
   textInput.addEventListener("input", () => {
@@ -409,6 +438,9 @@ export function initColorInput(
     },
     getOpenOnClick() {
       return openMode;
+    },
+    getOpenTrigger() {
+      return openMode === "none" ? null : triggerMode;
     },
     open() {
       openTargets();

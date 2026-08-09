@@ -1468,7 +1468,7 @@
           <h3 id="demo-specialised-inputs" class="section-title">Specialised inputs</h3>
           <div class="demo-card">
             <h3 class="demo-card-title">Colour inputs</h3>
-            <p class="demo-hint">Hex colour fields with swatch preview. Click the swatch on “Colour set” / “Colour picker” to open those UIs.</p>
+            <p class="demo-hint">Hex colour fields with swatch preview. Colour set / picker fields open on focus or swatch click (default).</p>
             <div class="demo-row">
               <div class="color-input" id="demo-color-input" data-color-input-default="#0969da">
                 <label class="field-label" for="demo-color-input-field">Simple</label>
@@ -1514,8 +1514,8 @@
                     aria-label="Open colour set">Colour set</button>
                   <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
                     <div class="color-set-panel">
-                      <label class="field-label" for="demo-color-input-set-select">Palette</label>
-                      <select id="demo-color-input-set-select" class="input color-set-select"></select>
+                      <select id="demo-color-input-set-select" class="input color-set-select"
+                        aria-label="Colour set"></select>
                       <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
                     </div>
                   </div>
@@ -1539,8 +1539,8 @@
                       <div class="color-picker-panel"></div>
                       <div class="color-set color-picker-sets hidden" data-color-set-embedded hidden>
                         <div class="color-set-panel">
-                          <label class="field-label" for="demo-color-input-picker-set-select">Palette</label>
-                          <select id="demo-color-input-picker-set-select" class="input color-set-select"></select>
+                          <select id="demo-color-input-picker-set-select" class="input color-set-select"
+                            aria-label="Colour set"></select>
                           <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
                         </div>
                       </div>
@@ -1556,7 +1556,8 @@
                 <div class="color-set" id="demo-color-set-embedded" data-color-set-embedded
                 data-color-set-sets="basic,material,metro,flat-ui" data-color-set-default="basic">
                 <div class="color-set-panel">
-                  <select id="demo-color-set-embedded-select" class="input color-set-select"></select>
+                  <select id="demo-color-set-embedded-select" class="input color-set-select"
+                    aria-label="Colour set"></select>
                   <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
                 </div>
               </div>
@@ -1565,10 +1566,10 @@
             <div class="panel-stack">
               <h3 class="demo-card-title">Embedded colour picker</h3>
               <div class="color-picker" id="demo-color-picker-embedded" data-color-picker-embedded
-              data-color-picker-default="#1a7f37" data-color-picker-format="hex">
-              <div class="color-picker-shell">
-                <div class="color-picker-panel"></div>
-              </div>
+                data-color-picker-alpha data-color-picker-default="#1a7f37cc"
+                data-color-picker-format="hex">
+                <div class="color-picker-shell">
+                  <div class="color-picker-panel"></div>
                 </div>
               </div>
             </div>
@@ -1730,7 +1731,7 @@
               </div>
             </div>
             <hr class="panel-divider" />
-            <div class="panel-split panel-split--after-heading">
+            <div class="panel-split">
               <div class="panel-stack">
                 <h3 class="demo-card-title">File downloads</h3>
                 <p class="demo-hint">Sample files are generated in the browser.</p>

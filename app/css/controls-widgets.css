@@ -849,7 +849,7 @@
   padding-left: calc(var(--color-input-inset) + var(--color-input-swatch-size) + var(--color-input-text-gap));
   padding-right: var(--color-input-end-pad);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.875rem;
+  font-size: inherit;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -896,12 +896,12 @@
   background-position: 0 0, 0 4px, 4px -4px, -4px 0;
 }
 
-.color-input--open .color-input-swatch {
+.color-input--open-swatch .color-input-swatch {
   pointer-events: auto;
   cursor: pointer;
 }
 
-.color-input--open .color-input-swatch:focus-visible {
+.color-input--open-swatch .color-input-swatch:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
