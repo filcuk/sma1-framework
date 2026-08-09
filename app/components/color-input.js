@@ -179,11 +179,11 @@ export function initColorInput(
 
   applyDisabled(isDisabled);
 
-  function syncPartnersFromInput() {
+  function syncPartnersFromInput(nextValue = currentValue) {
     if (syncingFromPartner) return;
-    if (currentValue) {
-      colorSetApi?.setValue?.(currentValue, { emit: false });
-      pickerApi?.setValue?.(currentValue, { emit: false });
+    colorSetApi?.setValue?.(nextValue, { emit: false });
+    if (nextValue) {
+      pickerApi?.setValue?.(nextValue, { emit: false });
     }
   }
 
@@ -366,6 +366,7 @@ export function initColorInput(
     if (!raw) {
       textInput.removeAttribute("aria-invalid");
       syncSwatch(swatchEl, null);
+      syncPartnersFromInput(null);
       onInput?.({
         ...buildPayload("input"),
         value: null,
@@ -383,6 +384,10 @@ export function initColorInput(
     textInput.removeAttribute("aria-invalid");
     const preview = parse(raw);
     syncSwatch(swatchEl, preview);
+    if (preview) {
+      // Live-update open picker / set; set clears swatch selection when hex is not in the palette.
+      syncPartnersFromInput(preview);
+    }
     onInput?.({
       ...buildPayload("input"),
       value: preview,

@@ -1800,7 +1800,7 @@ initSteppers(document); // all `.stepper` blocks
 
 Hex colour field with a swatch inside the input on the left. Accepts `#RGB` or `#RRGGBB` (with or without `#` while typing). Values normalise to uppercase `#RRGGBB` on commit. With `data-color-input-alpha` (or `alpha: true`), also accepts `#RGBA` / `#RRGGBBAA`; if no alpha digits are given, commit normalises to full opacity (`#RRGGBBFF`). The swatch shows a checkerboard when empty, incomplete, or under a semi-transparent value.
 
-Optional `data-color-input-open` / `openOnClick`: `none` (default), `picker`, `set`, or `both`. When not `none`, a nested (or passed) **colour set** and/or **colour picker** opens and stays in sync. Colour input remains the hex field — picker and set are separate components.
+Optional `data-color-input-open` / `openOnClick`: `none` (default), `picker`, `set`, or `both`. When not `none`, a nested (or passed) **colour set** and/or **colour picker** opens and stays in sync (including while typing a valid hex). Colour set highlights a matching swatch when possible and clears selection when the value is not in the active palette. Colour input remains the hex field — picker and set are separate components.
 
 Optional `data-color-input-open-trigger` / `openTrigger` (when open is not `none`): `either` (default — swatch click or field focus), `swatch` (swatch only), or `input` (field focus only). Aliases: `image` → `swatch`, `field` → `input`. Opening from field focus keeps the caret in the hex input (`open({ focus: false })` on the partner); opening from the swatch still moves focus into the popup.
 
