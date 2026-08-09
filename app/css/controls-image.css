@@ -1,0 +1,47 @@
+/* Image preview — checkerboard host for SVG / img */
+
+.image-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 12rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background:
+    linear-gradient(45deg, var(--border) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--border) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--border) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--border) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-color: var(--surface);
+  overflow: auto;
+}
+
+.image-preview__empty {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.image-preview svg,
+.image-preview img,
+.image-preview__media {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 20rem;
+  min-width: min(100%, 8rem);
+  background: transparent;
+}
+
+.image-preview[data-image-preview-pixelated] svg,
+.image-preview[data-image-preview-pixelated] img,
+.image-preview[data-image-preview-pixelated] .image-preview__media {
+  image-rendering: pixelated;
+}
