@@ -16,6 +16,7 @@
   --border: #d0d7de;
   --control-height: 2.625rem;
   --control-height-slim: 2.25rem;
+  --control-height-micro: 1.3125rem;
   --accent: #0969da;
   --accent-hover: color-mix(in srgb, var(--accent) 80%, #000000);
   --accent-fg: #ffffff;

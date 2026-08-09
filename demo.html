@@ -1468,35 +1468,108 @@
           <h3 id="demo-specialised-inputs" class="section-title">Specialised inputs</h3>
           <div class="demo-card">
             <h3 class="demo-card-title">Colour inputs</h3>
-            <p class="demo-hint">Hex colour fields with swatch preview and optional alpha channel.</p>
+            <p class="demo-hint">HEX colour fields with optional swatch or colour picker popup on focus.</p>
             <div class="demo-row">
               <div class="color-input" id="demo-color-input" data-color-input-default="#0969da">
                 <label class="field-label" for="demo-color-input-field">Simple</label>
                 <div class="color-input-control">
-                  <input type="text" id="demo-color-input-field" class="input color-input-field"
-                    placeholder="#0969DA" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
                   <span class="color-input-swatch" aria-hidden="true"></span>
+                  <input type="text" id="demo-color-input-field" class="input color-input-field"
+                  placeholder="#0969DA" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
                   <input type="hidden" class="color-input-value" />
                 </div>
               </div>
               <div class="color-input" id="demo-color-input-empty">
                 <label class="field-label" for="demo-color-input-empty-field">Empty</label>
                 <div class="color-input-control">
+                  <span class="color-input-swatch" aria-hidden="true"></span>
                   <input type="text" id="demo-color-input-empty-field" class="input color-input-field"
                     placeholder="#RRGGBB" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
-                  <span class="color-input-swatch" aria-hidden="true"></span>
                   <input type="hidden" class="color-input-value" />
                 </div>
               </div>
               <div class="color-input" id="demo-color-input-alpha" data-color-input-alpha
-                data-color-input-default="#ff338855">
+              data-color-input-default="#ff338855">
                 <label class="field-label" for="demo-color-input-alpha-field">Alpha</label>
                 <div class="color-input-control">
-                  <input type="text" id="demo-color-input-alpha-field" class="input color-input-field"
-                    placeholder="#RRGGBBAA" autocomplete="off" spellcheck="false"
-                    aria-label="Hex colour with alpha" />
                   <span class="color-input-swatch" aria-hidden="true"></span>
+                  <input type="text" id="demo-color-input-alpha-field" class="input color-input-field"
+                  placeholder="#RRGGBBAA" autocomplete="off" spellcheck="false"
+                  aria-label="Hex colour with alpha" />
                   <input type="hidden" class="color-input-value" />
+                </div>
+              </div>
+              <div class="color-input" id="demo-color-input-set" data-color-input-open="set"
+                data-color-input-default="#2196F3">
+                <label class="field-label" for="demo-color-input-set-field">Colour set</label>
+                <div class="color-input-control">
+                  <span class="color-input-swatch"></span>
+                  <input type="text" id="demo-color-input-set-field" class="input color-input-field"
+                    placeholder="#RRGGBB" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
+                  <input type="hidden" class="color-input-value" />
+                </div>
+                <div class="color-set" id="demo-color-input-set-host" data-color-set-default="material"
+                  data-color-set-value="#2196F3">
+                  <button type="button" class="btn color-set-trigger" aria-expanded="false"
+                    aria-label="Open colour set">Colour set</button>
+                  <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
+                    <div class="color-set-panel">
+                      <select id="demo-color-input-set-select" class="input color-set-select"
+                        aria-label="Colour set"></select>
+                      <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="color-input" id="demo-color-input-picker" data-color-input-open="picker"
+                data-color-input-default="#0969da">
+                <label class="field-label" for="demo-color-input-picker-field">Colour picker</label>
+                <div class="color-input-control">
+                  <span class="color-input-swatch"></span>
+                  <input type="text" id="demo-color-input-picker-field" class="input color-input-field"
+                    placeholder="#RRGGBB" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
+                  <input type="hidden" class="color-input-value" />
+                </div>
+                <div class="color-picker" id="demo-color-input-picker-host"
+                  data-color-picker-default="#0969da" data-color-picker-color-set>
+                  <button type="button" class="btn color-picker-trigger" aria-expanded="false"
+                    aria-label="Open colour picker">Colour picker</button>
+                  <div class="color-picker-popup hidden" role="dialog" aria-label="Colour picker" hidden>
+                    <div class="color-picker-shell">
+                      <div class="color-picker-panel"></div>
+                      <div class="color-set color-picker-sets hidden" data-color-set-embedded hidden>
+                        <div class="color-set-panel">
+                          <select id="demo-color-input-picker-set-select" class="input color-set-select"
+                            aria-label="Colour set"></select>
+                          <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr class="panel-divider" />
+            <div class="panel-split">
+              <div class="panel-stack">
+                <h3 class="demo-card-title">Embedded palette</h3>
+                <div class="color-set" id="demo-color-set-embedded" data-color-set-embedded
+                data-color-set-default="basic">
+                <div class="color-set-panel">
+                  <select id="demo-color-set-embedded-select" class="input color-set-select"
+                    aria-label="Colour set"></select>
+                  <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
+                </div>
+              </div>
+            </div>
+            <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+            <div class="panel-stack">
+              <h3 class="demo-card-title">Embedded colour picker</h3>
+              <div class="color-picker" id="demo-color-picker-embedded" data-color-picker-embedded
+                data-color-picker-alpha data-color-picker-default="#1a7f37cc"
+                data-color-picker-format="hex">
+                <div class="color-picker-shell">
+                  <div class="color-picker-panel"></div>
                 </div>
               </div>
             </div>
@@ -1658,7 +1731,7 @@
               </div>
             </div>
             <hr class="panel-divider" />
-            <div class="panel-split panel-split--after-heading">
+            <div class="panel-split">
               <div class="panel-stack">
                 <h3 class="demo-card-title">File downloads</h3>
                 <p class="demo-hint">Sample files are generated in the browser.</p>

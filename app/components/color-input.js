@@ -5,59 +5,35 @@
  *   <div class="color-input" data-color-input-default="#0969da">
  *     <label class="field-label" for="my-color-input">Colour</label>
  *     <div class="color-input-control">
+ *       <span class="color-input-swatch" aria-hidden="true"></span>
  *       <input type="text" id="my-color-input" class="input color-input-field"
  *         autocomplete="off" spellcheck="false" aria-label="Hex colour" />
- *       <span class="color-input-swatch" aria-hidden="true"></span>
  *       <input type="hidden" class="color-input-value" name="color" />
  *     </div>
  *   </div>
+ *
+ * Optional open target (nest a `.color-set` and/or `.color-picker`, or pass APIs):
+ *   data-color-input-open="none" | "picker" | "set" | "both"
+ * Optional open trigger (when open is not none):
+ *   data-color-input-open-trigger="either" | "swatch" | "input"  (default either)
  *
  * data-color-input-default — initial hex value (#RGB / #RRGGBB; with alpha also #RGBA / #RRGGBBAA)
  * data-color-input-alpha — allow 4- and 8-digit hex with alpha
  * data-color-input-disabled — disable the control
  */
 
-import { parseBooleanAttr } from "../utils/dom.js";
+import { parseBooleanAttr, setHidden } from "../utils/dom.js";
+import { isPartialHexInput, paintHexMirror, parseHexColor } from "../utils/color.js";
+import { initColorSet } from "./color-set/index.js";
+import { initColorPicker } from "./color-picker/index.js";
 
-const HEX_OPAQUE_PATTERN = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const HEX_ALPHA_PATTERN = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
-const PARTIAL_HEX_OPAQUE_PATTERN = /^#?[0-9a-fA-F]{0,6}$/;
-const PARTIAL_HEX_ALPHA_PATTERN = /^#?[0-9a-fA-F]{0,8}$/;
+export { parseHexColor };
 
-function expandShortHex(hex) {
-  if (hex.length === 3 || hex.length === 4) {
-    return hex
-      .split("")
-      .map((char) => char + char)
-      .join("");
-  }
-  return hex;
-}
-
-/**
- * @param {string} value
- * @param {{ alpha?: boolean }} [options]
- * @returns {string | null} Normalised `#RRGGBB` or `#RRGGBBAA`, or null when invalid.
- */
-export function parseHexColor(value, { alpha = false } = {}) {
-  const text = String(value ?? "").trim();
-  if (!text) return null;
-  const match = text.match(alpha ? HEX_ALPHA_PATTERN : HEX_OPAQUE_PATTERN);
-  if (!match) return null;
-  let hex = expandShortHex(match[1]).toUpperCase();
-  if (alpha && hex.length === 6) {
-    hex += "FF";
-  }
-  return `#${hex}`;
-}
+const OPEN_MODES = new Set(["none", "picker", "set", "both"]);
+const OPEN_TRIGGERS = new Set(["either", "swatch", "input"]);
 
 function formatDisplayValue(value) {
   return value ?? "";
-}
-
-function isPartialHexInput(value, alpha) {
-  const pattern = alpha ? PARTIAL_HEX_ALPHA_PATTERN : PARTIAL_HEX_OPAQUE_PATTERN;
-  return pattern.test(String(value ?? "").trim());
 }
 
 function resolveDisabled(colorInputEl, disabledOption) {
@@ -70,6 +46,32 @@ function resolveAlpha(colorInputEl, alphaOption) {
   return parseBooleanAttr(colorInputEl?.dataset.colorInputAlpha) ?? false;
 }
 
+/**
+ * @param {unknown} raw
+ * @returns {"none" | "picker" | "set" | "both"}
+ */
+function resolveOpenOnClick(colorInputEl, openOnClickOption) {
+  const raw =
+    openOnClickOption ?? colorInputEl?.dataset.colorInputOpen ?? "none";
+  const value = String(raw).trim().toLowerCase();
+  return OPEN_MODES.has(value) ? /** @type {"none" | "picker" | "set" | "both"} */ (value) : "none";
+}
+
+/**
+ * @param {unknown} raw
+ * @returns {"either" | "swatch" | "input"}
+ */
+function resolveOpenTrigger(colorInputEl, openTriggerOption) {
+  const raw =
+    openTriggerOption ?? colorInputEl?.dataset.colorInputOpenTrigger ?? "either";
+  const value = String(raw).trim().toLowerCase();
+  if (value === "image") return "swatch";
+  if (value === "field") return "input";
+  return OPEN_TRIGGERS.has(value)
+    ? /** @type {"either" | "swatch" | "input"} */ (value)
+    : "either";
+}
+
 function syncSwatch(swatchEl, color) {
   if (!swatchEl) return;
   swatchEl.classList.toggle("is-empty", !color);
@@ -80,9 +82,44 @@ function syncSwatch(swatchEl, color) {
   }
 }
 
+function isPartnerApi(value) {
+  return Boolean(value && typeof value === "object" && typeof value.open === "function");
+}
+
+/**
+ * @param {HTMLElement} hostEl
+ */
+function hidePartnerTrigger(hostEl) {
+  const trigger =
+    hostEl.querySelector(".color-set-trigger") ||
+    hostEl.querySelector(".color-picker-trigger");
+  if (trigger instanceof HTMLElement) setHidden(trigger, true);
+}
+
+/**
+ * @param {HTMLElement} colorInputEl
+ * @param {string} selector
+ */
+function findNestedPartner(colorInputEl, selector) {
+  return (
+    colorInputEl.querySelector(`.color-input-control > ${selector}`) ||
+    colorInputEl.querySelector(`:scope > ${selector}`)
+  );
+}
+
 export function initColorInput(
   colorInputEl,
-  { defaultValue, alpha, disabled, onChange, onInput } = {}
+  {
+    defaultValue,
+    alpha,
+    disabled,
+    openOnClick,
+    openTrigger,
+    colorSet,
+    picker,
+    onChange,
+    onInput,
+  } = {}
 ) {
   if (!colorInputEl) return null;
 
@@ -92,7 +129,34 @@ export function initColorInput(
 
   if (!textInput || !swatchEl) return null;
 
+  // Drop the old static hash prefix if present.
+  colorInputEl.querySelector(".color-input-hash")?.remove();
+
+  let fieldShell = textInput.closest(".color-input-field-shell");
+  if (!fieldShell) {
+    fieldShell = document.createElement("div");
+    fieldShell.className = "color-input-field-shell";
+    textInput.before(fieldShell);
+    fieldShell.append(textInput);
+  }
+  let mirrorEl = fieldShell.querySelector(".color-input-mirror");
+  if (!mirrorEl) {
+    mirrorEl = document.createElement("div");
+    mirrorEl.className = "color-input-mirror";
+    mirrorEl.setAttribute("aria-hidden", "true");
+    textInput.before(mirrorEl);
+  }
+
   const allowAlpha = resolveAlpha(colorInputEl, alpha);
+  const openMode = resolveOpenOnClick(colorInputEl, openOnClick);
+  const triggerMode =
+    openMode === "none" ? "either" : resolveOpenTrigger(colorInputEl, openTrigger);
+  const swatchOpens = openMode !== "none" && (triggerMode === "swatch" || triggerMode === "either");
+  const inputOpens = openMode !== "none" && (triggerMode === "input" || triggerMode === "either");
+
+  colorInputEl.classList.toggle("color-input--open", openMode !== "none");
+  colorInputEl.classList.toggle("color-input--open-swatch", swatchOpens);
+  colorInputEl.classList.toggle("color-input--open-input", inputOpens);
   colorInputEl.classList.toggle("color-input--alpha", allowAlpha);
 
   const parse = (value) => parseHexColor(value, { alpha: allowAlpha });
@@ -105,6 +169,12 @@ export function initColorInput(
   let currentValue = parse(initialRaw);
   let isEditing = false;
   let isDisabled = resolveDisabled(colorInputEl, disabled);
+  let syncingFromPartner = false;
+
+  /** @type {ReturnType<typeof initColorSet> | null} */
+  let colorSetApi = null;
+  /** @type {ReturnType<typeof initColorPicker> | null} */
+  let pickerApi = null;
 
   function buildPayload(source) {
     return {
@@ -119,18 +189,32 @@ export function initColorInput(
     isDisabled = nextDisabled;
     colorInputEl.classList.toggle("color-input--disabled", nextDisabled);
     textInput.disabled = nextDisabled;
+    if (nextDisabled) {
+      colorSetApi?.close?.();
+      pickerApi?.close?.();
+    }
   }
 
   applyDisabled(isDisabled);
+
+  function syncPartnersFromInput(nextValue = currentValue) {
+    if (syncingFromPartner) return;
+    colorSetApi?.setValue?.(nextValue, { emit: false });
+    if (nextValue) {
+      pickerApi?.setValue?.(nextValue, { emit: false });
+    }
+  }
 
   function syncDom({ emit = true, source = "init" } = {}) {
     if (!isEditing) {
       textInput.value = formatDisplayValue(currentValue);
     }
+    paintHexMirror(mirrorEl, textInput.value);
     if (hiddenInput) {
       hiddenInput.value = currentValue ?? "";
     }
     syncSwatch(swatchEl, currentValue);
+    syncPartnersFromInput();
 
     if (emit) {
       onChange?.(buildPayload(source));
@@ -150,6 +234,12 @@ export function initColorInput(
     return true;
   }
 
+  function applyFromPartner(nextValue, source) {
+    syncingFromPartner = true;
+    setValue(nextValue, { emit: true, source });
+    syncingFromPartner = false;
+  }
+
   function commitTypedValue({ emit = true } = {}) {
     const raw = String(textInput.value).trim();
     if (!raw) {
@@ -163,6 +253,7 @@ export function initColorInput(
     const parsed = parse(raw);
     if (!parsed) {
       textInput.value = formatDisplayValue(currentValue);
+      paintHexMirror(mirrorEl, textInput.value);
       textInput.removeAttribute("aria-invalid");
       isEditing = false;
       syncSwatch(swatchEl, currentValue);
@@ -176,18 +267,126 @@ export function initColorInput(
     return true;
   }
 
+  function openTargets({ focus = true } = {}) {
+    if (openMode === "set" || openMode === "both") colorSetApi?.open?.({ focus });
+    if (openMode === "picker" || openMode === "both") pickerApi?.open?.({ focus });
+  }
+
+  function closeTargets() {
+    colorSetApi?.close?.();
+    pickerApi?.close?.();
+  }
+
+  function toggleTargets() {
+    const setOpen = Boolean(colorSetApi?.isOpen?.());
+    const pickerOpen = Boolean(pickerApi?.isOpen?.());
+    if (
+      (openMode === "set" && setOpen) ||
+      (openMode === "picker" && pickerOpen) ||
+      (openMode === "both" && (setOpen || pickerOpen))
+    ) {
+      closeTargets();
+      return;
+    }
+    openTargets();
+  }
+
+  if (openMode === "set" || openMode === "both") {
+    if (isPartnerApi(colorSet)) {
+      colorSetApi = /** @type {ReturnType<typeof initColorSet>} */ (colorSet);
+    } else {
+      const host =
+        colorSet instanceof HTMLElement
+          ? colorSet
+          : findNestedPartner(colorInputEl, ".color-set");
+      if (host instanceof HTMLElement) {
+        colorSetApi = initColorSet(host, {
+          value: currentValue,
+          alpha: allowAlpha,
+          onSelect: ({ value }) => {
+            if (!value) return;
+            applyFromPartner(value, "color-set");
+          },
+        });
+        hidePartnerTrigger(host);
+        host.classList.add("color-input-partner");
+      }
+    }
+  }
+
+  if (openMode === "picker" || openMode === "both") {
+    if (isPartnerApi(picker)) {
+      pickerApi = /** @type {ReturnType<typeof initColorPicker>} */ (picker);
+    } else {
+      const host =
+        picker instanceof HTMLElement
+          ? picker
+          : findNestedPartner(colorInputEl, ".color-picker");
+      if (host instanceof HTMLElement) {
+        pickerApi = initColorPicker(host, {
+          defaultValue: currentValue ?? undefined,
+          alpha: allowAlpha,
+          onChange: ({ value, source }) => {
+            if (source === "api") return;
+            if (!value) return;
+            applyFromPartner(value, "color-picker");
+          },
+        });
+        hidePartnerTrigger(host);
+        host.classList.add("color-input-partner");
+      }
+    }
+  }
+
+  if (openMode !== "none") {
+    const openLabel =
+      openMode === "set"
+        ? "Open colour set"
+        : openMode === "picker"
+          ? "Open colour picker"
+          : "Open colour set and picker";
+
+    if (swatchOpens) {
+      swatchEl.setAttribute("role", "button");
+      swatchEl.setAttribute("aria-label", openLabel);
+      swatchEl.tabIndex = 0;
+      swatchEl.removeAttribute("aria-hidden");
+
+      const onSwatchActivate = (event) => {
+        if (isDisabled) return;
+        event.preventDefault();
+        event.stopPropagation();
+        toggleTargets();
+      };
+
+      swatchEl.addEventListener("click", onSwatchActivate);
+      swatchEl.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") onSwatchActivate(event);
+      });
+    }
+  }
+
   textInput.addEventListener("focus", () => {
     isEditing = true;
+    if (isDisabled || !inputOpens) return;
+    // Defer so the focusing click is not treated as an outside click by the popup.
+    window.setTimeout(() => {
+      if (isDisabled || document.activeElement !== textInput) return;
+      // Keep caret in the hex field — popup open must not steal focus.
+      openTargets({ focus: false });
+    }, 0);
   });
 
   textInput.addEventListener("input", () => {
     if (isDisabled) return;
     isEditing = true;
     const raw = String(textInput.value).trim();
+    paintHexMirror(mirrorEl, textInput.value);
 
     if (!raw) {
       textInput.removeAttribute("aria-invalid");
       syncSwatch(swatchEl, null);
+      syncPartnersFromInput(null);
       onInput?.({
         ...buildPayload("input"),
         value: null,
@@ -205,6 +404,10 @@ export function initColorInput(
     textInput.removeAttribute("aria-invalid");
     const preview = parse(raw);
     syncSwatch(swatchEl, preview);
+    if (preview) {
+      // Live-update open picker / set; set clears swatch selection when hex is not in the palette.
+      syncPartnersFromInput(preview);
+    }
     onInput?.({
       ...buildPayload("input"),
       value: preview,
@@ -231,6 +434,7 @@ export function initColorInput(
       event.preventDefault();
       isEditing = false;
       textInput.value = formatDisplayValue(currentValue);
+      paintHexMirror(mirrorEl, textInput.value);
       textInput.removeAttribute("aria-invalid");
       syncSwatch(swatchEl, currentValue);
       textInput.blur();
@@ -243,8 +447,8 @@ export function initColorInput(
     getValue() {
       return currentValue;
     },
-    setValue(nextValue) {
-      return setValue(nextValue);
+    setValue(nextValue, options) {
+      return setValue(nextValue, options);
     },
     commitInput() {
       return commitTypedValue();
@@ -257,6 +461,24 @@ export function initColorInput(
     },
     allowsAlpha() {
       return allowAlpha;
+    },
+    getOpenOnClick() {
+      return openMode;
+    },
+    getOpenTrigger() {
+      return openMode === "none" ? null : triggerMode;
+    },
+    open() {
+      openTargets();
+    },
+    close() {
+      closeTargets();
+    },
+    getColorSet() {
+      return colorSetApi;
+    },
+    getPicker() {
+      return pickerApi;
     },
   };
 }
