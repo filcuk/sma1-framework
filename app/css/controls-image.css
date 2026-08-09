@@ -28,9 +28,9 @@
   text-align: center;
 }
 
-.image-preview svg,
-.image-preview img,
-.image-preview__media {
+.image-preview > svg,
+.image-preview > img,
+.image-preview > .image-preview__media {
   display: block;
   width: auto;
   height: auto;
@@ -40,9 +40,9 @@
   background: transparent;
 }
 
-.image-preview[data-image-preview-pixelated] svg,
-.image-preview[data-image-preview-pixelated] img,
-.image-preview[data-image-preview-pixelated] .image-preview__media {
+.image-preview[data-image-preview-pixelated] > svg,
+.image-preview[data-image-preview-pixelated] > img,
+.image-preview[data-image-preview-pixelated] > .image-preview__media {
   image-rendering: pixelated;
 }
 
@@ -56,8 +56,8 @@
   max-height: none;
 }
 
-.image-preview.expandable-surface.is-expanded svg,
-.image-preview.expandable-surface.is-expanded img,
-.image-preview.expandable-surface.is-expanded .image-preview__media {
+.image-preview.expandable-surface.is-expanded > svg,
+.image-preview.expandable-surface.is-expanded > img,
+.image-preview.expandable-surface.is-expanded > .image-preview__media {
   max-height: min(70vh, 100%);
 }

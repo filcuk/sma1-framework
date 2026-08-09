@@ -1658,36 +1658,58 @@
               </div>
             </div>
             <hr class="panel-divider" />
-            <h3 class="demo-card-title">File downloads</h3>
-            <p class="demo-hint">Sample files are generated in the browser.</p>
-            <div class="field">
-              <div class="file-download" id="demo-file-download">
-                <ul class="file-download-list">
-                  <li>
-                    <button type="button" class="file-download-item btn" data-file-download-name="hello.txt"
-                      aria-label="Download hello.txt">
-                      <span class="file-download-item-name">hello<span class="file-download-item-ext">.txt</span></span>
-                      <span class="file-download-item-meta">Plain text</span>
-                      <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                    </button>
-                  </li>
-                  <li>
-                    <button type="button" class="file-download-item btn" data-file-download-name="notes.txt"
-                      aria-label="Download notes.txt">
-                      <span class="file-download-item-name">notes<span class="file-download-item-ext">.txt</span></span>
-                      <span class="file-download-item-meta">Plain text</span>
-                      <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                    </button>
-                  </li>
-                  <li>
-                    <button type="button" class="file-download-item btn" data-file-download-name="summary.txt"
-                      aria-label="Download summary.txt">
-                      <span class="file-download-item-name">summary<span class="file-download-item-ext">.txt</span></span>
-                      <span class="file-download-item-meta">Plain text</span>
-                      <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                    </button>
-                  </li>
-                </ul>
+            <div class="panel-split panel-split--after-heading">
+              <div class="panel-stack">
+                <h3 class="demo-card-title">File downloads</h3>
+                <p class="demo-hint">Sample files are generated in the browser.</p>
+                <div class="field">
+                  <div class="file-download" id="demo-file-download">
+                    <ul class="file-download-list">
+                      <li>
+                        <button type="button" class="file-download-item btn" data-file-download-name="hello.txt"
+                          aria-label="Download hello.txt">
+                          <span class="file-download-item-name">hello<span class="file-download-item-ext">.txt</span></span>
+                          <span class="file-download-item-meta">Plain text</span>
+                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="file-download-item btn" data-file-download-name="notes.txt"
+                          aria-label="Download notes.txt">
+                          <span class="file-download-item-name">notes<span class="file-download-item-ext">.txt</span></span>
+                          <span class="file-download-item-meta">Plain text</span>
+                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="file-download-item btn" data-file-download-name="summary.txt"
+                          aria-label="Download summary.txt">
+                          <span class="file-download-item-name">summary<span class="file-download-item-ext">.txt</span></span>
+                          <span class="file-download-item-meta">Plain text</span>
+                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="demo-card-title">Image preview</h3>
+                <p class="demo-hint">Maximise on click or using floating button.</p>
+                <div
+                  class="image-preview"
+                  id="demo-image-preview"
+                  data-image-preview-pixelated
+                  data-image-preview-maximize
+                  data-image-preview-expand-on-click
+                  data-expandable-surface
+                  data-expandable-surface-click
+                  data-expandable-surface-label="Image preview"
+                  aria-live="polite"
+                >
+                  <p class="image-preview__empty">No image</p>
+                </div>
               </div>
             </div>
           </div>
