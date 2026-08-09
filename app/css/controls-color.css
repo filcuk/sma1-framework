@@ -262,19 +262,8 @@
   box-shadow: none;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  background-color: var(--surface);
-  background-image:
-    linear-gradient(
-      var(--color-picker-thumb, transparent),
-      var(--color-picker-thumb, transparent)
-    ),
-    linear-gradient(45deg, var(--border) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--border) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--border) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--border) 75%);
-  background-size: auto, 6px 6px, 6px 6px, 6px 6px, 6px 6px;
-  background-position: 0 0, 0 0, 0 3px, 3px -3px, -3px 0;
-  background-clip: padding-box;
+  /* Opaque fill only — alpha is shown on `.color-picker-preview`. */
+  background: var(--color-picker-thumb, var(--surface));
 }
 
 /* Match `.slider-range` chrome; rainbow track instead of accent progress. */

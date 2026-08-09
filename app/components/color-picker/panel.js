@@ -438,7 +438,7 @@ export function mountColorPickerPanel(
     if (!(plane instanceof HTMLElement) || !(thumb instanceof HTMLElement)) return;
 
     plane.style.setProperty("--color-picker-hue", hueColor);
-    thumb.style.setProperty("--color-picker-thumb", hexFromRgba(rgba, { alpha: true }));
+    thumb.style.setProperty("--color-picker-thumb", hexFromRgba(rgba, { alpha: false }));
     if (mode === "hsl") {
       thumb.style.left = `${hslState.s}%`;
       thumb.style.top = `${100 - hslState.l}%`;
