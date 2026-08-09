@@ -104,6 +104,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initSpinner()` / `initSpinners()` | Loading spinner; optional blocking overlay on a host |
 | `initStepper()` / `initSteppers()` | Numeric nudger with decrement/increment buttons |
 | `initColorInput()` / `initColorInputs()` | Hex colour input with inline swatch preview; optional alpha |
+| `initColorSet()` / `initColorSets()` | Named palette gallery; popup or embedded; optional set whitelist |
 | `initToggle()` / `initToggles()` | On/off switch control; optional `data-toggle-tristate` for off → on → mixed |
 | `initTriStateCheckbox()` / `initTriStateCheckboxes()` | Tri-state checkbox (`data-checkbox-tristate`) — unchecked → checked → mixed |
 | `initBadge()` / `initBadges()` | Corner badge on a `.badge-host` (normal readout or `.badge--sm` dot) |
@@ -162,6 +163,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-disclosure.css` | Expand, accordion, tabs, progress indicator |
 | `app/css/controls-file.css` | File dropzone, file download |
 | `app/css/controls-image.css` | Image preview (checkerboard host) |
+| `app/css/controls-color.css` | Color set gallery (and future color picker) |
 | `app/css/overlays.css` | Banners, tooltips, popovers, modals |
 | `app/css/tutorial.css` | Tutorial spotlight overlay and step chrome |
 | `app/css/rich-text-editor.css` | Rich text editor field layout and Toast UI token overrides |

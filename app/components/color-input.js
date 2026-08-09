@@ -18,38 +18,12 @@
  */
 
 import { parseBooleanAttr } from "../utils/dom.js";
+import { parseHexColor } from "../utils/color.js";
 
-const HEX_OPAQUE_PATTERN = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const HEX_ALPHA_PATTERN = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+export { parseHexColor };
+
 const PARTIAL_HEX_OPAQUE_PATTERN = /^#?[0-9a-fA-F]{0,6}$/;
 const PARTIAL_HEX_ALPHA_PATTERN = /^#?[0-9a-fA-F]{0,8}$/;
-
-function expandShortHex(hex) {
-  if (hex.length === 3 || hex.length === 4) {
-    return hex
-      .split("")
-      .map((char) => char + char)
-      .join("");
-  }
-  return hex;
-}
-
-/**
- * @param {string} value
- * @param {{ alpha?: boolean }} [options]
- * @returns {string | null} Normalised `#RRGGBB` or `#RRGGBBAA`, or null when invalid.
- */
-export function parseHexColor(value, { alpha = false } = {}) {
-  const text = String(value ?? "").trim();
-  if (!text) return null;
-  const match = text.match(alpha ? HEX_ALPHA_PATTERN : HEX_OPAQUE_PATTERN);
-  if (!match) return null;
-  let hex = expandShortHex(match[1]).toUpperCase();
-  if (alpha && hex.length === 6) {
-    hex += "FF";
-  }
-  return `#${hex}`;
-}
 
 function formatDisplayValue(value) {
   return value ?? "";

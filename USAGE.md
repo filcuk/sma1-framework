@@ -439,7 +439,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 
 | Feature | Description |
 | -------- | ----------- |
-| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` (standard and compact single-line controls), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`template.css`](app/css/template.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
+| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`template.css`](app/css/template.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; template version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order` and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
@@ -459,6 +459,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/spinner.js`](app/spinner.js). |
 | **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/stepper.js`](app/stepper.js). |
 | **Colour input** | Hex text input with inline swatch preview; optional alpha (`#RRGGBBAA`). [`app/components/color-input.js`](app/components/color-input.js). |
+| **Colour set** | Named palette gallery (popup or embedded); built-in sets as one module each. [`app/components/color-set/`](app/components/color-set/). |
 | **Date picker** | Calendar popup with optional time field. [`app/components/date-picker/`](app/components/date-picker/). |
 | **Time picker** | Time-of-day field (no date) via native `<input type="time">`. [`app/components/time-picker.js`](app/components/time-picker.js). |
 | **Duration input** | Segmented hours:minutes (optional seconds) duration field. [`app/components/duration-input.js`](app/components/duration-input.js). |
@@ -1848,7 +1849,64 @@ alphaInput?.allowsAlpha(); // true
 initColorInputs(document); // all `.color-input` blocks
 ```
 
-`data-color-input-default`, `data-color-input-alpha`, and `data-color-input-disabled` mirror the JS options. `parseHexColor(value, { alpha })` is exported for reuse.
+`data-color-input-default`, `data-color-input-alpha`, and `data-color-input-disabled` mirror the JS options. `parseHexColor(value, { alpha })` is exported from colour input and from [`app/utils/color.js`](app/utils/color.js).
+
+### Colour set
+
+Named palette gallery. Default mode is a trigger button that opens a popup (date-picker style). Set `data-color-set-embedded` for an always-visible panel. Built-in palettes live as one module each under `app/components/color-set/sets/` and register via `ensureBuiltinColorSets()` (called automatically by `initColorSet`). Add or edit a set by adding/updating a module and importing it from `sets/index.js`.
+
+```html
+<div class="color-set" id="my-color-set" data-color-set-default="material">
+  <button type="button" class="btn color-set-trigger" aria-expanded="false"
+    aria-label="Open colour set">Colour set</button>
+  <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
+    <div class="color-set-panel">
+      <label class="field-label" for="my-color-set-select">Palette</label>
+      <select id="my-color-set-select" class="input color-set-select"></select>
+      <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
+    </div>
+  </div>
+</div>
+
+<div class="color-set" id="my-color-set-embedded" data-color-set-embedded
+  data-color-set-sets="basic,material,metro" data-color-set-default="basic">
+  <div class="color-set-panel">
+    <label class="field-label" for="my-color-set-embedded-select">Palette</label>
+    <select id="my-color-set-embedded-select" class="input color-set-select"></select>
+    <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
+  </div>
+</div>
+```
+
+```javascript
+import {
+  initColorSet,
+  initColorSets,
+  registerColorSet,
+  listColorSets,
+} from "./components/color-set/index.js";
+
+const colorSet = initColorSet(document.getElementById("my-color-set"), {
+  defaultSet: "material",
+  onSelect: ({ value, name, setId }) => console.log(value, name, setId),
+});
+
+colorSet?.open();
+colorSet?.getValue();
+colorSet?.setValue("#2196F3");
+colorSet?.setSetId("tailwind");
+
+initColorSets(document);
+
+// Custom palette (optional — besides the built-in modules):
+registerColorSet({
+  id: "brand",
+  name: "Brand",
+  colors: ["#0969da", { hex: "#1a7f37", name: "Success" }],
+});
+```
+
+`data-color-set-embedded`, `data-color-set-sets`, `data-color-set-default`, `data-color-set-value`, `data-color-set-alpha`, and `data-color-set-close-on-select` mirror the JS options. Popup mode closes after a swatch click by default (`closeOnSelect: true`). Named swatches use `data-tooltip` (shell tooltips).
 
 ### Toggle
 

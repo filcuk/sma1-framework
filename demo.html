@@ -1467,7 +1467,7 @@
         <section class="content-section" aria-labelledby="demo-specialised-inputs">
           <h3 id="demo-specialised-inputs" class="section-title">Specialised inputs</h3>
           <div class="demo-card">
-            <h3 class="demo-card-title">Colour inputs</h3>
+            <h3 class="demo-card-title">Colour inputs &amp; sets</h3>
             <p class="demo-hint">Hex colour fields with swatch preview and optional alpha channel.</p>
             <div class="demo-row">
               <div class="color-input" id="demo-color-input" data-color-input-default="#0969da">
@@ -1498,6 +1498,32 @@
                   <span class="color-input-swatch" aria-hidden="true"></span>
                   <input type="hidden" class="color-input-value" />
                 </div>
+              </div>
+            </div>
+            <hr class="panel-divider" />
+            <p class="demo-hint">Named palette galleries — popup (default) or embedded. Built-in sets are one module each under <code>color-set/sets/</code>.</p>
+            <div class="demo-row">
+              <div class="color-set" id="demo-color-set" data-color-set-default="material"
+                data-color-set-value="#2196F3">
+                <button type="button" class="btn color-set-trigger" aria-expanded="false"
+                  aria-label="Open colour set">Open colour set</button>
+                <div class="color-set-popup hidden" role="dialog" aria-label="Colour set" hidden>
+                  <div class="color-set-panel">
+                    <label class="field-label" for="demo-color-set-select">Palette</label>
+                    <select id="demo-color-set-select" class="input color-set-select"></select>
+                    <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
+                  </div>
+                </div>
+              </div>
+              <p class="demo-hint" id="demo-color-set-readout" aria-live="polite">Selected: #2196F3</p>
+            </div>
+            <hr class="panel-divider" />
+            <div class="color-set" id="demo-color-set-embedded" data-color-set-embedded
+              data-color-set-sets="basic,material,metro,flat-ui" data-color-set-default="basic">
+              <div class="color-set-panel">
+                <label class="field-label" for="demo-color-set-embedded-select">Embedded palette</label>
+                <select id="demo-color-set-embedded-select" class="input color-set-select"></select>
+                <div class="color-set-grid" role="listbox" aria-label="Colours"></div>
               </div>
             </div>
           </div>

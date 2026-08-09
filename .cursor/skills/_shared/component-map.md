@@ -37,6 +37,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
 | `controls-file.css` | file-dropzone, file-download |
 | `controls-image.css` | image-preview |
+| `controls-color.css` | color-set |
 | `rich-text-editor.css` | rich-text-editor (+ `app/toastui-editor.css`) |
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
@@ -61,7 +62,8 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | date-picker | `app/components/date-picker/` (`index.js`, `calendar.js`, `parse.js`) | `controls-fields.css` | — | Markup: `calendar` | `dom`, `document-listeners` | |
 | time-picker | `app/components/time-picker.js` | `controls-fields.css` | — | — | `dom` | Native `type="time"` |
 | duration-input | `app/components/duration-input.js` | `controls-fields.css` | — | — | `dom` | Hours:minutes; optional seconds |
-| color-input | `app/components/color-input.js` | `controls-widgets.css` | — | — | `dom` | Hex field + swatch; optional alpha; not a spectrum picker |
+| color-input | `app/components/color-input.js` | `controls-widgets.css` | — | — | `dom`, `color` | Hex field + swatch; optional alpha; not a spectrum picker |
+| color-set | `app/components/color-set/` (`index.js`, `panel.js`, `registry.js`, `sets/*`) | `controls-color.css` | — | — | `dom`, `document-listeners`, `color` | Named palette gallery; popup or embedded; one module per set |
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
 | checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | JS face: `check`, `minus` | `dom`, `icons` | Tri-state checkbox; faces via `initIcons` / `ensureCheckboxFace` |
 | segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |

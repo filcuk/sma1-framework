@@ -10,6 +10,8 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
+- Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
+- `--control-height-micro` token (half of `--control-height`) for compact colour swatches and similar micro controls.
 - Image preview (`initImagePreview`) — checkerboard host for SVG / image URLs / Blob; optional maximise icon and click-to-expand via expandable-surface (`data-image-preview-maximize`, `data-image-preview-expand-on-click`); optional floating download and muted dimensions / file-size / SMIL frame + duration meta (`data-image-preview-download`, `data-image-preview-dimensions`, `data-image-preview-file-size`, `data-image-preview-frames`, `data-image-preview-duration`); meta strip visibility via `data-image-preview-meta` (`hover` default, `always`, `never`).
 - Expandable surface: `data-expandable-surface-click` (toggle on surface click) and `data-expandable-surface-control="false"` (omit floating maximise button).
 - Manifest **schema v2**: hashed Cursor agent skills/rules, `agent` catalogue, empty `deprecated` / `retired` lifecycle maps, and lock `skills` selection (`*` / `-id`).

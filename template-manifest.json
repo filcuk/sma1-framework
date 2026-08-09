@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.9.0",
-  "generatedAt": "2026-08-09T15:30:14.394Z",
+  "generatedAt": "2026-08-09T16:27:51.953Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -22,7 +22,7 @@
   "derived": {
     "app/css/template.css": {
       "generator": "css-index",
-      "sha256": "8111e666ecd93706e73446cfd2ae7001358d781335c5b87857f204016ee810dd"
+      "sha256": "57842a3b801aab277efbfca9c4c142757a04213d06c5be39e52457c7d73b741c"
     }
   },
   "files": {
@@ -48,7 +48,40 @@
       "sha256": "007526ca24962ac1c5d71efef266b93841ce91b1e235b2bb6207d71637c1e024"
     },
     "app/components/color-input.js": {
-      "sha256": "a2d7ac0e699ecf2f926bce6b9a157893dcf4d0f8cbef6818fc44c3760f8ce7f6"
+      "sha256": "2c95c509950302549fc579e2b0a4bfdbcf05a7e0a2fbd88ef7f90c0db4701d25"
+    },
+    "app/components/color-set/index.js": {
+      "sha256": "ffd1f5f06d018678fde80d43f298659db909923e5658ba3c6ddd5bcd8c7c0102"
+    },
+    "app/components/color-set/panel.js": {
+      "sha256": "2c912d2a27176c7a95ec2b8aab69a3a93cacca3a77093082c80dce007b58e845"
+    },
+    "app/components/color-set/registry.js": {
+      "sha256": "50866e663a5d869536463e317db427a59c03e6eab7f03838b47021390c8450fe"
+    },
+    "app/components/color-set/sets/basic.js": {
+      "sha256": "cb04740c780236fd497fcb419d11d0a44014c721d277790d1c492b8b7c686b93"
+    },
+    "app/components/color-set/sets/flat-ui.js": {
+      "sha256": "604b20ad0988bd9bf936b88892972da5a7a31779525c0781c2867564acd07588"
+    },
+    "app/components/color-set/sets/fluent.js": {
+      "sha256": "592fe352428ea5c4a9e527eefd34e0fd741261b7a2ecce0039d5a1ff36b0d20e"
+    },
+    "app/components/color-set/sets/index.js": {
+      "sha256": "89358e926fc93ca7ec7740ccc24f838d09b02d06396bb8e03a828c4289741258"
+    },
+    "app/components/color-set/sets/material.js": {
+      "sha256": "375225356f8378dec4bb6af9af147d416ce611a7b4f029f7635e1b97a227d63a"
+    },
+    "app/components/color-set/sets/metro.js": {
+      "sha256": "d1e90734d15e0412e1d2892c18ee2b888544b58a6f803f40fd5f266da08dab71"
+    },
+    "app/components/color-set/sets/tailwind.js": {
+      "sha256": "a5ed1e1e435e36257b3b2db90a4f82da7c55d5f6ef127ea97e991886a41c9ba2"
+    },
+    "app/components/color-set/sets/web-safe.js": {
+      "sha256": "03afa4f0e89e289aa3e2a186db826361fa15a7d41e5a207b8de3f71a052cb17d"
     },
     "app/components/combo.js": {
       "sha256": "a0a43f7e59f6f8e13ec4f6e89e1f96d02cfd1283dbaa868fcd511140b9bdb04f"
@@ -155,6 +188,9 @@
     "app/css/controls-chips.css": {
       "sha256": "1568970bc1a3dbba798f50cf63568539c6543152a37e38c7c66c5aca18305cce"
     },
+    "app/css/controls-color.css": {
+      "sha256": "096c6d978e06448cf7a60f4763ba4f2da65aa7c8edaf2d4974e1a5aadf600f02"
+    },
     "app/css/controls-disclosure.css": {
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
     },
@@ -231,7 +267,7 @@
       "sha256": "3f9f55c503dec155b391c71c7a3ab3ed5c659de5df5695084831155e51e95f0b"
     },
     "app/tokens.css": {
-      "sha256": "aafa3bef83481fc5793bd73210600c78fd50da144bc94fb64edcf0a77c03683f"
+      "sha256": "222fa35f080a70ca0abba79de4fde42de01a5d27f1fedd2daab95279869b70ac"
     },
     "app/utils/also-see-svg.js": {
       "sha256": "af1ff194fde0ba9ffe09edf885fde4562bac5f14592fd2f348c366296447e854"
@@ -241,6 +277,9 @@
     },
     "app/utils/clipboard.js": {
       "sha256": "b8821da634ea9c1eb85771e1f2d3fd54f3085cf64116040adc449cd342f12def"
+    },
+    "app/utils/color.js": {
+      "sha256": "8fa1368ee10610b16ecdef89331b93e976ce33866a80ec31225e8174387b8b1d"
     },
     "app/utils/document-listeners.js": {
       "sha256": "21cc35d5ce94dc5b88d67ef50a9f7763a360308376fa9739e1ec8316e8b36f2f"
@@ -294,7 +333,7 @@
       "sha256": "7bf8d6c2ce63462b929d50e6c7646748e4a7232c5c68ce790a8778a9697ccd82"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "18eafed866ef6985280c125ce700696724ae47f15a570682057a981dbce8a635"
+      "sha256": "44fe0468cd6bd04461992caeb59cc0146c2d5846eeea3f11c59ac0b851107fe7"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -388,6 +427,9 @@
     ],
     "clipboard": [
       "app/utils/clipboard.js"
+    ],
+    "color": [
+      "app/utils/color.js"
     ],
     "icons": [
       "app/utils/icons.js",
@@ -622,7 +664,34 @@
       "vendorFiles": [],
       "icons": [],
       "infra": [
-        "dom"
+        "dom",
+        "color"
+      ]
+    },
+    "color-set": {
+      "files": [
+        "app/components/color-set/index.js",
+        "app/components/color-set/panel.js",
+        "app/components/color-set/registry.js",
+        "app/components/color-set/sets/index.js",
+        "app/components/color-set/sets/basic.js",
+        "app/components/color-set/sets/fluent.js",
+        "app/components/color-set/sets/metro.js",
+        "app/components/color-set/sets/flat-ui.js",
+        "app/components/color-set/sets/material.js",
+        "app/components/color-set/sets/tailwind.js",
+        "app/components/color-set/sets/web-safe.js"
+      ],
+      "css": [
+        "controls-color.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [
+        "dom",
+        "document-listeners",
+        "color"
       ]
     },
     "toggle": {
@@ -1215,6 +1284,9 @@
     "controls-image.css": [
       "image-preview"
     ],
+    "controls-color.css": [
+      "color-set"
+    ],
     "rich-text-editor.css": [
       "rich-text-editor"
     ],
@@ -1238,6 +1310,7 @@
     "controls-disclosure.css",
     "controls-file.css",
     "controls-image.css",
+    "controls-color.css",
     "overlays.css",
     "tutorial.css",
     "rich-text-editor.css",

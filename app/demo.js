@@ -29,6 +29,7 @@ import { initDurationInput } from "./components/duration-input.js";
 import { initSlider } from "./components/slider.js";
 import { initStepper } from "./components/stepper.js";
 import { initColorInput } from "./components/color-input.js";
+import { initColorSet } from "./components/color-set/index.js";
 import { initToggle } from "./components/toggle.js";
 import { initTriStateCheckbox } from "./components/checkbox.js";
 import { initSegmentedControl } from "./components/segmented-control.js";
@@ -121,6 +122,16 @@ initStepper(document.getElementById("demo-stepper"));
 initColorInput(document.getElementById("demo-color-input"));
 initColorInput(document.getElementById("demo-color-input-empty"));
 initColorInput(document.getElementById("demo-color-input-alpha"));
+
+const demoColorSetReadout = document.getElementById("demo-color-set-readout");
+initColorSet(document.getElementById("demo-color-set"), {
+  onSelect: ({ value, name, setId }) => {
+    if (!demoColorSetReadout) return;
+    const label = name ? `${value} (${name})` : value;
+    demoColorSetReadout.textContent = `Selected: ${label} · set ${setId}`;
+  },
+});
+initColorSet(document.getElementById("demo-color-set-embedded"));
 
 initProgressIndicator(document.getElementById("demo-progress-indicator"));
 initProgressIndicator(document.getElementById("demo-progress-indicator-vertical"));
