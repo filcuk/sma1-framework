@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.9.0",
-  "generatedAt": "2026-08-08T20:27:17.359Z",
+  "generatedAt": "2026-08-09T15:30:14.394Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -22,7 +22,7 @@
   "derived": {
     "app/css/template.css": {
       "generator": "css-index",
-      "sha256": "f31c170c8b5a8689c9b58fb10595b84a3ebd364507523a3ae9554a224b73dc42"
+      "sha256": "8111e666ecd93706e73446cfd2ae7001358d781335c5b87857f204016ee810dd"
     }
   },
   "files": {
@@ -81,13 +81,16 @@
       "sha256": "9b3f0ac0631f11ea21fd3b998de9bd1d33115e437860f3456171a3a070bde437"
     },
     "app/components/expandable-surface.js": {
-      "sha256": "bbcca5b7ad4fb9c329e308e7e822468d4c3e59b12902ab144aa201c7bddbdad7"
+      "sha256": "3959fb2b66ade2f81fed6ab7e90713b929242a54239e66c8577b3cf6eb3f7660"
     },
     "app/components/file-download.js": {
       "sha256": "a059ed3f44f61a53fd7035688f0cac0796050e240645caeca6d65a8232d32b81"
     },
     "app/components/file-dropzone.js": {
       "sha256": "d397a2b989468b7bf91f49db3cabaa340ad3c9a2fede9f00cb9ed9aad6ee884d"
+    },
+    "app/components/image-preview.js": {
+      "sha256": "c170dd9e97a8d05034278b556723eb248077e4f768b6b13fa9b27cf2ab38e0d2"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
@@ -141,7 +144,7 @@
       "sha256": "77a9e92f6abfe2f2fe1304dc788ad6df97324517bcd198cec0fe6869bdce9e76"
     },
     "app/css/code-block.css": {
-      "sha256": "437c4840d29c902948368a1cb7ddd68fe4be73ef3068fc2ccdae24d6c95a62ee"
+      "sha256": "f8d9d8f49cc5cca8f72e6d0c5a55208d7b1a20da36afb92fa44763db13363594"
     },
     "app/css/controls-badges.css": {
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"
@@ -160,6 +163,9 @@
     },
     "app/css/controls-file.css": {
       "sha256": "2dd93b29594da190aaa6b6a12f019e1a99fbce834ea928970106a9e83a0b4df3"
+    },
+    "app/css/controls-image.css": {
+      "sha256": "5588c5e7d60b18d21a5350d90f8e6a7e07b76e746ae831e4891b38fe51df48d1"
     },
     "app/css/controls-menus.css": {
       "sha256": "3d583f7c1572077865a5779cc597f0a7f9ce4a9433e0dee4ad14afad7174a667"
@@ -288,7 +294,7 @@
       "sha256": "7bf8d6c2ce63462b929d50e6c7646748e4a7232c5c68ce790a8778a9697ccd82"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "b3ba5d762e227d967e02da9cd1e112d1d9109811f661c7f53b4a576e4fabe01e"
+      "sha256": "18eafed866ef6985280c125ce700696724ae47f15a570682057a981dbce8a635"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -874,6 +880,23 @@
         "icons"
       ]
     },
+    "image-preview": {
+      "files": [
+        "app/components/image-preview.js"
+      ],
+      "css": [
+        "controls-image.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [
+        "download"
+      ],
+      "infra": [
+        "dom",
+        "icons"
+      ]
+    },
     "code-block": {
       "files": [
         "app/components/code-block.js"
@@ -1189,6 +1212,9 @@
       "file-dropzone",
       "file-download"
     ],
+    "controls-image.css": [
+      "image-preview"
+    ],
     "rich-text-editor.css": [
       "rich-text-editor"
     ],
@@ -1211,6 +1237,7 @@
     "controls-menus.css",
     "controls-disclosure.css",
     "controls-file.css",
+    "controls-image.css",
     "overlays.css",
     "tutorial.css",
     "rich-text-editor.css",

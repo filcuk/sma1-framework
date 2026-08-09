@@ -449,6 +449,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/file-dropzone.js`](app/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
+| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **Section panel** | `.section-panel` three-column grid rows, divider, submit row with expiring banner. See [`demo.html`](demo.html). |
 | **Panel split** | Side-by-side columns with full-bleed horizontal/vertical dividers inside padded panels (`.panel-split`, `.panel-divider`, `.panel-stack`). See **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/combo.js`](app/combo.js). |
@@ -1339,6 +1340,51 @@ initFileDownloads(document); // wire every `.file-download`
 ```
 
 Pass a `files` array with per-file `getContent` callbacks. File size is shown in `.file-download-item-meta` when content can be resolved at init time.
+
+### Image preview
+
+Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty placeholder until content is set. Fit-to-box with scroll when oversized; optional pixelated rendering for pixel art.
+
+```html
+<div class="image-preview" id="my-preview" aria-live="polite"
+  data-image-preview-pixelated
+  data-image-preview-maximize
+  data-image-preview-expand-on-click
+  data-image-preview-download
+  data-image-preview-download-name="preview.svg"
+  data-image-preview-dimensions
+  data-image-preview-file-size
+  data-image-preview-frames
+  data-image-preview-duration
+  data-image-preview-meta="hover"
+  data-expandable-surface
+  data-expandable-surface-click
+  data-expandable-surface-label="Preview">
+  <p class="image-preview__empty">No image</p>
+</div>
+```
+
+```javascript
+import { initImagePreview, initImagePreviews } from "./components/image-preview.js";
+import { initExpandableSurfaces } from "./components/expandable-surface.js";
+
+const preview = initImagePreview(document.getElementById("my-preview"));
+preview?.setSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">…</svg>`);
+// preview?.setSrc("app/res/example.png", { alt: "Example" });
+// preview?.setBlob(file, { alt: file.name });
+// preview?.clear();
+
+initExpandableSurfaces(document); // required when maximise attrs are used
+initImagePreviews(document); // wire every `.image-preview`
+```
+
+`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`.
+
+`data-image-preview-download` adds a floating download control (same hover strip as maximise). Optional `data-image-preview-download-name` sets the default filename. `data-image-preview-dimensions` and `data-image-preview-file-size` show muted intrinsic size (`W × H px`) and/or source byte size in the bottom-right corner. For inline SMIL SVG (including multi-frame `g#frame-N` groups), `data-image-preview-frames` shows `frame K/N` while animating and `data-image-preview-duration` shows the loop length (e.g. `1.5 s`). Frame/duration meta does not apply to GIF/APNG/WebP loaded via `<img>`.
+
+`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`.
+
+Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
 ### Panel split
 
@@ -2549,7 +2595,7 @@ Runtime API from `initCodeBlock()`: `setMode`, `getMode`, `getSource`, `setSourc
 
 ### Expandable surface
 
-Reusable expanded overlay for code blocks, multi-line inputs, or any block marked with `data-expandable-surface`. A maximise control appears on hover when enabled (for code blocks, when `maximize` is in `data-code-surface-actions`); toolbar Maximize buttons use `data-expandable-surface-open`. Click expands the surface to the page body width (`--page-width`); Escape or backdrop click closes it.
+Reusable expanded overlay for code blocks, multi-line inputs, image previews, or any block marked with `data-expandable-surface`. A maximise control appears on hover when enabled (for code blocks, when `maximize` is in `data-code-surface-actions`); toolbar Maximize buttons use `data-expandable-surface-open`. Set `data-expandable-surface-control="false"` to omit the floating button. Set `data-expandable-surface-click` to toggle when clicking non-interactive areas of the surface. Expand moves the surface to the page body width (`--page-width`); Escape or backdrop click closes it.
 
 ```html
 <div class="field" data-expandable-surface data-expandable-surface-label="Notes">

@@ -253,7 +253,7 @@
   pointer-events: auto;
 }
 
-.surface-actions:not(:has(.code-block-copy:not([hidden]))) {
+.surface-actions:not(:has(> :nth-child(2))) {
   gap: 0;
 }
 

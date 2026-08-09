@@ -50,6 +50,61 @@
   cursor: pointer;
 }
 
+.image-preview:hover > .surface-actions,
+.image-preview > .surface-actions:focus-within,
+.image-preview.expandable-surface.is-expanded > .surface-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Keep gap between download + maximise (and any other strip actions). */
+.image-preview > .surface-actions {
+  gap: 0.5rem;
+}
+
+.image-preview__meta {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  margin: 0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+/* Default: show meta on hover (same idea as floating actions). */
+.image-preview[data-image-preview-meta="hover"] > .image-preview__meta {
+  opacity: 0;
+}
+
+.image-preview[data-image-preview-meta="hover"]:hover > .image-preview__meta,
+.image-preview[data-image-preview-meta="hover"]:focus-within > .image-preview__meta,
+.image-preview[data-image-preview-meta="hover"].expandable-surface.is-expanded
+  > .image-preview__meta {
+  opacity: 1;
+}
+
+.image-preview[data-image-preview-meta="always"] > .image-preview__meta {
+  opacity: 1;
+}
+
+.image-preview[data-image-preview-meta="never"] > .image-preview__meta {
+  display: none;
+}
+
+@media (hover: none) {
+  .image-preview[data-image-preview-meta="hover"] > .image-preview__meta {
+    opacity: 1;
+  }
+}
+
 .image-preview.expandable-surface.is-expanded {
   flex: 1;
   min-height: 0;

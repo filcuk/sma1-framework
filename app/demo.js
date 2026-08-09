@@ -47,6 +47,11 @@ initShell();
 initExpands(document);
 initTabs(document);
 const codeBlockInstances = initCodeBlocks(document);
+
+const demoImagePreview = initImagePreview(
+  document.getElementById("demo-image-preview")
+);
+
 initExpandableSurfaces(document);
 
 const demoCodeBlock = codeBlockInstances[0] ?? null;
@@ -98,7 +103,6 @@ initFileDownload(document.getElementById("demo-file-download"), {
   ],
 });
 
-const demoImagePreview = initImagePreview(document.getElementById("demo-image-preview"));
 fetch(new URL("./res/demo-image-preview.svg", import.meta.url))
   .then((response) => response.text())
   .then((markup) => {
