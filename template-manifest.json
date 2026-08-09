@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.9.0",
-  "generatedAt": "2026-08-09T17:57:53.886Z",
+  "generatedAt": "2026-08-09T18:25:32.363Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -48,16 +48,16 @@
       "sha256": "007526ca24962ac1c5d71efef266b93841ce91b1e235b2bb6207d71637c1e024"
     },
     "app/components/color-input.js": {
-      "sha256": "2ca11447d93beeca2fb2c5d64ae930801711f88922ce73c151fd7be4b954893f"
+      "sha256": "f3838ca01e41d8ecf985bb8fec35c531ee69207636eb8e0f911c92fa9847ca6d"
     },
     "app/components/color-picker/index.js": {
-      "sha256": "8ad3eb014ceaa5a83bee530336f20f3659b5ce3127184aa0759386cc012b78d6"
+      "sha256": "a23375d0f921039a75596ce44402d081f696e6661ff931d5d1bed975837b2097"
     },
     "app/components/color-picker/panel.js": {
-      "sha256": "b951f747bce1fde89077aa2fb25bfbe28773ae249e3ad79abe640344a3d243aa"
+      "sha256": "4fe0642d365bf41412956610492d2919905991cc821564a4d8ba4d26e9e064a0"
     },
     "app/components/color-set/index.js": {
-      "sha256": "3aa74acb0b8f743ae2ff4ca95eabf8efcbed9e1081c9b2dc8c0c7d1413e727f0"
+      "sha256": "4abff48f1162ca4be39c3d2ad3ba78587948023a8200404619f85518e7e00f71"
     },
     "app/components/color-set/panel.js": {
       "sha256": "2c912d2a27176c7a95ec2b8aab69a3a93cacca3a77093082c80dce007b58e845"
@@ -195,7 +195,7 @@
       "sha256": "1568970bc1a3dbba798f50cf63568539c6543152a37e38c7c66c5aca18305cce"
     },
     "app/css/controls-color.css": {
-      "sha256": "f3e14103ab1c7276ee4a6c230f641776e029140c52f9086364daab2a34e7c821"
+      "sha256": "150bbb11447e82597dfc9225286ea5cbfeb52cc9f0208265423934a61926b5b9"
     },
     "app/css/controls-disclosure.css": {
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
@@ -219,7 +219,7 @@
       "sha256": "e63764fba1fbd95acc81e69314be87c4047cdfb827c808d003870126692eead7"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "e12756bfccff3e9828dae18c7a5c919ecab8ac24966c0bda394fc99aa44a0afb"
+      "sha256": "e5cc81cc9b54cf39c27411ead5452b9687b14daf0d5048dd22d471a25c96de5b"
     },
     "app/css/layout.css": {
       "sha256": "38200fdff68354e5bb8e51b55066df5927a6ed7b67622302e6a9c73dffee541a"
@@ -285,7 +285,7 @@
       "sha256": "b8821da634ea9c1eb85771e1f2d3fd54f3085cf64116040adc449cd342f12def"
     },
     "app/utils/color.js": {
-      "sha256": "8fa1368ee10610b16ecdef89331b93e976ce33866a80ec31225e8174387b8b1d"
+      "sha256": "b17da2f325d37b2719d374dd2ab1f0f68c2a7232317fb17d19ab6cb52a60447a"
     },
     "app/utils/document-listeners.js": {
       "sha256": "21cc35d5ce94dc5b88d67ef50a9f7763a360308376fa9739e1ec8316e8b36f2f"
