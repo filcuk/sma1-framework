@@ -19,6 +19,39 @@ function expandShortHex(hex) {
 }
 
 /**
+ * Strip leading `#` characters from a hex string.
+ * @param {string | null | undefined} value
+ * @returns {string}
+ */
+export function stripHexPrefix(value) {
+  return String(value ?? "").trim().replace(/^#+/, "");
+}
+
+/**
+ * Paint a hex mirror so a leading `#` can render muted while the real input
+ * keeps the full selectable text (input text is transparent; caret stays visible).
+ * @param {HTMLElement | null | undefined} mirrorEl
+ * @param {string | null | undefined} text
+ */
+export function paintHexMirror(mirrorEl, text) {
+  if (!mirrorEl) return;
+  const raw = String(text ?? "");
+  if (!raw) {
+    mirrorEl.replaceChildren();
+    return;
+  }
+  const match = raw.match(/^(#+)([\s\S]*)$/);
+  if (match) {
+    const hash = document.createElement("span");
+    hash.className = "color-hex-hash";
+    hash.textContent = match[1];
+    mirrorEl.replaceChildren(hash, document.createTextNode(match[2]));
+    return;
+  }
+  mirrorEl.textContent = raw;
+}
+
+/**
  * @param {string} value
  * @param {{ alpha?: boolean }} [options]
  * @returns {string | null} Normalised `#RRGGBB` or `#RRGGBBAA`, or null when invalid.

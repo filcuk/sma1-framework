@@ -477,6 +477,27 @@
   min-width: 0;
 }
 
+/* Swatch + hex only — format menu stays outside the focus ring. */
+.color-picker-value-color {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: var(--control-height);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  background: var(--input-bg);
+}
+
+.color-picker-value-color:has(.color-picker-hex:focus) {
+  z-index: 1;
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
 .color-picker-value-row > .color-picker-sets-toggle {
   flex-shrink: 0;
   align-self: stretch;
@@ -491,11 +512,11 @@
 
 .color-picker-preview {
   width: var(--control-height);
-  height: var(--control-height);
   flex-shrink: 0;
-  border: 1px solid var(--border);
-  border-right: none;
-  border-radius: 6px 0 0 6px;
+  align-self: stretch;
+  border: none;
+  border-right: 1px solid var(--border);
+  border-radius: 5px 0 0 5px;
   overflow: hidden;
   background-color: var(--surface);
   background-image:
@@ -518,23 +539,32 @@
   align-items: stretch;
   flex: 1;
   min-width: 0;
-  border: 1px solid var(--border);
-  border-right: none;
+  border: none;
   border-radius: 0;
-  background: var(--input-bg);
+  background: transparent;
   color: var(--text);
-  min-height: var(--control-height);
+  min-height: 0;
 }
 
-.color-picker-hex-field:has(.color-picker-hex:focus) {
-  z-index: 1;
-  border-right: 1px solid var(--accent);
-  outline: 2px solid var(--accent);
-  outline-offset: -1px;
-  border-color: var(--accent);
+.color-picker-hex-mirror {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  overflow: hidden;
+  white-space: pre;
+  pointer-events: none;
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: inherit;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .color-picker-hex {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
   width: auto;
@@ -542,6 +572,9 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  color: transparent;
+  caret-color: var(--text);
+  -webkit-text-fill-color: transparent;
   min-height: calc(var(--control-height) - 2px);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: inherit;
@@ -553,10 +586,15 @@
   text-transform: none;
   letter-spacing: normal;
   font-family: inherit;
+  color: var(--muted);
+  -webkit-text-fill-color: var(--muted);
+  opacity: 0.85;
 }
 
 .color-picker-hex:focus {
   outline: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .color-picker-format-slot {

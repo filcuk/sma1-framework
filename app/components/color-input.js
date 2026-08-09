@@ -5,9 +5,9 @@
  *   <div class="color-input" data-color-input-default="#0969da">
  *     <label class="field-label" for="my-color-input">Colour</label>
  *     <div class="color-input-control">
+ *       <span class="color-input-swatch" aria-hidden="true"></span>
  *       <input type="text" id="my-color-input" class="input color-input-field"
  *         autocomplete="off" spellcheck="false" aria-label="Hex colour" />
- *       <span class="color-input-swatch" aria-hidden="true"></span>
  *       <input type="hidden" class="color-input-value" name="color" />
  *     </div>
  *   </div>
@@ -23,7 +23,7 @@
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
-import { isPartialHexInput, parseHexColor } from "../utils/color.js";
+import { isPartialHexInput, paintHexMirror, parseHexColor } from "../utils/color.js";
 import { initColorSet } from "./color-set/index.js";
 import { initColorPicker } from "./color-picker/index.js";
 
@@ -129,6 +129,24 @@ export function initColorInput(
 
   if (!textInput || !swatchEl) return null;
 
+  // Drop the old static hash prefix if present.
+  colorInputEl.querySelector(".color-input-hash")?.remove();
+
+  let fieldShell = textInput.closest(".color-input-field-shell");
+  if (!fieldShell) {
+    fieldShell = document.createElement("div");
+    fieldShell.className = "color-input-field-shell";
+    textInput.before(fieldShell);
+    fieldShell.append(textInput);
+  }
+  let mirrorEl = fieldShell.querySelector(".color-input-mirror");
+  if (!mirrorEl) {
+    mirrorEl = document.createElement("div");
+    mirrorEl.className = "color-input-mirror";
+    mirrorEl.setAttribute("aria-hidden", "true");
+    textInput.before(mirrorEl);
+  }
+
   const allowAlpha = resolveAlpha(colorInputEl, alpha);
   const openMode = resolveOpenOnClick(colorInputEl, openOnClick);
   const triggerMode =
@@ -191,6 +209,7 @@ export function initColorInput(
     if (!isEditing) {
       textInput.value = formatDisplayValue(currentValue);
     }
+    paintHexMirror(mirrorEl, textInput.value);
     if (hiddenInput) {
       hiddenInput.value = currentValue ?? "";
     }
@@ -234,6 +253,7 @@ export function initColorInput(
     const parsed = parse(raw);
     if (!parsed) {
       textInput.value = formatDisplayValue(currentValue);
+      paintHexMirror(mirrorEl, textInput.value);
       textInput.removeAttribute("aria-invalid");
       isEditing = false;
       syncSwatch(swatchEl, currentValue);
@@ -327,7 +347,6 @@ export function initColorInput(
           : "Open colour set and picker";
 
     if (swatchOpens) {
-      swatchEl.dataset.tooltip = openLabel;
       swatchEl.setAttribute("role", "button");
       swatchEl.setAttribute("aria-label", openLabel);
       swatchEl.tabIndex = 0;
@@ -362,6 +381,7 @@ export function initColorInput(
     if (isDisabled) return;
     isEditing = true;
     const raw = String(textInput.value).trim();
+    paintHexMirror(mirrorEl, textInput.value);
 
     if (!raw) {
       textInput.removeAttribute("aria-invalid");
@@ -414,6 +434,7 @@ export function initColorInput(
       event.preventDefault();
       isEditing = false;
       textInput.value = formatDisplayValue(currentValue);
+      paintHexMirror(mirrorEl, textInput.value);
       textInput.removeAttribute("aria-invalid");
       syncSwatch(swatchEl, currentValue);
       textInput.blur();

@@ -458,7 +458,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/progress-bar.js`](app/progress-bar.js). |
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/spinner.js`](app/spinner.js). |
 | **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/stepper.js`](app/stepper.js). |
-| **Colour input** | Hex text input with inline swatch preview; optional alpha (`#RRGGBBAA`); optional `openOnClick` + `openTrigger` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
+| **Colour input** | Hex text input with swatch attached on the left; optional alpha (`#RRGGBBAA`); optional `openOnClick` + `openTrigger` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
 | **Colour set** | Named palette gallery (popup or embedded); built-in sets as one module each. [`app/components/color-set/`](app/components/color-set/). |
 | **Colour picker** | Spectrum / channel colour selector (HEX / RGB / HSL / HSV / CMYK); optional alpha and adjacent colour set. [`app/components/color-picker/`](app/components/color-picker/). |
 | **Date picker** | Calendar popup with optional time field. [`app/components/date-picker/`](app/components/date-picker/). |
@@ -1798,7 +1798,7 @@ initSteppers(document); // all `.stepper` blocks
 
 ### Colour input
 
-Hex colour field with a swatch inside the input on the left. Accepts `#RGB` or `#RRGGBB` (with or without `#` while typing). Values normalise to uppercase `#RRGGBB` on commit. With `data-color-input-alpha` (or `alpha: true`), also accepts `#RGBA` / `#RRGGBBAA`; if no alpha digits are given, commit normalises to full opacity (`#RRGGBBFF`). The swatch shows a checkerboard when empty, incomplete, or under a semi-transparent value.
+Hex colour field with a colour swatch attached to the left of the input (same joined look as the colour picker hex row). The leading `#` is part of the field value (selectable / copyable) and rendered muted. Accepts `#RGB` or `#RRGGBB` (with or without `#` while typing). Values normalise to uppercase `#RRGGBB` on commit. With `data-color-input-alpha` (or `alpha: true`), also accepts `#RGBA` / `#RRGGBBAA`; if no alpha digits are given, commit normalises to full opacity (`#RRGGBBFF`). The swatch shows a checkerboard when empty, incomplete, or under a semi-transparent value.
 
 Optional `data-color-input-open` / `openOnClick`: `none` (default), `picker`, `set`, or `both`. When not `none`, a nested (or passed) **colour set** and/or **colour picker** opens and stays in sync (including while typing a valid hex). Colour set highlights a matching swatch when possible and clears selection when the value is not in the active palette. Colour input remains the hex field — picker and set are separate components.
 
@@ -1808,9 +1808,9 @@ Optional `data-color-input-open-trigger` / `openTrigger` (when open is not `none
 <div class="color-input" id="my-color-input" data-color-input-default="#0969da">
   <label class="field-label" for="my-color-input-field">Colour</label>
   <div class="color-input-control">
+    <span class="color-input-swatch" aria-hidden="true"></span>
     <input type="text" id="my-color-input-field" class="input color-input-field"
       placeholder="#0969DA" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
-    <span class="color-input-swatch" aria-hidden="true"></span>
     <input type="hidden" class="color-input-value" name="color" />
   </div>
 </div>
@@ -1819,10 +1819,10 @@ Optional `data-color-input-open-trigger` / `openTrigger` (when open is not `none
   data-color-input-default="#ff338855">
   <label class="field-label" for="my-color-input-alpha-field">Colour with alpha</label>
   <div class="color-input-control">
+    <span class="color-input-swatch" aria-hidden="true"></span>
     <input type="text" id="my-color-input-alpha-field" class="input color-input-field"
       placeholder="#RRGGBBAA" autocomplete="off" spellcheck="false"
       aria-label="Hex colour with alpha" />
-    <span class="color-input-swatch" aria-hidden="true"></span>
     <input type="hidden" class="color-input-value" name="color" />
   </div>
 </div>
@@ -1831,9 +1831,9 @@ Optional `data-color-input-open-trigger` / `openTrigger` (when open is not `none
   data-color-input-default="#2196F3">
   <label class="field-label" for="my-color-input-set-field">Colour with set</label>
   <div class="color-input-control">
+    <span class="color-input-swatch"></span>
     <input type="text" id="my-color-input-set-field" class="input color-input-field"
       placeholder="#RRGGBB" autocomplete="off" spellcheck="false" aria-label="Hex colour" />
-    <span class="color-input-swatch"></span>
     <input type="hidden" class="color-input-value" name="color" />
   </div>
   <div class="color-set" data-color-set-default="material" data-color-set-value="#2196F3">
@@ -1942,7 +1942,7 @@ registerColorSet({
 
 ### Colour picker
 
-Spectrum / channel colour selector. Default mode is a trigger that opens a popup. Set `data-color-picker-embedded` for an always-visible panel. The value row shows the current swatch, a hex field (shared input styling), and a format dropdown on the field (HEX / RGB / HSL / HSV / CMYK) in the same pattern as the tabular-input type menu. The hex field updates the colour live while typing (same as colour input) once the value is a valid hex; blur / Enter normalises or reverts invalid text. Switching format changes the visual above: HSV and HEX use a saturation/value plane + hue slider; HSL uses saturation/lightness + hue; RGB and CMYK use the shared **slider** component for each channel (range + editable value). Optional `data-color-picker-alpha` adds an alpha channel via the same slider. Optional `data-color-picker-color-set` shows a palette icon button on the value row that toggles an adjacent colour-set panel (requires a `.color-picker-sets` host in markup).
+Spectrum / channel colour selector. Default mode is a trigger that opens a popup. Set `data-color-picker-embedded` for an always-visible panel. The value row shows the current swatch, a hex field (shared input styling), and a format dropdown on the field (HEX / RGB / HSL / HSV / CMYK) in the same pattern as the tabular-input type menu. The hex field updates the colour live while typing (same as colour input) once the value is a valid hex; the leading `#` stays in the value and is shown muted; blur / Enter normalises or reverts invalid text. Switching format changes the visual above: HSV and HEX use a saturation/value plane + hue slider; HSL uses saturation/lightness + hue; RGB and CMYK use the shared **slider** component for each channel (range + editable value). Optional `data-color-picker-alpha` adds an alpha channel via the same slider. Optional `data-color-picker-color-set` shows a palette icon button on the value row that toggles an adjacent colour-set panel (requires a `.color-picker-sets` host in markup).
 
 ```html
 <div class="color-picker" id="my-color-picker" data-color-picker-default="#0969da"

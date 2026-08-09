@@ -5,6 +5,7 @@
 import {
   parseHexColor,
   isPartialHexInput,
+  paintHexMirror,
   rgbToHex,
   hexToRgb,
   rgbToHsl,
@@ -163,14 +164,21 @@ export function mountColorPickerPanel(
   const hexField = document.createElement("div");
   hexField.className = "color-picker-hex-field";
 
+  const hexMirror = document.createElement("div");
+  hexMirror.className = "color-picker-hex-mirror";
+  hexMirror.setAttribute("aria-hidden", "true");
+
   const hexInput = document.createElement("input");
   hexInput.type = "text";
   hexInput.className = "input color-picker-hex";
   hexInput.spellcheck = false;
   hexInput.autocomplete = "off";
+  hexInput.placeholder = alpha ? "#RRGGBBAA" : "#RRGGBB";
   hexInput.setAttribute("aria-label", "Hex");
+
   hexInput.addEventListener("input", () => {
     const raw = String(hexInput.value).trim();
+    paintHexMirror(hexMirror, hexInput.value);
     if (!raw) {
       hexInput.removeAttribute("aria-invalid");
       return;
@@ -188,6 +196,7 @@ export function mountColorPickerPanel(
     const parsed = parseHexColor(hexInput.value, { alpha });
     if (!parsed) {
       hexInput.value = hexFromRgba(rgba, { alpha });
+      paintHexMirror(hexMirror, hexInput.value);
       hexInput.removeAttribute("aria-invalid");
       return;
     }
@@ -243,8 +252,12 @@ export function mountColorPickerPanel(
   }
 
   formatSlot.append(formatTrigger, formatMenu);
-  hexField.append(hexInput);
-  valueRow.append(preview, hexField, formatSlot);
+  hexField.append(hexMirror, hexInput);
+
+  const valueColor = document.createElement("div");
+  valueColor.className = "color-picker-value-color";
+  valueColor.append(preview, hexField);
+  valueRow.append(valueColor, formatSlot);
 
   const footer = document.createElement("div");
   footer.className = "color-picker-footer";
@@ -338,6 +351,7 @@ export function mountColorPickerPanel(
   function syncHexInput() {
     if (document.activeElement === hexInput) return;
     hexInput.value = hexFromRgba(rgba, { alpha });
+    paintHexMirror(hexMirror, hexInput.value);
   }
 
   function renderPlaneAndHue(mode) {
