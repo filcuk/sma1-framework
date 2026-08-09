@@ -294,8 +294,8 @@ export function initSlider(
     getValue() {
       return currentValue;
     },
-    setValue(nextValue) {
-      setValue(nextValue);
+    setValue(nextValue, options = {}) {
+      setValue(nextValue, options);
     },
     getConfig() {
       return { ...config };

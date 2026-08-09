@@ -31,13 +31,13 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-badges.css` | badge |
 | `controls-chips.css` | chip |
 | `controls-fields.css` | field/input (CSS-only), combobox, date-picker, time-picker, duration-input |
-| `controls-widgets.css` | toggle, checkbox, segmented-control, pagination, progress-bar, spinner, slider, stepper, color-input |
+| `controls-widgets.css` | toggle, checkbox, segmented-control, pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
-| `controls-menus.css` | combo, dropdown, dropdown-toggle |
+| `controls-menus.css` | combo, dropdown, dropdown-toggle, color-picker (format menu) |
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
 | `controls-file.css` | file-dropzone, file-download |
 | `controls-image.css` | image-preview |
-| `controls-color.css` | color-set |
+| `controls-color.css` | color-set, color-picker |
 | `rich-text-editor.css` | rich-text-editor (+ `app/toastui-editor.css`) |
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
@@ -62,8 +62,9 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | date-picker | `app/components/date-picker/` (`index.js`, `calendar.js`, `parse.js`) | `controls-fields.css` | — | Markup: `calendar` | `dom`, `document-listeners` | |
 | time-picker | `app/components/time-picker.js` | `controls-fields.css` | — | — | `dom` | Native `type="time"` |
 | duration-input | `app/components/duration-input.js` | `controls-fields.css` | — | — | `dom` | Hours:minutes; optional seconds |
-| color-input | `app/components/color-input.js` | `controls-widgets.css` | — | — | `dom`, `color` | Hex field + swatch; optional alpha; not a spectrum picker |
+| color-input | `app/components/color-input.js` | `controls-widgets.css` | — | — | `dom`, `color`; optional `color-set` / `color-picker` via `openOnClick` | Hex field + swatch; optional alpha; swatch can open nested/passed set or picker |
 | color-set | `app/components/color-set/` (`index.js`, `panel.js`, `registry.js`, `sets/*`) | `controls-color.css` | — | — | `dom`, `document-listeners`, `color` | Named palette gallery; popup or embedded; one module per set |
+| color-picker | `app/components/color-picker/` (`index.js`, `panel.js`) | `controls-color.css`, `controls-menus.css`, `controls-widgets.css` | — | JS: `chevron-down` (format menu) | `dom`, `document-listeners`, `color`, `menu`, `icons`; uses `slider`; optional `color-set` | Spectrum / channel picker; RGB/CMYK/alpha via `initSlider`; format menu on hex field; optional adjacent colour set |
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
 | checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | JS face: `check`, `minus` | `dom`, `icons` | Tri-state checkbox; faces via `initIcons` / `ensureCheckboxFace` |
 | segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |

@@ -817,6 +817,7 @@
 }
 
 .color-input {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -893,6 +894,34 @@
     linear-gradient(-45deg, transparent 75%, var(--border) 75%);
   background-size: 8px 8px;
   background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+.color-input--open .color-input-swatch {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.color-input--open .color-input-swatch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.color-input .color-input-partner.color-set,
+.color-input .color-input-partner.color-picker {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 0;
+  height: 0;
+  margin: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.color-input .color-input-partner .color-set-popup,
+.color-input .color-input-partner .color-picker-popup {
+  pointer-events: auto;
+  top: 0.35rem;
 }
 
 .color-input--disabled {

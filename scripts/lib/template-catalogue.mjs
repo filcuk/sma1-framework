@@ -213,6 +213,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: [],
     infra: ["dom", "color"],
+    notes:
+      "Optional openOnClick nests/uses color-set and color-picker (keep those components when using open hooks)",
   },
   "color-set": {
     files: [
@@ -232,6 +234,18 @@ export const COMPONENTS = {
     vendor: [],
     icons: [],
     infra: ["dom", "document-listeners", "color"],
+  },
+  "color-picker": {
+    files: [
+      "app/components/color-picker/index.js",
+      "app/components/color-picker/panel.js",
+      "app/components/slider.js",
+    ],
+    css: ["controls-color.css", "controls-menus.css", "controls-widgets.css"],
+    vendor: [],
+    icons: ["chevron-down"],
+    infra: ["dom", "document-listeners", "color", "menu", "icons"],
+    notes: "Uses slider for RGB/CMYK/alpha channels; optional adjacent colour set via color-set",
   },
   toggle: {
     files: ["app/components/toggle.js"],
@@ -450,10 +464,11 @@ export const CSS_PARTIAL_FEATURES = {
     "slider",
     "stepper",
     "color-input",
+    "color-picker",
     "rich-text-editor",
   ],
   "controls-section-panel.css": ["section-panel"],
-  "controls-menus.css": ["combo", "dropdown", "dropdown-toggle"],
+  "controls-menus.css": ["combo", "dropdown", "dropdown-toggle", "color-picker"],
   "controls-disclosure.css": [
     "expand",
     "accordion",
@@ -462,7 +477,7 @@ export const CSS_PARTIAL_FEATURES = {
   ],
   "controls-file.css": ["file-dropzone", "file-download"],
   "controls-image.css": ["image-preview"],
-  "controls-color.css": ["color-set"],
+  "controls-color.css": ["color-set", "color-picker"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],

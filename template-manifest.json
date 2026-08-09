@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.9.0",
-  "generatedAt": "2026-08-09T16:27:51.953Z",
+  "generatedAt": "2026-08-09T17:35:34.887Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -48,7 +48,13 @@
       "sha256": "007526ca24962ac1c5d71efef266b93841ce91b1e235b2bb6207d71637c1e024"
     },
     "app/components/color-input.js": {
-      "sha256": "2c95c509950302549fc579e2b0a4bfdbcf05a7e0a2fbd88ef7f90c0db4701d25"
+      "sha256": "dc8336bf9fc7e68d0a1d391fc28ba7c9e2a342237cc7864d2aebcb30f7ef1ba1"
+    },
+    "app/components/color-picker/index.js": {
+      "sha256": "023910b6dddde15f6ab60f1f525ce8e7e39e364cb417edb7fde6a9ba437428cc"
+    },
+    "app/components/color-picker/panel.js": {
+      "sha256": "fc7a743522b938da137bdeb33f3c650ef9e1bcf4779b3dc0facedf1fd17b9bcd"
     },
     "app/components/color-set/index.js": {
       "sha256": "ffd1f5f06d018678fde80d43f298659db909923e5658ba3c6ddd5bcd8c7c0102"
@@ -144,7 +150,7 @@
       "sha256": "da46f5c892bb605f92e385cd7037281b70d9c4323876c4ff725007172d2151ef"
     },
     "app/components/slider.js": {
-      "sha256": "26e83fe72898f1ed26702efce8a8289bf32dd8ce653ce11e882b462b140d7064"
+      "sha256": "d33e0abe0f79cd9ccd1498bb17e2a1fd4cf7c361f33c565996beb2bb90a14941"
     },
     "app/components/spinner.js": {
       "sha256": "01171c4add024fb8e3ad2422ec41f4d99bd3130d40fcf188827ee5111697d342"
@@ -189,7 +195,7 @@
       "sha256": "1568970bc1a3dbba798f50cf63568539c6543152a37e38c7c66c5aca18305cce"
     },
     "app/css/controls-color.css": {
-      "sha256": "096c6d978e06448cf7a60f4763ba4f2da65aa7c8edaf2d4974e1a5aadf600f02"
+      "sha256": "6cacce0182acea2e521d6a0d50de449e95f163c2fac1d50dcdd599e9feef0d0f"
     },
     "app/css/controls-disclosure.css": {
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
@@ -213,7 +219,7 @@
       "sha256": "e63764fba1fbd95acc81e69314be87c4047cdfb827c808d003870126692eead7"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "b68c2fb288e433ecc0d8f6881f60111c0e10cf5baa1bfcec0d620ec9ee82634a"
+      "sha256": "b52e938c50f4ee2ea4c3da68274b29e8d19617376bd9686c68e0044cb3cae770"
     },
     "app/css/layout.css": {
       "sha256": "38200fdff68354e5bb8e51b55066df5927a6ed7b67622302e6a9c73dffee541a"
@@ -333,7 +339,7 @@
       "sha256": "7bf8d6c2ce63462b929d50e6c7646748e4a7232c5c68ce790a8778a9697ccd82"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "44fe0468cd6bd04461992caeb59cc0146c2d5846eeea3f11c59ac0b851107fe7"
+      "sha256": "d638ddaa1a7a149c5cd00988ce53414941633a07899ed928fcf8ec394ae1eeb0"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -666,7 +672,8 @@
       "infra": [
         "dom",
         "color"
-      ]
+      ],
+      "notes": "Optional openOnClick nests/uses color-set and color-picker (keep those components when using open hooks)"
     },
     "color-set": {
       "files": [
@@ -693,6 +700,31 @@
         "document-listeners",
         "color"
       ]
+    },
+    "color-picker": {
+      "files": [
+        "app/components/color-picker/index.js",
+        "app/components/color-picker/panel.js",
+        "app/components/slider.js"
+      ],
+      "css": [
+        "controls-color.css",
+        "controls-menus.css",
+        "controls-widgets.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [
+        "chevron-down"
+      ],
+      "infra": [
+        "dom",
+        "document-listeners",
+        "color",
+        "menu",
+        "icons"
+      ],
+      "notes": "Uses slider for RGB/CMYK/alpha channels; optional adjacent colour set via color-set"
     },
     "toggle": {
       "files": [
@@ -1261,6 +1293,7 @@
       "slider",
       "stepper",
       "color-input",
+      "color-picker",
       "rich-text-editor"
     ],
     "controls-section-panel.css": [
@@ -1269,7 +1302,8 @@
     "controls-menus.css": [
       "combo",
       "dropdown",
-      "dropdown-toggle"
+      "dropdown-toggle",
+      "color-picker"
     ],
     "controls-disclosure.css": [
       "expand",
@@ -1285,7 +1319,8 @@
       "image-preview"
     ],
     "controls-color.css": [
-      "color-set"
+      "color-set",
+      "color-picker"
     ],
     "rich-text-editor.css": [
       "rich-text-editor"

@@ -12,18 +12,24 @@
  *     </div>
  *   </div>
  *
+ * Optional open-on-swatch (nest a `.color-set` and/or `.color-picker`, or pass APIs):
+ *   data-color-input-open="none" | "picker" | "set" | "both"
+ *
  * data-color-input-default — initial hex value (#RGB / #RRGGBB; with alpha also #RGBA / #RRGGBBAA)
  * data-color-input-alpha — allow 4- and 8-digit hex with alpha
  * data-color-input-disabled — disable the control
  */
 
-import { parseBooleanAttr } from "../utils/dom.js";
+import { parseBooleanAttr, setHidden } from "../utils/dom.js";
 import { parseHexColor } from "../utils/color.js";
+import { initColorSet } from "./color-set/index.js";
+import { initColorPicker } from "./color-picker/index.js";
 
 export { parseHexColor };
 
 const PARTIAL_HEX_OPAQUE_PATTERN = /^#?[0-9a-fA-F]{0,6}$/;
 const PARTIAL_HEX_ALPHA_PATTERN = /^#?[0-9a-fA-F]{0,8}$/;
+const OPEN_MODES = new Set(["none", "picker", "set", "both"]);
 
 function formatDisplayValue(value) {
   return value ?? "";
@@ -44,6 +50,17 @@ function resolveAlpha(colorInputEl, alphaOption) {
   return parseBooleanAttr(colorInputEl?.dataset.colorInputAlpha) ?? false;
 }
 
+/**
+ * @param {unknown} raw
+ * @returns {"none" | "picker" | "set" | "both"}
+ */
+function resolveOpenOnClick(colorInputEl, openOnClickOption) {
+  const raw =
+    openOnClickOption ?? colorInputEl?.dataset.colorInputOpen ?? "none";
+  const value = String(raw).trim().toLowerCase();
+  return OPEN_MODES.has(value) ? /** @type {"none" | "picker" | "set" | "both"} */ (value) : "none";
+}
+
 function syncSwatch(swatchEl, color) {
   if (!swatchEl) return;
   swatchEl.classList.toggle("is-empty", !color);
@@ -54,9 +71,43 @@ function syncSwatch(swatchEl, color) {
   }
 }
 
+function isPartnerApi(value) {
+  return Boolean(value && typeof value === "object" && typeof value.open === "function");
+}
+
+/**
+ * @param {HTMLElement} hostEl
+ */
+function hidePartnerTrigger(hostEl) {
+  const trigger =
+    hostEl.querySelector(".color-set-trigger") ||
+    hostEl.querySelector(".color-picker-trigger");
+  if (trigger instanceof HTMLElement) setHidden(trigger, true);
+}
+
+/**
+ * @param {HTMLElement} colorInputEl
+ * @param {string} selector
+ */
+function findNestedPartner(colorInputEl, selector) {
+  return (
+    colorInputEl.querySelector(`.color-input-control > ${selector}`) ||
+    colorInputEl.querySelector(`:scope > ${selector}`)
+  );
+}
+
 export function initColorInput(
   colorInputEl,
-  { defaultValue, alpha, disabled, onChange, onInput } = {}
+  {
+    defaultValue,
+    alpha,
+    disabled,
+    openOnClick,
+    colorSet,
+    picker,
+    onChange,
+    onInput,
+  } = {}
 ) {
   if (!colorInputEl) return null;
 
@@ -67,7 +118,9 @@ export function initColorInput(
   if (!textInput || !swatchEl) return null;
 
   const allowAlpha = resolveAlpha(colorInputEl, alpha);
+  const openMode = resolveOpenOnClick(colorInputEl, openOnClick);
   colorInputEl.classList.toggle("color-input--alpha", allowAlpha);
+  colorInputEl.classList.toggle("color-input--open", openMode !== "none");
 
   const parse = (value) => parseHexColor(value, { alpha: allowAlpha });
 
@@ -79,6 +132,12 @@ export function initColorInput(
   let currentValue = parse(initialRaw);
   let isEditing = false;
   let isDisabled = resolveDisabled(colorInputEl, disabled);
+  let syncingFromPartner = false;
+
+  /** @type {ReturnType<typeof initColorSet> | null} */
+  let colorSetApi = null;
+  /** @type {ReturnType<typeof initColorPicker> | null} */
+  let pickerApi = null;
 
   function buildPayload(source) {
     return {
@@ -93,9 +152,21 @@ export function initColorInput(
     isDisabled = nextDisabled;
     colorInputEl.classList.toggle("color-input--disabled", nextDisabled);
     textInput.disabled = nextDisabled;
+    if (nextDisabled) {
+      colorSetApi?.close?.();
+      pickerApi?.close?.();
+    }
   }
 
   applyDisabled(isDisabled);
+
+  function syncPartnersFromInput() {
+    if (syncingFromPartner) return;
+    if (currentValue) {
+      colorSetApi?.setValue?.(currentValue, { emit: false });
+      pickerApi?.setValue?.(currentValue, { emit: false });
+    }
+  }
 
   function syncDom({ emit = true, source = "init" } = {}) {
     if (!isEditing) {
@@ -105,6 +176,7 @@ export function initColorInput(
       hiddenInput.value = currentValue ?? "";
     }
     syncSwatch(swatchEl, currentValue);
+    syncPartnersFromInput();
 
     if (emit) {
       onChange?.(buildPayload(source));
@@ -122,6 +194,12 @@ export function initColorInput(
     textInput.removeAttribute("aria-invalid");
     syncDom({ emit, source });
     return true;
+  }
+
+  function applyFromPartner(nextValue, source) {
+    syncingFromPartner = true;
+    setValue(nextValue, { emit: true, source });
+    syncingFromPartner = false;
   }
 
   function commitTypedValue({ emit = true } = {}) {
@@ -148,6 +226,103 @@ export function initColorInput(
     textInput.removeAttribute("aria-invalid");
     syncDom({ emit, source: "input" });
     return true;
+  }
+
+  function openTargets() {
+    if (openMode === "set" || openMode === "both") colorSetApi?.open?.();
+    if (openMode === "picker" || openMode === "both") pickerApi?.open?.();
+  }
+
+  function closeTargets() {
+    colorSetApi?.close?.();
+    pickerApi?.close?.();
+  }
+
+  function toggleTargets() {
+    const setOpen = Boolean(colorSetApi?.isOpen?.());
+    const pickerOpen = Boolean(pickerApi?.isOpen?.());
+    if (
+      (openMode === "set" && setOpen) ||
+      (openMode === "picker" && pickerOpen) ||
+      (openMode === "both" && (setOpen || pickerOpen))
+    ) {
+      closeTargets();
+      return;
+    }
+    openTargets();
+  }
+
+  if (openMode === "set" || openMode === "both") {
+    if (isPartnerApi(colorSet)) {
+      colorSetApi = /** @type {ReturnType<typeof initColorSet>} */ (colorSet);
+    } else {
+      const host =
+        colorSet instanceof HTMLElement
+          ? colorSet
+          : findNestedPartner(colorInputEl, ".color-set");
+      if (host instanceof HTMLElement) {
+        colorSetApi = initColorSet(host, {
+          value: currentValue,
+          alpha: allowAlpha,
+          onSelect: ({ value }) => {
+            if (!value) return;
+            applyFromPartner(value, "color-set");
+          },
+        });
+        hidePartnerTrigger(host);
+        host.classList.add("color-input-partner");
+      }
+    }
+  }
+
+  if (openMode === "picker" || openMode === "both") {
+    if (isPartnerApi(picker)) {
+      pickerApi = /** @type {ReturnType<typeof initColorPicker>} */ (picker);
+    } else {
+      const host =
+        picker instanceof HTMLElement
+          ? picker
+          : findNestedPartner(colorInputEl, ".color-picker");
+      if (host instanceof HTMLElement) {
+        pickerApi = initColorPicker(host, {
+          defaultValue: currentValue ?? undefined,
+          alpha: allowAlpha,
+          onChange: ({ value, source }) => {
+            if (source === "api") return;
+            if (!value) return;
+            applyFromPartner(value, "color-picker");
+          },
+        });
+        hidePartnerTrigger(host);
+        host.classList.add("color-input-partner");
+      }
+    }
+  }
+
+  if (openMode !== "none") {
+    const openLabel =
+      openMode === "set"
+        ? "Open colour set"
+        : openMode === "picker"
+          ? "Open colour picker"
+          : "Open colour set and picker";
+    swatchEl.dataset.tooltip = openLabel;
+    swatchEl.setAttribute("role", "button");
+    swatchEl.setAttribute("aria-label", openLabel);
+    swatchEl.tabIndex = 0;
+    swatchEl.removeAttribute("aria-hidden");
+
+    const onSwatchActivate = (event) => {
+      if (isDisabled) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toggleTargets();
+    };
+
+    swatchEl.addEventListener("click", onSwatchActivate);
+    swatchEl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") onSwatchActivate(event);
+    });
   }
 
   textInput.addEventListener("focus", () => {
@@ -217,8 +392,8 @@ export function initColorInput(
     getValue() {
       return currentValue;
     },
-    setValue(nextValue) {
-      return setValue(nextValue);
+    setValue(nextValue, options) {
+      return setValue(nextValue, options);
     },
     commitInput() {
       return commitTypedValue();
@@ -231,6 +406,21 @@ export function initColorInput(
     },
     allowsAlpha() {
       return allowAlpha;
+    },
+    getOpenOnClick() {
+      return openMode;
+    },
+    open() {
+      openTargets();
+    },
+    close() {
+      closeTargets();
+    },
+    getColorSet() {
+      return colorSetApi;
+    },
+    getPicker() {
+      return pickerApi;
     },
   };
 }
