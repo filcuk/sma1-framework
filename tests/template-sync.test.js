@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { readTemplateVersion } from "../scripts/generate-template-manifest.mjs";
 import {
   collectPrunePaths,
   isPathReferencedInAppOwned,
@@ -248,8 +249,12 @@ test("sync --from self into a temp root with dialog-only lock", async () => {
     );
     assert.ok(fs.existsSync(path.join(temp, ".cursor", "rules", "icons.mdc")));
 
+    const expectedTemplateVersion = readTemplateVersion();
     const version = fs.readFileSync(path.join(temp, "app", "version.js"), "utf8");
-    assert.match(version, /TEMPLATE_VERSION = "0\.9\.0"/);
+    assert.match(
+      version,
+      new RegExp(`TEMPLATE_VERSION = "${expectedTemplateVersion.replace(/\./g, "\\.")}"`)
+    );
     assert.match(version, /APP_VERSION = "9\.9\.9"/);
 
     const css = fs.readFileSync(path.join(temp, "app", "css", "template.css"), "utf8");

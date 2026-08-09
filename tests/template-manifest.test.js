@@ -28,7 +28,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFEST_PATH = path.join(ROOT, "template-manifest.json");
 
 test("readTemplateVersion matches app/version.js", () => {
-  assert.equal(readTemplateVersion(), "0.9.0");
+  const src = fs.readFileSync(path.join(ROOT, "app", "version.js"), "utf8");
+  const match = /export const TEMPLATE_VERSION = "([^"]+)"/.exec(src);
+  assert.ok(match, "app/version.js must export TEMPLATE_VERSION");
+  assert.equal(readTemplateVersion(), match[1]);
 });
 
 test("isAppOwnedPath covers files and directory prefixes", () => {
