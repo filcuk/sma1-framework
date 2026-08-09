@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "templateVersion": "0.9.0",
-  "generatedAt": "2026-08-09T18:25:32.363Z",
+  "templateVersion": "0.10.0",
+  "generatedAt": "2026-08-09T18:28:13.348Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -327,7 +327,7 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "81749a49d5655e2ad20c836f6984f8ea40221c8156ab962edc521158193e00e0"
+      "sha256": "ef35671e7aa71d2aa015a4b361bf6b3c505afcc4e64174b4e6de43e37acf3ca9"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c3b54ede01da4e28263086993067158810f3db781f869eff709751ba8b54324f"
