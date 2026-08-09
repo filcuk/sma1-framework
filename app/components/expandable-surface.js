@@ -109,6 +109,45 @@ function codeBlockWantsFloatingMaximize(surface) {
 }
 
 /**
+ * Whether to inject the floating maximise control.
+ * @param {HTMLElement} surface
+ */
+function wantsFloatingMaximize(surface) {
+  const control = surface.dataset.expandableSurfaceControl?.trim().toLowerCase();
+  if (control === "false" || control === "none") return false;
+  return codeBlockWantsFloatingMaximize(surface);
+}
+
+/**
+ * Whether clicks on the surface (not open controls) should toggle expand.
+ * @param {HTMLElement} surface
+ */
+function wantsExpandOnClick(surface) {
+  return surface.dataset.expandableSurfaceClick !== undefined;
+}
+
+/**
+ * @param {Element} target
+ * @param {HTMLElement} surface
+ */
+function isExpandOpenControl(target, surface) {
+  const btn = target.closest("[data-expandable-surface-open]");
+  return btn instanceof HTMLElement && surface.contains(btn);
+}
+
+/**
+ * Interactive targets that should not trigger expand-on-click.
+ * @param {Element} target
+ */
+function isInteractiveClickTarget(target) {
+  return Boolean(
+    target.closest(
+      "a, button, input, select, textarea, label, summary, [data-expandable-surface-open]"
+    )
+  );
+}
+
+/**
  * @param {ExpandSession} session
  */
 function openSurface(session) {
@@ -193,9 +232,11 @@ function toggleSession(session) {
  * `data-expandable-surface-trigger` — optional child that hosts the floating button.
  * `data-expandable-surface-label` — accessible name for the overlay dialog.
  * `data-expandable-surface-open` — buttons (toolbar Maximize or floating control) that toggle.
+ * `data-expandable-surface-control="false"` — omit the floating maximise button.
+ * `data-expandable-surface-click` — click the surface (non-interactive areas) to toggle.
  *
  * For `.code-block`, the floating button is shown only when `maximize` is listed
- * in `data-code-surface-actions`.
+ * in `data-code-surface-actions` (unless `data-expandable-surface-control="false"`).
  *
  * @param {HTMLElement} surface
  */
@@ -209,10 +250,11 @@ export function initExpandableSurface(surface) {
   const trigger =
     surface.querySelector("[data-expandable-surface-trigger]") ?? surface;
   const label = surface.dataset.expandableSurfaceLabel ?? "Expanded content";
+  const expandOnClick = wantsExpandOnClick(surface);
 
   trigger.classList.add("expandable-surface-trigger");
 
-  const showFloating = codeBlockWantsFloatingMaximize(surface);
+  const showFloating = wantsFloatingMaximize(surface);
   /** @type {HTMLButtonElement | null} */
   let expandBtn = null;
 
@@ -251,8 +293,12 @@ export function initExpandableSurface(surface) {
     onSurfaceClick: (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
-      const btn = target.closest("[data-expandable-surface-open]");
-      if (!(btn instanceof HTMLElement) || !surface.contains(btn)) return;
+      if (isExpandOpenControl(target, surface)) {
+        event.preventDefault();
+        toggleSession(session);
+        return;
+      }
+      if (!expandOnClick || isInteractiveClickTarget(target)) return;
       event.preventDefault();
       toggleSession(session);
     },

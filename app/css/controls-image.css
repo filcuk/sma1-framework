@@ -45,3 +45,19 @@
 .image-preview[data-image-preview-pixelated] .image-preview__media {
   image-rendering: pixelated;
 }
+
+.image-preview[data-image-preview-expand-on-click] {
+  cursor: pointer;
+}
+
+.image-preview.expandable-surface.is-expanded {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.image-preview.expandable-surface.is-expanded svg,
+.image-preview.expandable-surface.is-expanded img,
+.image-preview.expandable-surface.is-expanded .image-preview__media {
+  max-height: min(70vh, 100%);
+}

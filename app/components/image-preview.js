@@ -3,12 +3,18 @@
  *
  * Markup:
  *   <div class="image-preview" aria-live="polite"
- *     data-image-preview-pixelated>
+ *     data-image-preview-pixelated
+ *     data-image-preview-maximize
+ *     data-image-preview-expand-on-click
+ *     data-expandable-surface-label="Preview">
  *     <p class="image-preview__empty">No image</p>
  *   </div>
  *
  * data-image-preview-pixelated — crisp nearest-neighbour scaling for media
+ * data-image-preview-maximize — floating fullscreen control via expandable-surface
+ * data-image-preview-expand-on-click — click the viewport to maximise
  *
+ * Maximise requires `initExpandableSurfaces()` on the page (same as code-block).
  * Content is set via the instance API (`setSvg`, `setSrc`, `setBlob`, `clear`).
  */
 
@@ -25,13 +31,32 @@ function getEmptyEl(el) {
 }
 
 /**
+ * @param {Element} node
+ */
+function isChromeChild(node) {
+  if (!(node instanceof Element)) return false;
+  if (node.classList.contains("image-preview__empty")) return true;
+  if (node.classList.contains("expandable-surface__expand")) return true;
+  if (node.classList.contains("surface-actions")) return true;
+  if (node.hasAttribute("data-expandable-surface-open")) return true;
+  return false;
+}
+
+/**
  * @param {HTMLElement} el
  */
 function removeMedia(el) {
   for (const node of [...el.children]) {
-    if (node.classList.contains("image-preview__empty")) continue;
+    if (isChromeChild(node)) continue;
     node.remove();
   }
+}
+
+/**
+ * @param {HTMLElement} el
+ */
+function hasMediaChild(el) {
+  return [...el.children].some((node) => !isChromeChild(node));
 }
 
 /**
@@ -43,6 +68,58 @@ function parseSvgMarkup(markup) {
   if (doc.querySelector("parsererror")) return null;
   const svg = doc.documentElement;
   return svg instanceof SVGSVGElement ? svg : null;
+}
+
+/**
+ * Map image-preview maximise options onto expandable-surface data attributes.
+ * Call `initExpandableSurfaces()` after init (or on the page) to activate.
+ *
+ * @param {HTMLElement} el
+ * @param {{ maximize?: boolean, expandOnClick?: boolean }} options
+ */
+function syncExpandableAttrs(el, options) {
+  const maximize =
+    typeof options.maximize === "boolean"
+      ? options.maximize
+      : el.hasAttribute("data-image-preview-maximize");
+  const expandOnClick =
+    typeof options.expandOnClick === "boolean"
+      ? options.expandOnClick
+      : el.hasAttribute("data-image-preview-expand-on-click");
+
+  if (maximize) {
+    el.setAttribute("data-image-preview-maximize", "");
+  } else {
+    el.removeAttribute("data-image-preview-maximize");
+  }
+
+  if (expandOnClick) {
+    el.setAttribute("data-image-preview-expand-on-click", "");
+  } else {
+    el.removeAttribute("data-image-preview-expand-on-click");
+  }
+
+  if (!maximize && !expandOnClick) {
+    el.removeAttribute("data-expandable-surface-click");
+    el.removeAttribute("data-expandable-surface-control");
+    return { maximize: false, expandOnClick: false };
+  }
+
+  el.setAttribute("data-expandable-surface", "");
+
+  if (expandOnClick) {
+    el.setAttribute("data-expandable-surface-click", "");
+  } else {
+    el.removeAttribute("data-expandable-surface-click");
+  }
+
+  if (maximize) {
+    el.removeAttribute("data-expandable-surface-control");
+  } else {
+    el.setAttribute("data-expandable-surface-control", "false");
+  }
+
+  return { maximize, expandOnClick };
 }
 
 /**
@@ -79,11 +156,7 @@ export function initImagePreview(el, options = {}) {
     showEmpty(true);
   }
 
-  // Initial state: empty when there is no media child yet
-  const hasMedia = [...el.children].some(
-    (node) => !node.classList.contains("image-preview__empty")
-  );
-  if (!hasMedia) {
+  if (!hasMediaChild(el)) {
     showEmpty(true);
     contentType = null;
   } else {
@@ -96,6 +169,8 @@ export function initImagePreview(el, options = {}) {
   } else if (options.pixelated === false) {
     delete el.dataset.imagePreviewPixelated;
   }
+
+  syncExpandableAttrs(el, options);
 
   return {
     /** @returns {"svg" | "img" | null} */
