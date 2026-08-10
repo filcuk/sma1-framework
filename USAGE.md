@@ -136,6 +136,7 @@ The demo is for exploring components — not required for your app.
 | [`app/demo.js`](app/demo.js) | Delete `app/demo.js` |
 | Prism vendor + `app/prism.css` (only if you do not use code blocks) | `app/vendor/prism/`, `app/prism.css` |
 | Toast UI vendor + `app/toastui-editor.css` (only if you do not use the rich text editor) | `app/components/rich-text-editor.js`, `app/toastui-editor.css`, `app/css/rich-text-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` |
+| TanStack Charts vendor (only if you do not use charts) | `app/components/charts.js`, `app/css/controls-charts.css`, `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` |
 
 If you **remove** `demo.html`, update [`.github/workflows/pages.yml`](.github/workflows/pages.yml) — drop `demo.html` from the `cp` line:
 
@@ -151,6 +152,7 @@ All modules under `app/` are small and tree-shaken by the browser (only imported
 
 - `app/code-block.js`, `app/expandable-surface.js`, `app/vendor/prism/` — no syntax-highlighted code
 - `app/components/rich-text-editor.js`, `app/toastui-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` — no rich text editor
+- `app/components/charts.js`, `app/css/controls-charts.css`, `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` — no charts
 - `app/combo.js`, `app/dropdown.js`, `app/dropdown-toggle.js` — no menus
 - `app/dialog.js` — no modals
 
@@ -387,6 +389,8 @@ app/
     controls-menus.css    # Combo, dropdown
     controls-disclosure.css # Expand, accordion, tabs, progress indicator
     controls-file.css     # File dropzone, file download
+    controls-color.css    # Colour set / colour picker
+    controls-charts.css   # TanStack Charts host
     overlays.css        # Banners, tooltips, modals
     rich-text-editor.css # Rich text editor layout + Toast UI token overrides
     table.css            # Data tables
@@ -416,7 +420,7 @@ app/
     date-picker/        # parse.js, calendar.js, index.js
   prism.css             # Prism token colours (optional)
   toastui-editor.css    # Vendored Toast UI base CSS (optional)
-  vendor/               # Prism, Toast UI (optional)
+  vendor/               # Prism, Toast UI, TanStack Charts, d3-scale, d3-shape (optional)
   res/                  # App logo SVGs
 ```
 
@@ -491,7 +495,8 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Icons** | Inline SVGs in [`app/icons.js`](app/icons.js); use `data-icon` in HTML or `createIcon()` in JS. Source from [Icônes — Material Icons (Round)](https://icones.js.org/collection/ic?s=info&variant=Round). Logo files stay in `app/res/`. |
 | **Toolbar helper** | `.toolbar` flex row for button groups. See [`demo.html`](demo.html). |
 | **Code highlighting** | Optional [Prism.js](https://prismjs.com/) via [`app/code-block.js`](app/code-block.js) and [`app/vendor/prism/`](app/vendor/prism/). Load vendor scripts on the page (see Code blocks in **Using components**). |
-| **Rich text editor** | Markdown + WYSIWYG via [Toast UI Editor](https://github.com/nhn/tui.editor); table merged-cell plugin; base64 image paste. [`app/rich-text-editor.js`](app/rich-text-editor.js). Large vendor bundle (~500KB+). |
+| **Rich text editor** | Markdown + WYSIWYG via [Toast UI Editor](https://github.com/nhn/tui.editor); table merged-cell plugin; base64 image paste. [`app/components/rich-text-editor.js`](app/components/rich-text-editor.js). Large vendor bundle (~500KB+). |
+| **Charts** | Thin SVG host around [TanStack Charts](https://tanstack.com/charts/latest) (`initChart` / `mountChart`). Forks author `defineChart` marks/scales. Vendored ESM + import map for `d3-scale` / `d3-shape`. [`app/components/charts.js`](app/components/charts.js). Pre-alpha upstream. |
 
 For live examples of each component, open [`demo.html`](demo.html) on a local server or your deployed site.
 
@@ -2682,6 +2687,87 @@ initRichTextEditors(document); // every `.rich-text-editor` with a mount node
 Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/theme.js`](app/theme.js).
 
 Markdown ↔ WYSIWYG uses the template [segmented control](#segmented-control) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use template [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
+
+### Charts (TanStack Charts)
+
+Thin host around vendored [TanStack Charts](https://tanstack.com/charts/latest) (`mountChart`). You author the chart definition (`defineChart`, marks, scales); this template only mounts it into a `.charts` host and refreshes on theme change. Upstream is **pre-alpha** — expect API churn.
+
+Prefer **narrow** vendor entry files (e.g. `bar.js`, `scene.js`) over the root barrel so unused marks stay out of the module graph.
+
+**Page setup** — add an import map **before** any `type="module"` script when using marks that bare-import D3 (including `barY` / `barX`, which pull `stack-internal` → `d3-shape`):
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "d3-scale": "./app/vendor/d3-scale/d3-scale.esm.js",
+    "d3-shape": "./app/vendor/d3-shape/d3-shape.esm.js"
+  }
+}
+</script>
+```
+
+**Markup:**
+
+```html
+<div class="charts" id="my-chart" data-charts-height="320"
+  aria-label="Example fruit sales"></div>
+```
+
+| `data-*` attribute | Option | Default |
+| ---------------- | ------ | ------- |
+| `data-charts-height` | `height` (CSS pixels) | `320` |
+| `aria-label` | `ariaLabel` | `"Chart"` |
+
+```javascript
+import { initChart, initCharts } from "./components/charts.js";
+import { defineChart } from "./vendor/tanstack-charts/scene.js";
+import { barY } from "./vendor/tanstack-charts/bar.js";
+import { tooltip } from "./vendor/tanstack-charts/tooltip.js";
+import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
+import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
+
+const rows = [
+  { fruit: "Apples", sold: 42 },
+  { fruit: "Bananas", sold: 28 },
+];
+
+const definition = defineChart({
+  marks: [
+    barY(rows, {
+      id: "fruit-sales",
+      x: "fruit",
+      y: "sold",
+      fill: "var(--accent)",
+    }),
+  ],
+  x: {
+    scale: () => scaleBand().padding(0.18),
+    axis: { label: "Fruit" },
+  },
+  y: {
+    scale: scaleLinear,
+    nice: true,
+    grid: true,
+    axis: { label: "Sold" },
+  },
+  tooltip,
+});
+
+const chart = initChart(document.getElementById("my-chart"), {
+  definition,
+  ariaLabel: "Example fruit sales",
+});
+
+chart?.update({ definition }); // replace definition / height / ariaLabel
+chart?.getHost(); // underlying TanStack host
+chart?.destroy();
+
+// Or scan by id → options (each entry needs a definition):
+initCharts(document, { "my-chart": { definition } });
+```
+
+Pinned versions live as `TANSTACK_CHARTS_VERSION`, `D3_SCALE_VERSION`, and `D3_SHAPE_VERSION` in [`app/components/charts.js`](app/components/charts.js). See vendor READMEs under `app/vendor/tanstack-charts/`, `d3-scale/`, and `d3-shape/` for refresh steps.
 
 ### Code highlighting (Prism)
 

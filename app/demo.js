@@ -39,6 +39,12 @@ import { initProgressBar } from "./components/progress-bar.js";
 import { initSpinner } from "./components/spinner.js";
 import { initProgressIndicator } from "./components/progress-indicator.js";
 import { initRichTextEditor } from "./components/rich-text-editor.js";
+import { initChart } from "./components/charts.js";
+import { defineChart } from "./vendor/tanstack-charts/scene.js";
+import { barY } from "./vendor/tanstack-charts/bar.js";
+import { tooltip } from "./vendor/tanstack-charts/tooltip.js";
+import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
+import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
@@ -83,6 +89,39 @@ function buildDemoTextFile(title) {
 }
 
 initRichTextEditor(document.getElementById("demo-rich-text-editor-block"));
+
+const demoFruitSales = [
+  { fruit: "Apples", sold: 42 },
+  { fruit: "Bananas", sold: 28 },
+  { fruit: "Cherries", sold: 35 },
+  { fruit: "Dates", sold: 19 },
+  { fruit: "Elderberries", sold: 31 },
+];
+
+initChart(document.getElementById("demo-bar-chart"), {
+  definition: defineChart({
+    marks: [
+      barY(demoFruitSales, {
+        id: "fruit-sales",
+        x: "fruit",
+        y: "sold",
+        fill: "var(--accent)",
+      }),
+    ],
+    x: {
+      scale: () => scaleBand().padding(0.18),
+      axis: { label: "Fruit" },
+    },
+    y: {
+      scale: scaleLinear,
+      nice: true,
+      grid: true,
+      axis: { label: "Sold" },
+    },
+    tooltip,
+  }),
+  ariaLabel: "Example fruit sales",
+});
 
 initFileDropzone(document.getElementById("demo-file-dropzone-single"));
 

@@ -16,17 +16,25 @@
  *   ../vendor/tanstack-charts/scales/band.js
  *   ../vendor/tanstack-charts/scales/linear.js
  *
- * Pages that use marks which bare-import `d3-scale` (including `barY` / `barX`)
- * must include an import map before any `type="module"` script:
- *   { "imports": { "d3-scale": "./app/vendor/d3-scale/d3-scale.esm.js" } }
+ * Pages that use marks which bare-import `d3-scale` or `d3-shape`
+ * (including `barY` / `barX`, which pull `stack-internal`) must include an
+ * import map before any `type="module"` script:
+ *   {
+ *     "imports": {
+ *       "d3-scale": "./app/vendor/d3-scale/d3-scale.esm.js",
+ *       "d3-shape": "./app/vendor/d3-shape/d3-shape.esm.js"
+ *     }
+ *   }
  *
  * Refresh vendor (maintainer):
  *   1. `npm pack @tanstack/charts@0.9.0` — copy `package/dist/*.js` and
  *      `package/dist/scales/*.js` into `app/vendor/tanstack-charts/` (omit
  *      framework adapter folders and `.d.ts`).
- *   2. Download the self-contained bundle
- *      `https://esm.sh/d3-scale@4.0.2/es2022/d3-scale.bundle.mjs` as
- *      `app/vendor/d3-scale/d3-scale.esm.js` (pinned with D3_SCALE_VERSION).
+ *   2. Download self-contained bundles:
+ *      `https://esm.sh/d3-scale@4.0.2/es2022/d3-scale.bundle.mjs`
+ *        → `app/vendor/d3-scale/d3-scale.esm.js`
+ *      `https://esm.sh/d3-shape@3.2.0/es2022/d3-shape.bundle.mjs`
+ *        → `app/vendor/d3-shape/d3-shape.esm.js`
  */
 
 import { mountChart } from "../vendor/tanstack-charts/dom.js";
@@ -37,6 +45,9 @@ export const TANSTACK_CHARTS_VERSION = "0.9.0";
 
 /** @type {const} */
 export const D3_SCALE_VERSION = "4.0.2";
+
+/** @type {const} */
+export const D3_SHAPE_VERSION = "3.2.0";
 
 const DEFAULT_HEIGHT = 320;
 const DEFAULT_ARIA_LABEL = "Chart";

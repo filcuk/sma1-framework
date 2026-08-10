@@ -41,6 +41,7 @@ export const CSS_INDEX_ORDER = [
   "controls-file.css",
   "controls-image.css",
   "controls-color.css",
+  "controls-charts.css",
   "overlays.css",
   "tutorial.css",
   "rich-text-editor.css",
@@ -426,6 +427,19 @@ export const COMPONENTS = {
     infra: ["config", "dom"],
     notes: "Mode switch uses segmented-control",
   },
+  charts: {
+    files: ["app/components/charts.js"],
+    css: ["controls-charts.css"],
+    vendor: [
+      "app/vendor/tanstack-charts/",
+      "app/vendor/d3-scale/",
+      "app/vendor/d3-shape/",
+    ],
+    icons: [],
+    infra: ["config"],
+    notes:
+      "Thin mountChart host; pages need an import map for d3-scale / d3-shape when using barY / barX",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */
@@ -477,6 +491,7 @@ export const CSS_PARTIAL_FEATURES = {
   "controls-file.css": ["file-dropzone", "file-download"],
   "controls-image.css": ["image-preview"],
   "controls-color.css": ["color-set", "color-picker"],
+  "controls-charts.css": ["charts"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],

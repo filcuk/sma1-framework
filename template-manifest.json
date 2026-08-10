@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-10T19:10:15.146Z",
+  "generatedAt": "2026-08-10T19:17:58.001Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -22,7 +22,7 @@
   "derived": {
     "app/css/template.css": {
       "generator": "css-index",
-      "sha256": "57842a3b801aab277efbfca9c4c142757a04213d06c5be39e52457c7d73b741c"
+      "sha256": "b68f00ec1146adf135e3521032076d75a683200878d4e1c882237e14ec70cc92"
     }
   },
   "files": {
@@ -39,7 +39,7 @@
       "sha256": "715504dbfb0448c1a88d3752ef922ef8d818c0e722138d1a146b3ce85863dadc"
     },
     "app/components/charts.js": {
-      "sha256": "6f9bc670c9a4709f256c39795c625830812752648927c2fb8a5cc85b03090f42"
+      "sha256": "f0b5a1d826940dbbf6ffa14bbd9c6c606b9e5835349c59d81f19f9082db936cc"
     },
     "app/components/checkbox.js": {
       "sha256": "9b982c2ac7f694df706189460ab2f780abfe7563d880e64c21d78622edfa24e3"
@@ -191,6 +191,9 @@
     "app/css/controls-buttons.css": {
       "sha256": "cde1a0a8a0faabbc9388c7960c40c0b365112660dc8a19783370992f71f504ef"
     },
+    "app/css/controls-charts.css": {
+      "sha256": "6b491aaf5adc9c75310b63ed3acb962db791460ab86261625d8a91146965f286"
+    },
     "app/css/controls-chips.css": {
       "sha256": "1568970bc1a3dbba798f50cf63568539c6543152a37e38c7c66c5aca18305cce"
     },
@@ -303,10 +306,16 @@
       "sha256": "e58869226dfd2ccef4f91738582f70a85909346c0abf1885d9664b8f7b4d0a29"
     },
     "app/vendor/d3-scale/README.md": {
-      "sha256": "1abc671abadd52bd5296bcea1b233a3efeab1ef349999252a7e40618998b934d"
+      "sha256": "b4ecd72cc23d8f3309030c5df852dfb87f56e39e70c3760610bca10e5d585dbd"
     },
     "app/vendor/d3-scale/d3-scale.esm.js": {
       "sha256": "f9efd9872eef04ecd48defcae5135e846fd85f50203f94894878a54b7321295d"
+    },
+    "app/vendor/d3-shape/README.md": {
+      "sha256": "933080b783092c6ccb4b0ec612cc80d2a53b8a629d7534aa3931ab994c5d3d0f"
+    },
+    "app/vendor/d3-shape/d3-shape.esm.js": {
+      "sha256": "fab52e0c0c9b2c80054fdbe65328aa47df64f2879cb985ef7ba525c44f56b8b4"
     },
     "app/vendor/prism/prism-line-numbers.min.js": {
       "sha256": "f5c99feed70b757a4ab0f8bfd80584f773db6694e9e0ce2dab3164fa55a89a35"
@@ -831,7 +840,7 @@
       "sha256": "6c4b4a651c3c8e79433aee7895a02d4ed0817033709643bdcc2b2f73a1f1cc72"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "e731f6f080c85e53bd00d2df0e2f596da716cdf002c0e36d6cc93659e5500a4d"
+      "sha256": "45f2fae80e50d92844a65397dd02a5247197c191b25809059d921967b06fba7c"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1613,6 +1622,191 @@
         "dom"
       ],
       "notes": "Mode switch uses segmented-control"
+    },
+    "charts": {
+      "files": [
+        "app/components/charts.js"
+      ],
+      "css": [
+        "controls-charts.css"
+      ],
+      "vendor": [
+        "app/vendor/tanstack-charts/",
+        "app/vendor/d3-scale/",
+        "app/vendor/d3-shape/"
+      ],
+      "vendorFiles": [
+        "app/vendor/tanstack-charts/README.md",
+        "app/vendor/tanstack-charts/adapter-renderer.js",
+        "app/vendor/tanstack-charts/adapter-shared.js",
+        "app/vendor/tanstack-charts/adapter.js",
+        "app/vendor/tanstack-charts/area-x.js",
+        "app/vendor/tanstack-charts/area.js",
+        "app/vendor/tanstack-charts/arrow-geometry.js",
+        "app/vendor/tanstack-charts/arrow.js",
+        "app/vendor/tanstack-charts/band.js",
+        "app/vendor/tanstack-charts/bar.js",
+        "app/vendor/tanstack-charts/box.js",
+        "app/vendor/tanstack-charts/canvas.js",
+        "app/vendor/tanstack-charts/composite-motion-internal.js",
+        "app/vendor/tanstack-charts/configured-scale.js",
+        "app/vendor/tanstack-charts/crosshair-resolver.js",
+        "app/vendor/tanstack-charts/crosshair.js",
+        "app/vendor/tanstack-charts/cursor-host-contract.js",
+        "app/vendor/tanstack-charts/cursor-host.js",
+        "app/vendor/tanstack-charts/cursor-public.js",
+        "app/vendor/tanstack-charts/cursor.js",
+        "app/vendor/tanstack-charts/d3-area-x.js",
+        "app/vendor/tanstack-charts/d3-shape.js",
+        "app/vendor/tanstack-charts/difference.js",
+        "app/vendor/tanstack-charts/dodge-internal.js",
+        "app/vendor/tanstack-charts/dodge.js",
+        "app/vendor/tanstack-charts/dom-text.js",
+        "app/vendor/tanstack-charts/dom-types.js",
+        "app/vendor/tanstack-charts/dom.js",
+        "app/vendor/tanstack-charts/dot-layout.js",
+        "app/vendor/tanstack-charts/dot.js",
+        "app/vendor/tanstack-charts/export.js",
+        "app/vendor/tanstack-charts/facet.js",
+        "app/vendor/tanstack-charts/focus-disabled.js",
+        "app/vendor/tanstack-charts/focus-guide.js",
+        "app/vendor/tanstack-charts/focus-layer.js",
+        "app/vendor/tanstack-charts/focus-mark.js",
+        "app/vendor/tanstack-charts/focus-presentation.js",
+        "app/vendor/tanstack-charts/focus.js",
+        "app/vendor/tanstack-charts/frame.js",
+        "app/vendor/tanstack-charts/geo.js",
+        "app/vendor/tanstack-charts/group.js",
+        "app/vendor/tanstack-charts/guide-layout.js",
+        "app/vendor/tanstack-charts/guide-nodes-internal.js",
+        "app/vendor/tanstack-charts/hexagon.js",
+        "app/vendor/tanstack-charts/hierarchy-flat-internal.js",
+        "app/vendor/tanstack-charts/hierarchy-sunburst.js",
+        "app/vendor/tanstack-charts/hierarchy-tree.js",
+        "app/vendor/tanstack-charts/hierarchy-treemap.js",
+        "app/vendor/tanstack-charts/index.js",
+        "app/vendor/tanstack-charts/interaction-axis-internal.js",
+        "app/vendor/tanstack-charts/interaction-brush.js",
+        "app/vendor/tanstack-charts/interaction-cursor.js",
+        "app/vendor/tanstack-charts/interaction-handle.js",
+        "app/vendor/tanstack-charts/interaction-range-internal.js",
+        "app/vendor/tanstack-charts/interaction-signal.js",
+        "app/vendor/tanstack-charts/interaction-zoom.js",
+        "app/vendor/tanstack-charts/interaction.js",
+        "app/vendor/tanstack-charts/interactive-legend.js",
+        "app/vendor/tanstack-charts/legend-layout-internal.js",
+        "app/vendor/tanstack-charts/legend-static.js",
+        "app/vendor/tanstack-charts/legend.js",
+        "app/vendor/tanstack-charts/line.js",
+        "app/vendor/tanstack-charts/link.js",
+        "app/vendor/tanstack-charts/mapped-spacing-internal.js",
+        "app/vendor/tanstack-charts/mark-composite-internal.js",
+        "app/vendor/tanstack-charts/mark-composite.js",
+        "app/vendor/tanstack-charts/mark-decorative-internal.js",
+        "app/vendor/tanstack-charts/mark-decorative.js",
+        "app/vendor/tanstack-charts/mark-scene-filter-internal.js",
+        "app/vendor/tanstack-charts/mark-state-transition.js",
+        "app/vendor/tanstack-charts/mark-state.js",
+        "app/vendor/tanstack-charts/mark-with-scale-values.js",
+        "app/vendor/tanstack-charts/mark.js",
+        "app/vendor/tanstack-charts/motion-path.js",
+        "app/vendor/tanstack-charts/motion.js",
+        "app/vendor/tanstack-charts/nearest.js",
+        "app/vendor/tanstack-charts/network-force.js",
+        "app/vendor/tanstack-charts/network-graph-internal.js",
+        "app/vendor/tanstack-charts/network-sankey.js",
+        "app/vendor/tanstack-charts/polar-mark-internal.js",
+        "app/vendor/tanstack-charts/polar-pie.js",
+        "app/vendor/tanstack-charts/polar-sector-internal.js",
+        "app/vendor/tanstack-charts/polar.js",
+        "app/vendor/tanstack-charts/proportional-interval-internal.js",
+        "app/vendor/tanstack-charts/reconcile.js",
+        "app/vendor/tanstack-charts/rect.js",
+        "app/vendor/tanstack-charts/regression.js",
+        "app/vendor/tanstack-charts/renderer.js",
+        "app/vendor/tanstack-charts/resolved-layout-child.js",
+        "app/vendor/tanstack-charts/resolved-layout-position.js",
+        "app/vendor/tanstack-charts/ridgeline.js",
+        "app/vendor/tanstack-charts/rule.js",
+        "app/vendor/tanstack-charts/runtime.js",
+        "app/vendor/tanstack-charts/scale-input.js",
+        "app/vendor/tanstack-charts/scales.js",
+        "app/vendor/tanstack-charts/scales/band-kernel.js",
+        "app/vendor/tanstack-charts/scales/band.js",
+        "app/vendor/tanstack-charts/scales/intern.js",
+        "app/vendor/tanstack-charts/scales/linear.js",
+        "app/vendor/tanstack-charts/scales/ordinal.js",
+        "app/vendor/tanstack-charts/scales/point.js",
+        "app/vendor/tanstack-charts/scales/ticks.js",
+        "app/vendor/tanstack-charts/scene-child-id-internal.js",
+        "app/vendor/tanstack-charts/scene-embed-internal.js",
+        "app/vendor/tanstack-charts/scene-point-map.js",
+        "app/vendor/tanstack-charts/scene-point-ownership-internal.js",
+        "app/vendor/tanstack-charts/scene-source.js",
+        "app/vendor/tanstack-charts/scene.js",
+        "app/vendor/tanstack-charts/selection.js",
+        "app/vendor/tanstack-charts/spatial-contour-internal.js",
+        "app/vendor/tanstack-charts/spatial-contour.js",
+        "app/vendor/tanstack-charts/spatial-delaunay-internal.js",
+        "app/vendor/tanstack-charts/spatial-delaunay.js",
+        "app/vendor/tanstack-charts/spatial-density.js",
+        "app/vendor/tanstack-charts/spatial-group-internal.js",
+        "app/vendor/tanstack-charts/spatial-hexbin.js",
+        "app/vendor/tanstack-charts/spatial-voronoi-internal.js",
+        "app/vendor/tanstack-charts/spatial-voronoi.js",
+        "app/vendor/tanstack-charts/spring.js",
+        "app/vendor/tanstack-charts/stack-internal.js",
+        "app/vendor/tanstack-charts/stack.js",
+        "app/vendor/tanstack-charts/svg-coordinates.js",
+        "app/vendor/tanstack-charts/svg-focus-guide-layer.js",
+        "app/vendor/tanstack-charts/svg-focus-guide-serializer.js",
+        "app/vendor/tanstack-charts/svg-renderer.js",
+        "app/vendor/tanstack-charts/svg-resources.js",
+        "app/vendor/tanstack-charts/svg-surface.js",
+        "app/vendor/tanstack-charts/svg.js",
+        "app/vendor/tanstack-charts/text.js",
+        "app/vendor/tanstack-charts/tick.js",
+        "app/vendor/tanstack-charts/tooltip-model.js",
+        "app/vendor/tanstack-charts/tooltip-placement.js",
+        "app/vendor/tanstack-charts/tooltip-portal.js",
+        "app/vendor/tanstack-charts/tooltip-position.js",
+        "app/vendor/tanstack-charts/tooltip.js",
+        "app/vendor/tanstack-charts/transform-bin-time.js",
+        "app/vendor/tanstack-charts/transform-bin-xy.js",
+        "app/vendor/tanstack-charts/transform-bin.js",
+        "app/vendor/tanstack-charts/transform-cumulative.js",
+        "app/vendor/tanstack-charts/transform-fold.js",
+        "app/vendor/tanstack-charts/transform-group.js",
+        "app/vendor/tanstack-charts/transform-internal.js",
+        "app/vendor/tanstack-charts/transform-mosaic.js",
+        "app/vendor/tanstack-charts/transform-normalize.js",
+        "app/vendor/tanstack-charts/transform-rank.js",
+        "app/vendor/tanstack-charts/transform-reduce-internal.js",
+        "app/vendor/tanstack-charts/transform-reduce.js",
+        "app/vendor/tanstack-charts/transform-rolling-window.js",
+        "app/vendor/tanstack-charts/transform-select.js",
+        "app/vendor/tanstack-charts/transform-stack.js",
+        "app/vendor/tanstack-charts/transform-statistics-internal.js",
+        "app/vendor/tanstack-charts/transform-waterfall.js",
+        "app/vendor/tanstack-charts/transform.js",
+        "app/vendor/tanstack-charts/types.js",
+        "app/vendor/tanstack-charts/universal-types.js",
+        "app/vendor/tanstack-charts/universal.js",
+        "app/vendor/tanstack-charts/vector.js",
+        "app/vendor/tanstack-charts/view-layout.js",
+        "app/vendor/tanstack-charts/view.js",
+        "app/vendor/tanstack-charts/violin.js",
+        "app/vendor/tanstack-charts/waffle.js",
+        "app/vendor/d3-scale/README.md",
+        "app/vendor/d3-scale/d3-scale.esm.js",
+        "app/vendor/d3-shape/README.md",
+        "app/vendor/d3-shape/d3-shape.esm.js"
+      ],
+      "icons": [],
+      "infra": [
+        "config"
+      ],
+      "notes": "Thin mountChart host; pages need an import map for d3-scale / d3-shape when using barY / barX"
     }
   },
   "agent": {
@@ -1815,6 +2009,9 @@
       "color-set",
       "color-picker"
     ],
+    "controls-charts.css": [
+      "charts"
+    ],
     "rich-text-editor.css": [
       "rich-text-editor"
     ],
@@ -1839,6 +2036,7 @@
     "controls-file.css",
     "controls-image.css",
     "controls-color.css",
+    "controls-charts.css",
     "overlays.css",
     "tutorial.css",
     "rich-text-editor.css",
