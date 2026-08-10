@@ -20,6 +20,14 @@
   <link rel="stylesheet" href="app/styles.css" />
   <link rel="stylesheet" href="app/prism.css" />
   <link rel="stylesheet" href="app/toastui-editor.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "d3-scale": "./app/vendor/d3-scale/d3-scale.esm.js",
+        "d3-shape": "./app/vendor/d3-shape/d3-shape.esm.js"
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -1869,6 +1877,19 @@
               data-rich-text-editor-value="## Hello&#10;&#10;Edit in **Markdown** or switch to WYSIWYG. Tables support merged cells.">
               <div class="rich-text-editor-mount" aria-label="Rich text editor"></div>
             </div>
+          </div>
+        </section>
+
+        <section class="content-section" aria-labelledby="demo-charts">
+          <h3 id="demo-charts" class="section-title">Charts</h3>
+          <div class="demo-card">
+            <h3 class="demo-card-title">Bar chart</h3>
+            <p class="demo-hint">
+              SVG grammar charts with
+              <a href="https://tanstack.com/charts/latest" target="_blank" rel="noopener noreferrer">TanStack Charts</a>.
+            </p>
+            <div class="charts" id="demo-bar-chart" data-charts-height="320"
+              aria-label="Example fruit sales"></div>
           </div>
         </section>
       </div>

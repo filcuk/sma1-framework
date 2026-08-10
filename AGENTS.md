@@ -118,6 +118,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initProgressIndicator()` / `initProgressIndicators()` | Multi-step wizard with indicators, panels, and back/next |
 | `initAboutDialog()` | Tagline “What?” dialog with progressive Huh? / Uhh… stages (wraps `initDialog`) |
 | `initRichTextEditor()` / `initRichTextEditors()` | Toast UI rich text editor (Markdown + WYSIWYG); requires vendor scripts |
+| `initChart()` / `initCharts()` | TanStack Charts host (`mountChart`); requires vendored ESM + import map for `d3-scale` / `d3-shape` when using bars |
 | `onDocumentClickOutside()` / `onDocumentEscape()` | Shared document listeners — do not add per-instance `document` listeners for these |
 
 ### Document listeners
@@ -165,6 +166,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-file.css` | File dropzone, file download |
 | `app/css/controls-image.css` | Image preview (checkerboard host) |
 | `app/css/controls-color.css` | Color set gallery and color picker |
+| `app/css/controls-charts.css` | TanStack Charts host |
 | `app/css/overlays.css` | Banners, tooltips, popovers, modals |
 | `app/css/tutorial.css` | Tutorial spotlight overlay and step chrome |
 | `app/css/rich-text-editor.css` | Rich text editor field layout and Toast UI token overrides |
@@ -189,6 +191,11 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
 | Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `icons.js` (+ `icons-template.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
+| Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put template wrappers here |
+
+### Vendor access
+
+`app/components/` is for product components only. The owning component talks to its vendor directly (UMD global or relative ESM import) and documents version / load order in its header. Do **not** add a per-vendor seam file under `components/` when only one feature uses that library. Extract shared accessors to `app/utils/` only when **two or more** components need them. See [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc).
 
 Respect `prefers-reduced-motion: reduce` — transitions live in components; global overrides are in `tokens.css`. JS scroll behaviour should use `prefersReducedMotion()` from `app/utils/dom.js`.
 

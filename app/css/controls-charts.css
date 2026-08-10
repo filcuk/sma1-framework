@@ -1,0 +1,22 @@
+/* Charts — TanStack Charts host */
+
+.charts {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 12rem;
+  color: var(--text);
+  /* Categorical palette (TanStack defaults to --ts-chart-1…6) */
+  --ts-chart-1: var(--accent);
+  --ts-chart-2: var(--banner-success-border);
+  --ts-chart-3: var(--banner-warn-border);
+  --ts-chart-4: var(--banner-important-border);
+  --ts-chart-5: var(--banner-error-border);
+  --ts-chart-6: var(--banner-info-border);
+}
+
+.charts > svg.ts-chart {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}

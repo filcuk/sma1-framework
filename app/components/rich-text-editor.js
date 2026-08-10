@@ -1,7 +1,10 @@
 /**
  * Rich text editor — Toast UI Editor wrapper (Markdown + WYSIWYG).
  *
- * Requires vendor scripts and `app/toastui-editor.css` on the page. See `app/toastui-editor.js`.
+ * Requires vendor scripts and `app/toastui-editor.css` on the page:
+ *   app/vendor/toastui-editor/toastui-editor-all.min.js
+ *   app/vendor/toastui-editor-plugin-table-merged-cell/toastui-editor-plugin-table-merged-cell.min.js
+ *
  * Mode switching uses the template segmented control (Toast UI’s native switch is hidden).
  * Toolbar tips use template `data-tooltip` (Toast UI’s native tooltip is hidden).
  *
@@ -23,20 +26,30 @@
  * data-rich-text-editor-autofocus — focus the editor on init (default off; Toast UI defaults on)
  */
 
-import {
-  getTableMergedCellPlugin,
-  getToastUiEditor,
-  isToastUiEditorReady,
-} from "./toastui-editor.js";
 import { initSegmentedControl } from "./segmented-control.js";
 import { APP_CONFIG } from "../config.js";
 import { parseBooleanAttr } from "../utils/dom.js";
+
+/** @type {const} */
+export const TOASTUI_EDITOR_VERSION = "3.2.2";
 
 const EDIT_TYPES = ["markdown", "wysiwyg"];
 const PREVIEW_STYLES = ["vertical", "tab"];
 const DEFAULT_PLUGINS = ["tableMergedCell"];
 
 const THEME_CLASS = "toastui-editor-dark";
+
+function isToastUiEditorReady() {
+  return Boolean(window.toastui?.Editor);
+}
+
+function getToastUiEditor() {
+  return window.toastui?.Editor ?? null;
+}
+
+function getTableMergedCellPlugin() {
+  return window.toastui?.Editor?.plugin?.tableMergedCell ?? null;
+}
 
 function resolveTheme() {
   const theme = document.documentElement.dataset.theme;

@@ -38,6 +38,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-file.css` | file-dropzone, file-download |
 | `controls-image.css` | image-preview |
 | `controls-color.css` | color-set, color-picker |
+| `controls-charts.css` | charts |
 | `rich-text-editor.css` | rich-text-editor (+ `app/toastui-editor.css`) |
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
@@ -87,7 +88,8 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
 | table | `app/components/table.js` | `table.css` | — | `chevron-up` (sort) | `dom`, `icons` | |
 | tabular-input | `app/components/tabular-input.js` | `controls-tabular-input.css` | — | `copy`, `paste`, `paste-special`, `plus`, `delete`, `remove`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `menu`, `icons`, `clipboard`; closes `tooltip` | |
-| rich-text-editor | `app/components/rich-text-editor.js`, `toastui-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control |
+| rich-text-editor | `app/components/rich-text-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control; owns Toast UI global access (no separate seam file) |
+| charts | `app/components/charts.js` | `controls-charts.css` | `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` | — | `config` | Thin `mountChart` host; import map for `d3-scale` / `d3-shape` when using `barY` / `barX`; forks author `defineChart` |
 
 ## CSS-only / shell patterns (no dedicated component module)
 
@@ -117,7 +119,7 @@ Do not remove these from `ICONS` while using `initShell`:
 | Keep as reference | Remove when shipping without demo |
 | ----------------- | --------------------------------- |
 | `demo.html`, `app/demo.js` | Delete both; drop `demo.html` from `.github/workflows/pages.yml` `cp` line |
-| Prism / Toast UI | Only if no app page uses code-block / rich-text-editor |
+| Prism / Toast UI / TanStack Charts | Only if no app page uses code-block / rich-text-editor / charts |
 
 ## Legacy path aliases (migrate)
 
@@ -127,6 +129,7 @@ Do not remove these from `ICONS` while using `initShell`:
 | `app/icons.js` | `app/utils/icons.js` (merge API; definitions in `icons-template.js` / `icons-app.js`) |
 | `app/page-nav.js`, `app/heading-link.js`, … | `app/shell/<name>.js` |
 | `app/file-dropzone.js` | `app/components/file-dropzone.js` |
+| `app/components/toastui-editor.js` | Merged into `app/components/rich-text-editor.js` (no separate seam) |
 
 ## Trim decision algorithm
 
