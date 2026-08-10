@@ -189,6 +189,11 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
 | Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `icons.js` (+ `icons-template.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
+| Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put template wrappers here |
+
+### Vendor access
+
+`app/components/` is for product components only. The owning component talks to its vendor directly (UMD global or relative ESM import) and documents version / load order in its header. Do **not** add a per-vendor seam file under `components/` when only one feature uses that library. Extract shared accessors to `app/utils/` only when **two or more** components need them. See [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc).
 
 Respect `prefers-reduced-motion: reduce` — transitions live in components; global overrides are in `tokens.css`. JS scroll behaviour should use `prefersReducedMotion()` from `app/utils/dom.js`.
 

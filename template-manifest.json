@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-09T18:28:13.348Z",
+  "generatedAt": "2026-08-10T19:10:15.146Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -37,6 +37,9 @@
     },
     "app/components/banner.js": {
       "sha256": "715504dbfb0448c1a88d3752ef922ef8d818c0e722138d1a146b3ce85863dadc"
+    },
+    "app/components/charts.js": {
+      "sha256": "6f9bc670c9a4709f256c39795c625830812752648927c2fb8a5cc85b03090f42"
     },
     "app/components/checkbox.js": {
       "sha256": "9b982c2ac7f694df706189460ab2f780abfe7563d880e64c21d78622edfa24e3"
@@ -144,7 +147,7 @@
       "sha256": "d757d5234d16110d89136612ae8c51078500fdb60d67bc98386e2677f32172b5"
     },
     "app/components/rich-text-editor.js": {
-      "sha256": "939be36a98bd98b9b2e0248f352a581912f6f306c9e90a3098147c38ef1b5312"
+      "sha256": "f742ee2cf6c7bd0c662646c15f08d09089c85ea2fbfe8b0ee74c28813576c5a1"
     },
     "app/components/segmented-control.js": {
       "sha256": "da46f5c892bb605f92e385cd7037281b70d9c4323876c4ff725007172d2151ef"
@@ -169,9 +172,6 @@
     },
     "app/components/time-picker.js": {
       "sha256": "97435605bb9c3b5398a28f495fa58020d690eac565b0d76af1804d0e40e6eae4"
-    },
-    "app/components/toastui-editor.js": {
-      "sha256": "0cb1380424d29bac4301004de5b51e75b2b59c7ab31dd5eccd79f82580cf30b9"
     },
     "app/components/toggle.js": {
       "sha256": "e2f9c98506e8fffe580f864ea12ca023cb8026bb24ec48578f2c948f793f124a"
@@ -302,6 +302,12 @@
     "app/utils/menu.js": {
       "sha256": "e58869226dfd2ccef4f91738582f70a85909346c0abf1885d9664b8f7b4d0a29"
     },
+    "app/vendor/d3-scale/README.md": {
+      "sha256": "1abc671abadd52bd5296bcea1b233a3efeab1ef349999252a7e40618998b934d"
+    },
+    "app/vendor/d3-scale/d3-scale.esm.js": {
+      "sha256": "f9efd9872eef04ecd48defcae5135e846fd85f50203f94894878a54b7321295d"
+    },
     "app/vendor/prism/prism-line-numbers.min.js": {
       "sha256": "f5c99feed70b757a4ab0f8bfd80584f773db6694e9e0ce2dab3164fa55a89a35"
     },
@@ -310,6 +316,489 @@
     },
     "app/vendor/prism/prism.min.js": {
       "sha256": "11d136a060e78db4a558573a4fdc1a282c89f014c79de9221334d8c971707d0d"
+    },
+    "app/vendor/tanstack-charts/README.md": {
+      "sha256": "477cf3b4b0d288624e106a9a29d45c7de72d3a3217ebde994100c1be0973eed8"
+    },
+    "app/vendor/tanstack-charts/adapter-renderer.js": {
+      "sha256": "db8321786abe4810f1f319a6a2a85b5390544c265b41c4e5ba27a0a693724cde"
+    },
+    "app/vendor/tanstack-charts/adapter-shared.js": {
+      "sha256": "15bb5d34b46c5e5f2f1423ff08fd48d83bd503999236b6c34a534c496083a2b6"
+    },
+    "app/vendor/tanstack-charts/adapter.js": {
+      "sha256": "4e7595c9d3e6f0baeaecca3e9d0665583c811e7441cd825e5402ef0956af099e"
+    },
+    "app/vendor/tanstack-charts/area-x.js": {
+      "sha256": "e777af70f5579d24862ec05dc8eb95c59718d1a7f8b2c89cda794045f52845c2"
+    },
+    "app/vendor/tanstack-charts/area.js": {
+      "sha256": "c7bececf1707211f97b04423e6ce2a3f01c01de88591fb4233cb276f40ca7351"
+    },
+    "app/vendor/tanstack-charts/arrow-geometry.js": {
+      "sha256": "a83deabc181861d2aede6bf88a8a1749fad06e8c881cac316147fada1a92db93"
+    },
+    "app/vendor/tanstack-charts/arrow.js": {
+      "sha256": "45c30bf466dbdce8441bbe3824e9d518c8ccd109641ecf7d3531792584d34f17"
+    },
+    "app/vendor/tanstack-charts/band.js": {
+      "sha256": "5a4633a8ff7fd3cb0ffc884a8b515975de3301acf6d639eea57a87e138ddba12"
+    },
+    "app/vendor/tanstack-charts/bar.js": {
+      "sha256": "ce02769ac0328a49fe836b3e298a0d473f97bed55acd28a64d6ca4aa181db930"
+    },
+    "app/vendor/tanstack-charts/box.js": {
+      "sha256": "5e5162320ed2f4928503588482e610297fc0b4c67c84e7939a07aaee7bc761f7"
+    },
+    "app/vendor/tanstack-charts/canvas.js": {
+      "sha256": "b522a35f9a76b3fe62d6a1d6e6a072e5c105e841fa03fe2d9a8219eb198746ee"
+    },
+    "app/vendor/tanstack-charts/composite-motion-internal.js": {
+      "sha256": "50f924e383dda41e6117ccd10cea18931fdbeb91410cf502761a84b59124c8cb"
+    },
+    "app/vendor/tanstack-charts/configured-scale.js": {
+      "sha256": "acf376eb1421cf198ffe0fb6f4091d7ff1c27d243f7f849d98a72f467477be7f"
+    },
+    "app/vendor/tanstack-charts/crosshair-resolver.js": {
+      "sha256": "6b0461c79ad89216fb114a50324bf43716df47f6f0faca7e76b3118ba2e579a3"
+    },
+    "app/vendor/tanstack-charts/crosshair.js": {
+      "sha256": "bafbcb18ff5b707abade0bf0c1f6069f5392fccdd518f6b0218921431c3770d0"
+    },
+    "app/vendor/tanstack-charts/cursor-host-contract.js": {
+      "sha256": "bd5d7a8c1eab2b6e5ca6d9e96928d96afb7b1ba35f9bb285ae508762980045b1"
+    },
+    "app/vendor/tanstack-charts/cursor-host.js": {
+      "sha256": "a485227692ebb6e9b8213ef96fca0de0387eee3d439465d8cfbb814886e3231f"
+    },
+    "app/vendor/tanstack-charts/cursor-public.js": {
+      "sha256": "0dca3d4903a69ab8e40ba03c71706978dc70b3e21017b078c62c9c735eddb39a"
+    },
+    "app/vendor/tanstack-charts/cursor.js": {
+      "sha256": "aba2a6fa0e1345dad4310c987f58600c830c82a4cfae75bcd55547a60998133d"
+    },
+    "app/vendor/tanstack-charts/d3-area-x.js": {
+      "sha256": "dc1efae99015f0e23fb1320eaf0bb747aa1d21c4cf43e582b171048ed25637ec"
+    },
+    "app/vendor/tanstack-charts/d3-shape.js": {
+      "sha256": "475c38bdde2de106396f404a9f51a83896a4f067c9a694017e1d4c54a46e4ffb"
+    },
+    "app/vendor/tanstack-charts/difference.js": {
+      "sha256": "2da48711f7c3d338ff8fc6dbf474f3ae860b4673be6e772b8e5c59ac758da1a2"
+    },
+    "app/vendor/tanstack-charts/dodge-internal.js": {
+      "sha256": "a28ff8c0ff2579fb10cbaacda8803be30271e3effdf0c14c5e3ee7c554b80028"
+    },
+    "app/vendor/tanstack-charts/dodge.js": {
+      "sha256": "f7384377aad754b20e5281ae16f9fc8a7511d4fe7f81fbb52756a6734e6e436f"
+    },
+    "app/vendor/tanstack-charts/dom-text.js": {
+      "sha256": "6df694ad94f81c516a8cfff3ce9adf34157ecd7f935790bd018a1b28b0a0a95a"
+    },
+    "app/vendor/tanstack-charts/dom-types.js": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "app/vendor/tanstack-charts/dom.js": {
+      "sha256": "60b1ad6f28adef829d52d6b98f92b79b91c4f27ac0d0f1dceba786357d9443cb"
+    },
+    "app/vendor/tanstack-charts/dot-layout.js": {
+      "sha256": "97f1d603be23f2fc257f160b5377a1d363ce87c904af75631cc90f370b1ceadb"
+    },
+    "app/vendor/tanstack-charts/dot.js": {
+      "sha256": "e4ac513233f643d3f06c118d8e211b247dd4b329def6f94050e19a556096ed30"
+    },
+    "app/vendor/tanstack-charts/export.js": {
+      "sha256": "a63ae772ab5022c90dc02690912bc574f7909f6b4b7878f16102261777fb7697"
+    },
+    "app/vendor/tanstack-charts/facet.js": {
+      "sha256": "8daa5f4879b0d8eb42d59f03234cda295c72754bd2072bce5e14346fbacdd681"
+    },
+    "app/vendor/tanstack-charts/focus-disabled.js": {
+      "sha256": "4863daa68c980521c580eda8b2f62aca671884f2a8f1b35dbaab62a3cc28869c"
+    },
+    "app/vendor/tanstack-charts/focus-guide.js": {
+      "sha256": "fc34adec93259a5f632e3d235b15cabe36b26062ba4abadc26f681b5c0422d2e"
+    },
+    "app/vendor/tanstack-charts/focus-layer.js": {
+      "sha256": "5304da4a63d7662f13324aadcdadcc8d26d8d7a7fb9381e3253323db08d58f0b"
+    },
+    "app/vendor/tanstack-charts/focus-mark.js": {
+      "sha256": "d59cb0fcd387412568b73bf367266a98e467817fc9b965a7d4ac88dd3d207e85"
+    },
+    "app/vendor/tanstack-charts/focus-presentation.js": {
+      "sha256": "baa8f40ad84d482dc9406a192d1ae12bc1808ffe2b9a4336fe4c6e3f1d6efab2"
+    },
+    "app/vendor/tanstack-charts/focus.js": {
+      "sha256": "3ec768feaf9774f9394c367d962112262b670fd905bdbb4602b82532fefbeb0f"
+    },
+    "app/vendor/tanstack-charts/frame.js": {
+      "sha256": "ba6bfd4eddacb66cdbfb4521552a527a500c25e285dca8824b8dc873e2627428"
+    },
+    "app/vendor/tanstack-charts/geo.js": {
+      "sha256": "7b4d56b8f4751437ee8d6b8ca38fef83f99b130013ec015ab0cc97397976a050"
+    },
+    "app/vendor/tanstack-charts/group.js": {
+      "sha256": "15d4be1364f6138eb1b2d7be36bc4783ba74ddf5f9c911114f487c6ff7173f8f"
+    },
+    "app/vendor/tanstack-charts/guide-layout.js": {
+      "sha256": "dceba54521ba0a9bbd7a17616d86dc76d780ef7bc0e195cfeca247dd398bf086"
+    },
+    "app/vendor/tanstack-charts/guide-nodes-internal.js": {
+      "sha256": "2d1ea520959047d6c8f1428a46a13296cba991ac9020b0888f85120bcac578ff"
+    },
+    "app/vendor/tanstack-charts/hexagon.js": {
+      "sha256": "534165da29a79e1e2c18060ef41b030c91c968cc4e42953b6eab78e8075c9c8c"
+    },
+    "app/vendor/tanstack-charts/hierarchy-flat-internal.js": {
+      "sha256": "a89285b77518e60cc77afa756c3923a2e9bbcba08460aed1f88e768fc57c750c"
+    },
+    "app/vendor/tanstack-charts/hierarchy-sunburst.js": {
+      "sha256": "b9f9d61aabbb30626da942e4dabb30c963cb0877ec569ed69eb7b450ef325731"
+    },
+    "app/vendor/tanstack-charts/hierarchy-tree.js": {
+      "sha256": "6ca187c664c5dbebbcd6fd7aee8314948ee42000671a93aa08f82d8aea948a75"
+    },
+    "app/vendor/tanstack-charts/hierarchy-treemap.js": {
+      "sha256": "6f73cd08bae2b97ef76f4fced7717f303776e2fec6b8d4f3f9f799f57b4110bd"
+    },
+    "app/vendor/tanstack-charts/index.js": {
+      "sha256": "72c7de57e8dc756aa00c9718f2784d0259591fe1d456a3542e0cbc102a3ec490"
+    },
+    "app/vendor/tanstack-charts/interaction-axis-internal.js": {
+      "sha256": "86678925155a276f760541d0b322c4215999c29482777974c114376dfe66d312"
+    },
+    "app/vendor/tanstack-charts/interaction-brush.js": {
+      "sha256": "341af506d8867c9d30a4842792f7aa80924434fa3b0a016bb8546d6b3ab4990a"
+    },
+    "app/vendor/tanstack-charts/interaction-cursor.js": {
+      "sha256": "6b864138355bdf83746654c1722ffd5564bbe1472390b9cec6dd4031bf2952bc"
+    },
+    "app/vendor/tanstack-charts/interaction-handle.js": {
+      "sha256": "2df1317ffab1f6d3db9c83531f86d5671feb16f6962ee182e8759841a09a8ec7"
+    },
+    "app/vendor/tanstack-charts/interaction-range-internal.js": {
+      "sha256": "205d8a82753afe9a371b8881736380f75a59a075945df821f634390dd595467a"
+    },
+    "app/vendor/tanstack-charts/interaction-signal.js": {
+      "sha256": "c24377dae1410f95ac18e973522ef0edb60c59b1aaa94cd8c8d2161056023920"
+    },
+    "app/vendor/tanstack-charts/interaction-zoom.js": {
+      "sha256": "9d7edd025618993c6083b31887bab56c6710311ddde4b31221bf88ab39f3a802"
+    },
+    "app/vendor/tanstack-charts/interaction.js": {
+      "sha256": "7d5cbeb7989736977d896ffa611e1289adb7a181d2737996c9d057063931d5eb"
+    },
+    "app/vendor/tanstack-charts/interactive-legend.js": {
+      "sha256": "1c20966c0434cc7e1c741edb1ae9f734e733483af2fdc4a1c52b65050bf644cd"
+    },
+    "app/vendor/tanstack-charts/legend-layout-internal.js": {
+      "sha256": "7a95d952902e4fe6d8c8ab8700eb24db039c1ae3a6c933913139c7aeecfe110f"
+    },
+    "app/vendor/tanstack-charts/legend-static.js": {
+      "sha256": "20a346054b96a08e273dfc8b6922a382b41b110f0cba828d718e9f17a9cd7943"
+    },
+    "app/vendor/tanstack-charts/legend.js": {
+      "sha256": "9e3d0dad44d7eafccbd246e76789d0c732b76a4253dc51eafc9d6739b24f1cef"
+    },
+    "app/vendor/tanstack-charts/line.js": {
+      "sha256": "9503209a0abfbd19eb2624c2853019d18193526a2d3c92e8559ed1e406e045c5"
+    },
+    "app/vendor/tanstack-charts/link.js": {
+      "sha256": "a2f4e13e85781953802fb8f675c0d5d60d80fe8b770787df76c920db5f1033f4"
+    },
+    "app/vendor/tanstack-charts/mapped-spacing-internal.js": {
+      "sha256": "8ac66dbc404f43e3d15d4c24e95617d0404d531758a3836566d36a03aa6df041"
+    },
+    "app/vendor/tanstack-charts/mark-composite-internal.js": {
+      "sha256": "f775dae5fbf8d38261e1f977ee734b2aaa83a0220b66a3c54e177a0ba9c370bf"
+    },
+    "app/vendor/tanstack-charts/mark-composite.js": {
+      "sha256": "3205069019d87f36225aa9bd10feed59eac0ac8636548aa53a2a98a86992fc2b"
+    },
+    "app/vendor/tanstack-charts/mark-decorative-internal.js": {
+      "sha256": "9a81d74ab04b62c5798c2a760445c09531d017ad6d8d763d9d96bffa78de1ebf"
+    },
+    "app/vendor/tanstack-charts/mark-decorative.js": {
+      "sha256": "1748618c21978d5277363548d2b2be58a2df5d1cce7ab538379acd087446d3bc"
+    },
+    "app/vendor/tanstack-charts/mark-scene-filter-internal.js": {
+      "sha256": "6e0df83d8ef45bbbe6f45d6744a4b53153b76180993846a17aa7384c315bcddf"
+    },
+    "app/vendor/tanstack-charts/mark-state-transition.js": {
+      "sha256": "350ad15e63653108ebb838ec46d2b4c4c21c3d850df3e0b5a7c55617535759a0"
+    },
+    "app/vendor/tanstack-charts/mark-state.js": {
+      "sha256": "e0e247c1d4a636a7d766ed8b5b377041d700b38cfa810ef4d77c3027e8ac59ed"
+    },
+    "app/vendor/tanstack-charts/mark-with-scale-values.js": {
+      "sha256": "c1fe5e2f3960206f72ce3e8afcfd493f3e1383c37da805df67ee9ffe66c5683e"
+    },
+    "app/vendor/tanstack-charts/mark.js": {
+      "sha256": "b7f37d973d0a5db3dc15d7cc9af6eb8fb0b0353a4c7dff1fabb1a327705db50a"
+    },
+    "app/vendor/tanstack-charts/motion-path.js": {
+      "sha256": "d206f3b2c06c45d03c8fe3253245609364b34a517fc665b31dc8270079070f4c"
+    },
+    "app/vendor/tanstack-charts/motion.js": {
+      "sha256": "eb93989896884b027242bb82aa2304968e0992ca7ce09a0d3759cc21a83b3f32"
+    },
+    "app/vendor/tanstack-charts/nearest.js": {
+      "sha256": "681f3664acc365174d449b58ac481f4c62a23f31805efd66f15f6b7966e1dd6e"
+    },
+    "app/vendor/tanstack-charts/network-force.js": {
+      "sha256": "fa326b276e6fad957f89da96700258fc89bca8dfdc761868d3bd1f38b034f598"
+    },
+    "app/vendor/tanstack-charts/network-graph-internal.js": {
+      "sha256": "eff0a585712c1d3878f12e46e32f6a53c728648684c77cf7bf458cfc970883b1"
+    },
+    "app/vendor/tanstack-charts/network-sankey.js": {
+      "sha256": "65824df2e3ea3c49d50018ab53a79e61999255df41c51a25c9ce6dea04b9e0d5"
+    },
+    "app/vendor/tanstack-charts/polar-mark-internal.js": {
+      "sha256": "9304c6d1ad8d724cb328879fad73d40cf76dea3995aa94040a2b06f8940fe0e6"
+    },
+    "app/vendor/tanstack-charts/polar-pie.js": {
+      "sha256": "bb2b2a16998fafa90792bdbc5642af23bd2d01926d67747824f28f924da10229"
+    },
+    "app/vendor/tanstack-charts/polar-sector-internal.js": {
+      "sha256": "7c2bbb48b27c01a7a0ff8f95a3ba95ac8295b81b00f8742e4580c17880d0c6fd"
+    },
+    "app/vendor/tanstack-charts/polar.js": {
+      "sha256": "c28780089c6a56c924d9018f66d9c89fa07e4d511638cfecbcf98e7868c2b8cb"
+    },
+    "app/vendor/tanstack-charts/proportional-interval-internal.js": {
+      "sha256": "b119621c55cc0eb71aecc30f971ab3d3d4d314fde48e73138b79697d0778d8dd"
+    },
+    "app/vendor/tanstack-charts/reconcile.js": {
+      "sha256": "bcbb87f5a6a0199dbc6c22fd0d07306fbf269811b30d65131eff58d1519337f8"
+    },
+    "app/vendor/tanstack-charts/rect.js": {
+      "sha256": "29c9cdeedfb445c3387e710a3609e6cbeaa77aff28bf13053fd73158ed3a54be"
+    },
+    "app/vendor/tanstack-charts/regression.js": {
+      "sha256": "14f7200bfce918321002f06144b951aa1acc4112924777ba029c44012bbb1d30"
+    },
+    "app/vendor/tanstack-charts/renderer.js": {
+      "sha256": "57ee0983f043637e31875eacd73a67d8d00e254f44368c27795179c5b68e4c94"
+    },
+    "app/vendor/tanstack-charts/resolved-layout-child.js": {
+      "sha256": "8e6dcc80543cea7daf436f92e0ad35025cc3cc680e0fb30874b7ea118953eb3e"
+    },
+    "app/vendor/tanstack-charts/resolved-layout-position.js": {
+      "sha256": "288d3f86163be282ea25b5cfa3bf8010e356669dfd71dc590e61c08edf37d257"
+    },
+    "app/vendor/tanstack-charts/ridgeline.js": {
+      "sha256": "be478a849243977321037e00409637bed3f6ae4c00f72a7afbe8bd777429a083"
+    },
+    "app/vendor/tanstack-charts/rule.js": {
+      "sha256": "2501584d3ca60306528e79f8085729d73af6fced06fa5832e50dde5cd7efcf41"
+    },
+    "app/vendor/tanstack-charts/runtime.js": {
+      "sha256": "0b64677145f8333c75c351ec3b4f1c9fddf060842582b176a289edc687975a64"
+    },
+    "app/vendor/tanstack-charts/scale-input.js": {
+      "sha256": "9e138bc715c9d46f9f1d1815951602bdb4b6563a7c45b7c7a2f3a8d2f00d8b73"
+    },
+    "app/vendor/tanstack-charts/scales.js": {
+      "sha256": "13c0f66c264db476320e96a06cebc7b0014c55f09e91171eefdcd1644a3c95ff"
+    },
+    "app/vendor/tanstack-charts/scales/band-kernel.js": {
+      "sha256": "586155cf8adfe41c9258bc8e1584cf0e78360ca5388371a6c1ab601c5f4aac75"
+    },
+    "app/vendor/tanstack-charts/scales/band.js": {
+      "sha256": "b21aee54870fbf8f223208385dab4b59a0843aba8568cfabb8945c053532bf88"
+    },
+    "app/vendor/tanstack-charts/scales/intern.js": {
+      "sha256": "60475a716cf7b6d4647a8143f95a87a34d826befc0c8b00c5e48ec5ebec848c5"
+    },
+    "app/vendor/tanstack-charts/scales/linear.js": {
+      "sha256": "f4124cc2816302c28fd1fd3e6f3c3b267fa4a516ac2e63dc9e50c7288ab117d7"
+    },
+    "app/vendor/tanstack-charts/scales/ordinal.js": {
+      "sha256": "27db408be5730547b744ca32e039cc217f39fc5997e2fd72e0b65b4e80c4ac4b"
+    },
+    "app/vendor/tanstack-charts/scales/point.js": {
+      "sha256": "3b5321e1f17f8c678532e3bbd4c9172538f8b3f283883d22f41d3d99ed0c9f71"
+    },
+    "app/vendor/tanstack-charts/scales/ticks.js": {
+      "sha256": "12220ddda4c5678056445af99d7e78b390a84357b08a8c22d4f20d0be731cafc"
+    },
+    "app/vendor/tanstack-charts/scene-child-id-internal.js": {
+      "sha256": "143ec120fd59a4341bca80eaea1e166d87935217cc68e21d0c56127ba0901487"
+    },
+    "app/vendor/tanstack-charts/scene-embed-internal.js": {
+      "sha256": "79526940ea4497de718f3d718929055e1a4155aee13c50c5adce163f2fa4c77f"
+    },
+    "app/vendor/tanstack-charts/scene-point-map.js": {
+      "sha256": "caed7c72e9ac2abd4d6d1d94d34c3f24f0c95739244f38ce9be0d2415598c983"
+    },
+    "app/vendor/tanstack-charts/scene-point-ownership-internal.js": {
+      "sha256": "6264a17dcd237066103baaa80df0f8de84b6bdd48beab854769a3d1683f9e116"
+    },
+    "app/vendor/tanstack-charts/scene-source.js": {
+      "sha256": "ce969a8cb4e4f7b487de7a6c32a4bbfaf4a506675b0a01c88a9da4f7ec4d3abd"
+    },
+    "app/vendor/tanstack-charts/scene.js": {
+      "sha256": "481ff1f83ec54e2e26e202f7d9181ad50f296f18d1d533917eed65c4c87dbd6c"
+    },
+    "app/vendor/tanstack-charts/selection.js": {
+      "sha256": "850c79231ec041e39cd13c82043794849cbd04ea0f1722f1612cca04450355f2"
+    },
+    "app/vendor/tanstack-charts/spatial-contour-internal.js": {
+      "sha256": "3ac7e9bcadb6d93513d540cdab3f9fd2c610bf7df9da06f173be5b4147bed248"
+    },
+    "app/vendor/tanstack-charts/spatial-contour.js": {
+      "sha256": "6e3cfaf95a097a039075ac29ec790c84298ac09b218b600f16fc5486f1fd5ef5"
+    },
+    "app/vendor/tanstack-charts/spatial-delaunay-internal.js": {
+      "sha256": "55d39482229a74e0abd85e0f2f4c5da438f3bae9ffd6dfc6e0ab5ea990b39b6f"
+    },
+    "app/vendor/tanstack-charts/spatial-delaunay.js": {
+      "sha256": "a4fe4355a3e18dc73d8ec99b26e9512ded2653ab7c4ef29a593a28bdc00a138d"
+    },
+    "app/vendor/tanstack-charts/spatial-density.js": {
+      "sha256": "b06330117c49b9b3b071d4fb67c0bc56d70f9b7c1ec1b1b8d68555425fc29537"
+    },
+    "app/vendor/tanstack-charts/spatial-group-internal.js": {
+      "sha256": "ec9888547d07801fa8d5d6f4b7b9c48295523e0d30be2f5721e7258d034d6a5c"
+    },
+    "app/vendor/tanstack-charts/spatial-hexbin.js": {
+      "sha256": "dee505c0103c199ec465954c3814fae737b35460de49f237e3f2eb7ace041e58"
+    },
+    "app/vendor/tanstack-charts/spatial-voronoi-internal.js": {
+      "sha256": "d32ebbc9143a959832319138fb748444770f36cec6999921d1db98fe0f81fd84"
+    },
+    "app/vendor/tanstack-charts/spatial-voronoi.js": {
+      "sha256": "b0dcb39762cd60d28fca02f980a4ff1472a32352a084a8df0636f900f83cc3aa"
+    },
+    "app/vendor/tanstack-charts/spring.js": {
+      "sha256": "17fa5aab336e86e92f3e873c1f4b81c2a14525523fc5b83b66d47b4314aea830"
+    },
+    "app/vendor/tanstack-charts/stack-internal.js": {
+      "sha256": "9038e75f46daf739d5dec5c1250f7631132a2e7c574f269e65d9e3d5cb268b9f"
+    },
+    "app/vendor/tanstack-charts/stack.js": {
+      "sha256": "b940999faab440bd30037cc5e4c41d6d0f14a659d93b7d70ef315b01d2a9181a"
+    },
+    "app/vendor/tanstack-charts/svg-coordinates.js": {
+      "sha256": "90d592d00e6e93d8ce08d23f762c493fdfcbc8be99bd3e12c325e8b6b55c68c1"
+    },
+    "app/vendor/tanstack-charts/svg-focus-guide-layer.js": {
+      "sha256": "98282b4a40b2db1a993a674e208c92e3f68a113e7229b67964e688aefcca2454"
+    },
+    "app/vendor/tanstack-charts/svg-focus-guide-serializer.js": {
+      "sha256": "35e8867728b4f02db5ab16a034d7dc7f4347a0c95e136bf3784bf43fb07dc6cd"
+    },
+    "app/vendor/tanstack-charts/svg-renderer.js": {
+      "sha256": "947acd2da22295a15443f10db5f6c0e94fe416c26837bf6cfc0ac81b4a374046"
+    },
+    "app/vendor/tanstack-charts/svg-resources.js": {
+      "sha256": "d4e28d54ab15622df5f989cc3bf1015ad28e8db97e9302dcc874cbbb2c9b6cfe"
+    },
+    "app/vendor/tanstack-charts/svg-surface.js": {
+      "sha256": "0d3740383b834036c6d938f8ad39ef5d8cb4bf17d31cf509e713430352d16158"
+    },
+    "app/vendor/tanstack-charts/svg.js": {
+      "sha256": "7e8685b4a45be15288343e8afd599a162fc50f9bd3c8bfe82e6ed576b23aa91d"
+    },
+    "app/vendor/tanstack-charts/text.js": {
+      "sha256": "664de8bb30ebd1b0471ef7b59920d6ed2beb87362a46100d463d0dc9d7eaf5bc"
+    },
+    "app/vendor/tanstack-charts/tick.js": {
+      "sha256": "f62f191b8c908a32ea3c4316e109eeb0cd2d9972918de2b14c8fd046b23964cc"
+    },
+    "app/vendor/tanstack-charts/tooltip-model.js": {
+      "sha256": "a7f9ed6376884390204ad1edb47e2563795aae6bb933086defe697288f709911"
+    },
+    "app/vendor/tanstack-charts/tooltip-placement.js": {
+      "sha256": "e9db8124640e380274e12314b117d42ecfa0667ab5e6f138339bf82ff2620396"
+    },
+    "app/vendor/tanstack-charts/tooltip-portal.js": {
+      "sha256": "b2dd853d70cf4ffce22e5a719b021a61b70ad71c424973260c72f246a7f28b96"
+    },
+    "app/vendor/tanstack-charts/tooltip-position.js": {
+      "sha256": "8f05f41f1adc71f287f440cec57c5111eeb8248c7acc3fd3d9ab61c5c577c105"
+    },
+    "app/vendor/tanstack-charts/tooltip.js": {
+      "sha256": "afb468f93e2d2afe6acb4f3294f8207b4c02125020d358f4b28b7bc29cec8092"
+    },
+    "app/vendor/tanstack-charts/transform-bin-time.js": {
+      "sha256": "ae8cf168d7c9de6a9eb212b8e50c1c061f70f786759c429e15633d398e2a4b81"
+    },
+    "app/vendor/tanstack-charts/transform-bin-xy.js": {
+      "sha256": "4e38884330cc08ea360d574d9cc7de1b4b44696310cd83bea83e267cb827030b"
+    },
+    "app/vendor/tanstack-charts/transform-bin.js": {
+      "sha256": "6a0862e9a53eeb6151c067dce8978c91b1823cc7fc17f1367268966799efb44d"
+    },
+    "app/vendor/tanstack-charts/transform-cumulative.js": {
+      "sha256": "c968358ace49437a51010096ecf4d42c65cc78f58434f03913960fedc8973873"
+    },
+    "app/vendor/tanstack-charts/transform-fold.js": {
+      "sha256": "189ce9ffe552fb89a93b3a5ec95cdd821564afa19f5e08edc47edf142bac0119"
+    },
+    "app/vendor/tanstack-charts/transform-group.js": {
+      "sha256": "c056f81c9a44a1cdf972c21122a0beb746ed621795c06d760409e0008b612de9"
+    },
+    "app/vendor/tanstack-charts/transform-internal.js": {
+      "sha256": "58f8a5f598e565437e69b3901cc1b187497984dd43c15c5069586676a37f0c89"
+    },
+    "app/vendor/tanstack-charts/transform-mosaic.js": {
+      "sha256": "795c74d835ea8a390f76ab7eb29788fb95f07080c5c5f5196d55cad545940145"
+    },
+    "app/vendor/tanstack-charts/transform-normalize.js": {
+      "sha256": "b7589332517eced1d28da467915e0e97f6c14200d1d7b3093fd2856f3b0dd3cc"
+    },
+    "app/vendor/tanstack-charts/transform-rank.js": {
+      "sha256": "dd95d05dbb4ba318b8028f9719e1f6d88ba626b7bd1f47e1c39b75950f182ef4"
+    },
+    "app/vendor/tanstack-charts/transform-reduce-internal.js": {
+      "sha256": "db183fc7c86f1807c30b73d10c5e121ddc8026d1873d0455524ad1a06d204533"
+    },
+    "app/vendor/tanstack-charts/transform-reduce.js": {
+      "sha256": "7f69bd6118f9ecb8a27c9113a3968108a6a23d3bb169f771107b6e0c9c0f96f3"
+    },
+    "app/vendor/tanstack-charts/transform-rolling-window.js": {
+      "sha256": "52cbb6a5647491d9d41d6f557bd68f24252977d89844ab35125bd07c41a17388"
+    },
+    "app/vendor/tanstack-charts/transform-select.js": {
+      "sha256": "9462e5a3a622aa3ce54c9eb2099f03047d273af7f5e57016a1eca0b0549486df"
+    },
+    "app/vendor/tanstack-charts/transform-stack.js": {
+      "sha256": "40e2a19a1a5f2f0e880e8c3a1835a76489fd10ad1550545830b0056395ac91b6"
+    },
+    "app/vendor/tanstack-charts/transform-statistics-internal.js": {
+      "sha256": "7e0d8fc7b4a03cc9af16b27cd60b6f8b5dab8bd89916d8ddb49360a444c8b36a"
+    },
+    "app/vendor/tanstack-charts/transform-waterfall.js": {
+      "sha256": "cfac20c4f5cc216b09c29606aeeb6661abf4c890be017cdd204b135012f11d27"
+    },
+    "app/vendor/tanstack-charts/transform.js": {
+      "sha256": "0a4c06ff1b23924757472b98044d000b8b4c48f47cd0a8d263de483b987e2a75"
+    },
+    "app/vendor/tanstack-charts/types.js": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "app/vendor/tanstack-charts/universal-types.js": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "app/vendor/tanstack-charts/universal.js": {
+      "sha256": "df5be9b8ee8fdfc43f1872bb5fb71e4948682f708edbbb8a356b261c2bd1dd89"
+    },
+    "app/vendor/tanstack-charts/vector.js": {
+      "sha256": "c06c65cbd58927557f71634e23992c7192bfbcd4355858e23d6aab014e9e2ded"
+    },
+    "app/vendor/tanstack-charts/view-layout.js": {
+      "sha256": "1e871de51075be736f6659651e6c85a972374b09e9e5e264b00153b5ea2eea73"
+    },
+    "app/vendor/tanstack-charts/view.js": {
+      "sha256": "785fab0604eca8e4bc87af07273ff9d631ae6415d7187518a497c56523ff0298"
+    },
+    "app/vendor/tanstack-charts/violin.js": {
+      "sha256": "eacb9bbcc22917a2014a6c34bc7a98d3999595e77a3d465d2a66e797dff5ef14"
+    },
+    "app/vendor/tanstack-charts/waffle.js": {
+      "sha256": "665932f756a28805175e3fc26beb0d6d81b766b6f5a023216ddda9baa845f8d4"
     },
     "app/vendor/toastui-editor-plugin-table-merged-cell/toastui-editor-plugin-table-merged-cell.min.css": {
       "sha256": "f9e22de132b84d5547733353be9b7ea8bbc55c1afad1432a5745cccc50c76005"
@@ -338,8 +827,11 @@
     ".cursor/rules/usage-docs.mdc": {
       "sha256": "7bf8d6c2ce63462b929d50e6c7646748e4a7232c5c68ce790a8778a9697ccd82"
     },
+    ".cursor/rules/vendor.mdc": {
+      "sha256": "6c4b4a651c3c8e79433aee7895a02d4ed0817033709643bdcc2b2f73a1f1cc72"
+    },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "711b2234e8e7c6ceaa3d20110ab2b97a6e3cf5ee8b46fa509a4149a4cf867610"
+      "sha256": "e731f6f080c85e53bd00d2df0e2f596da716cdf002c0e36d6cc93659e5500a4d"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -351,7 +843,7 @@
       "sha256": "622f1d12f32b7f19100d6a94298a4808960b5f029512131594e15ffc3582542e"
     },
     ".cursor/skills/author-component/SKILL.md": {
-      "sha256": "baa57e0923d15a5b876d584e935e21aa6350d9126f7eefe83e9221695f3b21e8"
+      "sha256": "99145e4cf0a7249ca4315112a34d37be37d1b8a6f6a6a8a742ed49314b0a93a2"
     },
     ".cursor/skills/finalize-app/SKILL.md": {
       "sha256": "1fa503b27e65b0f5b901112af92e85cf7bb1de9b093543c50a99b72c11c1d892"
@@ -1096,7 +1588,6 @@
     "rich-text-editor": {
       "files": [
         "app/components/rich-text-editor.js",
-        "app/components/toastui-editor.js",
         "app/components/segmented-control.js"
       ],
       "css": [
@@ -1206,7 +1697,8 @@
     "rules": [
       ".cursor/rules/demo-isolation.mdc",
       ".cursor/rules/icons.mdc",
-      ".cursor/rules/usage-docs.mdc"
+      ".cursor/rules/usage-docs.mdc",
+      ".cursor/rules/vendor.mdc"
     ]
   },
   "deprecated": {},

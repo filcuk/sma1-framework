@@ -87,7 +87,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
 | table | `app/components/table.js` | `table.css` | — | `chevron-up` (sort) | `dom`, `icons` | |
 | tabular-input | `app/components/tabular-input.js` | `controls-tabular-input.css` | — | `copy`, `paste`, `paste-special`, `plus`, `delete`, `remove`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `menu`, `icons`, `clipboard`; closes `tooltip` | |
-| rich-text-editor | `app/components/rich-text-editor.js`, `toastui-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control |
+| rich-text-editor | `app/components/rich-text-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control; owns Toast UI global access (no separate seam file) |
 
 ## CSS-only / shell patterns (no dedicated component module)
 
@@ -127,6 +127,7 @@ Do not remove these from `ICONS` while using `initShell`:
 | `app/icons.js` | `app/utils/icons.js` (merge API; definitions in `icons-template.js` / `icons-app.js`) |
 | `app/page-nav.js`, `app/heading-link.js`, … | `app/shell/<name>.js` |
 | `app/file-dropzone.js` | `app/components/file-dropzone.js` |
+| `app/components/toastui-editor.js` | Merged into `app/components/rich-text-editor.js` (no separate seam) |
 
 ## Trim decision algorithm
 

@@ -414,7 +414,6 @@ export const COMPONENTS = {
   "rich-text-editor": {
     files: [
       "app/components/rich-text-editor.js",
-      "app/components/toastui-editor.js",
       "app/components/segmented-control.js",
     ],
     css: ["rich-text-editor.css", "controls-widgets.css"],
@@ -559,6 +558,7 @@ export const AGENT_RULES = [
   ".cursor/rules/demo-isolation.mdc",
   ".cursor/rules/icons.mdc",
   ".cursor/rules/usage-docs.mdc",
+  ".cursor/rules/vendor.mdc",
 ];
 
 /**

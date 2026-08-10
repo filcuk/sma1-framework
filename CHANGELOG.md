@@ -10,6 +10,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
+- Agent rule [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc) — vendor bytes in `app/vendor/`; components own single-consumer access; shared accessors only in `app/utils/` when two+ components need them.
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
 - Colour picker (`initColorPicker`) — HSV/HSL plane + hue slider, RGB/CMYK/alpha via shared `initSlider`, HEX field; format switch changes the visual; optional adjacent colour-set panel (palette icon toggle on the value row).
 - Template icon `palette` (`ic:round-palette`).
@@ -38,6 +39,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Changed
 
+- Merged Toast UI vendor accessors into `rich-text-editor.js` and removed `app/components/toastui-editor.js` (components own single-consumer vendor access; see `.cursor/rules/vendor.mdc`).
 - Soft verify for agent skill/rule drift (`agentModified` / `agentMissing` does not fail CI); hard verify remains for catalogue `app/` hashes.
 - Rich text editor Markdown / WYSIWYG switch uses the template segmented control (Toast UI’s native mode tabs are hidden).
 - Heading outline: site `h1`, tier `h2.segment-title` (was `.content-tier-title`), section `h3.section-title` (was `h2.section-heading`). Page nav and heading links default to `main :is(h2, h3)[id]`.

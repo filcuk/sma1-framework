@@ -135,7 +135,7 @@ The demo is for exploring components — not required for your app.
 | [`demo.html`](demo.html) | Delete `demo.html` |
 | [`app/demo.js`](app/demo.js) | Delete `app/demo.js` |
 | Prism vendor + `app/prism.css` (only if you do not use code blocks) | `app/vendor/prism/`, `app/prism.css` |
-| Toast UI vendor + `app/toastui-editor.css` (only if you do not use the rich text editor) | `app/rich-text-editor.js`, `app/toastui-editor.js`, `app/toastui-editor.css`, `app/css/rich-text-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` |
+| Toast UI vendor + `app/toastui-editor.css` (only if you do not use the rich text editor) | `app/components/rich-text-editor.js`, `app/toastui-editor.css`, `app/css/rich-text-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` |
 
 If you **remove** `demo.html`, update [`.github/workflows/pages.yml`](.github/workflows/pages.yml) — drop `demo.html` from the `cp` line:
 
@@ -150,7 +150,7 @@ If you **keep** the demo, leave the workflow as-is and optionally link to it fro
 All modules under `app/` are small and tree-shaken by the browser (only imported files load). You can delete files you will never use, for example:
 
 - `app/code-block.js`, `app/expandable-surface.js`, `app/vendor/prism/` — no syntax-highlighted code
-- `app/rich-text-editor.js`, `app/toastui-editor.js`, `app/toastui-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` — no rich text editor
+- `app/components/rich-text-editor.js`, `app/toastui-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` — no rich text editor
 - `app/combo.js`, `app/dropdown.js`, `app/dropdown-toggle.js` — no menus
 - `app/dialog.js` — no modals
 
