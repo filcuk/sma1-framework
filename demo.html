@@ -1880,16 +1880,35 @@
           </div>
         </section>
 
-        <section class="content-section" aria-labelledby="demo-charts">
-          <h3 id="demo-charts" class="section-title">Charts</h3>
+        <section class="content-section" aria-labelledby="demo-charts-diagrams">
+          <h3 id="demo-charts-diagrams" class="section-title">Charts &amp; Diagrams</h3>
           <div class="demo-card">
-            <h3 class="demo-card-title">Bar chart</h3>
-            <p class="demo-hint">
-              SVG grammar charts with
-              <a href="https://tanstack.com/charts/latest" target="_blank" rel="noopener noreferrer">TanStack Charts</a>.
-            </p>
-            <div class="charts" id="demo-bar-chart" data-charts-height="320"
-              aria-label="Example fruit sales"></div>
+            <div class="panel-split">
+              <div class="panel-stack">
+                <h3 class="demo-card-title">Chart</h3>
+                <p class="demo-hint">
+                  SVG grammar charts with
+                  <a href="https://tanstack.com/charts/latest" target="_blank" rel="noopener noreferrer">TanStack Charts</a>.
+                </p>
+                <div class="charts" id="demo-bar-chart" data-charts-height="320"
+                  aria-label="Example fruit sales"></div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="demo-card-title">Diagram</h3>
+                <p class="demo-hint">
+                  Text → SVG diagrams with
+                  <a href="https://mermaid.js.org/" target="_blank" rel="noopener noreferrer">Mermaid</a>.
+                </p>
+                <div class="diagram" id="demo-sequence" aria-label="Example sequence diagram">
+                  <pre class="diagram-source">sequenceDiagram
+  participant User
+  participant App
+  User-&gt;&gt;App: Open demo
+  App--&gt;&gt;User: Render diagram</pre>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>
