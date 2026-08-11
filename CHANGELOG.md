@@ -10,6 +10,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
+- Diagrams (`initDiagram` / `initDiagrams`) — thin Mermaid (`mermaid@11.16.1`) text→SVG host; vendored ESM entry + chunks under `app/vendor/mermaid/`; light/dark theme re-render; Specialised demo sequence beside the bar chart.
 - Charts (`initChart` / `initCharts`) — thin TanStack Charts (`@tanstack/charts@0.9.0`) SVG host; vendored ESM under `app/vendor/tanstack-charts/` plus `d3-scale` / `d3-shape` bundles and a demo import map; Specialised demo bar chart after Editors.
 - Agent rule [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc) — vendor bytes in `app/vendor/`; components own single-consumer access; shared accessors only in `app/utils/` when two+ components need them.
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.

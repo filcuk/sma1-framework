@@ -45,6 +45,7 @@ import { barY } from "./vendor/tanstack-charts/bar.js";
 import { tooltip } from "./vendor/tanstack-charts/tooltip.js";
 import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
 import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
+import { initDiagrams } from "./components/diagram.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
@@ -122,6 +123,8 @@ initChart(document.getElementById("demo-bar-chart"), {
   }),
   ariaLabel: "Example fruit sales",
 });
+
+initDiagrams(document);
 
 initFileDropzone(document.getElementById("demo-file-dropzone-single"));
 
