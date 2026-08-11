@@ -18,4 +18,4 @@ npm pack mermaid@11.16.1
 # omit *.map and *.d.ts
 ```
 
-See `app/components/diagram.js` for the version constant and host API (added in a later step).
+See `app/components/diagram.js` for the version constant and host API.
