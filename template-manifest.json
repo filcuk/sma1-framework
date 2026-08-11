@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-10T19:17:58.001Z",
+  "generatedAt": "2026-08-11T18:32:30.252Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -22,7 +22,7 @@
   "derived": {
     "app/css/template.css": {
       "generator": "css-index",
-      "sha256": "b68f00ec1146adf135e3521032076d75a683200878d4e1c882237e14ec70cc92"
+      "sha256": "4556ce24199200e40a16d6780a44fad0440733e6f8656611be28f6a0809aba5a"
     }
   },
   "files": {
@@ -106,6 +106,9 @@
     },
     "app/components/date-picker/parse.js": {
       "sha256": "c070ae61a509bc2eab3601276790ac290fc93666c94269a2978740f2aca8cb9b"
+    },
+    "app/components/diagram.js": {
+      "sha256": "4d958e385a60b9693ebdbc19765fd304f6eba087e3458227b93fa69c8cbf3df7"
     },
     "app/components/dialog.js": {
       "sha256": "81103e0d8b908fc495a21f3a503a92c1f01f06a45460fcd4e9f0efe9519a4a33"
@@ -199,6 +202,9 @@
     },
     "app/css/controls-color.css": {
       "sha256": "150bbb11447e82597dfc9225286ea5cbfeb52cc9f0208265423934a61926b5b9"
+    },
+    "app/css/controls-diagram.css": {
+      "sha256": "fab5be1880d5ec4004035474183a4b461ae72232819d67f9aaa7c14f504efa1d"
     },
     "app/css/controls-disclosure.css": {
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
@@ -316,6 +322,321 @@
     },
     "app/vendor/d3-shape/d3-shape.esm.js": {
       "sha256": "fab52e0c0c9b2c80054fdbe65328aa47df64f2879cb985ef7ba525c44f56b8b4"
+    },
+    "app/vendor/mermaid/README.md": {
+      "sha256": "311a414ba5db465de1066e1ea6d88d1286aadeebbeb283eaecfd920d75283a55"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/abnfDiagram-QNN2D4NM.mjs": {
+      "sha256": "8cc0474c098d63399e2909d979cc37eac599d8fe91d291f06825d34c42dbc75f"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/architecture-TIHT7OUA-V6N4J3SY.mjs": {
+      "sha256": "4ac3013dba07e4b82798d7dddda3601d1d98e338dcca6a5c5a5778b0fe6c50ce"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/architectureDiagram-OT7VKSJ7.mjs": {
+      "sha256": "a32f14543226eeeb20d7f4877a1959e6d2e8578ae1ff3ccdb935b48137b62192"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/blockDiagram-54WLDVWM.mjs": {
+      "sha256": "b1e39763cb98f70d9a104bb3c2971f62748353d9a8700957be4ca36bcb8563cd"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/c4Diagram-X2LASM7V.mjs": {
+      "sha256": "6ab7de31018a24845fca48e8a855bb8a213f00ca603de5afbcd60ee189cb0892"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-224SPVON.mjs": {
+      "sha256": "106897ed01950fdb24ea92cbea810b72911f6566d4b2f4c0e684744d0f1370b4"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-2AEHWXPW.mjs": {
+      "sha256": "7746258e13606fce8dc8dde32041da7f3b3492fb1669f006dc647833db25b6d0"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-2SREHG4O.mjs": {
+      "sha256": "632ba06aa573dc5a0f78f15c8fb4ef5245d781057249f7c22ed7f98c1b7d87b2"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-4RFN2BYJ.mjs": {
+      "sha256": "23314130df2cb3093e6f4b5d6e9429a6c9f38f752f608ae9da214d57c478576f"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-5IMINLNL.mjs": {
+      "sha256": "ed3c40c332ee25f9c86e89507f2a6d18edefda66eadfb38ef3aeb59b95dad2b2"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-5VCL7Z4A.mjs": {
+      "sha256": "923319fb47f66b4ec1eda16c8e2b7c86c3126dd30e670772c61fdfd40bd1fed3"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-66DQ2XMT.mjs": {
+      "sha256": "09bd00c04cf0908c651ba73cf22a6aaab2291adfa4ce7ee5f8b835c7619bcf3c"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-6BELYETK.mjs": {
+      "sha256": "1c6ee1bae6d50d9d180b8ae92749d06102129ea24996883c31a005f6b61e5d45"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-6L755F7B.mjs": {
+      "sha256": "0b9a069e0153247af990b2cf2be0dbc045476c3bff9c22f9422fd8f3439db25e"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-7CWYLC5S.mjs": {
+      "sha256": "d6424d8a07495baaf4fc5f0da05daca8e7f0541bb053ca08cfd8dc43ed3d69a0"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-7FYTHRHK.mjs": {
+      "sha256": "d8289e52f9933b146725db036cf8c935df33378aea95d8b37e8232ca7c1efd30"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-A7VWPJGB.mjs": {
+      "sha256": "ba5b5a18fe4b1954330d9de580a751be692d0a89d828b262e938032902f50ec0"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-AQ6EADP3.mjs": {
+      "sha256": "13f83482f9731f6ed320746bf4f69aaaff5e1efdda94f64cd9ea6d9030b868c2"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-AZZRMDJM.mjs": {
+      "sha256": "e5c109a799a86fc58b75bbb2cbdb72a6570c8c29821037d181ebe019db0beab1"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-BI6VK774.mjs": {
+      "sha256": "97caa6db4057b3f102a4aa7f3628a740b72b1b2fb9a0c4a978ddf864a39f31a5"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-D6VWDJW2.mjs": {
+      "sha256": "e7813fbe9401a041c7c35f894c99457de7404e58e5351f3ea6440c526b71bb00"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-DMV4VAQV.mjs": {
+      "sha256": "0ccc30de1d64e92deaf38b6b00c214bb779e09ea961e4521cb26430fe992a13e"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-E5QJAATJ.mjs": {
+      "sha256": "5ea63a7706949a88f363221d082e1b20157240b1706248b100bb0f6ce060882e"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-EQFTRU2I.mjs": {
+      "sha256": "726433c36797f3de029d5bef36c2280e301d8bb817c35d06b4650d7081222cb2"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-FWYVLQTC.mjs": {
+      "sha256": "0ff4679432bf2790874085155cead21924fd47314042584a7bfe4a741de9d893"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-HNC4WDU7.mjs": {
+      "sha256": "edb2b880152a63227abfb2cda85c8951c6ca83689262d1a0af8be5f79af1cf05"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-JQRUD6KW.mjs": {
+      "sha256": "ab31e28cd7a9246443f102d2d34e07740bb9a872d1a6a65deb165f163a641517"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-KRXBNO2N.mjs": {
+      "sha256": "45d2e1a6271e678ca3823e6da3bead7effbc3f4b9f751ed9109c98c4b01af561"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-L5GCOVLC.mjs": {
+      "sha256": "87fc9c74c9711e04eceaf9b2e10d107aac440c92b25198e654c02003838c50bf"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-LAHSG3N2.mjs": {
+      "sha256": "880de71ecb9daf937713d50fde8dd59e6c47e7740363b1c5325ec8e90d55dfce"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-LIEV3EAG.mjs": {
+      "sha256": "e6d431e84c685d0eca811a02f62708a25f9191171d7d384e2521268a46422300"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-LORZLZWG.mjs": {
+      "sha256": "e442d27ddebdb1d5d0f65ec5a13696fbf8d92e958d99c3058e23d824d3669c54"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-NLANEA3F.mjs": {
+      "sha256": "5801b60996da2185fba046d4aa0fe182e9c9d23d98b5c3c8551123effb05b88f"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-NV3KIAZN.mjs": {
+      "sha256": "879f555c3214d46d025211ee3dd4a5bb1270231881293b2ba16693859806de99"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-OIYT25JQ.mjs": {
+      "sha256": "104e929ab1b4bb27bc06b6b4fc4d8044fea9a3e41616135adbd0ac494f1efacf"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-PE7DX7ZZ.mjs": {
+      "sha256": "23a90cf695611fbf9374e44e3687724486e653e618482cbb5d20cd83ea4da0f7"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-Q67WD55A.mjs": {
+      "sha256": "67288f0cece7b95af7cb6e07c51860bd0025aaf94e57192d5b887c83ab66cf65"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-RRFMTAIC.mjs": {
+      "sha256": "57eb88c3f76b7bdca544c02cb4bd19d4e277ad8740137dd99abacc49c588ee7c"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-SATU7PGQ.mjs": {
+      "sha256": "3f5a8d735b17e5566e8526db97931630f3dc023a66393e5bee323078181e88db"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-STOV2HOB.mjs": {
+      "sha256": "b9dcf40a130db7675f59151f77ea069438782074fa847001abcd6bb82b8d9b02"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-SZD42YQK.mjs": {
+      "sha256": "5f5b653e2ad2d2a925bd9b10fcbf3b9e9b643b5f67b543a2458de72b5e344850"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-T5OCTHI4.mjs": {
+      "sha256": "bcf848310d29d090f623a39375c36b19f4c78c0856bddd8a68b3998a729f2fdc"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-TFPGFQPA.mjs": {
+      "sha256": "bedd980a8d969ac2fd0cf65633a48ee76e2a23a4b41f7add4eb7175965cdf2a6"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-TGVD4F4B.mjs": {
+      "sha256": "1c0dcb6d16633abe5274036a5c42bea1c4d0f8e555e3fdd333d1d09d7dbcf251"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-TZUXEDM2.mjs": {
+      "sha256": "2e90f11fbef8a2af7791a6e0e83603e66fda48451d205bf73d4a3411e45c227f"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-UAT7B5JY.mjs": {
+      "sha256": "7f6130fbe2367c45cf18f97e096e1dbd89d97eeae961d3db84199acb477633eb"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-VE5CLXGZ.mjs": {
+      "sha256": "86b0d4f0e161df3400dccac0e4b6e4b2aa5983cf3c2edee3dfa4915f07d6a501"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-VJFVEZTB.mjs": {
+      "sha256": "92784a322b0d08145c6e960c7d4393c2d2e24c24a6acfc528234dfd71d265592"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-VY5UBI4V.mjs": {
+      "sha256": "9b63597072ca997a7b50812a5f4857df16e4ce48b262e9a3553802db3e12dfe3"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-W44A43WB.mjs": {
+      "sha256": "5ea884c347e3c61eae14a29442ea017a28b22734d600dc7bed957b6fd3dbfd8e"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-WJBAP47W.mjs": {
+      "sha256": "8085f24dfc8725939304f3fb08c6205b3fa73a149b2edb2aa39354082d7bae34"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-XNMVGMAZ.mjs": {
+      "sha256": "fada21c58ead432eba08b4e3ceff3a93f69c6effcf8da0e964814fc4a2e2ddbe"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/classDiagram-VPOSVPXH.mjs": {
+      "sha256": "a8e86a4efa33e5586e0a2ca892d8fdce841e702b8d1ad0b5db376c597da2f21c"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/classDiagram-v2-5VFNUXQA.mjs": {
+      "sha256": "a8e86a4efa33e5586e0a2ca892d8fdce841e702b8d1ad0b5db376c597da2f21c"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/cose-bilkent-RZA4XIPR.mjs": {
+      "sha256": "3168d10108921bb3ae573fbd234e0ac9f098e1018be5cacc71a982540203390a"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/cynefin-VYW2F7L2-2VAHYKR6.mjs": {
+      "sha256": "afce7dab0d785151d10d91441beaf531466127a39da9dcbe4af78d3cf5b90cb9"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/cynefinDiagram-TR7LZUCG.mjs": {
+      "sha256": "dd2f1b11edd387b1ef8092f85c7c2bf1d037599302e9b0b3aa2d2a058d2c20ee"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/dagre-K64A6Z3X.mjs": {
+      "sha256": "37059ad4e595124f5c01acc8c4a3e947d1aae65ba13b6f3ac0cc472851f5f583"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-2TLGJV2N.mjs": {
+      "sha256": "2620dc74f497425b10dec50fc5394950f154c4553d3e6744024fcc23a2bced1d"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-JCD7PQ7C.mjs": {
+      "sha256": "b9568d1fc56c3f5feb711cce8fd72f17eb9e057a9a45377045a71e94ed834f99"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-KFBZAVDW.mjs": {
+      "sha256": "28ecdc47084618e53724e347cdb8752f4f2c98df64c68f4b5f23e07003ed8ade"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-L7DVE3PN.mjs": {
+      "sha256": "909d15a0595af3cff1a5a8e0bd961acd2ba61807687ebc7b17a3497a8a95d5a7"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-YP3FGXHI.mjs": {
+      "sha256": "7f53e9a9456182444856e90546ebf456cb4a87c56c5fccba3c6e0f618855bb42"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/ebnfDiagram-DRHRQJWO.mjs": {
+      "sha256": "e6781dbd0bfd1c2bd7ce4845a91d72a41711eb09db11b9f41283b1fa045b04d0"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/erDiagram-SZLJLQMB.mjs": {
+      "sha256": "ab9eb3bc85e34b781edcbf18438a4fb04d5e4fd5a06d6e17b2cf68c655cba802"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/eventmodeling-45OFAUF4-AOUJWSLX.mjs": {
+      "sha256": "d555ca9f11aa3b68df01a7039059bba40496f495a2b69a868cafa093d9d3e4ae"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/flowDiagram-BWE6NHOH.mjs": {
+      "sha256": "5b15abcda20994d677304f8a20885ba05d15f34b86ee5a83e7e876c46234b5a4"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/ganttDiagram-2QTCJSNI.mjs": {
+      "sha256": "3d42a65abe137ab3f7b5496c7307fd2a9f621701eb2f56d4e3f840e1af17ba12"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/gitGraph-TEB2WS4Q-U5VWYIBC.mjs": {
+      "sha256": "e5650c42c15412f8b9b1cf23391af06ace863c4cff567f7e7cdb930adcef4452"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/gitGraphDiagram-VVZAVV5G.mjs": {
+      "sha256": "af49840a3fb6951b001568f652df5918aec59206f8903058dba112fb690c2710"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/info-DKCQHKI2-DX6KST54.mjs": {
+      "sha256": "81f3b2fbcf14edaea2ddc199347e5a6c9d61b9e86d9d51bd436ebc3df9886eb7"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/infoDiagram-FY4PZKRE.mjs": {
+      "sha256": "60e2f5c54df06a066556ef1388767027f5fe60f58e07d5be9ae29bc56dd94920"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/ishikawaDiagram-4JDSWWDM.mjs": {
+      "sha256": "7d90f45026cb1280c5652822f7bb3c4fc7109643f1e64db00baa670fedea9060"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/journeyDiagram-QUS3FAKT.mjs": {
+      "sha256": "76ac7ef329cfe11e7971c6d671f769d5a03158facc42562be4a9570ac63c6be0"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/kanban-definition-D4L7SQKK.mjs": {
+      "sha256": "32d73055f2fddd603626a6fbefce0a2b38860e7b7872513430f3ad4eccb71027"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/katex-C5OPUE3Q.mjs": {
+      "sha256": "66f00e67b71a51efcf8562554ff3cfb7342653b0d6069ebbf7123451daa2e8f3"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/mindmap-definition-66QP5TD6.mjs": {
+      "sha256": "3a9fda10f550bdc27188151dee33540080b7f44601c71b906e95c553f2be39ca"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/packet-7NZHBO7P-5WG45QPS.mjs": {
+      "sha256": "32d837cc69f0d75dedb9c8a90fd197908fe82c46907461bd94197a3c4d2991fd"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/pegDiagram-YKIO5C6U.mjs": {
+      "sha256": "5b3c792dea867c40bea08d01a39ce547d252c6b90f5710c430734bccc1088df3"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/pie-RZYD4A2V-2OCZ2VTD.mjs": {
+      "sha256": "7be075f26467b22a9c9230d78fa8a6aec5f1364003fb19748e63bad346bd2002"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/pieDiagram-YPY3TKG5.mjs": {
+      "sha256": "bab921e9aa5c53bb1ade6da09b5fa4fc22e06b7e2e0be53387e91a8b0300bcee"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/quadrantDiagram-VO5QLCXA.mjs": {
+      "sha256": "5e96b5bd10fa1c295b42ca1d88247feac2fdc47bfa407f2e3b7330b128b6a629"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/radar-I7S5WNFK-EPLSA35B.mjs": {
+      "sha256": "1f579c758a9c08674e38e18a5b1411112838f510117654e8e4a87e395ff26dc7"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-3IZDKUUU-PWFQV6Y6.mjs": {
+      "sha256": "66d82b33cdd8c6dc3f894771e88b380a7658f54acc3dca436385e0497b5baca8"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-abnf-AHOZXSZD-JYYJX3BS.mjs": {
+      "sha256": "b1277bd74b3a88611bfce9f1a1cde5c5ae09f7494e783a7f1e01815014085c26"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-ebnf-EBAXGLYW-RBZ4ONAP.mjs": {
+      "sha256": "6b7b97ef5c73b69b68a4809ea94268bde2e63d672fc77ee56f948e63beb1a31f"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-peg-LSFZ7HO6-KHNPXGPG.mjs": {
+      "sha256": "178487c55bec3ed0a2d314f7ee94785b8d7fd4658da62b390ff8cd826d173cf9"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/railroadDiagram-M77LTMSB.mjs": {
+      "sha256": "60955c6fa4eca979f74c4b2c481340be2ec551da7ecb149169fec47531cb4beb"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/requirementDiagram-RASO5HTO.mjs": {
+      "sha256": "031401a68d05092f5bb9d4be78370d5c923ed5e645c0276be25e70fd6bf52705"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/sankeyDiagram-F32LOJ6L.mjs": {
+      "sha256": "6547e92123d0bd92141f020b23118f9db01d6164244409a81e95326c87f9f1b9"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/sequenceDiagram-URATNSBD.mjs": {
+      "sha256": "4c4320145ba3fa1bcabf35a2c1727751aa1a04eb1562109bf4e180021e79eaaf"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/sizeCapture-5GORAGP4.mjs": {
+      "sha256": "d35e060aabccb4c14e76f544a9925631e0b3dcea95dca128ee0ffe0ae3c803f9"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/stateDiagram-DODFXNG5.mjs": {
+      "sha256": "20192ba1375f8a4514011684bd9eaae84179eda27839b5f855a8e6b5813c3822"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/stateDiagram-v2-JNMM5JRA.mjs": {
+      "sha256": "df796fb6e5f565c9459747fc12f8517681c69bc5d445542b85d4fa924c5e2dd2"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/swimlanes-OSWOYLSK.mjs": {
+      "sha256": "3a55f16fc5f66e97e6bb9796d5e4ec6c11bfaea99f1c7b9e3dd8e72557783a5d"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/swimlanesDiagram-RHGX2RDE.mjs": {
+      "sha256": "3ba8f8856da56301a4245cb8ad4de84ff0b11c479b14592e630813bfa3776c7e"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/timeline-definition-WJXWRH4I.mjs": {
+      "sha256": "057ca125014108b2beb17051dfc4095659ce3659213fabd83da27d0abcfc85f1"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/treeView-QDETBFTQ-EHYTSQNO.mjs": {
+      "sha256": "a2ef50a12f4e175fbb3b667120b93f651aba5410a048d7c89166c65020dad021"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/treemap-6X3UGDF4-CCWCF7EK.mjs": {
+      "sha256": "774b6f3b3618277e4b6945fb7146fbfa55a1db620c4da67bdb447be9fd0de952"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/vennDiagram-K3VCMQLI.mjs": {
+      "sha256": "085712065e78ef0b659a2334b38bd8189fc6d57c4ec84f149b96b6f9d57b3371"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/wardley-OPB4EBWU-6OWERDVT.mjs": {
+      "sha256": "29b7ba6345d13795aad38877a9affcab31b17a8928cb15ab043c09f58a14d6a4"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/wardleyDiagram-XK6FUAWV.mjs": {
+      "sha256": "3235351fd70c2b61bb6a5c9a39348d45ca69546814b7381e434450b8b5115ac2"
+    },
+    "app/vendor/mermaid/chunks/mermaid.esm.min/xychartDiagram-5VRUVLCW.mjs": {
+      "sha256": "7bf49322c642d586ee588758f9c9dc60605040d1182305383ff23dd90f5a3b4a"
+    },
+    "app/vendor/mermaid/mermaid.esm.min.mjs": {
+      "sha256": "028ee006287b85ea6ee0a670f5d9f10e22e8e46e33c7e345fbf1f60d443a5c21"
     },
     "app/vendor/prism/prism-line-numbers.min.js": {
       "sha256": "f5c99feed70b757a4ab0f8bfd80584f773db6694e9e0ce2dab3164fa55a89a35"
@@ -837,10 +1158,10 @@
       "sha256": "7bf8d6c2ce63462b929d50e6c7646748e4a7232c5c68ce790a8778a9697ccd82"
     },
     ".cursor/rules/vendor.mdc": {
-      "sha256": "6c4b4a651c3c8e79433aee7895a02d4ed0817033709643bdcc2b2f73a1f1cc72"
+      "sha256": "fdd604c1062cfb03da9aca9ee9d2609d5924d40192798bda3950dc192f410697"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "45f2fae80e50d92844a65397dd02a5247197c191b25809059d921967b06fba7c"
+      "sha256": "7401e77e2154263b63e8913cf72f33202725c5977cfee82a3464c5686b780d93"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1807,6 +2128,130 @@
         "config"
       ],
       "notes": "Thin mountChart host; pages need an import map for d3-scale / d3-shape when using barY / barX"
+    },
+    "diagram": {
+      "files": [
+        "app/components/diagram.js"
+      ],
+      "css": [
+        "controls-diagram.css"
+      ],
+      "vendor": [
+        "app/vendor/mermaid/"
+      ],
+      "vendorFiles": [
+        "app/vendor/mermaid/README.md",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/abnfDiagram-QNN2D4NM.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/architecture-TIHT7OUA-V6N4J3SY.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/architectureDiagram-OT7VKSJ7.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/blockDiagram-54WLDVWM.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/c4Diagram-X2LASM7V.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-224SPVON.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-2AEHWXPW.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-2SREHG4O.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-4RFN2BYJ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-5IMINLNL.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-5VCL7Z4A.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-66DQ2XMT.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-6BELYETK.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-6L755F7B.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-7CWYLC5S.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-7FYTHRHK.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-A7VWPJGB.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-AQ6EADP3.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-AZZRMDJM.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-BI6VK774.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-D6VWDJW2.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-DMV4VAQV.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-E5QJAATJ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-EQFTRU2I.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-FWYVLQTC.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-HNC4WDU7.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-JQRUD6KW.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-KRXBNO2N.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-L5GCOVLC.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-LAHSG3N2.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-LIEV3EAG.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-LORZLZWG.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-NLANEA3F.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-NV3KIAZN.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-OIYT25JQ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-PE7DX7ZZ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-Q67WD55A.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-RRFMTAIC.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-SATU7PGQ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-STOV2HOB.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-SZD42YQK.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-T5OCTHI4.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-TFPGFQPA.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-TGVD4F4B.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-TZUXEDM2.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-UAT7B5JY.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-VE5CLXGZ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-VJFVEZTB.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-VY5UBI4V.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-W44A43WB.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-WJBAP47W.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/chunk-XNMVGMAZ.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/classDiagram-VPOSVPXH.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/classDiagram-v2-5VFNUXQA.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/cose-bilkent-RZA4XIPR.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/cynefin-VYW2F7L2-2VAHYKR6.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/cynefinDiagram-TR7LZUCG.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/dagre-K64A6Z3X.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-2TLGJV2N.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-JCD7PQ7C.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-KFBZAVDW.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-L7DVE3PN.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/diagram-YP3FGXHI.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/ebnfDiagram-DRHRQJWO.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/erDiagram-SZLJLQMB.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/eventmodeling-45OFAUF4-AOUJWSLX.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/flowDiagram-BWE6NHOH.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/ganttDiagram-2QTCJSNI.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/gitGraph-TEB2WS4Q-U5VWYIBC.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/gitGraphDiagram-VVZAVV5G.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/info-DKCQHKI2-DX6KST54.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/infoDiagram-FY4PZKRE.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/ishikawaDiagram-4JDSWWDM.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/journeyDiagram-QUS3FAKT.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/kanban-definition-D4L7SQKK.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/katex-C5OPUE3Q.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/mindmap-definition-66QP5TD6.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/packet-7NZHBO7P-5WG45QPS.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/pegDiagram-YKIO5C6U.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/pie-RZYD4A2V-2OCZ2VTD.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/pieDiagram-YPY3TKG5.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/quadrantDiagram-VO5QLCXA.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/radar-I7S5WNFK-EPLSA35B.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-3IZDKUUU-PWFQV6Y6.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-abnf-AHOZXSZD-JYYJX3BS.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-ebnf-EBAXGLYW-RBZ4ONAP.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/railroad-peg-LSFZ7HO6-KHNPXGPG.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/railroadDiagram-M77LTMSB.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/requirementDiagram-RASO5HTO.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/sankeyDiagram-F32LOJ6L.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/sequenceDiagram-URATNSBD.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/sizeCapture-5GORAGP4.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/stateDiagram-DODFXNG5.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/stateDiagram-v2-JNMM5JRA.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/swimlanes-OSWOYLSK.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/swimlanesDiagram-RHGX2RDE.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/timeline-definition-WJXWRH4I.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/treeView-QDETBFTQ-EHYTSQNO.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/treemap-6X3UGDF4-CCWCF7EK.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/vennDiagram-K3VCMQLI.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/wardley-OPB4EBWU-6OWERDVT.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/wardleyDiagram-XK6FUAWV.mjs",
+        "app/vendor/mermaid/chunks/mermaid.esm.min/xychartDiagram-5VRUVLCW.mjs",
+        "app/vendor/mermaid/mermaid.esm.min.mjs"
+      ],
+      "icons": [],
+      "infra": [
+        "config",
+        "dom"
+      ],
+      "notes": "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark"
     }
   },
   "agent": {
@@ -2012,6 +2457,9 @@
     "controls-charts.css": [
       "charts"
     ],
+    "controls-diagram.css": [
+      "diagram"
+    ],
     "rich-text-editor.css": [
       "rich-text-editor"
     ],
@@ -2037,6 +2485,7 @@
     "controls-image.css",
     "controls-color.css",
     "controls-charts.css",
+    "controls-diagram.css",
     "overlays.css",
     "tutorial.css",
     "rich-text-editor.css",

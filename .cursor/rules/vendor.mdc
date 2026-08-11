@@ -35,3 +35,4 @@ If a second component needs the same vendor API, move the accessors to `app/util
 - **Prism** — `code-block.js` reads `window.Prism` directly
 - **Toast UI** — `rich-text-editor.js` owns `window.toastui` access and `TOASTUI_EDITOR_VERSION`
 - **TanStack Charts** (when present) — `charts.js` imports from `app/vendor/tanstack-charts/` and pins versions there
+- **Mermaid** (when present) — `diagram.js` imports from `app/vendor/mermaid/` and pins `MERMAID_VERSION` there

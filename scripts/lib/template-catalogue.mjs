@@ -42,6 +42,7 @@ export const CSS_INDEX_ORDER = [
   "controls-image.css",
   "controls-color.css",
   "controls-charts.css",
+  "controls-diagram.css",
   "overlays.css",
   "tutorial.css",
   "rich-text-editor.css",
@@ -440,6 +441,15 @@ export const COMPONENTS = {
     notes:
       "Thin mountChart host; pages need an import map for d3-scale / d3-shape when using barY / barX",
   },
+  diagram: {
+    files: ["app/components/diagram.js"],
+    css: ["controls-diagram.css"],
+    vendor: ["app/vendor/mermaid/"],
+    icons: [],
+    infra: ["config", "dom"],
+    notes:
+      "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */
@@ -492,6 +502,7 @@ export const CSS_PARTIAL_FEATURES = {
   "controls-image.css": ["image-preview"],
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],
+  "controls-diagram.css": ["diagram"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],

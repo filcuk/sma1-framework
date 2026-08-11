@@ -137,6 +137,7 @@ The demo is for exploring components — not required for your app.
 | Prism vendor + `app/prism.css` (only if you do not use code blocks) | `app/vendor/prism/`, `app/prism.css` |
 | Toast UI vendor + `app/toastui-editor.css` (only if you do not use the rich text editor) | `app/components/rich-text-editor.js`, `app/toastui-editor.css`, `app/css/rich-text-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` |
 | TanStack Charts vendor (only if you do not use charts) | `app/components/charts.js`, `app/css/controls-charts.css`, `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` |
+| Mermaid vendor (only if you do not use diagrams) | `app/components/diagram.js`, `app/css/controls-diagram.css`, `app/vendor/mermaid/` |
 
 If you **remove** `demo.html`, update [`.github/workflows/pages.yml`](.github/workflows/pages.yml) — drop `demo.html` from the `cp` line:
 
@@ -153,6 +154,7 @@ All modules under `app/` are small and tree-shaken by the browser (only imported
 - `app/code-block.js`, `app/expandable-surface.js`, `app/vendor/prism/` — no syntax-highlighted code
 - `app/components/rich-text-editor.js`, `app/toastui-editor.css`, `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/` — no rich text editor
 - `app/components/charts.js`, `app/css/controls-charts.css`, `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` — no charts
+- `app/components/diagram.js`, `app/css/controls-diagram.css`, `app/vendor/mermaid/` — no diagrams
 - `app/combo.js`, `app/dropdown.js`, `app/dropdown-toggle.js` — no menus
 - `app/dialog.js` — no modals
 
@@ -391,6 +393,7 @@ app/
     controls-file.css     # File dropzone, file download
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
+    controls-diagram.css  # Mermaid diagram host
     overlays.css        # Banners, tooltips, modals
     rich-text-editor.css # Rich text editor layout + Toast UI token overrides
     table.css            # Data tables
@@ -420,7 +423,7 @@ app/
     date-picker/        # parse.js, calendar.js, index.js
   prism.css             # Prism token colours (optional)
   toastui-editor.css    # Vendored Toast UI base CSS (optional)
-  vendor/               # Prism, Toast UI, TanStack Charts, d3-scale, d3-shape (optional)
+  vendor/               # Prism, Toast UI, TanStack Charts, Mermaid, d3-scale, d3-shape (optional)
   res/                  # App logo SVGs
 ```
 
@@ -497,6 +500,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Code highlighting** | Optional [Prism.js](https://prismjs.com/) via [`app/code-block.js`](app/code-block.js) and [`app/vendor/prism/`](app/vendor/prism/). Load vendor scripts on the page (see Code blocks in **Using components**). |
 | **Rich text editor** | Markdown + WYSIWYG via [Toast UI Editor](https://github.com/nhn/tui.editor); table merged-cell plugin; base64 image paste. [`app/components/rich-text-editor.js`](app/components/rich-text-editor.js). Large vendor bundle (~500KB+). |
 | **Charts** | Thin SVG host around [TanStack Charts](https://tanstack.com/charts/latest) (`initChart` / `mountChart`). Forks author `defineChart` marks/scales. Vendored ESM + import map for `d3-scale` / `d3-shape`. [`app/components/charts.js`](app/components/charts.js). Pre-alpha upstream. |
+| **Diagrams** | Thin Mermaid host (`initDiagram` / `initDiagrams`) for text → SVG diagrams (flowchart, sequence, …). Vendored ESM + chunks under `app/vendor/mermaid/`. Theme follows light/dark. [`app/components/diagram.js`](app/components/diagram.js). |
 
 For live examples of each component, open [`demo.html`](demo.html) on a local server or your deployed site.
 
@@ -2768,6 +2772,44 @@ initCharts(document, { "my-chart": { definition } });
 ```
 
 Pinned versions live as `TANSTACK_CHARTS_VERSION`, `D3_SCALE_VERSION`, and `D3_SHAPE_VERSION` in [`app/components/charts.js`](app/components/charts.js). See vendor READMEs under `app/vendor/tanstack-charts/`, `d3-scale/`, and `d3-shape/` for refresh steps.
+
+### Diagrams (Mermaid)
+
+Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put diagram source in a child `.diagram-source`, or pass `source` to `initDiagram` / `update`. The host re-renders on theme change (`default` / `dark`). Diagram-type chunks lazy-load from `app/vendor/mermaid/chunks/` (needs a local server or GitHub Pages).
+
+**Markup:**
+
+```html
+<div class="diagram" id="my-diagram" aria-label="Example sequence">
+  <pre class="diagram-source">sequenceDiagram
+  participant User
+  participant App
+  User->>App: Open
+  App-->>User: Done</pre>
+</div>
+```
+
+| Attribute / option | Meaning | Default |
+| ------------------ | ------- | ------- |
+| `.diagram-source` text or `source` | Mermaid definition | required |
+| `aria-label` / `ariaLabel` | Accessible name | `"Diagram"` |
+
+```javascript
+import { initDiagram, initDiagrams } from "./components/diagram.js";
+
+const diagram = initDiagram(document.getElementById("my-diagram"));
+// or:
+initDiagrams(document);
+// or with JS source / overrides by id:
+initDiagrams(document, {
+  "my-diagram": { source: "flowchart TD\n  A-->B", ariaLabel: "Flow" },
+});
+
+diagram?.update({ source: "sequenceDiagram\n  A->>B: Hi" });
+diagram?.destroy();
+```
+
+Pinned version: `MERMAID_VERSION` in [`app/components/diagram.js`](app/components/diagram.js). See [`app/vendor/mermaid/README.md`](app/vendor/mermaid/README.md) for refresh steps. Math in labels uses Mermaid’s built-in KaTeX (`$$…$$`); there is no separate page KaTeX component.
 
 ### Code highlighting (Prism)
 
