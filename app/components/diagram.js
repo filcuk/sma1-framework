@@ -12,6 +12,7 @@
  *   2. child `.diagram-source` text content
  *
  * Callers may pass `source` to `initDiagram` / `update` for dynamic diagrams.
+ * `update({ source: "" })` clears the canvas and shows an empty-source error.
  * The host keeps `.diagram-source` in the DOM (hidden) when present so markup
  * remains the source of truth for static demos.
  *
@@ -30,6 +31,8 @@ import { setHidden } from "../utils/dom.js";
 
 /** @type {const} */
 export const MERMAID_VERSION = "11.16.1";
+
+export const EMPTY_DIAGRAM_SOURCE_MESSAGE = "Diagram source is empty";
 
 const DEFAULT_ARIA_LABEL = "Diagram";
 const SOURCE_SELECTOR = ".diagram-source";
@@ -63,7 +66,7 @@ function ensureMermaidConfig(theme = resolveMermaidTheme()) {
  * @param {unknown} ariaLabelOption
  * @returns {string}
  */
-function resolveAriaLabel(el, ariaLabelOption) {
+export function resolveDiagramAriaLabel(el, ariaLabelOption) {
   if (typeof ariaLabelOption === "string" && ariaLabelOption.trim()) {
     return ariaLabelOption.trim();
   }
@@ -77,7 +80,7 @@ function resolveAriaLabel(el, ariaLabelOption) {
  * @param {unknown} sourceOption
  * @returns {string}
  */
-function resolveSource(el, sourceOption) {
+export function resolveDiagramSource(el, sourceOption) {
   if (typeof sourceOption === "string" && sourceOption.trim()) {
     return sourceOption.trim();
   }
@@ -135,13 +138,13 @@ export function initDiagram(el, options = {}) {
   if (!el.classList.contains("diagram")) return null;
   if (el.dataset.diagramInit !== undefined) return null;
 
-  const initialSource = resolveSource(el, options.source);
+  const initialSource = resolveDiagramSource(el, options.source);
   if (!initialSource) return null;
 
   el.dataset.diagramInit = "";
 
   let currentSource = initialSource;
-  let currentAriaLabel = resolveAriaLabel(el, options.ariaLabel);
+  let currentAriaLabel = resolveDiagramAriaLabel(el, options.ariaLabel);
   el.setAttribute("aria-label", currentAriaLabel);
 
   const { canvas, error } = ensureChrome(el);
@@ -152,10 +155,22 @@ export function initDiagram(el, options = {}) {
     ensureMermaidConfig();
   }
 
+  function showEmptySource() {
+    renderGeneration += 1;
+    canvas.innerHTML = "";
+    error.textContent = EMPTY_DIAGRAM_SOURCE_MESSAGE;
+    setHidden(error, false);
+  }
+
   /**
    * @returns {Promise<void>}
    */
   async function renderCurrent() {
+    if (!currentSource) {
+      showEmptySource();
+      return;
+    }
+
     const generation = ++renderGeneration;
     const theme = resolveMermaidTheme();
     ensureMermaidConfig(theme);
@@ -198,12 +213,16 @@ export function initDiagram(el, options = {}) {
     update(partial = {}) {
       if (destroyed) return;
       if (partial.source !== undefined) {
-        const next = typeof partial.source === "string" ? partial.source.trim() : "";
-        if (next) currentSource = next;
+        currentSource =
+          typeof partial.source === "string" ? partial.source.trim() : "";
       }
       if (partial.ariaLabel !== undefined) {
-        currentAriaLabel = resolveAriaLabel(el, partial.ariaLabel);
+        currentAriaLabel = resolveDiagramAriaLabel(el, partial.ariaLabel);
         el.setAttribute("aria-label", currentAriaLabel);
+      }
+      if (!currentSource) {
+        showEmptySource();
+        return;
       }
       void renderCurrent();
     },

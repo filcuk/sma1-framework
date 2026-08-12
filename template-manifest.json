@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-12T16:41:33.780Z",
+  "generatedAt": "2026-08-12T16:43:42.418Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -108,7 +108,7 @@
       "sha256": "c070ae61a509bc2eab3601276790ac290fc93666c94269a2978740f2aca8cb9b"
     },
     "app/components/diagram.js": {
-      "sha256": "4d958e385a60b9693ebdbc19765fd304f6eba087e3458227b93fa69c8cbf3df7"
+      "sha256": "cd325876fb0d5d7560080386e822cd117321204f1f28597d9e1cec91efa1410b"
     },
     "app/components/dialog.js": {
       "sha256": "81103e0d8b908fc495a21f3a503a92c1f01f06a45460fcd4e9f0efe9519a4a33"
@@ -327,7 +327,7 @@
       "sha256": "fab52e0c0c9b2c80054fdbe65328aa47df64f2879cb985ef7ba525c44f56b8b4"
     },
     "app/vendor/mermaid/README.md": {
-      "sha256": "311a414ba5db465de1066e1ea6d88d1286aadeebbeb283eaecfd920d75283a55"
+      "sha256": "0b6e7babb5842cc790f4ef37c584d767659ffdce8f138114927fa21dd9096246"
     },
     "app/vendor/mermaid/chunks/mermaid.esm.min/abnfDiagram-QNN2D4NM.mjs": {
       "sha256": "8cc0474c098d63399e2909d979cc37eac599d8fe91d291f06825d34c42dbc75f"

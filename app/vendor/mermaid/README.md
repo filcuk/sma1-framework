@@ -18,4 +18,12 @@ npm pack mermaid@11.16.1
 # omit *.map and *.d.ts
 ```
 
+## Trimming
+
+- Prefer removing this whole directory with the diagram component via **finalize-app** when unused.
+- At runtime Mermaid only fetches diagram-type chunks that are needed.
+- Advanced: deleting unused `*Diagram*.mjs` / `*-definition-*.mjs` files shrinks the
+  checkout but those diagram types will fail to load. Do not delete shared
+  `chunk-*.mjs` files.
+
 See `app/components/diagram.js` for the version constant and host API.

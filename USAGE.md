@@ -2782,7 +2782,7 @@ Pinned versions live as `TANSTACK_CHARTS_VERSION`, `D3_SCALE_VERSION`, and `D3_S
 
 ### Diagrams (Mermaid)
 
-Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put diagram source in a child `.diagram-source`, or pass `source` to `initDiagram` / `update`. The host re-renders on theme change (`default` / `dark`). Diagram-type chunks lazy-load from `app/vendor/mermaid/chunks/` (needs a local server or GitHub Pages).
+Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put diagram source in a child `.diagram-source`, or pass `source` to `initDiagram` / `update`. The host re-renders on theme change (`default` / `dark`). Diagram-type chunks **lazy-load at runtime** from `app/vendor/mermaid/chunks/` (needs a local server or GitHub Pages) — unused diagram types are not fetched until referenced.
 
 **Markup:**
 
@@ -2798,7 +2798,7 @@ Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put
 
 | Attribute / option | Meaning | Default |
 | ------------------ | ------- | ------- |
-| `.diagram-source` text or `source` | Mermaid definition | required |
+| `.diagram-source` text or `source` | Mermaid definition | required on init |
 | `aria-label` / `ariaLabel` | Accessible name | `"Diagram"` |
 
 ```javascript
@@ -2813,10 +2813,13 @@ initDiagrams(document, {
 });
 
 diagram?.update({ source: "sequenceDiagram\n  A->>B: Hi" });
+diagram?.update({ source: "" }); // clears canvas; shows “Diagram source is empty”
 diagram?.destroy();
 ```
 
-Pinned version: `MERMAID_VERSION` in [`app/components/diagram.js`](app/components/diagram.js). See [`app/vendor/mermaid/README.md`](app/vendor/mermaid/README.md) for refresh steps. Math in labels uses Mermaid’s built-in KaTeX (`$$…$$`); there is no separate page KaTeX component.
+Pinned version: `MERMAID_VERSION` in [`app/components/diagram.js`](app/components/diagram.js). See [`app/vendor/mermaid/README.md`](app/vendor/mermaid/README.md) for refresh steps and how to shrink the vendor tree. Math in labels uses Mermaid’s built-in KaTeX (`$$…$$`); there is no separate page KaTeX component.
+
+**Trimming:** Prefer removing the whole component + `app/vendor/mermaid/` via **finalize-app** when the fork does not use diagrams. Mermaid already lazy-loads diagram-type chunks, so unused types do not download at runtime. To shrink the **repo** further you may delete unused `*Diagram*.mjs` / `*-definition-*.mjs` chunks under `chunks/mermaid.esm.min/` — those diagram types will then fail to load. Do **not** prune shared `chunk-*.mjs` files.
 
 ### Code highlighting (Prism)
 
