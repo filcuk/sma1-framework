@@ -742,6 +742,7 @@ const popover = initPopover({
   position: "auto", // auto | top | bottom | left | right
   dismissible: true, // close button + Escape
   closeOnOutsideClick: true, // defaults to dismissible
+  trapFocus: true, // default; set false (or call setTrapFocus) to allow Tab outside
   actions: [
     {
       label: "Got it",
@@ -752,8 +753,10 @@ const popover = initPopover({
 });
 
 popover.open();
+// Initial focus prefers the primary action, then any footer action, then Close.
 // popover.update({ title, body, position, actions })
 // popover.setAnchor(otherEl)
+// popover.setTrapFocus(false)
 // popover.close() / popover.destroy()
 ```
 
@@ -803,7 +806,7 @@ tour?.start(); // or rely on startTriggers
 | `target` | Element to spotlight; omit for a centred intro/outro card |
 | `title` / `body` | Popover content (`body` may be a string or a DOM node) |
 | `position` | Popover side (`auto` preferred) |
-| `interactive` | When true, the target stays clickable (page is not `inert`) |
+| `interactive` | When true, the target stays clickable (page is not `inert`) and Tab is not trapped in the step popover |
 | `advanceOn` | `"click"` — advance when the interactive target is clicked |
 | `padding` | Spotlight padding around the target (px) |
 | `scroll` | Scroll the target into view (default `true`) |
