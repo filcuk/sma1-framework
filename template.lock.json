@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "templateVersion": "0.10.0",
+  "templateVersion": "0.11.0",
   "source": "filcuk/microapp-template",
   "components": ["*"],
   "skills": ["*"]

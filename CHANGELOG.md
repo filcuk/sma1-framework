@@ -8,6 +8,8 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-08-12
+
 ### Added
 
 - Diagrams (`initDiagram` / `initDiagrams`) — thin Mermaid (`mermaid@11.16.1`) text→SVG host; vendored ESM entry + chunks under `app/vendor/mermaid/`; light/dark theme re-render; empty `update({ source: "" })` clears the canvas; Specialised demo sequence beside the bar chart.
@@ -153,7 +155,8 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 - Accordion, date/time picker, combobox.
 - Radio and related form control polish; banner lifetime / expire indicator.
 
-[Unreleased]: https://github.com/filcuk/microapp-template/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/filcuk/microapp-template/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/filcuk/microapp-template/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/filcuk/microapp-template/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/filcuk/microapp-template/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/filcuk/microapp-template/compare/v0.7.0...v0.8.0
