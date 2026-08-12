@@ -1943,6 +1943,7 @@ colorSet?.setValue("#2196F3");
 colorSet?.setSetId("tailwind");
 
 initColorSets(document);
+// Skips hosts that are already initialised (e.g. nested under colour input / picker).
 
 // Custom palette (optional — besides the built-in modules):
 registerColorSet({
@@ -2001,6 +2002,7 @@ picker?.openColorSet();
 picker?.open();
 
 initColorPickers(document);
+// Skips hosts that are already initialised (e.g. nested under colour input).
 ```
 
 `data-color-picker-embedded`, `data-color-picker-default`, `data-color-picker-alpha`, `data-color-picker-format`, and `data-color-picker-color-set` mirror the JS options. Escape closes the colour-set panel first (when open), then the picker popup.

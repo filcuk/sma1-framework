@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-12T15:56:11.886Z",
+  "generatedAt": "2026-08-12T16:40:27.006Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -54,13 +54,13 @@
       "sha256": "f3838ca01e41d8ecf985bb8fec35c531ee69207636eb8e0f911c92fa9847ca6d"
     },
     "app/components/color-picker/index.js": {
-      "sha256": "a9a6fc022f810fb07866c175ce4246e1d5fee40b6c8e46344d4e305c5238d4e8"
+      "sha256": "4256c1e52ddffcf3ccc8ceaf3c267faa1e29ac33d82d09787d001dd9f63140a7"
     },
     "app/components/color-picker/panel.js": {
       "sha256": "dfaa5f077af2acd6d7fcf10e52c15cf64a15d959a9e25c7851518bbfbf913a64"
     },
     "app/components/color-set/index.js": {
-      "sha256": "4abff48f1162ca4be39c3d2ad3ba78587948023a8200404619f85518e7e00f71"
+      "sha256": "ed2af1221b24498962a5a6ded7e9808bba020445cefe2142fa3bcef7f96359dc"
     },
     "app/components/color-set/panel.js": {
       "sha256": "2c912d2a27176c7a95ec2b8aab69a3a93cacca3a77093082c80dce007b58e845"

@@ -90,16 +90,14 @@ export function initColorPicker(
     onInput,
   } = {}
 ) {
-  if (!pickerEl) return null;
+  if (!(pickerEl instanceof HTMLElement)) return null;
+  if (pickerEl.dataset.colorPickerInit !== undefined) return null;
 
   const allowAlpha = resolveAlpha(pickerEl, alpha);
   const isEmbedded = resolveEmbedded(pickerEl, embedded);
   const enableColorSet = resolveColorSet(pickerEl, colorSet);
   const colorSetOptions =
     colorSet && typeof colorSet === "object" && !Array.isArray(colorSet) ? colorSet : {};
-
-  pickerEl.classList.toggle("color-picker--embedded", isEmbedded);
-  pickerEl.classList.toggle("color-picker--alpha", allowAlpha);
 
   const trigger = pickerEl.querySelector(".color-picker-trigger");
   const popup = pickerEl.querySelector(".color-picker-popup");
@@ -116,6 +114,10 @@ export function initColorPicker(
   if (!panelEl) return null;
   if (!isEmbedded && (!trigger || !popup || !shell)) return null;
   if (isEmbedded && !shell) return null;
+
+  pickerEl.dataset.colorPickerInit = "";
+  pickerEl.classList.toggle("color-picker--embedded", isEmbedded);
+  pickerEl.classList.toggle("color-picker--alpha", allowAlpha);
 
   let currentFormat = normalizeFormat(
     format ?? pickerEl.dataset.colorPickerFormat ?? "hsv"
@@ -376,6 +378,7 @@ export function initColorPicker(
       colorSetApi?.destroy();
       panelApi?.destroy();
       close();
+      delete pickerEl.dataset.colorPickerInit;
     },
   };
 }
