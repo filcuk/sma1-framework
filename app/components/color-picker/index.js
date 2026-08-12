@@ -36,11 +36,13 @@ import { parseBooleanAttr, setHidden } from "../../utils/dom.js";
 import { onDocumentClickOutside, onDocumentEscape } from "../../utils/document-listeners.js";
 import { initColorSet } from "../color-set/index.js";
 import {
+  DEFAULT_PICKER_RGBA,
   FORMATS,
   hexFromRgba,
   mountColorPickerPanel,
   normalizeFormat,
   rgbaFromHex,
+  rgbaFromHexOrDefault,
 } from "./panel.js";
 
 function resolveEmbedded(pickerEl, embeddedOption) {
@@ -118,7 +120,7 @@ export function initColorPicker(
   let currentFormat = normalizeFormat(
     format ?? pickerEl.dataset.colorPickerFormat ?? "hsv"
   );
-  let rgba = rgbaFromHex(
+  let rgba = rgbaFromHexOrDefault(
     defaultValue ?? pickerEl.dataset.colorPickerDefault ?? "#0969DA",
     { alpha: allowAlpha }
   );
@@ -228,7 +230,9 @@ export function initColorPicker(
       ...colorSetOptions,
       onSelect: ({ value }) => {
         if (!value) return;
-        rgba = rgbaFromHex(value, { alpha: allowAlpha });
+        const next = rgbaFromHex(value, { alpha: allowAlpha });
+        if (!next) return;
+        rgba = next;
         panelApi?.update({ rgba });
         const payload = buildPayload("color-set");
         onInput?.(payload);
@@ -386,4 +390,11 @@ export function initColorPickers(root = document) {
   return instances;
 }
 
-export { FORMATS, normalizeFormat, hexFromRgba, rgbaFromHex };
+export {
+  FORMATS,
+  normalizeFormat,
+  hexFromRgba,
+  rgbaFromHex,
+  rgbaFromHexOrDefault,
+  DEFAULT_PICKER_RGBA,
+};

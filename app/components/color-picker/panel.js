@@ -36,21 +36,44 @@ export function normalizeFormat(raw) {
     : "hsv";
 }
 
+/** Fallback when a default hex is missing or invalid. */
+export const DEFAULT_PICKER_RGBA = /** @type {const} */ ({
+  r: 9,
+  g: 105,
+  b: 218,
+  a: 1,
+});
+
 /**
  * @param {string | null | undefined} hex
  * @param {{ alpha?: boolean }} [options]
- * @returns {Rgba}
+ * @returns {Rgba | null}
  */
 export function rgbaFromHex(hex, { alpha = false } = {}) {
-  const parsed = parseHexColor(hex ?? "#0969DA", { alpha: true }) ?? "#0969DAFF";
+  const parsed = parseHexColor(hex, { alpha: true });
+  if (!parsed) return null;
   const rgb = hexToRgb(parsed);
-  if (!rgb) return { r: 9, g: 105, b: 218, a: 1 };
+  if (!rgb) return null;
   return {
     r: rgb.r,
     g: rgb.g,
     b: rgb.b,
     a: alpha ? rgb.a : 1,
   };
+}
+
+/**
+ * @param {string | null | undefined} hex
+ * @param {{ alpha?: boolean }} [options]
+ * @returns {Rgba}
+ */
+export function rgbaFromHexOrDefault(hex, { alpha = false } = {}) {
+  return (
+    rgbaFromHex(hex, { alpha }) ?? {
+      ...DEFAULT_PICKER_RGBA,
+      a: alpha ? DEFAULT_PICKER_RGBA.a : 1,
+    }
+  );
 }
 
 /**
@@ -190,7 +213,8 @@ export function mountColorPickerPanel(
     hexInput.removeAttribute("aria-invalid");
     const parsed = parseHexColor(raw, { alpha });
     if (!parsed) return;
-    emit(rgbaFromHex(parsed, { alpha }), "hex");
+    const next = rgbaFromHex(parsed, { alpha });
+    if (next) emit(next, "hex");
   });
   hexInput.addEventListener("change", () => {
     const parsed = parseHexColor(hexInput.value, { alpha });
@@ -200,7 +224,8 @@ export function mountColorPickerPanel(
       hexInput.removeAttribute("aria-invalid");
       return;
     }
-    emit(rgbaFromHex(parsed, { alpha }), "hex");
+    const next = rgbaFromHex(parsed, { alpha });
+    if (next) emit(next, "hex");
   });
   hexInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -331,6 +356,96 @@ export function mountColorPickerPanel(
     });
   }
 
+  /**
+   * @param {"hsl" | "hsv"} mode
+   * @param {number} saturation 0–100
+   * @param {number} vertical 0–100 (lightness for HSL, value for HSV)
+   */
+  function applyPlaneChannels(mode, saturation, vertical) {
+    const s = clamp(saturation, 0, 100);
+    const vOrL = clamp(vertical, 0, 100);
+    if (mode === "hsl") {
+      hslState = { h: hslState.h, s, l: vOrL };
+      const next = hslToRgb(hslState);
+      hsvState = rgbToHsv(next);
+      if (hsvState.v <= 0) {
+        hsvState.h = hslState.h;
+        hsvState.s = hslState.s;
+      } else if (hsvState.s <= 0) {
+        hsvState.h = hslState.h;
+      }
+      emit({ ...next, a: rgba.a }, "plane");
+      return;
+    }
+    hsvState = { h: hsvState.h, s, v: vOrL };
+    const next = hsvToRgb(hsvState);
+    hslState = rgbToHsl(next);
+    if (hslState.l <= 0 || hslState.l >= 100) {
+      hslState.h = hsvState.h;
+      hslState.s = hsvState.s;
+    } else if (hslState.s <= 0) {
+      hslState.h = hsvState.h;
+    }
+    emit({ ...next, a: rgba.a }, "plane");
+  }
+
+  /**
+   * @param {HTMLElement} planeEl
+   * @param {"hsl" | "hsv"} mode
+   */
+  function syncPlaneAria(planeEl, mode) {
+    const s = Math.round(mode === "hsl" ? hslState.s : hsvState.s);
+    const vertical = Math.round(mode === "hsl" ? hslState.l : hsvState.v);
+    const verticalLabel = mode === "hsl" ? "lightness" : "value";
+    planeEl.setAttribute("aria-valuemin", "0");
+    planeEl.setAttribute("aria-valuemax", "100");
+    planeEl.setAttribute("aria-valuenow", String(s));
+    planeEl.setAttribute(
+      "aria-valuetext",
+      `Saturation ${s}, ${verticalLabel} ${vertical}`
+    );
+  }
+
+  /**
+   * @param {HTMLElement} planeEl
+   * @param {"hsl" | "hsv"} mode
+   */
+  function bindPlaneKeyboard(planeEl, mode) {
+    planeEl.addEventListener("keydown", (event) => {
+      const step = event.shiftKey ? 10 : 1;
+      const s = mode === "hsl" ? hslState.s : hsvState.s;
+      const vertical = mode === "hsl" ? hslState.l : hsvState.v;
+      let nextS = s;
+      let nextVertical = vertical;
+      let handled = true;
+      switch (event.key) {
+        case "ArrowLeft":
+          nextS = s - step;
+          break;
+        case "ArrowRight":
+          nextS = s + step;
+          break;
+        case "ArrowUp":
+          nextVertical = vertical + step;
+          break;
+        case "ArrowDown":
+          nextVertical = vertical - step;
+          break;
+        case "Home":
+          nextS = 0;
+          break;
+        case "End":
+          nextS = 100;
+          break;
+        default:
+          handled = false;
+      }
+      if (!handled) return;
+      event.preventDefault();
+      applyPlaneChannels(mode, nextS, nextVertical);
+    });
+  }
+
   function syncPreview() {
     preview.style.setProperty("--color-picker-preview", hexFromRgba(rgba, { alpha: true }));
   }
@@ -375,6 +490,8 @@ export function mountColorPickerPanel(
         "aria-label",
         mode === "hsl" ? "Saturation and lightness" : "Saturation and value"
       );
+      plane.setAttribute("aria-valuemin", "0");
+      plane.setAttribute("aria-valuemax", "100");
 
       const thumb = document.createElement("span");
       thumb.className = "color-picker-thumb";
@@ -385,38 +502,9 @@ export function mountColorPickerPanel(
         const rect = plane.getBoundingClientRect();
         const x = clamp((event.clientX - rect.left) / rect.width, 0, 1);
         const y = clamp((event.clientY - rect.top) / rect.height, 0, 1);
-        if (mode === "hsl") {
-          hslState = {
-            h: hslState.h,
-            s: x * 100,
-            l: (1 - y) * 100,
-          };
-          const next = hslToRgb(hslState);
-          hsvState = rgbToHsv(next);
-          if (hsvState.v <= 0) {
-            hsvState.h = hslState.h;
-            hsvState.s = hslState.s;
-          } else if (hsvState.s <= 0) {
-            hsvState.h = hslState.h;
-          }
-          emit({ ...next, a: rgba.a }, "plane");
-        } else {
-          hsvState = {
-            h: hsvState.h,
-            s: x * 100,
-            v: (1 - y) * 100,
-          };
-          const next = hsvToRgb(hsvState);
-          hslState = rgbToHsl(next);
-          if (hslState.l <= 0 || hslState.l >= 100) {
-            hslState.h = hsvState.h;
-            hslState.s = hsvState.s;
-          } else if (hslState.s <= 0) {
-            hslState.h = hsvState.h;
-          }
-          emit({ ...next, a: rgba.a }, "plane");
-        }
+        applyPlaneChannels(mode, x * 100, (1 - y) * 100);
       });
+      bindPlaneKeyboard(plane, mode);
 
       const hueSlider = document.createElement("input");
       hueSlider.type = "range";
@@ -460,6 +548,7 @@ export function mountColorPickerPanel(
       thumb.style.left = `${hsvState.s}%`;
       thumb.style.top = `${100 - hsvState.v}%`;
     }
+    syncPlaneAria(plane, mode);
     if (hueSlider instanceof HTMLInputElement && document.activeElement !== hueSlider) {
       hueSlider.value = String(Math.round(hue));
     }
