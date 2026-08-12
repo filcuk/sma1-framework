@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-12T16:40:27.006Z",
+  "generatedAt": "2026-08-12T16:41:33.780Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -27,7 +27,7 @@
   },
   "files": {
     "app/components/about-dialog.js": {
-      "sha256": "d58b2ea2afa64379ce05f2e2085883f41aff4dfce853d966a214db2b67fb1db4"
+      "sha256": "d3f2bfe947f8083a890459b1b5edda62790e6650af6c7e34f645b0b635211193"
     },
     "app/components/accordion.js": {
       "sha256": "e65229543af29d705e262cabc0a595350d62fec0c2f50e67d158d0c3a540059d"

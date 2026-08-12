@@ -17,7 +17,7 @@
  * Built on `initDialog` (focus trap, Escape, backdrop, Enter default).
  */
 
-import { setHidden } from "../utils/dom.js";
+import { getFocusableElements, setHidden } from "../utils/dom.js";
 import { initDialog } from "./dialog.js";
 
 /**
@@ -29,6 +29,31 @@ import { initDialog } from "./dialog.js";
  */
 
 /**
+ * Prefer the final CTA when visible, else dialog close, else first focusable / root.
+ * @param {HTMLElement} dialogEl
+ * @param {Element | null} [preferred]
+ */
+function focusAboutDialog(dialogEl, preferred = null) {
+  const focusable = getFocusableElements(dialogEl);
+  const closeBtn =
+    dialogEl.querySelector(".modal-close") ||
+    dialogEl.querySelector("[data-dialog-close]");
+  const preferredFocus =
+    preferred instanceof HTMLElement &&
+    focusable.find(
+      (el) => el === preferred || preferred.contains(el)
+    );
+  const next =
+    preferredFocus ||
+    (closeBtn instanceof HTMLElement && focusable.includes(closeBtn)
+      ? closeBtn
+      : null) ||
+    focusable[0] ||
+    dialogEl;
+  next.focus({ preventScroll: true });
+}
+
+/**
  * @param {AboutDialogOptions} options
  */
 export function initAboutDialog({
@@ -37,7 +62,7 @@ export function initAboutDialog({
   onOpen,
   onClose,
 } = {}) {
-  if (!dialogEl) return null;
+  if (!(dialogEl instanceof HTMLElement)) return null;
 
   const confusedBtn = dialogEl.querySelector("[data-about-confused]");
   const stages = /** @type {HTMLElement[]} */ ([
@@ -94,6 +119,7 @@ export function initAboutDialog({
     if (finalEl instanceof HTMLElement) {
       setHidden(finalEl, false);
     }
+    focusAboutDialog(dialogEl, finalEl instanceof HTMLElement ? finalEl : null);
   }
 
   const dialog = initDialog({
@@ -109,14 +135,20 @@ export function initAboutDialog({
     },
   });
 
+  if (!dialog) return null;
+
   confusedBtn?.addEventListener("click", revealNextStage);
 
   reset();
 
   return {
-    openDialog: () => dialog?.openDialog(),
-    closeDialog: () => dialog?.closeDialog(),
-    isDialogOpen: () => dialog?.isDialogOpen() ?? false,
+    openDialog: () => dialog.openDialog(),
+    closeDialog: () => dialog.closeDialog(),
+    isDialogOpen: () => dialog.isDialogOpen(),
     reset,
+    destroy() {
+      confusedBtn?.removeEventListener("click", revealNextStage);
+      dialog.destroy();
+    },
   };
 }

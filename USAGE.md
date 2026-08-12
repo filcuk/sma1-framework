@@ -670,7 +670,7 @@ const about = initAboutDialog({
   dialogEl: document.getElementById("about-dialog"),
   openTriggers: "#about-open-btn",
 });
-// about.openDialog(), about.closeDialog(), about.isDialogOpen(), about.reset()
+// about.openDialog(), about.closeDialog(), about.isDialogOpen(), about.reset(), about.destroy()
 ```
 
 | Markup hook | Role |
@@ -678,7 +678,7 @@ const about = initAboutDialog({
 | `data-about-confused` | The progressive button; its HTML text is the initial label |
 | `data-about-stage` | One block per stage, revealed in DOM order (start them `hidden`) |
 | `data-about-next-label` | Optional label for the button once that stage is showing |
-| `data-about-final` | Optional element (usually an `<a href>`) shown after the last stage; the button hides |
+| `data-about-final` | Optional element (usually an `<a href>`) shown after the last stage; the button hides and focus moves to it |
 
 Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely and the confused button hides itself. See the live example on [`demo.html`](demo.html).
 
