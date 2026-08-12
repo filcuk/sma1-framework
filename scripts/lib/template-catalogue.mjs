@@ -102,6 +102,7 @@ export const INFRA = {
   config: ["app/config.js"],
   "brand-icon": ["app/utils/brand-icon.js"],
   "also-see-svg": ["app/utils/also-see-svg.js"],
+  "sanitize-svg": ["app/utils/sanitize-svg.js"],
 };
 
 /**
@@ -374,7 +375,7 @@ export const COMPONENTS = {
     css: ["controls-image.css"],
     vendor: [],
     icons: ["download"],
-    infra: ["dom", "icons"],
+    infra: ["dom", "icons", "sanitize-svg"],
   },
   "code-block": {
     files: ["app/components/code-block.js"],
