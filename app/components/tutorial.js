@@ -435,6 +435,8 @@ export function initTutorial(options) {
 
       setPageInert(!step.interactive);
       placeSpotlight(target, pad, step.interactive);
+      /* Interactive steps need Tab to reach the spotlight target. */
+      popover.setTrapFocus(!step.interactive);
       syncPopover(step, i, target);
 
       if (step.interactive && step.advanceOn === "click" && target) {

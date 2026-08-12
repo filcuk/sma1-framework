@@ -88,7 +88,8 @@ export function initColorSet(
     onChange,
   } = {}
 ) {
-  if (!colorSetEl) return null;
+  if (!(colorSetEl instanceof HTMLElement)) return null;
+  if (colorSetEl.dataset.colorSetInit !== undefined) return null;
 
   ensureBuiltinColorSets();
 
@@ -100,8 +101,6 @@ export function initColorSet(
     isEmbedded
   );
 
-  colorSetEl.classList.toggle("color-set--embedded", isEmbedded);
-
   const trigger = colorSetEl.querySelector(".color-set-trigger");
   const popup = colorSetEl.querySelector(".color-set-popup");
   const panel =
@@ -112,6 +111,9 @@ export function initColorSet(
 
   if (!panel || !gridEl) return null;
   if (!isEmbedded && (!trigger || !popup)) return null;
+
+  colorSetEl.dataset.colorSetInit = "";
+  colorSetEl.classList.toggle("color-set--embedded", isEmbedded);
 
   const setIdsOption =
     (Array.isArray(sets) ? sets : parseSetsAttr(sets)) ??
@@ -290,6 +292,7 @@ export function initColorSet(
       removeOutside();
       removeEscape();
       close();
+      delete colorSetEl.dataset.colorSetInit;
     },
   };
 }

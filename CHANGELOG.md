@@ -8,11 +8,31 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-08-12
+
 ### Added
 
-- Diagrams (`initDiagram` / `initDiagrams`) — thin Mermaid (`mermaid@11.16.1`) text→SVG host; vendored ESM entry + chunks under `app/vendor/mermaid/`; light/dark theme re-render; Specialised demo sequence beside the bar chart.
+- Diagrams (`initDiagram` / `initDiagrams`) — thin Mermaid (`mermaid@11.16.1`) text→SVG host; vendored ESM entry + chunks under `app/vendor/mermaid/`; light/dark theme re-render; empty `update({ source: "" })` clears the canvas; Specialised demo sequence beside the bar chart.
 - Charts (`initChart` / `initCharts`) — thin TanStack Charts (`@tanstack/charts@0.9.0`) SVG host; vendored ESM under `app/vendor/tanstack-charts/` plus `d3-scale` / `d3-shape` bundles and a demo import map; Specialised demo bar chart after Editors.
 - Agent rule [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc) — vendor bytes in `app/vendor/`; components own single-consumer access; shared accessors only in `app/utils/` when two+ components need them.
+- `app/utils/sanitize-svg.js` — SVG sanitizer for image-preview `setSvg` (keeps SMIL `animate*`; strips scripts / event handlers).
+
+### Changed
+
+- Merged Toast UI vendor accessors into `rich-text-editor.js` and removed `app/components/toastui-editor.js` (components own single-consumer vendor access; see `.cursor/rules/vendor.mdc`).
+
+### Fixed
+
+- Popover initial focus prefers primary / footer actions over Close; `trapFocus` option and `setTrapFocus()` so interactive tutorial steps can Tab to the spotlight target.
+- Colour picker `rgbaFromHex` / `setValue` reject invalid hex instead of falling back to brand blue; SV/SL plane supports arrow keys / Home / End and `aria-value*`.
+- Image preview sanitizes `setSvg` markup before injection; pre-existing markup `<img>` children get `sourceUrl` so download works.
+- Colour set / colour picker `data-*-init` guards skip already-initialised hosts (including nested partners) on bulk `initColorSets` / `initColorPickers`.
+- About dialog moves focus to `data-about-final` (else close) after the last Huh? stage; `destroy()` removes the confused-button listener and forwards `initDialog.destroy()`.
+
+## [0.10.0] - 2026-08-09
+
+### Added
+
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
 - Colour picker (`initColorPicker`) — HSV/HSL plane + hue slider, RGB/CMYK/alpha via shared `initSlider`, HEX field; format switch changes the visual; optional adjacent colour-set panel (palette icon toggle on the value row).
 - Template icon `palette` (`ic:round-palette`).
@@ -41,7 +61,6 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Changed
 
-- Merged Toast UI vendor accessors into `rich-text-editor.js` and removed `app/components/toastui-editor.js` (components own single-consumer vendor access; see `.cursor/rules/vendor.mdc`).
 - Soft verify for agent skill/rule drift (`agentModified` / `agentMissing` does not fail CI); hard verify remains for catalogue `app/` hashes.
 - Rich text editor Markdown / WYSIWYG switch uses the template segmented control (Toast UI’s native mode tabs are hidden).
 - Heading outline: site `h1`, tier `h2.segment-title` (was `.content-tier-title`), section `h3.section-title` (was `h2.section-heading`). Page nav and heading links default to `main :is(h2, h3)[id]`.
@@ -136,8 +155,10 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 - Accordion, date/time picker, combobox.
 - Radio and related form control polish; banner lifetime / expire indicator.
 
-[Unreleased]: https://github.com/filcuk/microapp-template/compare/4990e86...HEAD
-[0.9.0]: https://github.com/filcuk/microapp-template/compare/v0.8.0...4990e86
+[Unreleased]: https://github.com/filcuk/microapp-template/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/filcuk/microapp-template/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/filcuk/microapp-template/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/filcuk/microapp-template/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/filcuk/microapp-template/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/filcuk/microapp-template/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/filcuk/microapp-template/compare/v0.5.0...v0.6.0

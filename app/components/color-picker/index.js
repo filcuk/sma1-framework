@@ -36,11 +36,13 @@ import { parseBooleanAttr, setHidden } from "../../utils/dom.js";
 import { onDocumentClickOutside, onDocumentEscape } from "../../utils/document-listeners.js";
 import { initColorSet } from "../color-set/index.js";
 import {
+  DEFAULT_PICKER_RGBA,
   FORMATS,
   hexFromRgba,
   mountColorPickerPanel,
   normalizeFormat,
   rgbaFromHex,
+  rgbaFromHexOrDefault,
 } from "./panel.js";
 
 function resolveEmbedded(pickerEl, embeddedOption) {
@@ -88,16 +90,14 @@ export function initColorPicker(
     onInput,
   } = {}
 ) {
-  if (!pickerEl) return null;
+  if (!(pickerEl instanceof HTMLElement)) return null;
+  if (pickerEl.dataset.colorPickerInit !== undefined) return null;
 
   const allowAlpha = resolveAlpha(pickerEl, alpha);
   const isEmbedded = resolveEmbedded(pickerEl, embedded);
   const enableColorSet = resolveColorSet(pickerEl, colorSet);
   const colorSetOptions =
     colorSet && typeof colorSet === "object" && !Array.isArray(colorSet) ? colorSet : {};
-
-  pickerEl.classList.toggle("color-picker--embedded", isEmbedded);
-  pickerEl.classList.toggle("color-picker--alpha", allowAlpha);
 
   const trigger = pickerEl.querySelector(".color-picker-trigger");
   const popup = pickerEl.querySelector(".color-picker-popup");
@@ -115,10 +115,14 @@ export function initColorPicker(
   if (!isEmbedded && (!trigger || !popup || !shell)) return null;
   if (isEmbedded && !shell) return null;
 
+  pickerEl.dataset.colorPickerInit = "";
+  pickerEl.classList.toggle("color-picker--embedded", isEmbedded);
+  pickerEl.classList.toggle("color-picker--alpha", allowAlpha);
+
   let currentFormat = normalizeFormat(
     format ?? pickerEl.dataset.colorPickerFormat ?? "hsv"
   );
-  let rgba = rgbaFromHex(
+  let rgba = rgbaFromHexOrDefault(
     defaultValue ?? pickerEl.dataset.colorPickerDefault ?? "#0969DA",
     { alpha: allowAlpha }
   );
@@ -228,7 +232,9 @@ export function initColorPicker(
       ...colorSetOptions,
       onSelect: ({ value }) => {
         if (!value) return;
-        rgba = rgbaFromHex(value, { alpha: allowAlpha });
+        const next = rgbaFromHex(value, { alpha: allowAlpha });
+        if (!next) return;
+        rgba = next;
         panelApi?.update({ rgba });
         const payload = buildPayload("color-set");
         onInput?.(payload);
@@ -372,6 +378,7 @@ export function initColorPicker(
       colorSetApi?.destroy();
       panelApi?.destroy();
       close();
+      delete pickerEl.dataset.colorPickerInit;
     },
   };
 }
@@ -386,4 +393,11 @@ export function initColorPickers(root = document) {
   return instances;
 }
 
-export { FORMATS, normalizeFormat, hexFromRgba, rgbaFromHex };
+export {
+  FORMATS,
+  normalizeFormat,
+  hexFromRgba,
+  rgbaFromHex,
+  rgbaFromHexOrDefault,
+  DEFAULT_PICKER_RGBA,
+};

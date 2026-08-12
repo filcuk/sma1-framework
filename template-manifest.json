@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "templateVersion": "0.10.0",
-  "generatedAt": "2026-08-11T18:32:30.252Z",
+  "templateVersion": "0.11.0",
+  "generatedAt": "2026-08-12T17:44:36.572Z",
   "source": "filcuk/microapp-template",
   "appOwned": [
     "app/main.js",
@@ -27,7 +27,7 @@
   },
   "files": {
     "app/components/about-dialog.js": {
-      "sha256": "d58b2ea2afa64379ce05f2e2085883f41aff4dfce853d966a214db2b67fb1db4"
+      "sha256": "d3f2bfe947f8083a890459b1b5edda62790e6650af6c7e34f645b0b635211193"
     },
     "app/components/accordion.js": {
       "sha256": "e65229543af29d705e262cabc0a595350d62fec0c2f50e67d158d0c3a540059d"
@@ -54,13 +54,13 @@
       "sha256": "f3838ca01e41d8ecf985bb8fec35c531ee69207636eb8e0f911c92fa9847ca6d"
     },
     "app/components/color-picker/index.js": {
-      "sha256": "a23375d0f921039a75596ce44402d081f696e6661ff931d5d1bed975837b2097"
+      "sha256": "4256c1e52ddffcf3ccc8ceaf3c267faa1e29ac33d82d09787d001dd9f63140a7"
     },
     "app/components/color-picker/panel.js": {
-      "sha256": "4fe0642d365bf41412956610492d2919905991cc821564a4d8ba4d26e9e064a0"
+      "sha256": "dfaa5f077af2acd6d7fcf10e52c15cf64a15d959a9e25c7851518bbfbf913a64"
     },
     "app/components/color-set/index.js": {
-      "sha256": "4abff48f1162ca4be39c3d2ad3ba78587948023a8200404619f85518e7e00f71"
+      "sha256": "ed2af1221b24498962a5a6ded7e9808bba020445cefe2142fa3bcef7f96359dc"
     },
     "app/components/color-set/panel.js": {
       "sha256": "2c912d2a27176c7a95ec2b8aab69a3a93cacca3a77093082c80dce007b58e845"
@@ -108,7 +108,7 @@
       "sha256": "c070ae61a509bc2eab3601276790ac290fc93666c94269a2978740f2aca8cb9b"
     },
     "app/components/diagram.js": {
-      "sha256": "4d958e385a60b9693ebdbc19765fd304f6eba087e3458227b93fa69c8cbf3df7"
+      "sha256": "cd325876fb0d5d7560080386e822cd117321204f1f28597d9e1cec91efa1410b"
     },
     "app/components/dialog.js": {
       "sha256": "81103e0d8b908fc495a21f3a503a92c1f01f06a45460fcd4e9f0efe9519a4a33"
@@ -135,13 +135,13 @@
       "sha256": "d397a2b989468b7bf91f49db3cabaa340ad3c9a2fede9f00cb9ed9aad6ee884d"
     },
     "app/components/image-preview.js": {
-      "sha256": "c170dd9e97a8d05034278b556723eb248077e4f768b6b13fa9b27cf2ab38e0d2"
+      "sha256": "f71b5af2bed051ad23f292f5552d2cb2be05e1dc3f01a840caa5e633734c1262"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
     },
     "app/components/popover.js": {
-      "sha256": "c371e51bcf342547f513998e4707db7710a706d566dbee7db2ee8955b2ffa663"
+      "sha256": "07c77e9b2b72282dd9e594c55bd32c0e5ac09e16456c01639cc9370643e13aa2"
     },
     "app/components/progress-bar.js": {
       "sha256": "59666e299ef56baa1a1e51eeea7e430b32b514e46717cee2bc422837600233fb"
@@ -183,7 +183,7 @@
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
     },
     "app/components/tutorial.js": {
-      "sha256": "77a9e92f6abfe2f2fe1304dc788ad6df97324517bcd198cec0fe6869bdce9e76"
+      "sha256": "199e1cab5fac0296de8eb1556005e2a46033e172ff72def7f9e57dde9019599f"
     },
     "app/css/code-block.css": {
       "sha256": "f8d9d8f49cc5cca8f72e6d0c5a55208d7b1a20da36afb92fa44763db13363594"
@@ -311,6 +311,9 @@
     "app/utils/menu.js": {
       "sha256": "e58869226dfd2ccef4f91738582f70a85909346c0abf1885d9664b8f7b4d0a29"
     },
+    "app/utils/sanitize-svg.js": {
+      "sha256": "4f55c12634aab20d45937abf6dd3158539ff05c1b6804e9608a6bfc224a8f3ad"
+    },
     "app/vendor/d3-scale/README.md": {
       "sha256": "b4ecd72cc23d8f3309030c5df852dfb87f56e39e70c3760610bca10e5d585dbd"
     },
@@ -324,7 +327,7 @@
       "sha256": "fab52e0c0c9b2c80054fdbe65328aa47df64f2879cb985ef7ba525c44f56b8b4"
     },
     "app/vendor/mermaid/README.md": {
-      "sha256": "311a414ba5db465de1066e1ea6d88d1286aadeebbeb283eaecfd920d75283a55"
+      "sha256": "0b6e7babb5842cc790f4ef37c584d767659ffdce8f138114927fa21dd9096246"
     },
     "app/vendor/mermaid/chunks/mermaid.esm.min/abnfDiagram-QNN2D4NM.mjs": {
       "sha256": "8cc0474c098d63399e2909d979cc37eac599d8fe91d291f06825d34c42dbc75f"
@@ -1146,7 +1149,7 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "ef35671e7aa71d2aa015a4b361bf6b3c505afcc4e64174b4e6de43e37acf3ca9"
+      "sha256": "0dbf422b5910dc3a9f2bbe4e0a91398fad4dae9afdeeb1ec067e2026abf4226d"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c3b54ede01da4e28263086993067158810f3db781f869eff709751ba8b54324f"
@@ -1161,7 +1164,7 @@
       "sha256": "fdd604c1062cfb03da9aca9ee9d2609d5924d40192798bda3950dc192f410697"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "7401e77e2154263b63e8913cf72f33202725c5977cfee82a3464c5686b780d93"
+      "sha256": "c97c51c70ccc8a69999d46c78004b416b049d9519ed2203090920fbb9d72095e"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1274,6 +1277,9 @@
     ],
     "also-see-svg": [
       "app/utils/also-see-svg.js"
+    ],
+    "sanitize-svg": [
+      "app/utils/sanitize-svg.js"
     ]
   },
   "components": {
@@ -1818,7 +1824,8 @@
       ],
       "infra": [
         "dom",
-        "icons"
+        "icons",
+        "sanitize-svg"
       ]
     },
     "code-block": {

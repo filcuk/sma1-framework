@@ -248,6 +248,7 @@ function nodesFromBody(body) {
  *   actions?: PopoverAction[],
  *   dismissible?: boolean,
  *   closeOnOutsideClick?: boolean,
+ *   trapFocus?: boolean,
  *   className?: string,
  *   gap?: number,
  *   notchSize?: number,
@@ -270,6 +271,7 @@ export function initPopover(options = {}) {
     options.closeOnOutsideClick !== undefined
       ? Boolean(options.closeOnOutsideClick)
       : dismissible;
+  let trapFocus = options.trapFocus !== false;
 
   /** @type {HTMLElement | null} */
   let anchorEl = resolveAnchor(options.anchor);
@@ -397,8 +399,29 @@ export function initPopover(options = {}) {
   }
 
   function onKeyDown(event) {
-    if (!isOpen) return;
+    if (!isOpen || !trapFocus) return;
     trapTabKey(event, el);
+  }
+
+  /**
+   * Prefer primary action, then any footer action, then close, then the root.
+   * @returns {HTMLElement}
+   */
+  function resolveInitialFocus() {
+    const focusable = getFocusableElements(el);
+    const footerButtons = [...footer.querySelectorAll("button")].filter(
+      (btn) => focusable.includes(btn) && !btn.disabled,
+    );
+    const primary = footerButtons.find((btn) =>
+      btn.classList.contains("btn-primary"),
+    );
+    return (
+      primary ||
+      footerButtons[0] ||
+      (closeBtn && focusable.includes(closeBtn) ? closeBtn : null) ||
+      focusable[0] ||
+      el
+    );
   }
 
   function onViewportChange() {
@@ -465,12 +488,7 @@ export function initPopover(options = {}) {
     /* Second pass after layout settles (actions / wrapping can change size). */
     applyPlacement();
 
-    const focusable = getFocusableElements(el);
-    const initial =
-      focusable.find((node) => node === closeBtn) ||
-      focusable[0] ||
-      el;
-    initial.focus({ preventScroll: true });
+    resolveInitialFocus().focus({ preventScroll: true });
   }
 
   function close() {
@@ -516,6 +534,14 @@ export function initPopover(options = {}) {
     close,
     update,
     setAnchor,
+    /**
+     * When false, Tab is not trapped inside the popover (e.g. interactive
+     * tutorial steps that must reach the spotlighted control).
+     * @param {boolean} enabled
+     */
+    setTrapFocus(enabled) {
+      trapFocus = Boolean(enabled);
+    },
     isOpen: () => isOpen,
     /** Underlying popover element (for advanced composition). */
     getElement: () => el,

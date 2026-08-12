@@ -670,7 +670,7 @@ const about = initAboutDialog({
   dialogEl: document.getElementById("about-dialog"),
   openTriggers: "#about-open-btn",
 });
-// about.openDialog(), about.closeDialog(), about.isDialogOpen(), about.reset()
+// about.openDialog(), about.closeDialog(), about.isDialogOpen(), about.reset(), about.destroy()
 ```
 
 | Markup hook | Role |
@@ -678,7 +678,7 @@ const about = initAboutDialog({
 | `data-about-confused` | The progressive button; its HTML text is the initial label |
 | `data-about-stage` | One block per stage, revealed in DOM order (start them `hidden`) |
 | `data-about-next-label` | Optional label for the button once that stage is showing |
-| `data-about-final` | Optional element (usually an `<a href>`) shown after the last stage; the button hides |
+| `data-about-final` | Optional element (usually an `<a href>`) shown after the last stage; the button hides and focus moves to it |
 
 Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely and the confused button hides itself. See the live example on [`demo.html`](demo.html).
 
@@ -742,6 +742,7 @@ const popover = initPopover({
   position: "auto", // auto | top | bottom | left | right
   dismissible: true, // close button + Escape
   closeOnOutsideClick: true, // defaults to dismissible
+  trapFocus: true, // default; set false (or call setTrapFocus) to allow Tab outside
   actions: [
     {
       label: "Got it",
@@ -752,8 +753,10 @@ const popover = initPopover({
 });
 
 popover.open();
+// Initial focus prefers the primary action, then any footer action, then Close.
 // popover.update({ title, body, position, actions })
 // popover.setAnchor(otherEl)
+// popover.setTrapFocus(false)
 // popover.close() / popover.destroy()
 ```
 
@@ -803,7 +806,7 @@ tour?.start(); // or rely on startTriggers
 | `target` | Element to spotlight; omit for a centred intro/outro card |
 | `title` / `body` | Popover content (`body` may be a string or a DOM node) |
 | `position` | Popover side (`auto` preferred) |
-| `interactive` | When true, the target stays clickable (page is not `inert`) |
+| `interactive` | When true, the target stays clickable (page is not `inert`) and Tab is not trapped in the step popover |
 | `advanceOn` | `"click"` — advance when the interactive target is clicked |
 | `padding` | Spotlight padding around the target (px) |
 | `scroll` | Scroll the target into view (default `true`) |
@@ -1391,7 +1394,9 @@ initImagePreviews(document); // wire every `.image-preview`
 
 `data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`.
 
-`data-image-preview-download` adds a floating download control (same hover strip as maximise). Optional `data-image-preview-download-name` sets the default filename. `data-image-preview-dimensions` and `data-image-preview-file-size` show muted intrinsic size (`W × H px`) and/or source byte size in the bottom-right corner. For inline SMIL SVG (including multi-frame `g#frame-N` groups), `data-image-preview-frames` shows `frame K/N` while animating and `data-image-preview-duration` shows the loop length (e.g. `1.5 s`). Frame/duration meta does not apply to GIF/APNG/WebP loaded via `<img>`.
+`data-image-preview-download` adds a floating download control (same hover strip as maximise). Optional `data-image-preview-download-name` sets the default filename. Pre-existing markup `<img>` children are wired for download via their `src`. `data-image-preview-dimensions` and `data-image-preview-file-size` show muted intrinsic size (`W × H px`) and/or source byte size in the bottom-right corner. For inline SMIL SVG (including multi-frame `g#frame-N` groups), `data-image-preview-frames` shows `frame K/N` while animating and `data-image-preview-duration` shows the loop length (e.g. `1.5 s`). Frame/duration meta does not apply to GIF/APNG/WebP loaded via `<img>`.
+
+`setSvg()` sanitizes markup before injection (strips scripts, event handlers, and other active content; keeps SMIL `animate*` / `set` when otherwise clean) and returns `false` when nothing safe remains.
 
 `data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`.
 
@@ -1938,6 +1943,7 @@ colorSet?.setValue("#2196F3");
 colorSet?.setSetId("tailwind");
 
 initColorSets(document);
+// Skips hosts that are already initialised (e.g. nested under colour input / picker).
 
 // Custom palette (optional — besides the built-in modules):
 registerColorSet({
@@ -1951,7 +1957,7 @@ registerColorSet({
 
 ### Colour picker
 
-Spectrum / channel colour selector. Default mode is a trigger that opens a popup. Set `data-color-picker-embedded` for an always-visible panel. The value row shows the current swatch, a hex field (shared input styling), and a format dropdown on the field (HEX / RGB / HSL / HSV / CMYK) in the same pattern as the tabular-input type menu. The hex field updates the colour live while typing (same as colour input) once the value is a valid hex; the leading `#` stays in the value and is shown muted; blur / Enter normalises or reverts invalid text. Switching format changes the visual above: HSV and HEX use a saturation/value plane + hue slider; HSL uses saturation/lightness + hue; RGB and CMYK use the shared **slider** component for each channel (range + editable value). Optional `data-color-picker-alpha` adds an alpha channel via the same slider. Optional `data-color-picker-color-set` shows a palette icon button on the value row that toggles an adjacent colour-set panel (requires a `.color-picker-sets` host in markup).
+Spectrum / channel colour selector. Default mode is a trigger that opens a popup. Set `data-color-picker-embedded` for an always-visible panel. The value row shows the current swatch, a hex field (shared input styling), and a format dropdown on the field (HEX / RGB / HSL / HSV / CMYK) in the same pattern as the tabular-input type menu. The hex field updates the colour live while typing (same as colour input) once the value is a valid hex; the leading `#` stays in the value and is shown muted; blur / Enter normalises or reverts invalid text. Switching format changes the visual above: HSV and HEX use a saturation/value plane + hue slider (arrow keys / Home / End nudge the plane; Shift multiplies the step); HSL uses saturation/lightness + hue; RGB and CMYK use the shared **slider** component for each channel (range + editable value). Optional `data-color-picker-alpha` adds an alpha channel via the same slider. Optional `data-color-picker-color-set` shows a palette icon button on the value row that toggles an adjacent colour-set panel (requires a `.color-picker-sets` host in markup). `setValue()` returns `false` for empty or invalid hex (it does not fall back to the default blue).
 
 ```html
 <div class="color-picker" id="my-color-picker" data-color-picker-default="#0969da"
@@ -1996,6 +2002,7 @@ picker?.openColorSet();
 picker?.open();
 
 initColorPickers(document);
+// Skips hosts that are already initialised (e.g. nested under colour input).
 ```
 
 `data-color-picker-embedded`, `data-color-picker-default`, `data-color-picker-alpha`, `data-color-picker-format`, and `data-color-picker-color-set` mirror the JS options. Escape closes the colour-set panel first (when open), then the picker popup.
@@ -2775,7 +2782,7 @@ Pinned versions live as `TANSTACK_CHARTS_VERSION`, `D3_SCALE_VERSION`, and `D3_S
 
 ### Diagrams (Mermaid)
 
-Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put diagram source in a child `.diagram-source`, or pass `source` to `initDiagram` / `update`. The host re-renders on theme change (`default` / `dark`). Diagram-type chunks lazy-load from `app/vendor/mermaid/chunks/` (needs a local server or GitHub Pages).
+Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put diagram source in a child `.diagram-source`, or pass `source` to `initDiagram` / `update`. The host re-renders on theme change (`default` / `dark`). Diagram-type chunks **lazy-load at runtime** from `app/vendor/mermaid/chunks/` (needs a local server or GitHub Pages) — unused diagram types are not fetched until referenced.
 
 **Markup:**
 
@@ -2791,7 +2798,7 @@ Thin host around vendored [Mermaid](https://mermaid.js.org/) (text → SVG). Put
 
 | Attribute / option | Meaning | Default |
 | ------------------ | ------- | ------- |
-| `.diagram-source` text or `source` | Mermaid definition | required |
+| `.diagram-source` text or `source` | Mermaid definition | required on init |
 | `aria-label` / `ariaLabel` | Accessible name | `"Diagram"` |
 
 ```javascript
@@ -2806,10 +2813,13 @@ initDiagrams(document, {
 });
 
 diagram?.update({ source: "sequenceDiagram\n  A->>B: Hi" });
+diagram?.update({ source: "" }); // clears canvas; shows “Diagram source is empty”
 diagram?.destroy();
 ```
 
-Pinned version: `MERMAID_VERSION` in [`app/components/diagram.js`](app/components/diagram.js). See [`app/vendor/mermaid/README.md`](app/vendor/mermaid/README.md) for refresh steps. Math in labels uses Mermaid’s built-in KaTeX (`$$…$$`); there is no separate page KaTeX component.
+Pinned version: `MERMAID_VERSION` in [`app/components/diagram.js`](app/components/diagram.js). See [`app/vendor/mermaid/README.md`](app/vendor/mermaid/README.md) for refresh steps and how to shrink the vendor tree. Math in labels uses Mermaid’s built-in KaTeX (`$$…$$`); there is no separate page KaTeX component.
+
+**Trimming:** Prefer removing the whole component + `app/vendor/mermaid/` via **finalize-app** when the fork does not use diagrams. Mermaid already lazy-loads diagram-type chunks, so unused types do not download at runtime. To shrink the **repo** further you may delete unused `*Diagram*.mjs` / `*-definition-*.mjs` chunks under `chunks/mermaid.esm.min/` — those diagram types will then fail to load. Do **not** prune shared `chunk-*.mjs` files.
 
 ### Code highlighting (Prism)
 

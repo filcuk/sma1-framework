@@ -27,11 +27,13 @@
  *
  * Maximise requires `initExpandableSurfaces()` on the page (same as code-block).
  * Content is set via the instance API (`setSvg`, `setSrc`, `setBlob`, `clear`).
+ * `setSvg` sanitizes markup (strips scripts / event handlers; keeps SMIL `animate*`).
  * Frame/duration meta applies to inline SMIL SVG (e.g. `g#frame-N` groups); not GIF/APNG via `<img>`.
  */
 
 import { setHidden } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
+import { sanitizeSvgMarkup } from "../utils/sanitize-svg.js";
 import { downloadFile } from "./file-download.js";
 
 const SVG_PARSER = new DOMParser();
@@ -621,12 +623,24 @@ export function initImagePreview(el, options = {}) {
     const existingSvg = [...el.children].find(
       (node) => node instanceof SVGSVGElement && !isChromeChild(node)
     );
-    contentType = existingSvg ? "svg" : "img";
+    const existingImg = [...el.children].find(
+      (node) => node instanceof HTMLImageElement && !isChromeChild(node)
+    );
     if (existingSvg instanceof SVGSVGElement) {
+      contentType = "svg";
       dimensions = readSvgDimensions(existingSvg);
       svgMarkup = new XMLSerializer().serializeToString(existingSvg);
       byteLength = new TextEncoder().encode(svgMarkup).byteLength;
       startAnimationMeta(existingSvg);
+    } else if (existingImg instanceof HTMLImageElement) {
+      contentType = "img";
+      sourceUrl = existingImg.currentSrc || existingImg.src || null;
+      bindImageMeta(existingImg, contentGeneration);
+      if (sourceUrl) {
+        void probeUrlByteLength(sourceUrl, contentGeneration);
+      }
+    } else {
+      contentType = null;
     }
   }
 
@@ -648,12 +662,15 @@ export function initImagePreview(el, options = {}) {
     },
 
     /**
-     * Inject inline SVG markup (SMIL animation is preserved).
+     * Inject inline SVG markup (SMIL animation is preserved when clean).
+     * Markup is sanitized before injection; returns false when nothing safe remains.
      * @param {string} markup
      * @returns {boolean}
      */
     setSvg(markup) {
-      const svg = parseSvgMarkup(markup);
+      const safe = sanitizeSvgMarkup(markup);
+      if (!safe) return false;
+      const svg = parseSvgMarkup(safe);
       if (!svg) return false;
       contentGeneration += 1;
       revokeObjectUrl();
@@ -662,7 +679,7 @@ export function initImagePreview(el, options = {}) {
       const imported = document.importNode(svg, true);
       el.append(imported);
       contentType = "svg";
-      svgMarkup = String(markup);
+      svgMarkup = safe;
       dimensions = readSvgDimensions(imported);
       byteLength = new TextEncoder().encode(svgMarkup).byteLength;
       showEmpty(false);
