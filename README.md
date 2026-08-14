@@ -1,9 +1,9 @@
-# 📦 Microapp Template
+# 🤏 SMA1 Framework
 
-A feature-rich template **for building small, static apps** with focus on vanilla HTML, CSS, and JavaScript.  
+A feature-rich framework **for building small, static apps**.  
 Ready for GitHub Pages deployment. LLM skills included.  
 
-Test all components: [demo](https://filcuk.github.io/microapp-template/demo.html)
+Test all components: [demo](https://filcuk.github.io/sma1-framework/demo.html)
 
 ![Scrolling demo](res/demo-scroll.avif)
 

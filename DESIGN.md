@@ -1,6 +1,6 @@
 # Design philosophy
 
-Visual and interaction principles for this microapp template. Implementation details live in `USAGE.md`, tokens in `app/tokens.css`, and agent rules in `AGENTS.md`.
+Visual and interaction principles for SMA1 Framework. Implementation details live in `USAGE.md`, tokens in `app/tokens.css`, and agent rules in `AGENTS.md`.
 
 Aesthetics follow a GitHub-inspired palette (based on [pqm-stepper](https://github.com/filcuk/pqm-stepper)): 6px radii, system UI font, light / dark / auto theme.
 

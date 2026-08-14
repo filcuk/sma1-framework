@@ -118,12 +118,12 @@ test("buildUpdatedLock preserves skills and bumps schemaVersion", () => {
       customNote: "keep-me",
     },
     manifest,
-    "filcuk/microapp-template"
+    "filcuk/sma1-framework"
   );
   assert.equal(next.schemaVersion, 2);
   assert.deepEqual(next.skills, ["*", "-release-template"]);
   assert.equal(next.customNote, "keep-me");
-  assert.equal(next.source, "filcuk/microapp-template");
+  assert.equal(next.source, "filcuk/sma1-framework");
 });
 
 test("verifyTemplateTree passes on this repository", () => {
@@ -227,7 +227,7 @@ test("sync --from self into a temp root with dialog-only lock", async () => {
         {
           schemaVersion: 1,
           templateVersion: "0.9.0",
-          source: "filcuk/microapp-template",
+          source: "filcuk/sma1-framework",
           components: ["dialog"],
           skills: ["*", "-release-template"],
         },

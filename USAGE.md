@@ -55,14 +55,14 @@ initShell({
 Versions use [Semantic Versioning 2.0.0](https://semver.org/) and live in [`app/version.js`](app/version.js):
 
 ```javascript
-export const TEMPLATE_VERSION = "0.6.0"; // microapp-template release — sync with app/version.js
+export const TEMPLATE_VERSION = "0.6.0"; // SMA1 Framework release — sync with app/version.js
 export const APP_VERSION = "0.0.0";      // your app — bump when you ship
 ```
 
 | Constant | Who sets it | Shown in UI |
 | -------- | ----------- | ----------- |
 | `APP_VERSION` | You, on your fork | Footer label (`v0.0.0`) |
-| `TEMPLATE_VERSION` | Template maintainers | Footer tooltip on hover/focus (`Template v0.6.0`) |
+| `TEMPLATE_VERSION` | Template maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
 
 After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream template, the maintainer may have raised `TEMPLATE_VERSION` — hover the footer version to see which template release you are on.
 
@@ -194,7 +194,7 @@ For pair-mode header logos, set a meaningful `alt` on the visible theme variant 
 
 ## How to bootstrap pre-v0.9.0 upgrades
 
-Forks created before lock/versioning lack `template.lock.json`, the sync scripts, and `.cursor/skills/`. For a **one-time** bootstrap, copy those from a current [microapp-template](https://github.com/filcuk/microapp-template) checkout (or tagged release) into the fork. After that, rely on lock + sync — do not keep re-copying the whole `.cursor/skills/` tree by hand (that would overwrite fork-local skills).
+Forks created before lock/versioning lack `template.lock.json`, the sync scripts, and `.cursor/skills/`. For a **one-time** bootstrap, copy those from a current [SMA1 Framework](https://github.com/filcuk/sma1-framework) checkout (or tagged release) into the fork. After that, rely on lock + sync — do not keep re-copying the whole `.cursor/skills/` tree by hand (that would overwrite fork-local skills).
 
 | Copy | Purpose |
 | ---- | ------- |
@@ -219,7 +219,7 @@ Add `template.lock.json` (use `"components": ["*"]` for a full catalogue, or lis
 {
   "schemaVersion": 2,
   "templateVersion": "0.9.0",
-  "source": "filcuk/microapp-template",
+  "source": "filcuk/sma1-framework",
   "components": ["*"],
   "skills": ["*"]
 }
@@ -231,7 +231,7 @@ Then run the **`migrate-template`** skill (or `npm run sync:template -- --versio
 
 ## Template lock, manifest, and upgrades
 
-How forks stay aligned with a tagged microapp-template release without clobbering app-owned work.
+How forks stay aligned with a tagged SMA1 Framework release without clobbering app-owned work.
 
 ### Versions
 
@@ -240,7 +240,7 @@ How forks stay aligned with a tagged microapp-template release without clobberin
 | `TEMPLATE_VERSION` | `app/version.js` | Template maintainers; sync updates it on the fork |
 | `APP_VERSION` | `app/version.js` | App authors on the fork (sync preserves it) |
 
-Fetch-based sync requires a git tag `vX.Y.Z` on the upstream template that matches `template.lock.json` → `templateVersion`. Local checkouts can use `npm run sync:template -- --from /path/to/microapp-template`.
+Fetch-based sync requires a git tag `vX.Y.Z` on the upstream template that matches `template.lock.json` → `templateVersion`. Local checkouts can use `npm run sync:template -- --from /path/to/sma1-framework`.
 
 ### Manifest (`template-manifest.json`)
 
@@ -261,7 +261,7 @@ Fork pin for what to install:
 {
   "schemaVersion": 2,
   "templateVersion": "0.9.0",
-  "source": "filcuk/microapp-template",
+  "source": "filcuk/sma1-framework",
   "components": ["*"],
   "skills": ["*"]
 }
@@ -278,8 +278,8 @@ Fork pin for what to install:
 
 ```bash
 npm run sync:template -- --version X.Y.Z
-npm run sync:template -- --from ../microapp-template
-npm run sync:template -- --from ../microapp-template --prune
+npm run sync:template -- --from ../sma1-framework
+npm run sync:template -- --from ../sma1-framework --prune
 npm run sync:template -- --from . --dry-run
 ```
 
@@ -340,9 +340,9 @@ npm run lint
 npm test
 npm run manifest:template   # regenerate template-manifest.json after catalogue changes
 npm run verify:template     # check tree vs template.lock.json + manifest hashes
-# npm run sync:template -- --from ../microapp-template
+# npm run sync:template -- --from ../sma1-framework
 # npm run sync:template -- --version 0.9.0
-# npm run sync:template -- --from ../microapp-template --prune
+# npm run sync:template -- --from ../sma1-framework --prune
 ```
 
 Forks that predate lock/sync should bootstrap first — see [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades). Day-to-day upgrades: [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades).

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-14T17:05:01.556Z",
-  "source": "filcuk/microapp-template",
+  "generatedAt": "2026-08-14T18:38:01.325Z",
+  "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
     "app/demo.js",
@@ -261,7 +261,7 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "de9cbb3e6dbc2fbfbb96330da38d01f26cf7ed36875dc0348f28c832f74e446d"
+      "sha256": "42f60de4596666fa537334eb10683589282f34b61e6b8576334cba50270132a3"
     },
     "app/shell/shell.js": {
       "sha256": "7bc59c18faeecf7bcce15d586547c00c76fdc908a832c1206d9b4e4fdc2f165a"
@@ -1149,7 +1149,7 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "0dbf422b5910dc3a9f2bbe4e0a91398fad4dae9afdeeb1ec067e2026abf4226d"
+      "sha256": "9ffacfcc2f2e229d0d1c8dc90eb012ea67521af926da4790f1186e3b2267e38d"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c3b54ede01da4e28263086993067158810f3db781f869eff709751ba8b54324f"
@@ -1176,7 +1176,7 @@
       "sha256": "622f1d12f32b7f19100d6a94298a4808960b5f029512131594e15ffc3582542e"
     },
     ".cursor/skills/author-component/SKILL.md": {
-      "sha256": "99145e4cf0a7249ca4315112a34d37be37d1b8a6f6a6a8a742ed49314b0a93a2"
+      "sha256": "b39a43799ebf81a7f48f492969c112a9c5c7f8f2640798c3170d5753c6c2f4ac"
     },
     ".cursor/skills/finalize-app/SKILL.md": {
       "sha256": "1fa503b27e65b0f5b901112af92e85cf7bb1de9b093543c50a99b72c11c1d892"
@@ -1185,10 +1185,10 @@
       "sha256": "074c69598d57bc4d82a691b73f99f885d4e300941c46ddaa531f16c08b7d93ff"
     },
     ".cursor/skills/health-check/SKILL.md": {
-      "sha256": "0d61abcdc79a3671eacedb50ec74e790fb13ccea4855a9755805983e915c454b"
+      "sha256": "96bdf88f0f9818d73eb7ee3803e3a52b535140a2edbefa5ba4892e40c8b11df3"
     },
     ".cursor/skills/init-app/SKILL.md": {
-      "sha256": "501b26aa0ed9a8b709c04daed9519ea538198ca4e5b3d9c85288731c3df9661f"
+      "sha256": "5128bad42684fd911e05dfa957cd2926403815cb407bb1a1102103e22dfa8902"
     },
     ".cursor/skills/manage-color/SKILL.md": {
       "sha256": "992c829286618a8cfa484d5cf4b60da070d55051e07292dfb0293096cf8b4a7c"
@@ -1197,16 +1197,16 @@
       "sha256": "348c94a4ca9fda3dbac1f1ed02f631f3d8d0a04bfc78398503830fc805db7098"
     },
     ".cursor/skills/migrate-template/SKILL.md": {
-      "sha256": "02d08bf46eb07896855b8932b10cf09fad013529896fc5c9f40bcbb2b658a097"
+      "sha256": "ac1cb2d88c5cdb9dcf6a843677ce64c657f2cbc85419e63579baa9d4397f2a35"
     },
     ".cursor/skills/release-template/SKILL.md": {
-      "sha256": "f71c8514745d20dd39bb6c5941b1ea181ae1754f52a49ca2fc6d278144e28ea0"
+      "sha256": "3e0e1abe13c51b125444a6cd15955b1d58849f1aabb559221c1071b713519758"
     },
     ".cursor/skills/restore-component/SKILL.md": {
-      "sha256": "9f865544de78aedee781a3d5e81b713be36feb1462e18faecbebfe1a5a50496d"
+      "sha256": "1658123fe04979895d5aab3e6e6794146f0ff718f191340e6228c7b331193cfc"
     },
     ".cursor/skills/sync-shell/SKILL.md": {
-      "sha256": "f2c8fed9cedd2bc5af220339ad16b45303014f597a6bee1ff0ed4683912c0492"
+      "sha256": "73090dee5ca403c5e99d980e5493a454ade2713950b39e23e4a4912aca7968f5"
     }
   },
   "core": {

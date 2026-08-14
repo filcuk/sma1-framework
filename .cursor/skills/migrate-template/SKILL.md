@@ -1,7 +1,7 @@
 ---
 name: migrate-template
 description: >-
-  Upgrade a microapp fork to a newer microapp-template version with partial
+  Upgrade a microapp fork to a newer SMA1 Framework version with partial
   (used components only) or full catalogue upgrade. Use when migrating,
   upgrading the template, syncing from upstream, or bumping TEMPLATE_VERSION.
 ---
@@ -24,7 +24,7 @@ Do not proceed until the user picks one.
 ## 2. Establish versions and source
 
 1. Read fork `TEMPLATE_VERSION` and `APP_VERSION` from `app/version.js`.
-2. Identify upstream (default `filcuk/microapp-template`, or user-specified remote/path).
+2. Identify upstream (default `filcuk/sma1-framework`, or user-specified remote/path).
 3. Resolve target **tag** `vX.Y.Z` (required for fetch-based sync). Local `--from` is allowed for unreleased checkouts.
 4. Read upstream `CHANGELOG.md` for entries between fork version and target (if present).
 5. Note any **deprecated** / **retired** entries in upstream `template-manifest.json` (`replacedBy`, `previousFiles`).
@@ -58,7 +58,7 @@ If the fork still uses flat `app/dialog.js`-style paths, map them with component
 {
   "schemaVersion": 2,
   "templateVersion": "X.Y.Z",
-  "source": "filcuk/microapp-template",
+  "source": "filcuk/sma1-framework",
   "components": ["dialog", "combobox"],
   "skills": ["*"]
 }
@@ -70,7 +70,7 @@ Always-on shell pieces (`tooltip`, `banner`, core CSS, etc.) are included automa
 
 ```bash
 npm run sync:template -- --version X.Y.Z
-# or: npm run sync:template -- --from /path/to/microapp-template
+# or: npm run sync:template -- --from /path/to/sma1-framework
 npm run verify:template
 ```
 

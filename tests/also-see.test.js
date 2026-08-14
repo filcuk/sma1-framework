@@ -25,14 +25,14 @@ test("normalizeAlsoSee excludes the current appUrl from flat links", () => {
     [
       {
         label: "Self",
-        url: "https://filcuk.github.io/microapp-template/",
+        url: "https://filcuk.github.io/sma1-framework/",
       },
       {
         label: "Other",
         url: "https://pqms.gh.fitec.dev/",
       },
     ],
-    "https://filcuk.github.io/microapp-template",
+    "https://filcuk.github.io/sma1-framework",
     ["*"]
   );
 

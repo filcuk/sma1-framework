@@ -1,7 +1,7 @@
 ﻿---
 name: release-template
 description: >-
-  Release a microapp-template version: SemVer bump TEMPLATE_VERSION, update
+  Release an SMA1 Framework version: SemVer bump TEMPLATE_VERSION, update
   CHANGELOG.md, regenerate template-manifest.json, verify, and create git tag
   vX.Y.Z. Use when cutting a template release, bumping TEMPLATE_VERSION, or
   publishing changelog notes.
@@ -69,7 +69,7 @@ npm test
 After the release commit exists locally:
 
 ```bash
-git tag -a "vX.Y.Z" -m "microapp-template vX.Y.Z"
+git tag -a "vX.Y.Z" -m "SMA1 Framework vX.Y.Z"
 ```
 
 - Do **not** push the tag unless the user asks.

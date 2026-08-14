@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Rules for AI agents working in this microapp template repository.
+Rules for AI agents working in the SMA1 Framework repository.
 
 ## Lifecycle skills
 

@@ -1,8 +1,8 @@
 /** Fork-sensitive defaults — edit when creating your app from this template. */
 export const APP_CONFIG = {
   /** Public site URL (GitHub Pages / custom domain). Used to hide this app in “also see”. */
-  appUrl: "https://filcuk.github.io/microapp-template/",
-  repoUrl: "https://github.com/filcuk/microapp-template",
+  appUrl: "https://filcuk.github.io/sma1-framework/",
+  repoUrl: "https://github.com/filcuk/sma1-framework",
   themeStorageKey: "microapp-theme",
   themeChangeEvent: "microapp-theme-change",
   /**

@@ -1,7 +1,7 @@
 /**
  * SemVer 2.0.0 — https://semver.org
  *
- * - TEMPLATE_VERSION — microapp-template release (bump when you maintain the template).
+ * - TEMPLATE_VERSION — SMA1 Framework release (bump when you maintain the template).
  * - APP_VERSION — your app release (set this when you fork).
  */
 
