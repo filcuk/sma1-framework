@@ -91,6 +91,8 @@ export function normalizeSiteUrl(value) {
  *   iconSvg: string,
  *   iconSvgLight: string,
  *   iconSvgDark: string,
+ *   accent: string,
+ *   accentHover: string,
  *   order: number | null,
  * }} AlsoSeeLink
  * @typedef {{
@@ -106,6 +108,18 @@ export function normalizeSiteUrl(value) {
  */
 function trimAlsoSeeString(value) {
   return typeof value === "string" && value.trim() ? value.trim() : "";
+}
+
+/**
+ * Accept only complete hex colours before writing remote/config values into
+ * inline custom properties.
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
+function normalizeAlsoSeeColor(value) {
+  const color = trimAlsoSeeString(value);
+  return /^#[\da-f]{3,4}(?:[\da-f]{3,4})?$/i.test(color) ? color : "";
 }
 
 /**
@@ -190,6 +204,14 @@ function normalizeAlsoSeeLink(link, exclude) {
   const iconSvgDark = trimAlsoSeeString(
     /** @type {{ iconSvgDark?: unknown }} */ (link).iconSvgDark
   );
+  const colors = {
+    accent: normalizeAlsoSeeColor(
+      /** @type {{ accent?: unknown }} */ (link).accent
+    ),
+    accentHover: normalizeAlsoSeeColor(
+      /** @type {{ accentHover?: unknown }} */ (link).accentHover
+    ),
+  };
 
   // Embedded SVG wins over URL icons (same pair / single precedence).
   if (iconSvgLight || iconSvgDark) {
@@ -203,6 +225,7 @@ function normalizeAlsoSeeLink(link, exclude) {
       iconSvg: "",
       iconSvgLight: iconSvgLight || iconSvgDark,
       iconSvgDark: iconSvgDark || iconSvgLight,
+      ...colors,
       order,
     };
   }
@@ -218,6 +241,7 @@ function normalizeAlsoSeeLink(link, exclude) {
       iconSvg,
       iconSvgLight: "",
       iconSvgDark: "",
+      ...colors,
       order,
     };
   }
@@ -242,6 +266,7 @@ function normalizeAlsoSeeLink(link, exclude) {
       iconSvg: "",
       iconSvgLight: "",
       iconSvgDark: "",
+      ...colors,
       order,
     };
   }
@@ -256,6 +281,7 @@ function normalizeAlsoSeeLink(link, exclude) {
     iconSvg: "",
     iconSvgLight: "",
     iconSvgDark: "",
+    ...colors,
     order,
   };
 }
@@ -568,9 +594,16 @@ function renderAlsoSeeLinkItem(link, index) {
   const subtitleMarkup = link.subtitle
     ? `<span class="dropdown-menu-item-subtitle">${escapeText(link.subtitle)}</span>`
     : "";
+  const colorDeclarations = [
+    link.accent ? `--accent: ${link.accent}` : "",
+    link.accentHover ? `--accent-hover: ${link.accentHover}` : "",
+  ].filter(Boolean);
+  const colorStyle = colorDeclarations.length
+    ? ` style="${escapeAttr(colorDeclarations.join("; "))}"`
+    : "";
 
   return `<li role="none">
-          <a href="${escapeAttr(link.url)}" class="dropdown-menu-item" role="menuitem" data-no-external-icon data-value="${index}">
+          <a href="${escapeAttr(link.url)}" class="dropdown-menu-item" role="menuitem" data-no-external-icon data-value="${index}"${colorStyle}>
             ${iconMarkup}
             <span class="dropdown-menu-item-text">
               <span class="dropdown-menu-item-label">${escapeText(link.label)}</span>

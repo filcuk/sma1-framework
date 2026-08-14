@@ -467,6 +467,74 @@ test("normalizeAlsoSee keeps a single icon without inventing a theme pair", () =
   assert.equal(sections[0].items[0].iconDark, "");
 });
 
+test("normalizeAlsoSee keeps valid per-link accent colours", () => {
+  const sections = normalizeAlsoSee(
+    [
+      {
+        label: "Branded",
+        url: "https://example.com/branded",
+        accent: "#8250df",
+        accentHover: "#6639ba",
+      },
+    ],
+    "",
+    ["*"]
+  );
+
+  const item = sections[0].items[0];
+  assert.equal(item.accent, "#8250df");
+  assert.equal(item.accentHover, "#6639ba");
+});
+
+test("normalizeAlsoSee rejects non-hex accent values", () => {
+  const sections = normalizeAlsoSee(
+    [
+      {
+        label: "Unsafe",
+        url: "https://example.com/unsafe",
+        accent: "red; background: url(https://example.com/tracker)",
+        accentHover: "oklch(50% 0.2 120)",
+      },
+    ],
+    "",
+    ["*"]
+  );
+
+  const item = sections[0].items[0];
+  assert.equal(item.accent, "");
+  assert.equal(item.accentHover, "");
+});
+
+test("renderAlsoSeeMarkup scopes accent colours to their link", () => {
+  const markup = renderAlsoSeeMarkup([
+    {
+      topic: null,
+      order: null,
+      items: [
+        {
+          label: "Branded",
+          subtitle: "",
+          url: "https://example.com/branded",
+          icon: "",
+          iconLight: "",
+          iconDark: "",
+          iconSvg: "",
+          iconSvgLight: "",
+          iconSvgDark: "",
+          accent: "#8250df",
+          accentHover: "#6639ba",
+          order: null,
+        },
+      ],
+    },
+  ]);
+
+  assert.match(
+    markup,
+    /style="--accent: #8250df; --accent-hover: #6639ba"/
+  );
+});
+
 test("normalizeAlsoSee prefers iconLight/iconDark theme pair", () => {
   const sections = normalizeAlsoSee(
     [

@@ -8,6 +8,10 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+### Added
+
+- Footer “also see” links accept optional per-app `accent` and `accentHover` hex colours in remote JSON or local config, scoping menu hover highlights to the destination app.
+
 ## [0.11.0] - 2026-08-12
 
 ### Added
