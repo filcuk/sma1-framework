@@ -568,6 +568,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   color: var(--accent-fg);
   cursor: pointer;
   grid-area: 1 / 1;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
 .checkbox-face {
@@ -578,6 +579,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   border-radius: 2px;
   background: transparent;
   pointer-events: none;
+  transition: background var(--control-hover-ms) ease-out, border-radius var(--control-hover-ms) ease-out;
 }
 
 /* Where half pixels are real, tighten to the toggle's inset ratio (2px on a 22px track). */
@@ -592,6 +594,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 .checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-face {
   background: var(--surface);
   border-radius: 2px;
+  transition-duration: 0s;
 }
 
 .checkbox-control:has(.checkbox-input:indeterminate) .checkbox-face,
@@ -604,6 +607,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 .checkbox-input[aria-checked="mixed"] {
   background: var(--accent);
   border-color: var(--accent);
+  transition-duration: 0s;
 }
 
 .checkbox-input:focus-visible {
@@ -650,6 +654,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   background: var(--input-bg);
   cursor: pointer;
   flex-shrink: 0;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
 .radio-input::before {
@@ -660,15 +665,18 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   border-radius: 50%;
   background: var(--surface);
   transform: scale(0);
+  transition: transform var(--control-hover-ms) ease-out;
 }
 
 .radio-input:checked {
   background: var(--accent);
   border-color: var(--accent);
+  transition-duration: 0s;
 }
 
 .radio-input:checked::before {
   transform: scale(1);
+  transition-duration: 0s;
 }
 
 .radio-input:focus-visible {
