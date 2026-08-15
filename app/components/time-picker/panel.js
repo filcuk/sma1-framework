@@ -271,6 +271,8 @@ export function mountTimePickerPanel(
   addSegment("hours", "Hours");
   addSegment("minutes", "Minutes");
   if (showSeconds) addSegment("seconds", "Seconds");
+  // Drives the fixed popup width so it does not track the host field.
+  panelEl.style.setProperty("--time-picker-columns", showSeconds ? "3" : "2");
   panelEl.append(fields);
 
   if (showZero || (showNow && resolvedMode === "time")) {
@@ -280,7 +282,7 @@ export function mountTimePickerPanel(
     function addAction(label, source, getParts) {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "btn time-picker-quick-btn";
+      button.className = "btn btn-slim time-picker-quick-btn";
       button.textContent = label;
       const onClick = (event) => {
         event.stopPropagation();
@@ -341,6 +343,7 @@ export function mountTimePickerPanel(
       cleanups.forEach((cleanup) => cleanup());
       panelEl.replaceChildren();
       panelEl.classList.remove("time-picker-panel", "time-picker-panel--disabled");
+      panelEl.style.removeProperty("--time-picker-columns");
       delete panelEl.dataset.timePickerMode;
     },
   };

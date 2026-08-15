@@ -1258,8 +1258,8 @@ Calendar popup via [`app/components/date-picker/index.js`](app/components/date-p
       </div>
       <div class="date-picker-grid" role="grid"></div>
       <div class="date-picker-actions">
-        <button type="button" class="btn date-picker-quick-btn" data-date-picker-today>Today</button>
-        <button type="button" class="btn date-picker-quick-btn" data-date-picker-now hidden>Now</button>
+        <button type="button" class="btn btn-slim date-picker-quick-btn" data-date-picker-today>Today</button>
+        <button type="button" class="btn btn-slim date-picker-quick-btn" data-date-picker-now hidden>Now</button>
       </div>
     </div>
   </div>

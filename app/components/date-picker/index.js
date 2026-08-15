@@ -191,7 +191,7 @@ export function initDatePicker(
     if (!todayBtn) {
       todayBtn = document.createElement("button");
       todayBtn.type = "button";
-      todayBtn.className = "btn date-picker-quick-btn";
+      todayBtn.className = "btn btn-slim date-picker-quick-btn";
       todayBtn.dataset.datePickerToday = "";
       todayBtn.textContent = "Today";
       actionsEl.append(todayBtn);
@@ -209,7 +209,7 @@ export function initDatePicker(
       if (!nowBtn) {
         nowBtn = document.createElement("button");
         nowBtn.type = "button";
-        nowBtn.className = "btn date-picker-quick-btn";
+        nowBtn.className = "btn btn-slim date-picker-quick-btn";
         nowBtn.dataset.datePickerNow = "";
         nowBtn.textContent = "Now";
         actionsEl.append(nowBtn);
