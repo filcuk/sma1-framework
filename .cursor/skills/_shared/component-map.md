@@ -29,7 +29,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `tutorial.css` | tutorial |
 | `code-block.css` | code-block, expandable-surface |
 | `controls-badges.css` | badge |
-| `controls-chips.css` | chip |
+| `controls-chips.css` | chip, legend |
 | `controls-fields.css` | field/input (CSS-only), combobox, date-picker, time-picker, duration-input |
 | `controls-widgets.css` | toggle, checkbox, segmented-control, pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
@@ -60,6 +60,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | tutorial | `app/components/tutorial.js` | `tutorial.css`, `overlays.css` | — | Via popover: `clear`, `chevron-left`, `chevron-right` | `dom`, `document-listeners`; wraps `popover` | Spotlight tour; Escape priority 110 |
 | badge | `app/components/badge.js` | `controls-badges.css` | — | — | `dom` | |
 | chip | `app/components/chip.js` | `controls-chips.css` | — | — | `dom` | |
+| legend | `app/components/legend.js` | `controls-chips.css` | — | — | — | Coloured category chips; slots 1–8; optional toggle; tooltips via `data-tooltip` |
 | combobox | `app/components/combobox.js` | `controls-fields.css`; multi also `controls-badges.css` | — | — | `dom`, `document-listeners`; multi: badge | Multi via `data-combobox-multi` |
 | date-picker | `app/components/date-picker/` (`index.js`, `calendar.js`, `parse.js`) | `controls-fields.css` | — | Markup: `calendar` | `dom`, `document-listeners` | |
 | time-picker | `app/components/time-picker.js` | `controls-fields.css` | — | — | `dom` | Native `type="time"` |

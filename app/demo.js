@@ -50,6 +50,7 @@ import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
 import { initChipGroup, initChipInput } from "./components/chip.js";
+import { initLegend } from "./components/legend.js";
 import { setHidden } from "./utils/dom.js";
 
 initShell();
@@ -206,6 +207,8 @@ syncChipFilterList(
 );
 
 initChipInput(document.getElementById("demo-chip-input"));
+
+initLegend(document.getElementById("demo-legend"));
 
 initSegmentedControl(document.getElementById("demo-segmented-panels"));
 initPagination(document.getElementById("demo-pagination"));

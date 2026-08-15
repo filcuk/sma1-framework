@@ -177,6 +177,14 @@ export const COMPONENTS = {
     icons: ["error"],
     infra: ["dom", "icons"],
   },
+  legend: {
+    files: ["app/components/legend.js"],
+    css: ["controls-chips.css"],
+    vendor: [],
+    icons: [],
+    infra: [],
+    notes: "Coloured category chips; slots 1–8; optional toggle; tooltips via data-tooltip / initShell",
+  },
   combobox: {
     files: ["app/components/combobox.js"],
     css: ["controls-fields.css", "controls-badges.css"],
@@ -470,7 +478,7 @@ export const CSS_PARTIAL_FEATURES = {
   "tutorial.css": ["tutorial"],
   "code-block.css": ["code-block", "expandable-surface"],
   "controls-badges.css": ["badge", "combobox", "dropdown-toggle"],
-  "controls-chips.css": ["chip"],
+  "controls-chips.css": ["chip", "legend"],
   "controls-fields.css": [
     "fields",
     "combobox",

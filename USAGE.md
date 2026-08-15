@@ -384,7 +384,7 @@ app/
     code-block.css      # Code blocks and expandable surfaces
     controls-buttons.css  # Toolbar, buttons
     controls-badges.css   # Corner badges on controls/labels
-    controls-chips.css    # Selectable / removable chips
+    controls-chips.css    # Selectable / removable chips; legend
     controls-fields.css   # Fields, combobox, date/time
     controls-widgets.css  # Toggle, segmented, pagination, progress, spinner, slider, stepper, color input
     controls-section-panel.css # Section panel grid
@@ -453,6 +453,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
+| **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/file-dropzone.js`](app/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
@@ -1093,6 +1094,51 @@ initChipInputs(document);
 ```
 
 `data-chip-value` on selectable chips sets the value (defaults to label text). `data-chip-input-disabled` disables the input field.
+
+### Legend
+
+Coloured category chips for charts, code highlights, and similar. Styles share [`app/css/controls-chips.css`](app/css/controls-chips.css). Eight palette slots live in [`app/tokens.css`](app/tokens.css) (`--legend-1` / `--legend-1-border` … `--legend-8` / `--legend-8-border`), applied via `.legend-chip--1` … `.legend-chip--8`. Override a chip with `--legend-color` and optional `--legend-border` for app-specific colours. Label text uses `--text`.
+
+**Interactive** — `button.legend-chip` items toggle on/off (`aria-pressed`); inactive chips dim. Use `data-tooltip` for hover detail (via `initTooltips` / `initShell`).
+
+```html
+<div class="legend" role="group" aria-label="Highlight categories">
+  <button type="button" class="legend-chip legend-chip--1"
+    aria-pressed="true" data-legend-value="definition"
+    data-tooltip="Step name being defined">Definition</button>
+  <button type="button" class="legend-chip legend-chip--2"
+    aria-pressed="true" data-legend-value="new-definition">New Definition</button>
+  <button type="button" class="legend-chip legend-chip--3"
+    aria-pressed="true" data-legend-value="reference">Reference</button>
+  <button type="button" class="legend-chip legend-chip--4"
+    aria-pressed="true" data-legend-value="new-reference">New Reference</button>
+</div>
+```
+
+```javascript
+import { initLegend, initLegends } from "./components/legend.js";
+
+const legend = initLegend(document.getElementById("highlight-legend"), {
+  onChange: ({ values, labels }) => console.log(values, labels),
+});
+
+legend?.getValues();
+legend?.setSelected(["definition", "reference"]);
+legend?.clear();
+
+initLegends(document);
+```
+
+**Static** — use `span.legend-chip` (no toggle). `initLegend` ignores non-button items.
+
+```html
+<div class="legend" role="list" aria-label="Series">
+  <span class="legend-chip legend-chip--1" role="listitem">Series A</span>
+  <span class="legend-chip" role="listitem" style="--legend-color: #dafbe1; --legend-border: #52b768">Custom</span>
+</div>
+```
+
+`data-legend-value` sets the value (defaults to label text). Modifier classes: `.legend-chip--1` … `.legend-chip--8`.
 
 ### Inputs
 

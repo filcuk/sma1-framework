@@ -1,22 +1,22 @@
 /**
  * Legend — coloured category chips for charts, code highlights, and similar.
  *
- * Semantic categories (optional modifiers):
- *   definition | new-definition | reference | new-reference
+ * Palette slots (optional modifiers `.legend-chip--1` … `--8`):
+ *   tokens `--legend-N` / `--legend-N-border`
  *
  * Static (display only):
  *   <div class="legend" role="list" aria-label="Legend">
- *     <span class="legend-chip legend-chip--definition" role="listitem">Definition</span>
+ *     <span class="legend-chip legend-chip--1" role="listitem">Series A</span>
  *   </div>
  *
  * Interactive (toggle category on/off):
  *   <div class="legend" role="group" aria-label="Highlight categories">
- *     <button type="button" class="legend-chip legend-chip--definition"
- *       aria-pressed="true" data-legend-value="definition"
- *       data-tooltip="Step name being defined">Definition</button>
+ *     <button type="button" class="legend-chip legend-chip--1"
+ *       aria-pressed="true" data-legend-value="a"
+ *       data-tooltip="Series A">Series A</button>
  *   </div>
  *
- * Custom colour: set --legend-color on the chip (overrides semantic modifier).
+ * Custom colour: set `--legend-color` (and optionally `--legend-border`) on the chip.
  */
 
 function readLegendValue(chipEl) {

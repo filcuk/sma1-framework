@@ -111,6 +111,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initBadge()` / `initBadges()` | Corner badge on a `.badge-host` (normal readout or `.badge--sm` dot) |
 | `initChipGroup()` / `initChipGroups()` | Selectable filter chips (toggle pressed; not removable) |
 | `initChipInput()` / `initChipInputs()` | Text field that adds removable chips |
+| `initLegend()` / `initLegends()` | Coloured legend chips (optional toggle; slots `--1`…`--8` or `--legend-color`) |
 | `initSegmentedControl()` / `initSegmentedControls()` | Segmented control (toggle button group) |
 | `initPagination()` / `initPaginations()` | Client-side pagination (numbered pages, no URL change) |
 | `initTable()` / `initTables()` | Data table with optional sortable columns (Shift+click multi-sort) and row selection |
@@ -158,7 +159,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/code-block.css` | Code blocks and expandable surfaces |
 | `app/css/controls-buttons.css` | Toolbar, buttons |
 | `app/css/controls-badges.css` | Corner badges on controls and labels |
-| `app/css/controls-chips.css` | Selectable filter chips and removable input chips |
+| `app/css/controls-chips.css` | Selectable / removable chips and coloured legend chips |
 | `app/css/controls-fields.css` | Fields, combobox, date/time |
 | `app/css/controls-widgets.css` | Toggle, segmented control, pagination, progress bar, spinner, slider, stepper, color input |
 | `app/css/controls-section-panel.css` | Section panel grid rows |

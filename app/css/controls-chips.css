@@ -110,7 +110,7 @@ button.chip.chip--removable:hover:not(:disabled) {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  color: var(--legend-text);
+  color: var(--text);
   font-size: 0.8125rem;
   line-height: 1.5;
 }
@@ -123,10 +123,10 @@ button.chip.chip--removable:hover:not(:disabled) {
   max-width: 100%;
   min-height: 1.75rem;
   padding: 0 0.9rem 1px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--legend-border, var(--border));
   border-radius: 999px;
   background: var(--legend-color, var(--surface));
-  color: var(--legend-text);
+  color: var(--text);
   font: inherit;
   font-size: inherit;
   font-weight: 500;
@@ -139,20 +139,44 @@ button.chip.chip--removable:hover:not(:disabled) {
     opacity var(--control-hover-ms) ease-out;
 }
 
-.legend-chip--definition {
-  --legend-color: var(--legend-definition);
+.legend-chip--1 {
+  --legend-color: var(--legend-1);
+  --legend-border: var(--legend-1-border);
 }
 
-.legend-chip--new-definition {
-  --legend-color: var(--legend-new-definition);
+.legend-chip--2 {
+  --legend-color: var(--legend-2);
+  --legend-border: var(--legend-2-border);
 }
 
-.legend-chip--reference {
-  --legend-color: var(--legend-reference);
+.legend-chip--3 {
+  --legend-color: var(--legend-3);
+  --legend-border: var(--legend-3-border);
 }
 
-.legend-chip--new-reference {
-  --legend-color: var(--legend-new-reference);
+.legend-chip--4 {
+  --legend-color: var(--legend-4);
+  --legend-border: var(--legend-4-border);
+}
+
+.legend-chip--5 {
+  --legend-color: var(--legend-5);
+  --legend-border: var(--legend-5-border);
+}
+
+.legend-chip--6 {
+  --legend-color: var(--legend-6);
+  --legend-border: var(--legend-6-border);
+}
+
+.legend-chip--7 {
+  --legend-color: var(--legend-7);
+  --legend-border: var(--legend-7-border);
+}
+
+.legend-chip--8 {
+  --legend-color: var(--legend-8);
+  --legend-border: var(--legend-8-border);
 }
 
 .legend-chip-label {
@@ -165,7 +189,7 @@ button.legend-chip {
 }
 
 button.legend-chip:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--legend-text) 35%, var(--border));
+  border-color: color-mix(in srgb, var(--legend-border, var(--border)) 70%, var(--text));
   transition-duration: 0s;
 }
 

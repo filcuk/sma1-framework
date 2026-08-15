@@ -39,12 +39,23 @@
   --banner-important-text: #6639ba;
   --banner-important-border: #995eff;
   --code-bg: #eff1f3;
-  /* Legend category fills (definition / reference semantics; match chart & code highlights). */
-  --legend-text: #424a53;
-  --legend-definition: rgba(56, 139, 253, 0.22);
-  --legend-new-definition: rgba(46, 160, 67, 0.2);
-  --legend-reference: rgba(210, 153, 34, 0.28);
-  --legend-new-reference: rgba(255, 99, 99, 0.22);
+  /* Legend category slots 1–8 (fills + borders; apps map labels as needed). */
+  --legend-1: rgba(56, 139, 253, 0.22);
+  --legend-1-border: #157dff;
+  --legend-2: rgba(46, 160, 67, 0.2);
+  --legend-2-border: #52b768;
+  --legend-3: rgba(210, 153, 34, 0.28);
+  --legend-3-border: #c37500;
+  --legend-4: rgba(255, 99, 99, 0.22);
+  --legend-4-border: #cf222e;
+  --legend-5: rgba(130, 80, 223, 0.22);
+  --legend-5-border: #995eff;
+  --legend-6: rgba(101, 109, 118, 0.22);
+  --legend-6-border: #909aa5;
+  --legend-7: rgba(8, 145, 178, 0.22);
+  --legend-7-border: #0891b2;
+  --legend-8: rgba(219, 114, 38, 0.25);
+  --legend-8-border: #db7226;
   --page-width: 1200px;
   --page-padding-x: 1.5rem;
   --page-padding-y: 1rem;
@@ -97,11 +108,22 @@
   --banner-important-text: #d2a8ff;
   --banner-important-border: #72578e;
   --code-bg: #21262d;
-  --legend-text: #c3ccd5;
-  --legend-definition: rgba(56, 139, 253, 0.18);
-  --legend-new-definition: rgba(46, 160, 67, 0.16);
-  --legend-reference: rgba(210, 153, 34, 0.22);
-  --legend-new-reference: rgba(255, 99, 99, 0.18);
+  --legend-1: rgba(56, 139, 253, 0.18);
+  --legend-1-border: #39658b;
+  --legend-2: rgba(46, 160, 67, 0.16);
+  --legend-2-border: #23772b;
+  --legend-3: rgba(210, 153, 34, 0.22);
+  --legend-3-border: #896800;
+  --legend-4: rgba(255, 99, 99, 0.18);
+  --legend-4-border: #8b2e34;
+  --legend-5: rgba(130, 80, 223, 0.2);
+  --legend-5-border: #72578e;
+  --legend-6: rgba(139, 148, 158, 0.2);
+  --legend-6-border: #565b60;
+  --legend-7: rgba(8, 145, 178, 0.2);
+  --legend-7-border: #0e7490;
+  --legend-8: rgba(219, 114, 38, 0.22);
+  --legend-8-border: #9a4b12;
   --sticky-shadow: rgb(0 0 0 / 0.55);
 }
 

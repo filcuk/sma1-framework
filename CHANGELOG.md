@@ -10,6 +10,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
+- Legend (`initLegend` / `initLegends`) — coloured category chips for charts and code highlights; eight numbered palette slots; optional toggle and `data-tooltip`; demo under Chips.
 - Footer “also see” links accept optional per-app `accent` and `accentHover` hex colours in remote JSON or local config, scoping menu hover highlights to the destination app.
 
 ## [0.11.0] - 2026-08-12
