@@ -701,9 +701,9 @@
               </div>
             </div>
             <hr class="panel-divider" />
-            <div class="demo-grid demo-grid-4">
+            <div class="demo-row">
               <div class="field date-picker" id="demo-date-picker">
-                <label class="field-label" for="demo-date-picker-input">Date picker</label>
+                <label class="field-label" for="demo-date-picker-input">Date</label>
                 <div class="date-picker-control">
                   <input type="hidden" class="date-picker-value" />
                   <input type="text" id="demo-date-picker-input" class="input date-picker-input"
@@ -729,7 +729,7 @@
                 </div>
               </div>
               <div class="field date-picker" id="demo-date-picker-time" data-date-picker-time>
-                <label class="field-label" for="demo-date-picker-time-input">Date picker with time</label>
+                <label class="field-label" for="demo-date-picker-time-input">Date & time</label>
                 <div class="date-picker-row">
                   <div class="date-picker-control">
                     <input type="hidden" class="date-picker-value" />
@@ -759,9 +759,31 @@
                 </div>
               </div>
               <div class="field time-picker" id="demo-time-picker" data-time-picker-default="14:30">
-                <label class="field-label" for="demo-time-picker-input">Time picker</label>
-                <input type="time" id="demo-time-picker-input" class="input date-picker-time" />
+                <label class="field-label" for="demo-time-picker-input">Time</label>
+                <div class="time-picker-control">
+                  <input type="text" id="demo-time-picker-input" class="input time-picker-input"
+                    value="14:30" inputmode="numeric" autocomplete="off" />
+                  <button type="button" class="time-picker-trigger" aria-label="Open time picker"
+                    data-icon="clock" data-icon-class="time-picker-icon" aria-expanded="false"></button>
+                </div>
+                <div class="time-picker-popup hidden" role="dialog" aria-label="Choose time" hidden>
+                  <div class="time-picker-panel"></div>
+                </div>
                 <input type="hidden" class="time-picker-value" value="14:30" />
+              </div>
+              <div class="field time-picker" id="demo-time-picker-seconds"
+                data-time-picker-default="14:30:00" data-time-picker-seconds>
+                <label class="field-label" for="demo-time-picker-seconds-input">Time with seconds</label>
+                <div class="time-picker-control">
+                  <input type="text" id="demo-time-picker-seconds-input" class="input time-picker-input"
+                    value="14:30:00" inputmode="numeric" autocomplete="off" />
+                  <button type="button" class="time-picker-trigger" aria-label="Open time picker"
+                    data-icon="clock" data-icon-class="time-picker-icon" aria-expanded="false"></button>
+                </div>
+                <div class="time-picker-popup hidden" role="dialog" aria-label="Choose time" hidden>
+                  <div class="time-picker-panel"></div>
+                </div>
+                <input type="hidden" class="time-picker-value" value="14:30:00" />
               </div>
               <div class="field duration-input" id="demo-duration-input" data-duration-default="1:30">
                 <span class="field-label" id="demo-duration-label">Duration</span>

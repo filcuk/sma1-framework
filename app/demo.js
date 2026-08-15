@@ -158,6 +158,7 @@ fetch(new URL("./res/demo-image-preview.svg", import.meta.url))
 initDatePicker(document.getElementById("demo-date-picker"));
 initDatePicker(document.getElementById("demo-date-picker-time"));
 initTimePicker(document.getElementById("demo-time-picker"));
+initTimePicker(document.getElementById("demo-time-picker-seconds"));
 initDurationInput(document.getElementById("demo-duration-input"));
 
 initSlider(document.getElementById("demo-slider-integer"));

@@ -293,6 +293,10 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   font-variant-numeric: tabular-nums;
 }
 
+.time-picker[data-time-picker-seconds] .time-picker-input {
+  width: calc(11ch + 2.5rem);
+}
+
 .time-picker-input[aria-invalid="true"] {
   border-color: var(--banner-error-border);
   outline-color: var(--banner-error-border);
@@ -336,7 +340,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   z-index: 60;
   width: max-content;
   max-width: calc(100vw - 2 * var(--page-padding-x));
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
@@ -350,7 +354,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 .time-picker-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   min-width: 0;
 }
 
@@ -358,7 +362,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   display: flex;
   align-items: stretch;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .time-picker-field {
@@ -366,10 +370,11 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   flex-direction: column;
   align-items: stretch;
   gap: 0.25rem;
-  min-width: 2.75rem;
+  width: var(--control-height-slim);
+  min-width: var(--control-height-slim);
 }
 
-.time-picker-nudge {
+.time-picker-nudge.btn-icon {
   width: 100%;
   min-width: 0;
   height: var(--control-height-slim);
@@ -383,17 +388,19 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 }
 
 .time-picker-nudge-icon {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 .time-picker-segment {
+  box-sizing: border-box;
   width: 100%;
-  min-width: 2.75rem;
+  min-width: 0;
+  min-height: var(--control-height-slim);
+  padding: 0 0.15rem;
   text-align: center;
+  font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
 }
 
 .time-picker-segment[aria-invalid="true"] {
@@ -403,15 +410,16 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 
 .time-picker-actions {
   display: flex;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
   border-top: 1px solid var(--border);
 }
 
 .time-picker-quick-btn {
   flex: 1;
-  min-height: 2rem;
-  padding: 0 0.75rem;
+  min-height: 1.75rem;
+  padding: 0 0.35rem;
+  font-size: 0.75rem;
 }
 
 .time-picker-panel--disabled,
