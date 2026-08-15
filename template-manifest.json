@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-15T10:34:43.126Z",
+  "generatedAt": "2026-08-15T13:07:20.555Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -179,6 +179,9 @@
     "app/components/time-picker.js": {
       "sha256": "97435605bb9c3b5398a28f495fa58020d690eac565b0d76af1804d0e40e6eae4"
     },
+    "app/components/toggle-button.js": {
+      "sha256": "42c834104fde855b9f4f08bcebcc5768b2ff27fdbef3884469d8cde007de37f9"
+    },
     "app/components/toggle.js": {
       "sha256": "e2f9c98506e8fffe580f864ea12ca023cb8026bb24ec48578f2c948f793f124a"
     },
@@ -195,7 +198,7 @@
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"
     },
     "app/css/controls-buttons.css": {
-      "sha256": "cde1a0a8a0faabbc9388c7960c40c0b365112660dc8a19783370992f71f504ef"
+      "sha256": "820177992b2110044e6d9c29ca73a517796b8cc91528625fb28dc9c8ef317b72"
     },
     "app/css/controls-charts.css": {
       "sha256": "6b491aaf5adc9c75310b63ed3acb962db791460ab86261625d8a91146965f286"
@@ -1167,7 +1170,7 @@
       "sha256": "fdd604c1062cfb03da9aca9ee9d2609d5924d40192798bda3950dc192f410697"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "7eb98a1fd7080b24dc15cd39faf1f9bb4fbf8fd7b62d9b125cfe09668ba996f7"
+      "sha256": "1e896ab450a601034a01ed062a6cbf2d43945888e5acc1626464470a455ecac7"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1588,6 +1591,25 @@
         "dom",
         "icons"
       ]
+    },
+    "toggle-button": {
+      "files": [
+        "app/components/toggle-button.js"
+      ],
+      "css": [
+        "controls-buttons.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [
+        "fullscreen",
+        "fullscreen-exit"
+      ],
+      "infra": [
+        "dom",
+        "icons"
+      ],
+      "notes": "Pressed .btn-toggle; optional next-action label/icon swap; data-toggle-button-always-active"
     },
     "checkbox": {
       "files": [
@@ -2405,7 +2427,8 @@
     ],
     "controls-buttons.css": [
       "buttons",
-      "toolbar"
+      "toolbar",
+      "toggle-button"
     ],
     "overlays.css": [
       "tooltip",
