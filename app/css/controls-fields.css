@@ -648,17 +648,17 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   border: 1px solid var(--border);
   border-radius: 50%;
   background: var(--input-bg);
-  color: var(--accent-fg);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .radio-input::before {
   content: "";
-  width: 0.5rem;
-  height: 0.5rem;
+  /* Same 2px outer-to-face gap as `.checkbox-face` */
+  width: calc(1rem - 4px);
+  height: calc(1rem - 4px);
   border-radius: 50%;
-  background: currentColor;
+  background: var(--surface);
   transform: scale(0);
 }
 

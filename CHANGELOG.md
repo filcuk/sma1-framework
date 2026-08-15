@@ -16,7 +16,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Changed
 
-- Checked and mixed checkboxes use an inset `--surface` face (rounded square when checked, disc when mixed) on an accent fill to match the toggle thumb — no check / minus glyphs.
+- Checked and mixed checkboxes use an inset `--surface` face (rounded square when checked, disc when mixed) on an accent fill to match the toggle thumb — no check / minus glyphs. Radio selected dots use the same 2px inset and `--surface` face.
 
 ## [0.11.0] - 2026-08-12
 
