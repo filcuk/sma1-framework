@@ -114,6 +114,16 @@ a.btn.btn-primary:hover {
   color: var(--text);
 }
 
+.btn-toggle.btn-toggle--always-active {
+  background: var(--code-bg);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.btn-toggle:has(.btn-toggle-label) {
+  gap: 0.375rem;
+}
+
 .btn-icon-svg {
   width: 1rem;
   height: 1rem;
