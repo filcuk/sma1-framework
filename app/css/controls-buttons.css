@@ -131,6 +131,11 @@ a.btn.btn-primary:hover {
 }
 
 .btn-icon-svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.btn-slim .btn-icon-svg {
   width: 1rem;
   height: 1rem;
 }
