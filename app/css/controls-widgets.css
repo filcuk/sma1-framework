@@ -69,15 +69,16 @@
 
 .toggle-thumb-icon {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  /* Centred by insets + auto margins rather than a translate, so the glyph snaps to
+     whole device pixels inside the thumb (which is itself transformed when on). */
+  inset: 0;
+  margin: auto;
   display: block;
   flex-shrink: 0;
   width: 0.75rem;
   height: 0.75rem;
   color: var(--accent);
   opacity: 0;
-  transform: translate(-50%, -50%);
   transition: opacity 0.15s ease;
 }
 

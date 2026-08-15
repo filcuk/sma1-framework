@@ -674,8 +674,11 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   transition-duration: 0s;
 }
 
+/* `none` rather than `scale(1)`: an untransformed resting face rasterizes on whole
+   device pixels, so the dot cannot land half a pixel off centre (same reason
+   `.checkbox-face` is inset rather than centred). */
 .radio-input:checked::before {
-  transform: scale(1);
+  transform: none;
   transition-duration: 0s;
 }
 

@@ -19,6 +19,10 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 - Checked and mixed checkboxes use an inset `--surface` face (rounded square when checked, disc when mixed) on an accent fill to match the toggle thumb — no check / minus glyphs. Radio selected dots use the same 2px inset and `--surface` face. Checkbox and radio snap into the selected state and ease out over `--control-hover-ms`, matching other controls.
 
+### Fixed
+
+- Selected radio dots and toggle thumb glyphs no longer rest inside a transform (radio uses `transform: none` when checked; thumb icons centre with insets and `margin: auto`), so they rasterize on whole device pixels instead of drifting about a pixel off centre at some scroll positions and display scalings.
+
 ## [0.11.0] - 2026-08-12
 
 ### Added
