@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-14T18:38:01.325Z",
+  "generatedAt": "2026-08-15T10:34:43.126Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -137,6 +137,9 @@
     "app/components/image-preview.js": {
       "sha256": "f71b5af2bed051ad23f292f5552d2cb2be05e1dc3f01a840caa5e633734c1262"
     },
+    "app/components/legend.js": {
+      "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
+    },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
     },
@@ -198,7 +201,7 @@
       "sha256": "6b491aaf5adc9c75310b63ed3acb962db791460ab86261625d8a91146965f286"
     },
     "app/css/controls-chips.css": {
-      "sha256": "1568970bc1a3dbba798f50cf63568539c6543152a37e38c7c66c5aca18305cce"
+      "sha256": "747ffe3da916aca5d97c8200333fd0f921ba92517b261225ef7c4acb242dfe68"
     },
     "app/css/controls-color.css": {
       "sha256": "150bbb11447e82597dfc9225286ea5cbfeb52cc9f0208265423934a61926b5b9"
@@ -282,7 +285,7 @@
       "sha256": "3f9f55c503dec155b391c71c7a3ab3ed5c659de5df5695084831155e51e95f0b"
     },
     "app/tokens.css": {
-      "sha256": "222fa35f080a70ca0abba79de4fde42de01a5d27f1fedd2daab95279869b70ac"
+      "sha256": "b7e2927c4f65b3cebfc80461a1cf2b3ed9e77e9713f44d0f5d975731f9e3b7d3"
     },
     "app/utils/also-see-svg.js": {
       "sha256": "af1ff194fde0ba9ffe09edf885fde4562bac5f14592fd2f348c366296447e854"
@@ -1164,7 +1167,7 @@
       "sha256": "fdd604c1062cfb03da9aca9ee9d2609d5924d40192798bda3950dc192f410697"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "c97c51c70ccc8a69999d46c78004b416b049d9519ed2203090920fbb9d72095e"
+      "sha256": "7eb98a1fd7080b24dc15cd39faf1f9bb4fbf8fd7b62d9b125cfe09668ba996f7"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1422,6 +1425,19 @@
         "dom",
         "icons"
       ]
+    },
+    "legend": {
+      "files": [
+        "app/components/legend.js"
+      ],
+      "css": [
+        "controls-chips.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [],
+      "notes": "Coloured category chips; slots 1–8; optional toggle; tooltips via data-tooltip / initShell"
     },
     "combobox": {
       "files": [
@@ -2413,7 +2429,8 @@
       "dropdown-toggle"
     ],
     "controls-chips.css": [
-      "chip"
+      "chip",
+      "legend"
     ],
     "controls-fields.css": [
       "fields",
