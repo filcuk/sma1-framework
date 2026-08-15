@@ -323,10 +323,11 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 .duration-input-seconds {
   box-sizing: border-box;
   flex: 0 0 auto;
+  align-self: stretch;
   width: 2ch;
   min-width: 2ch;
   min-height: 0;
-  height: 1.25rem;
+  height: auto;
   margin: 0;
   padding: 0;
   border: none;

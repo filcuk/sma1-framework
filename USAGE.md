@@ -1322,7 +1322,7 @@ initTimePickers(document);
 
 #### Duration input
 
-Segmented hours and minutes (optional seconds). Stores `H:MM` or `H:MM:SS` in `.duration-input-value`. Focusing or clicking a segment selects its full value (like a native time field). Arrow Up/Down nudges the focused segment (carries across fields; saturates at 0 and the max instead of wrapping); `:` or Arrow Right moves to the next field.
+Segmented hours and minutes (optional seconds). Stores `H:MM` or `H:MM:SS` in `.duration-input-value`. Focusing or clicking a segment selects its full value (like a native time field); clicking the control background focuses hours. Arrow Up/Down nudges the focused segment (carries across fields; saturates at 0 and the max instead of wrapping); `:` or Arrow Right moves to the next field.
 
 ```html
 <div class="duration-input" id="my-duration" data-duration-default="1:30">

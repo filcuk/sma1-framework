@@ -1,6 +1,7 @@
 /**
  * Duration input — hours / minutes (optional seconds) as a segmented control.
  * Focus/click selects the whole segment (parity with native `type="time"`).
+ * Clicking the control background (padding / separators) focuses hours.
  *
  * Markup:
  *   <div class="duration-input" id="my-duration" data-duration-default="1:30">
@@ -314,6 +315,16 @@ export function initDurationInput(
     selectSegment(event.target);
   }
 
+  // Native `type="time"` selects hours when the field background is clicked.
+  function onControlClick(event) {
+    if (isDisabled) return;
+    if (event.target instanceof HTMLInputElement && fields.includes(event.target)) {
+      return;
+    }
+    hoursInput.focus();
+    selectSegment(hoursInput);
+  }
+
   function onFieldInput(event) {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -410,6 +421,7 @@ export function initDurationInput(
   setDisabled(isDisabled);
 
   const fields = [hoursInput, minutesInput, secondsInput].filter(Boolean);
+  control.addEventListener("click", onControlClick);
   for (const field of fields) {
     field.addEventListener("focus", onFieldFocus);
     field.addEventListener("click", onFieldClick);
@@ -442,6 +454,7 @@ export function initDurationInput(
     },
     setDisabled,
     destroy() {
+      control.removeEventListener("click", onControlClick);
       for (const field of fields) {
         field.removeEventListener("focus", onFieldFocus);
         field.removeEventListener("click", onFieldClick);
