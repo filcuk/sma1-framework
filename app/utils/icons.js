@@ -100,7 +100,7 @@ export function mountIcon(element, name, { className = "", replace = true, inclu
 }
 
 /**
- * Wrap a checkbox input with painted glyph hosts (`check` / `minus`).
+ * Wrap a checkbox input with an inset face host (checked square / mixed disc).
  * Safe to call more than once; no-ops when already enhanced.
  * @param {Element | null | undefined} inputEl
  */
@@ -117,16 +117,12 @@ export function ensureCheckboxFace(inputEl) {
     control.append(inputEl);
   }
 
-  if (control.querySelector(".checkbox-glyphs")) return;
+  if (control.querySelector(".checkbox-face")) return;
 
-  const glyphs = document.createElement("span");
-  glyphs.className = "checkbox-glyphs";
-  glyphs.setAttribute("aria-hidden", "true");
-  glyphs.append(
-    createIcon("check", { className: "checkbox-glyph checkbox-glyph--check" }),
-    createIcon("minus", { className: "checkbox-glyph checkbox-glyph--minus" }),
-  );
-  control.append(glyphs);
+  const face = document.createElement("span");
+  face.className = "checkbox-face";
+  face.setAttribute("aria-hidden", "true");
+  control.append(face);
 }
 
 /** Mount icons on elements with `data-icon` (optional `data-icon-class`). */

@@ -70,7 +70,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | color-picker | `app/components/color-picker/` (`index.js`, `panel.js`) | `controls-color.css`, `controls-menus.css`, `controls-widgets.css` | — | JS: `chevron-down` (format menu), `palette` (colour sets toggle) | `dom`, `document-listeners`, `color`, `menu`, `icons`; uses `slider`; optional `color-set` | Spectrum / channel picker; RGB/CMYK/alpha via `initSlider`; format menu on hex field; optional adjacent colour set |
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
 | toggle-button | `app/components/toggle-button.js` | `controls-buttons.css` | — | Optional: `fullscreen`, `fullscreen-exit` (or any pair) | `dom`, `icons` | Pressed `.btn-toggle`; optional next-action label/icon swap; `data-toggle-button-always-active` drops the pressed accent styling |
-| checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | JS face: `check`, `minus` | `dom`, `icons` | Tri-state checkbox; faces via `initIcons` / `ensureCheckboxFace` |
+| checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | — | `dom`, `icons` | Tri-state checkbox; inset face via `initIcons` / `ensureCheckboxFace` |
 | segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
 | progress-bar | `app/components/progress-bar.js` | `controls-widgets.css` | — | — | `dom` | |

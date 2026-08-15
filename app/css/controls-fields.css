@@ -544,8 +544,8 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   line-height: 1.4;
 }
 
-/* Custom paint so checked glyphs match primary fills (`--accent-fg`).
-   Glyphs are `check` / `minus` icons mounted by initIcons / ensureCheckboxFace. */
+/* Custom paint mirrors the toggle thumb: inset `--surface` face on accent fill.
+   Face host is mounted by initIcons / ensureCheckboxFace (no glyph icons). */
 .checkbox-control {
   position: relative;
   display: inline-grid;
@@ -570,39 +570,33 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   grid-area: 1 / 1;
 }
 
-.checkbox-glyphs {
-  display: grid;
-  place-items: center;
-  grid-area: 1 / 1;
-  width: 0.75rem;
-  height: 0.75rem;
+.checkbox-face {
+  position: absolute;
+  /* Inset (not centred) so each edge is measured from the box and gaps stay even.
+     Whole pixels at 1x — a fractional inset cannot rasterize evenly there. */
+  inset: 2px;
+  border-radius: 2px;
+  background: transparent;
   pointer-events: none;
-  color: var(--accent-fg);
 }
 
-.checkbox-glyph {
-  display: none;
-  grid-area: 1 / 1;
-  width: 0.75rem;
-  height: 0.75rem;
-  overflow: visible;
-  /* Round Material paths read thin at 12px — stroke fattens the silhouette */
-  stroke: currentColor;
-  stroke-width: 5px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  paint-order: stroke fill;
+/* Where half pixels are real, tighten to the toggle's inset ratio (2px on a 22px track). */
+@media (min-resolution: 2dppx) {
+  .checkbox-face {
+    inset: 1.5px;
+  }
 }
 
-.checkbox-control:has(.checkbox-input:checked) .checkbox-glyph--check,
-.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-glyph--minus,
-.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-glyph--minus {
-  display: block;
+.checkbox-control:has(.checkbox-input:checked) .checkbox-face,
+.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-face,
+.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-face {
+  background: var(--surface);
+  border-radius: 2px;
 }
 
-.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-glyph--check,
-.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-glyph--check {
-  display: none;
+.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-face,
+.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-face {
+  border-radius: 999px;
 }
 
 .checkbox-input:checked,
@@ -697,7 +691,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
     appearance: auto;
   }
 
-  .checkbox-glyphs,
+  .checkbox-face,
   .radio-input::before {
     display: none;
   }

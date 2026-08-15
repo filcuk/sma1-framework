@@ -14,6 +14,10 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 - Legend (`initLegend` / `initLegends`) — coloured category chips for charts and code highlights; eight numbered palette slots; optional toggle and `data-tooltip`; demo under Chips.
 - Footer “also see” links accept optional per-app `accent` and `accentHover` hex colours in remote JSON or local config, scoping menu hover highlights to the destination app.
 
+### Changed
+
+- Checked and mixed checkboxes use an inset `--surface` face (rounded square when checked, disc when mixed) on an accent fill to match the toggle thumb — no check / minus glyphs.
+
 ## [0.11.0] - 2026-08-12
 
 ### Added
