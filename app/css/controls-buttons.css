@@ -114,10 +114,16 @@ a.btn.btn-primary:hover {
   color: var(--text);
 }
 
-.btn-toggle.btn-toggle--always-active {
-  background: var(--code-bg);
-  border-color: var(--accent);
+/* Both states are actions, not an on/off indicator — keep the default look */
+.btn-toggle.btn-toggle--always-active[aria-pressed="true"] {
+  background: var(--surface);
+  border-color: var(--border);
   color: var(--text);
+}
+
+.btn-toggle.btn-toggle--always-active[aria-pressed="true"]:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
 }
 
 .btn-toggle:has(.btn-toggle-label) {

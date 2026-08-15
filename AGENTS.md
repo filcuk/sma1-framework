@@ -107,6 +107,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initColorSet()` / `initColorSets()` | Named palette gallery; popup or embedded; optional set whitelist |
 | `initColorPicker()` / `initColorPickers()` | Spectrum / channel colour picker; format-dependent UI; optional colour set |
 | `initToggle()` / `initToggles()` | On/off switch control; optional `data-toggle-tristate` for off → on → mixed |
+| `initToggleButton()` / `initToggleButtons()` | `.btn-toggle` pressed state; optional next-action label/icon swap with `data-toggle-button-always-active` keeping the default button look |
 | `initTriStateCheckbox()` / `initTriStateCheckboxes()` | Tri-state checkbox (`data-checkbox-tristate`) — unchecked → checked → mixed |
 | `initBadge()` / `initBadges()` | Corner badge on a `.badge-host` (normal readout or `.badge--sm` dot) |
 | `initChipGroup()` / `initChipGroups()` | Selectable filter chips (toggle pressed; not removable) |

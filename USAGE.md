@@ -450,7 +450,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; template version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentHover`, and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
-| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. |
+| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
@@ -974,6 +974,39 @@ Standard height uses `--control-height`. Add `.btn-slim` for the compact `--cont
 <button type="button" class="btn btn-slim btn-icon" aria-label="More options"
   data-icon="lines" data-icon-class="btn-icon-svg"></button>
 ```
+
+### Toggle button
+
+Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/icon swapping. By default the pressed state shows the accent on/off appearance. Add `data-toggle-button-always-active` when both states are equally valid actions rather than on/off: the accent pressed styling is suppressed so the control keeps the default button appearance, and the swapped label/icon describes the **next action** (e.g. Enter fullscreen ↔ Exit fullscreen).
+
+```html
+<button type="button" class="btn btn-icon btn-toggle" aria-pressed="false"
+  data-toggle-button data-toggle-button-always-active
+  data-toggle-button-icon-off="fullscreen" data-toggle-button-icon-on="fullscreen-exit"
+  data-toggle-button-aria-label-off="Enter fullscreen"
+  data-toggle-button-aria-label-on="Exit fullscreen"
+  data-icon-class="btn-icon-svg"></button>
+
+<button type="button" class="btn btn-toggle" aria-pressed="false"
+  data-toggle-button
+  data-toggle-button-label-off="Enable" data-toggle-button-label-on="Disable"></button>
+```
+
+```javascript
+import { initToggleButton, initToggleButtons } from "./components/toggle-button.js";
+
+const btn = initToggleButton(document.getElementById("my-toggle-btn"), {
+  onChange: ({ pressed, source }) => console.log(pressed, source),
+});
+
+btn?.getPressed();
+btn?.setPressed(true);
+btn?.toggle();
+
+initToggleButtons(document); // all [data-toggle-button]
+```
+
+`data-toggle-button-label-off` / `-on`, `data-toggle-button-aria-label-off` / `-on`, `data-toggle-button-icon-off` / `-on`, `data-toggle-button-icon-class`, and `data-toggle-button-always-active` mirror the JS options. Actions in [`demo.html`](demo.html) shows both variants at standard and slim sizes.
 
 ### Toolbar
 

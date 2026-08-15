@@ -8,14 +8,15 @@
  *     data-toggle-button-label-on="Disable"></button>
  *
  * Add `data-toggle-button-always-active` when both states represent available
- * actions rather than an enabled / disabled presentation. State-specific
- * labels and icons describe the next action.
+ * actions rather than on / off: the pressed accent styling is dropped so the
+ * button keeps its default appearance, and state-specific labels and icons
+ * describe the next action.
  *
  * data-toggle-button-label-off / -on — visible label for each pressed state
  * data-toggle-button-aria-label-off / -on — accessible label for each state
  * data-toggle-button-icon-off / -on — icon id for each state
  * data-toggle-button-icon-class — class applied to mounted icons
- * data-toggle-button-always-active — keep the active visual in both states
+ * data-toggle-button-always-active — keep the default button look in both states
  */
 
 import { parseBooleanAttr } from "../utils/dom.js";

@@ -265,6 +265,15 @@ export const COMPONENTS = {
     icons: ["check", "remove"],
     infra: ["dom", "icons"],
   },
+  "toggle-button": {
+    files: ["app/components/toggle-button.js"],
+    css: ["controls-buttons.css"],
+    vendor: [],
+    icons: ["fullscreen", "fullscreen-exit"],
+    infra: ["dom", "icons"],
+    notes:
+      "Pressed .btn-toggle; optional next-action label/icon swap; data-toggle-button-always-active",
+  },
   checkbox: {
     files: ["app/components/checkbox.js"],
     css: ["controls-widgets.css"],
@@ -473,7 +482,7 @@ export const CSS_ONLY = {
 /** Which features need each CSS partial (for trim / index generation). */
 export const CSS_PARTIAL_FEATURES = {
   "layout.css": ["shell", "page-nav", "sticky", "title-numbering", "theme-toggle", "about-dialog"],
-  "controls-buttons.css": ["buttons", "toolbar"],
+  "controls-buttons.css": ["buttons", "toolbar", "toggle-button"],
   "overlays.css": ["tooltip", "banner", "dialog", "about-dialog", "callout", "popover", "tutorial"],
   "tutorial.css": ["tutorial"],
   "code-block.css": ["code-block", "expandable-surface"],

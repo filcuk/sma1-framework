@@ -24,7 +24,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | Partial (`app/css/`) | Features that need it |
 | -------------------- | --------------------- |
 | `layout.css` | Shell, section layout, page nav, footer, theme toggle, sticky, title numbering |
-| `controls-buttons.css` | Buttons, toolbar (always with shell) |
+| `controls-buttons.css` | Buttons, toolbar, toggle-button (always with shell) |
 | `overlays.css` | tooltip, banner, dialog, callout, popover |
 | `tutorial.css` | tutorial |
 | `code-block.css` | code-block, expandable-surface |
@@ -69,6 +69,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | color-set | `app/components/color-set/` (`index.js`, `panel.js`, `registry.js`, `sets/*`) | `controls-color.css` | — | — | `dom`, `document-listeners`, `color` | Named palette gallery; popup or embedded; one module per set |
 | color-picker | `app/components/color-picker/` (`index.js`, `panel.js`) | `controls-color.css`, `controls-menus.css`, `controls-widgets.css` | — | JS: `chevron-down` (format menu), `palette` (colour sets toggle) | `dom`, `document-listeners`, `color`, `menu`, `icons`; uses `slider`; optional `color-set` | Spectrum / channel picker; RGB/CMYK/alpha via `initSlider`; format menu on hex field; optional adjacent colour set |
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
+| toggle-button | `app/components/toggle-button.js` | `controls-buttons.css` | — | Optional: `fullscreen`, `fullscreen-exit` (or any pair) | `dom`, `icons` | Pressed `.btn-toggle`; optional next-action label/icon swap; `data-toggle-button-always-active` drops the pressed accent styling |
 | checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | JS face: `check`, `minus` | `dom`, `icons` | Tri-state checkbox; faces via `initIcons` / `ensureCheckboxFace` |
 | segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
@@ -98,7 +99,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 
 | id | Markup / CSS | Notes |
 | -- | ------------ | ----- |
-| buttons | `.btn*`, `controls-buttons.css` | Always keep with shell |
+| buttons | `.btn*`, `controls-buttons.css` | Always keep with shell; `.btn-toggle` pressed styles shared with toggle-button |
 | toolbar | `.toolbar` | Layout helper; no JS module |
 | fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css` |
 | section-panel | `.section-panel`, `controls-section-panel.css` | Demo pattern; drop partial if unused |

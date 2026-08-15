@@ -32,6 +32,7 @@ import { initColorInput } from "./components/color-input.js";
 import { initColorSet } from "./components/color-set/index.js";
 import { initColorPicker } from "./components/color-picker/index.js";
 import { initToggle } from "./components/toggle.js";
+import { initToggleButtons } from "./components/toggle-button.js";
 import { initTriStateCheckbox } from "./components/checkbox.js";
 import { initSegmentedControl } from "./components/segmented-control.js";
 import { initPagination } from "./components/pagination.js";
@@ -333,13 +334,7 @@ initDropdown(document.getElementById("demo-dropdown"));
 initDropdown(document.getElementById("demo-dropdown-icons"));
 initToggleDropdown(document.getElementById("demo-toggle-dropdown"));
 
-const iconToggleBtn = document.getElementById("icon-toggle-btn");
-if (iconToggleBtn) {
-  iconToggleBtn.addEventListener("click", () => {
-    const pressed = iconToggleBtn.getAttribute("aria-pressed") === "true";
-    iconToggleBtn.setAttribute("aria-pressed", pressed ? "false" : "true");
-  });
-}
+initToggleButtons(document);
 
 document.getElementById("demo-tooltip-flash-success")?.addEventListener("click", (e) => {
   const btn = e.currentTarget;
