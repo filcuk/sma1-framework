@@ -6,7 +6,7 @@
  * For third-party icons, set `name` to the collection id (e.g. `round-info`).
  * To reuse an existing template icon under another id, set `ref` to the target key.
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, upload, download, calendar, check, minus, plus, delete, remove, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, upload, download, calendar, clock, check, minus, plus, delete, remove, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
  */
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
@@ -143,6 +143,12 @@ export const TEMPLATE_ICONS = {
     markup: `<path fill="currentColor" d="M5 22q-.825 0-1.412-.587T3 20V6q0-.825.588-1.412T5 4h1V3q0-.425.288-.712T7 2t.713.288T8 3v1h8V3q0-.425.288-.712T17 2t.713.288T18 3v1h1q.825 0 1.413.588T21 6v14q0 .825-.587 1.413T19 22zm0-2h14V10H5z"/>`,
     attribution: ICON_ATTRIBUTIONS.materialSymbols,
     name: "calendar-today-rounded",
+  },
+  clock: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8s8 3.58 8 8s-3.58 8-8 8m-.22-13h-.06c-.4 0-.72.32-.72.72v4.72c0 .35.18.68.49.86l4.15 2.49c.34.2.78.1.98-.24a.71.71 0 0 0-.25-.99l-3.87-2.3V7.72c0-.4-.32-.72-.72-.72"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-schedule",
   },
   check: {
     viewBox: "0 0 24 24",
