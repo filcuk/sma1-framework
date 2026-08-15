@@ -102,3 +102,84 @@ button.chip.chip--removable:hover:not(:disabled) {
 .chip-filter-results li[hidden] {
   display: none;
 }
+
+/* Legend — coloured category chips (charts, code highlights, etc.) */
+
+.legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--legend-text);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 1.75rem;
+  padding: 0 0.9rem 1px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--legend-color, var(--surface));
+  color: var(--legend-text);
+  font: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    border-color var(--control-hover-ms) ease-out,
+    background var(--control-hover-ms) ease-out,
+    color var(--control-hover-ms) ease-out,
+    opacity var(--control-hover-ms) ease-out;
+}
+
+.legend-chip--definition {
+  --legend-color: var(--legend-definition);
+}
+
+.legend-chip--new-definition {
+  --legend-color: var(--legend-new-definition);
+}
+
+.legend-chip--reference {
+  --legend-color: var(--legend-reference);
+}
+
+.legend-chip--new-reference {
+  --legend-color: var(--legend-new-reference);
+}
+
+.legend-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button.legend-chip {
+  cursor: pointer;
+}
+
+button.legend-chip:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--legend-text) 35%, var(--border));
+  transition-duration: 0s;
+}
+
+button.legend-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button.legend-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.legend-chip.is-inactive,
+button.legend-chip[aria-pressed="false"] {
+  opacity: 0.45;
+}
