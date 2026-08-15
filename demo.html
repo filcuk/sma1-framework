@@ -307,29 +307,6 @@
             <hr class="panel-divider" />
             <div class="panel-split">
               <div class="panel-stack">
-                <h3 class="demo-card-title">Checkbox</h3>
-                <div class="checkbox-group" id="demo-checkbox-group">
-                  <label class="checkbox" for="demo-checkbox-default">
-                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-default" />
-                    <span>Option one</span>
-                  </label>
-                  <label class="checkbox" for="demo-checkbox-checked">
-                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-checked" checked />
-                    <span>Option two (checked)</span>
-                  </label>
-                  <label class="checkbox">
-                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-tristate"
-                      data-checkbox-tristate data-checkbox-default="mixed" />
-                    <span>Tri-state (click to cycle)</span>
-                  </label>
-                  <label class="checkbox" for="demo-checkbox-disabled">
-                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-disabled" disabled />
-                    <span>Option three (disabled)</span>
-                  </label>
-                </div>
-              </div>
-              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
-              <div class="panel-stack">
                 <h3 class="demo-card-title">Toggle</h3>
                 <div class="toggle-group" id="demo-toggle-group">
                   <div class="toggle" id="demo-toggle-off" data-toggle-default="false">
@@ -377,6 +354,47 @@
                     </button>
                     <input type="hidden" class="toggle-value" value="true" />
                   </div>
+                  <div class="toggle toggle--slim" id="demo-toggle-slim-off" data-toggle-default="false">
+                    <button type="button" class="toggle-btn" role="switch" aria-checked="false">
+                      <span class="toggle-track" aria-hidden="true">
+                        <span class="toggle-thumb"></span>
+                      </span>
+                      <span class="toggle-label">Slim (off)</span>
+                    </button>
+                    <input type="hidden" class="toggle-value" value="false" />
+                  </div>
+                  <div class="toggle toggle--slim" id="demo-toggle-slim-on" data-toggle-default="true">
+                    <button type="button" class="toggle-btn" role="switch" aria-checked="true">
+                      <span class="toggle-track" aria-hidden="true">
+                        <span class="toggle-thumb"></span>
+                      </span>
+                      <span class="toggle-label">Slim (on)</span>
+                    </button>
+                    <input type="hidden" class="toggle-value" value="true" />
+                  </div>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="demo-card-title">Checkbox</h3>
+                <div class="checkbox-group" id="demo-checkbox-group">
+                  <label class="checkbox" for="demo-checkbox-default">
+                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-default" />
+                    <span>Option one</span>
+                  </label>
+                  <label class="checkbox" for="demo-checkbox-checked">
+                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-checked" checked />
+                    <span>Option two (checked)</span>
+                  </label>
+                  <label class="checkbox">
+                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-tristate"
+                      data-checkbox-tristate data-checkbox-default="mixed" />
+                    <span>Tri-state (click to cycle)</span>
+                  </label>
+                  <label class="checkbox" for="demo-checkbox-disabled">
+                    <input type="checkbox" class="checkbox-input" id="demo-checkbox-disabled" disabled />
+                    <span>Option three (disabled)</span>
+                  </label>
                 </div>
               </div>
             </div>

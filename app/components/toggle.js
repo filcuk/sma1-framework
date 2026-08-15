@@ -22,6 +22,9 @@
  * data-toggle-default — "true" / "false" / "mixed" (tristate), or presence for on
  * data-toggle-tristate — enable three-state cycling
  * data-toggle-disabled — disable the switch
+ *
+ * Add `.toggle--slim` for a thin track with an oversized overhanging thumb
+ * (no icon; CSS hides thumb icons if present).
  */
 
 import { parseBooleanAttr } from "../utils/dom.js";

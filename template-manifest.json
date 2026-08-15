@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-15T13:27:10.907Z",
+  "generatedAt": "2026-08-15T13:33:24.527Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -183,7 +183,7 @@
       "sha256": "42c834104fde855b9f4f08bcebcc5768b2ff27fdbef3884469d8cde007de37f9"
     },
     "app/components/toggle.js": {
-      "sha256": "e2f9c98506e8fffe580f864ea12ca023cb8026bb24ec48578f2c948f793f124a"
+      "sha256": "aee44b761098d8f7b779b954a4275cca4dea95f95c8a475006f111a0f32b0598"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -234,7 +234,7 @@
       "sha256": "e63764fba1fbd95acc81e69314be87c4047cdfb827c808d003870126692eead7"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "e5cc81cc9b54cf39c27411ead5452b9687b14daf0d5048dd22d471a25c96de5b"
+      "sha256": "7e3b6bee904f1f34763cbe236ef83eb994c38985f58f3f63466109cb8b07d712"
     },
     "app/css/layout.css": {
       "sha256": "38200fdff68354e5bb8e51b55066df5927a6ed7b67622302e6a9c73dffee541a"

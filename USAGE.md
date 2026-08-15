@@ -472,7 +472,7 @@ Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via 
 | **Date picker** | Calendar popup with optional time field. [`app/components/date-picker/`](app/components/date-picker/). |
 | **Time picker** | Time-of-day field (no date) via native `<input type="time">`. [`app/components/time-picker.js`](app/components/time-picker.js). |
 | **Duration input** | Segmented hours:minutes (optional seconds) duration field. [`app/components/duration-input.js`](app/components/duration-input.js). |
-| **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional tri-state (`data-toggle-tristate`) cycles off → on → mixed. [`app/components/toggle.js`](app/components/toggle.js). |
+| **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) cycles off → on → mixed. [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
 | **Segmented control** | Toggle button group for single selection; optional linked panels. [`app/segmented-control.js`](app/segmented-control.js). |
 | **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/progress-indicator.js`](app/progress-indicator.js). |
@@ -2106,6 +2106,20 @@ On/off switch for boolean settings. Uses `role="switch"` and `aria-checked` on t
     <span class="toggle-label">Enable notifications</span>
   </button>
   <input type="hidden" class="toggle-value" name="notifications" value="false" />
+</div>
+```
+
+Add `.toggle--slim` for a thin track with an oversized thumb that overhangs the slot. Omit thumb icons (CSS hides them if present).
+
+```html
+<div class="toggle toggle--slim" id="my-toggle-slim" data-toggle-default="false">
+  <button type="button" class="toggle-btn" role="switch" aria-checked="false">
+    <span class="toggle-track" aria-hidden="true">
+      <span class="toggle-thumb"></span>
+    </span>
+    <span class="toggle-label">Compact setting</span>
+  </button>
+  <input type="hidden" class="toggle-value" name="compact" value="false" />
 </div>
 ```
 

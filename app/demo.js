@@ -183,6 +183,8 @@ initToggle(document.getElementById("demo-toggle-off"));
 initToggle(document.getElementById("demo-toggle-on"));
 initToggle(document.getElementById("demo-toggle-tristate"));
 initToggle(document.getElementById("demo-toggle-disabled"));
+initToggle(document.getElementById("demo-toggle-slim-off"));
+initToggle(document.getElementById("demo-toggle-slim-on"));
 
 initSegmentedControl(document.getElementById("demo-segmented-view"));
 

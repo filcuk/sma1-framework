@@ -10,6 +10,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
+- Slim toggle variant (`.toggle--slim`) — thin track with an oversized overhanging thumb and no icon; Forms demo and USAGE docs.
 - Toggle button (`initToggleButton` / `initToggleButtons`) — `.btn-toggle` pressed state with optional next-action label/icon swapping; `data-toggle-button-always-active` keeps the default button appearance for controls where both states are actions; Actions demo shows pressed-state and swapping icon toggles at standard and slim sizes.
 - Legend (`initLegend` / `initLegends`) — coloured category chips for charts and code highlights; eight numbered palette slots; optional toggle and `data-tooltip`; demo under Chips.
 - Footer “also see” links accept optional per-app `accent` and `accentHover` hex colours in remote JSON or local config, scoping menu hover highlights to the destination app.
