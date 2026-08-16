@@ -189,7 +189,8 @@ button.legend-chip {
 }
 
 button.legend-chip:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--legend-border, var(--border)) 70%, var(--text));
+  border-color: color-mix(in srgb, var(--legend-border, var(--border)) 70%, #FFFFFF);
+  background: color-mix(in srgb, var(--legend-color, var(--surface)) 90%, #FFFFFF);
   transition-duration: 0s;
 }
 
