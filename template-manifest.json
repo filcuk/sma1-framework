@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-16T10:07:50.329Z",
+  "generatedAt": "2026-08-16T09:49:36.114Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -198,7 +198,7 @@
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
     },
     "app/components/tutorial.js": {
-      "sha256": "199e1cab5fac0296de8eb1556005e2a46033e172ff72def7f9e57dde9019599f"
+      "sha256": "c43b57d9bfe696022bbcb69541d3557daff23bf5bedff1c516b26d0e36f08d33"
     },
     "app/css/code-block.css": {
       "sha256": "f8d9d8f49cc5cca8f72e6d0c5a55208d7b1a20da36afb92fa44763db13363594"
@@ -327,7 +327,7 @@
       "sha256": "d3dd6ac565d600b06f8a8925487c782f8495a11f2ba202a0602333afd78fba53"
     },
     "app/utils/sanitize-svg.js": {
-      "sha256": "433ca97df4ed3a0ad45c227448d0606a019a4be70215f3a0648eca0ab2b1f0ce"
+      "sha256": "4f55c12634aab20d45937abf6dd3158539ff05c1b6804e9608a6bfc224a8f3ad"
     },
     "app/vendor/d3-scale/README.md": {
       "sha256": "b4ecd72cc23d8f3309030c5df852dfb87f56e39e70c3760610bca10e5d585dbd"

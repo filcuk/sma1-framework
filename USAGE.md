@@ -817,7 +817,7 @@ tour?.start(); // or rely on startTriggers
 | `interactive` | When true, the target stays clickable (page is not `inert`) and Tab is not trapped in the step popover |
 | `advanceOn` | `"click"` — advance when the interactive target is clicked |
 | `padding` | Spotlight padding around the target (px) |
-| `scroll` | Scroll the target into view (default `true`) |
+| `scroll` | Scroll the target into view before opening the step popover (default `true`) |
 
 Escape closes the active tutorial (priority above dialogs). See [`DESIGN.md`](DESIGN.md) for when to prefer a tutorial vs a persistent tooltip. Demo: [`demo.html`](demo.html).
 
