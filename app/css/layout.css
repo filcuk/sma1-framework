@@ -78,7 +78,13 @@ body > footer {
 
 /* Optional sticky chrome — opt in via data-sticky-* on :root.
    Stack: site header → single content slot (segment, or Segment > Section crumb).
-   JS toggles data-sticky-stuck / data-sticky-stuck-edge / data-sticky-crumb*. */
+   JS toggles data-sticky-stuck / data-sticky-stuck-edge / data-sticky-crumb*.
+
+   Pinning waits for data-sticky-ready (set by sticky.js). All pinned chrome —
+   background, gap fill, hairline — is painted from JS-set state, so pinning
+   before the first sync would float bare heading text over scrolled content
+   until the module ran. data-sticky-boot zeroes the fade durations so that
+   first sync lands fully painted instead of transitioning in. */
 
 /* Tier-lead collapse shifts layout above the viewport; disable scroll
    anchoring so programmatic page-nav jumps keep their target Y. */
@@ -86,11 +92,16 @@ body > footer {
   overflow-anchor: none;
 }
 
+:root[data-sticky-boot] {
+  --sticky-fade-ms: 0ms;
+  --sticky-crumb-ms: 0ms;
+}
+
 .content-tier {
   --sticky-tier-offset: 0px;
 }
 
-:root[data-sticky-header] body > header {
+:root[data-sticky-ready][data-sticky-header] body > header {
   position: sticky;
   /* Flush at rest — top: sticky-gap would offset the header immediately at scroll 0 */
   top: 0;
@@ -102,7 +113,7 @@ body > footer {
   z-index: 41;
 }
 
-:root[data-sticky-section-headings] .content-tier-header {
+:root[data-sticky-ready][data-sticky-section-headings] .content-tier-header {
   position: sticky;
   top: calc(var(--sticky-header-offset) + var(--sticky-gap));
   /* Below site header; above section titles so crumbs paint over merged ghosts */
@@ -253,7 +264,7 @@ body > footer {
   text-underline-offset: 0.12em;
 }
 
-:root[data-sticky-section-headings] .section-title {
+:root[data-sticky-ready][data-sticky-section-headings] .section-title {
   position: sticky;
   /* Same content slot as the tier header (breadcrumb merge, not vertical stack). */
   top: calc(var(--sticky-header-offset) + var(--sticky-gap));
@@ -342,9 +353,10 @@ body > footer {
     0 18px 36px -10px var(--sticky-shadow);
 }
 
-/* Short viewports: drop the tier from the stack so content stays usable. */
+/* Short viewports: drop the tier from the stack so content stays usable.
+   Matches the pinning selector so it still wins on specificity. */
 @media (max-height: 700px) {
-  :root[data-sticky-section-headings] .content-tier-header {
+  :root[data-sticky-ready][data-sticky-section-headings] .content-tier-header {
     position: static;
   }
 }

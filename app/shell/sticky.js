@@ -26,6 +26,10 @@
  * *visible* pinned element also gets `data-sticky-stuck-edge` (hairline + shadow).
  * Sections merged into a tier crumb get `data-sticky-crumb-merged` (ghost chrome).
  *
+ * CSS pins only under `data-sticky-ready` (set here on boot) so headings never
+ * pin without the chrome this module paints; `data-sticky-boot` holds the fades
+ * at 0ms across the first sync.
+ *
  * CSS variables:
  *   --sticky-header-offset     on :root — live bottom of the site header (no gap)
  *   --sticky-tier-offset       on each .content-tier — pinned bar height, used
@@ -62,6 +66,12 @@ const STUCK_ATTR = "data-sticky-stuck";
 const STUCK_EDGE_ATTR = "data-sticky-stuck-edge";
 const CRUMB_ATTR = "data-sticky-crumb";
 const CRUMB_MERGED_ATTR = "data-sticky-crumb-merged";
+
+/** CSS pins only once this module can resolve and paint stuck state. */
+const READY_ATTR = "data-sticky-ready";
+
+/** Zeroes the fade durations so the first sync paints instead of fading in. */
+const BOOT_ATTR = "data-sticky-boot";
 
 /**
  * Hold the crumb across brief gaps between subsections so the large segment
@@ -884,7 +894,20 @@ export function initStickyChrome() {
     });
   }
 
+  const root = rootEl();
+  // Pinning and its chrome must land in the same paint: a page reloaded
+  // mid-document restores scroll before this module runs, so CSS-only pinning
+  // would show bare headings over the content behind them, then fade the
+  // background in once the first sync ran.
+  root.setAttribute(BOOT_ATTR, "");
+  root.setAttribute(READY_ATTR, "");
+
   syncStickyOffsets();
+
+  // Two frames: one to paint the boot state, one before fades are armed again.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => root.removeAttribute(BOOT_ATTR));
+  });
 
   if (listenersBound) return;
   listenersBound = true;
