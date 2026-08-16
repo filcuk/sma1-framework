@@ -465,8 +465,8 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/file-dropzone.js`](app/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
-| **Section panel** | `.section-panel` three-column grid rows, divider, submit row with expiring banner. See [`demo.html`](demo.html). |
-| **Panel split** | Side-by-side columns with full-bleed horizontal/vertical dividers inside padded panels (`.panel-split`, `.panel-divider`, `.panel-stack`). See **Panel split**. |
+| **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
+| **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/combo.js`](app/combo.js). |
 | **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge. [`app/components/combobox.js`](app/components/combobox.js). |
 | **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/slider.js`](app/slider.js). |
@@ -1074,7 +1074,7 @@ dot?.setValue(true);  // show
 initBadges(document); // all `.badge-host` blocks with a `.badge`
 ```
 
-`data-badge-label` keeps the control’s `aria-label` in sync (`{label}, {value}` for normal; `{label}, {detail}` for small). Optional `data-badge-max` (or `max` option) caps normal readouts (e.g. `99` → `99+`). Mark the control with `data-badge-control` when it is not the obvious button/link sibling. On tinted surfaces (`.section-panel`, `.demo-card`), `--badge-ring` matches the panel; override it where the host background differs.
+`data-badge-label` keeps the control’s `aria-label` in sync (`{label}, {value}` for normal; `{label}, {detail}` for small). Optional `data-badge-max` (or `max` option) caps normal readouts (e.g. `99` → `99+`). Mark the control with `data-badge-control` when it is not the obvious button/link sibling. On tinted `.section-panel` surfaces, `--badge-ring` matches the panel; override it where the host background differs.
 
 ### Chips
 
@@ -1510,6 +1510,28 @@ initImagePreviews(document); // wire every `.image-preview`
 `data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`.
 
 Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
+
+### Panel layout
+
+Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for compact inline content, and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
+
+```html
+<section class="section-panel">
+  <h3 class="panel-title">Preferences</h3>
+  <p class="panel-hint">Choose how this page behaves.</p>
+  <div class="panel-grid panel-grid-2">
+    <div class="panel-stack"><!-- stacked fields --></div>
+    <div class="panel-stack"><!-- stacked fields --></div>
+  </div>
+  <hr class="panel-divider" />
+  <div class="panel-row panel-row--spread">
+    <span class="panel-inline"><!-- compact status --></span>
+    <button type="button" class="btn btn-primary">Save</button>
+  </div>
+</section>
+```
+
+The three- and four-column grid variants collapse to one column below 900px; the four-column variant first drops to two columns below 1100px. Use `.panel-split` when columns need full-bleed dividers.
 
 ### Panel split
 
