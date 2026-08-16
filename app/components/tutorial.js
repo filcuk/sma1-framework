@@ -139,6 +139,147 @@ function formatStepOf(template, index, total) {
     .replaceAll("{N}", String(total));
 }
 
+/* The step card is only shown once scrolling has finished, so the tour runs the
+   scroll itself: native smooth scrolling gives no dependable "done" signal
+   (`scrollend` fires per frame for programmatic scrolls, and a smooth scroll can
+   start late on a busy main thread), which left the card placed against a
+   viewport the page had not reached yet. */
+const SCROLL_MIN_MS = 240;
+const SCROLL_MAX_MS = 640;
+const SCROLL_PX_PER_MS = 2.4;
+
+/**
+ * Scroll the window without honouring CSS `scroll-behavior`, so each animation
+ * frame lands exactly where asked.
+ * @param {number} y
+ */
+function jumpWindowTo(y) {
+  window.scrollTo({ top: y, left: window.scrollX, behavior: "instant" });
+}
+
+/**
+ * Nearest ancestor that scrolls independently of the page.
+ * @param {HTMLElement} target
+ * @returns {HTMLElement | null}
+ */
+function scrollableAncestor(target) {
+  const scrollable = /(auto|scroll|overlay)/;
+  let node = target.parentElement;
+  while (node && node !== document.body && node !== document.documentElement) {
+    const style = getComputedStyle(node);
+    if (
+      (scrollable.test(style.overflowY) && node.scrollHeight > node.clientHeight) ||
+      (scrollable.test(style.overflowX) && node.scrollWidth > node.clientWidth)
+    ) {
+      return node;
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
+
+/**
+ * Page scroll position that centres `target`, clamped to the document.
+ * @param {HTMLElement} target
+ * @returns {number}
+ */
+function centeredScrollY(target) {
+  const rect = target.getBoundingClientRect();
+  const desired =
+    window.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
+  const max = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight,
+  );
+  return Math.max(0, Math.min(desired, max));
+}
+
+/**
+ * True when showing `target` requires moving the page or an inner scroller.
+ * @param {HTMLElement} target
+ * @returns {boolean}
+ */
+function needsScrollFor(target) {
+  if (scrollableAncestor(target)) return true;
+  return Math.abs(centeredScrollY(target) - window.scrollY) > 1;
+}
+
+/**
+ * Centre `target` and resolve when the page has stopped moving. Inner scrollers
+ * are brought into view first (instantly); the page scroll is then animated
+ * here rather than by `scrollIntoView`, so the end of the scroll is exact.
+ * @param {HTMLElement} target
+ * @param {{ signal?: AbortSignal, animate?: boolean }} [options]
+ * @returns {Promise<void>}
+ */
+function scrollTargetIntoView(target, options = {}) {
+  const { signal, animate = true } = options;
+  if (signal?.aborted) return Promise.resolve();
+
+  if (scrollableAncestor(target)) {
+    target.scrollIntoView({
+      block: "nearest",
+      inline: "nearest",
+      behavior: "instant",
+    });
+  }
+
+  const destination = centeredScrollY(target);
+  const startY = window.scrollY;
+  const distance = destination - startY;
+
+  if (!animate || Math.abs(distance) <= 1) {
+    jumpWindowTo(destination);
+    return Promise.resolve();
+  }
+
+  const duration = Math.min(
+    SCROLL_MAX_MS,
+    Math.max(SCROLL_MIN_MS, Math.abs(distance) / SCROLL_PX_PER_MS),
+  );
+
+  return new Promise((resolve) => {
+    const started = performance.now();
+    let frame = 0;
+
+    const finish = () => {
+      cancelAnimationFrame(frame);
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    };
+
+    function onAbort() {
+      finish();
+    }
+
+    const tick = (now) => {
+      if (signal?.aborted || !target.isConnected) {
+        finish();
+        return;
+      }
+
+      const progress = Math.min(1, (now - started) / duration);
+      const eased =
+        progress < 0.5
+          ? 4 * progress ** 3
+          : 1 - (-2 * progress + 2) ** 3 / 2;
+      jumpWindowTo(startY + distance * eased);
+
+      if (progress >= 1) {
+        /* Re-centre in case the page reflowed while scrolling. */
+        jumpWindowTo(centeredScrollY(target));
+        finish();
+        return;
+      }
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    signal?.addEventListener("abort", onAbort, { once: true });
+    frame = requestAnimationFrame(tick);
+  });
+}
+
 /**
  * @param {{
  *   id?: string,
@@ -222,6 +363,8 @@ export function initTutorial(options) {
   let stepIndex = -1;
   /** @type {(() => void) | null} */
   let removeAdvanceListener = null;
+  /** @type {AbortController | null} */
+  let pendingReveal = null;
   /** @type {Element | null} */
   let previouslyFocused = null;
   let closing = false;
@@ -260,11 +403,25 @@ export function initTutorial(options) {
     removeAdvanceListener = null;
   }
 
+  function cancelPendingReveal() {
+    pendingReveal?.abort();
+    pendingReveal = null;
+  }
+
   function leaveCurrentStep() {
     clearAdvanceListener();
+    cancelPendingReveal();
     if (stepIndex < 0 || stepIndex >= steps.length) return;
     const step = steps[stepIndex];
     step.onLeave?.({ index: stepIndex, step });
+  }
+
+  /** Close the step card without ending the tutorial (e.g. while scrolling). */
+  function hideStepPopover() {
+    if (!popover.isOpen()) return;
+    closing = true;
+    popover.close();
+    closing = false;
   }
 
   /**
@@ -391,6 +548,35 @@ export function initTutorial(options) {
   }
 
   /**
+   * @param {NormalizedTutorialStep} step
+   * @param {number} i
+   * @param {HTMLElement | null} target
+   */
+  function presentStep(step, i, target) {
+    const pad = step.padding ?? defaultPadding;
+    setPageInert(!step.interactive);
+    placeSpotlight(target, pad, step.interactive);
+    /* Interactive steps need Tab to reach the spotlight target. */
+    popover.setTrapFocus(!step.interactive);
+    syncPopover(step, i, target);
+
+    if (step.interactive && step.advanceOn === "click" && target) {
+      clearAdvanceListener();
+      const onAdvance = () => {
+        clearAdvanceListener();
+        next();
+      };
+      target.addEventListener("click", onAdvance);
+      removeAdvanceListener = () => {
+        target.removeEventListener("click", onAdvance);
+      };
+    }
+
+    step.onEnter?.({ index: i, step });
+    onStep?.({ index: i, step, target });
+  }
+
+  /**
    * @param {number} index
    * @param {"forward" | "backward"} [direction]
    */
@@ -425,34 +611,37 @@ export function initTutorial(options) {
       stepIndex = i;
 
       const pad = step.padding ?? defaultPadding;
-      if (target && step.scroll) {
-        target.scrollIntoView({
-          block: "center",
-          inline: "nearest",
-          behavior: prefersReducedMotion() ? "auto" : "smooth",
-        });
-      }
+      const animate = !prefersReducedMotion();
+      const willScroll = Boolean(target && step.scroll) && needsScrollFor(target);
 
       setPageInert(!step.interactive);
       placeSpotlight(target, pad, step.interactive);
-      /* Interactive steps need Tab to reach the spotlight target. */
       popover.setTrapFocus(!step.interactive);
-      syncPopover(step, i, target);
 
-      if (step.interactive && step.advanceOn === "click" && target) {
-        clearAdvanceListener();
-        const onAdvance = () => {
-          clearAdvanceListener();
-          next();
-        };
-        target.addEventListener("click", onAdvance);
-        removeAdvanceListener = () => {
-          target.removeEventListener("click", onAdvance);
-        };
+      if (!willScroll) {
+        presentStep(step, i, target);
+        return;
       }
 
-      step.onEnter?.({ index: i, step });
-      onStep?.({ index: i, step, target });
+      if (!animate) {
+        scrollTargetIntoView(target, { animate: false });
+        presentStep(step, i, target);
+        return;
+      }
+
+      /* Keep the card hidden until the scroll has finished, so it is placed
+         against the viewport the step actually ends on. */
+      hideStepPopover();
+
+      const controller = new AbortController();
+      pendingReveal = controller;
+      const revealIndex = i;
+      scrollTargetIntoView(target, { signal: controller.signal }).then(() => {
+        if (pendingReveal !== controller) return;
+        pendingReveal = null;
+        if (!isActive || stepIndex !== revealIndex) return;
+        presentStep(step, revealIndex, target);
+      });
       return;
     }
 
@@ -512,6 +701,7 @@ export function initTutorial(options) {
     closing = true;
     leaveCurrentStep();
     clearAdvanceListener();
+    cancelPendingReveal();
     setPageInert(false);
     setHidden(overlay, true);
     document.body.classList.remove("tutorial-open");

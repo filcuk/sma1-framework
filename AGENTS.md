@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Rules for AI agents working in this microapp template repository.
+Rules for AI agents working in the SMA1 Framework repository.
 
 ## Lifecycle skills
 
@@ -96,9 +96,9 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
-| `initDatePicker()` / `initDatePickers()` | Calendar popup with optional time input |
-| `initTimePicker()` / `initTimePickers()` | Time-of-day field (native `type="time"`) |
-| `initDurationInput()` / `initDurationInputs()` | Segmented hours:minutes (optional seconds) duration |
+| `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
+| `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
+| `initDurationInput()` / `initDurationInputs()` | Segmented duration field with the shared popup in duration mode |
 | `initSlider()` / `initSliders()` | Range slider with editable value (integer, decimal, percentage) |
 | `initProgressBar()` / `initProgressBars()` | Progress bar with optional percent or fraction label |
 | `initSpinner()` / `initSpinners()` | Loading spinner; optional blocking overlay on a host |
@@ -107,10 +107,12 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initColorSet()` / `initColorSets()` | Named palette gallery; popup or embedded; optional set whitelist |
 | `initColorPicker()` / `initColorPickers()` | Spectrum / channel colour picker; format-dependent UI; optional colour set |
 | `initToggle()` / `initToggles()` | On/off switch control; optional `data-toggle-tristate` for off → on → mixed |
+| `initToggleButton()` / `initToggleButtons()` | `.btn-toggle` pressed state; optional next-action label/icon swap with `data-toggle-button-always-active` keeping the default button look |
 | `initTriStateCheckbox()` / `initTriStateCheckboxes()` | Tri-state checkbox (`data-checkbox-tristate`) — unchecked → checked → mixed |
 | `initBadge()` / `initBadges()` | Corner badge on a `.badge-host` (normal readout or `.badge--sm` dot) |
 | `initChipGroup()` / `initChipGroups()` | Selectable filter chips (toggle pressed; not removable) |
 | `initChipInput()` / `initChipInputs()` | Text field that adds removable chips |
+| `initLegend()` / `initLegends()` | Coloured legend chips (optional toggle; slots `--1`…`--8` or `--legend-color`) |
 | `initSegmentedControl()` / `initSegmentedControls()` | Segmented control (toggle button group) |
 | `initPagination()` / `initPaginations()` | Client-side pagination (numbered pages, no URL change) |
 | `initTable()` / `initTables()` | Data table with optional sortable columns (Shift+click multi-sort) and row selection |
@@ -121,6 +123,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initChart()` / `initCharts()` | TanStack Charts host (`mountChart`); requires vendored ESM + import map for `d3-scale` / `d3-shape` when using bars |
 | `initDiagram()` / `initDiagrams()` | Mermaid text→SVG host; requires vendored ESM + chunks under `app/vendor/mermaid/` |
 | `onDocumentClickOutside()` / `onDocumentEscape()` | Shared document listeners — do not add per-instance `document` listeners for these |
+| `registerOpenPopup()` / `unregisterOpenPopup()` / `openPopupGroup()` | One anchored popup open at a time (menus, pickers, combobox lists) |
 
 ### Document listeners
 
@@ -130,6 +133,17 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 - **Escape:** handlers sorted by priority (higher first). Return `true` when handled. Tutorials use priority `110`, dialogs `100`, expandable surfaces `90`, menus / popovers use `50`.
 
 When a module registers listeners, store and call the returned unsubscribe in `destroy()` if provided.
+
+### One popup at a time
+
+Anchored popups (dropdown / combo menus, combobox lists, date, time, duration, colour set, and colour picker popups) also register with the same module:
+
+- Call `registerOpenPopup(close)` when opening — it closes every other open popup first
+- Call `unregisterOpenPopup(close)` when closing and in `destroy()`
+- The closer is invoked as `close({ restoreFocus: false })`, so a peer never steals focus
+- Wrap a multi-popup open in `openPopupGroup(() => …)` when two popups belong together (colour input `open="both"`)
+
+Triggers call `stopPropagation`, so outside-click alone cannot close peers — new popup components must register.
 
 ### Visibility
 
@@ -158,7 +172,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/code-block.css` | Code blocks and expandable surfaces |
 | `app/css/controls-buttons.css` | Toolbar, buttons |
 | `app/css/controls-badges.css` | Corner badges on controls and labels |
-| `app/css/controls-chips.css` | Selectable filter chips and removable input chips |
+| `app/css/controls-chips.css` | Selectable / removable chips and coloured legend chips |
 | `app/css/controls-fields.css` | Fields, combobox, date/time |
 | `app/css/controls-widgets.css` | Toggle, segmented control, pagination, progress bar, spinner, slider, stepper, color input |
 | `app/css/controls-section-panel.css` | Section panel grid rows |
@@ -179,8 +193,8 @@ Keep HTML linking only `styles.css`. Edit tokens, `app/css/app.css`, or the rele
 
 ### Demo vs shared layout
 
-- **Shared layout** (usable in forks): `.content-section`, `.content-tier` / `.content-tier-header` / `.segment-title` / `.content-tier-lead` / `.content-tier-body`, `.section-title`, `.section-panel`, `.panel-split` / `.panel-divider` / `.panel-stack`, `.callout`, …
-- **Demo-only helpers** (showcase arrangement): `.demo-row`, `.demo-grid`, `.demo-card`, `.demo-hint`, … — fine in `demo.html` / `app/demo.js`
+- **Shared layout** (usable in forks): `.content-section`, `.content-tier` / `.content-tier-header` / `.segment-title` / `.content-tier-lead` / `.content-tier-body`, `.section-title`, `.section-panel`, `.panel-title` / `.panel-hint` / `.panel-row` / `.panel-inline` / `.panel-grid`, `.panel-split` / `.panel-divider` / `.panel-stack`, `.callout`, …
+- **Demo-only helpers** (catalogue wiring and visualisation): `.demo-colour-*`, `.demo-banner-*`, and demo element ids — fine in `demo.html` / `app/demo.js`
 - Shell and shared CSS/JS must **not** select `demo-*` classes. If sticky, page-nav, or other chrome depends on markup, use generic names and document them in `USAGE.md`. See [`.cursor/rules/demo-isolation.mdc`](.cursor/rules/demo-isolation.mdc).
 
 ## JS module layers

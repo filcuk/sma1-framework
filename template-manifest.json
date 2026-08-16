@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
-  "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-12T17:44:36.572Z",
-  "source": "filcuk/microapp-template",
+  "templateVersion": "0.12.0",
+  "generatedAt": "2026-08-16T10:23:46.291Z",
+  "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
     "app/demo.js",
@@ -51,16 +51,16 @@
       "sha256": "007526ca24962ac1c5d71efef266b93841ce91b1e235b2bb6207d71637c1e024"
     },
     "app/components/color-input.js": {
-      "sha256": "f3838ca01e41d8ecf985bb8fec35c531ee69207636eb8e0f911c92fa9847ca6d"
+      "sha256": "3ac48a3018c93a7d069967caee75d1fc5186f839e42dd14d22be05c582ca6e92"
     },
     "app/components/color-picker/index.js": {
-      "sha256": "4256c1e52ddffcf3ccc8ceaf3c267faa1e29ac33d82d09787d001dd9f63140a7"
+      "sha256": "bb9d0f6eb9d570d7a6efaea9c661960df9f2e6854dab9f93cf33714d05b97d83"
     },
     "app/components/color-picker/panel.js": {
       "sha256": "dfaa5f077af2acd6d7fcf10e52c15cf64a15d959a9e25c7851518bbfbf913a64"
     },
     "app/components/color-set/index.js": {
-      "sha256": "ed2af1221b24498962a5a6ded7e9808bba020445cefe2142fa3bcef7f96359dc"
+      "sha256": "4add3bbdf2051eaf8c07ac66731ac36ddc621570ac6ed65b28053e09ead9d127"
     },
     "app/components/color-set/panel.js": {
       "sha256": "2c912d2a27176c7a95ec2b8aab69a3a93cacca3a77093082c80dce007b58e845"
@@ -96,13 +96,13 @@
       "sha256": "a0a43f7e59f6f8e13ec4f6e89e1f96d02cfd1283dbaa868fcd511140b9bdb04f"
     },
     "app/components/combobox.js": {
-      "sha256": "f650d9e7005c76cdaaa07cb18fecc73c53f62d1bc1d7f41981753feef510604c"
+      "sha256": "d012718f4374c3af6b03f6399a244733278951b6668617ed888dc5618813f64e"
     },
     "app/components/date-picker/calendar.js": {
       "sha256": "97363b28d82da42733d867150fba07d7d55bb9d4b663f3057362b901194877be"
     },
     "app/components/date-picker/index.js": {
-      "sha256": "097744454cea178c37145b6b08ae296ea0a6b7466af1c5a41732f1b47343a5ca"
+      "sha256": "a360f2d1d9c72ac65d462ef948fd4ebd22bef348ee56a0210714c420aa76576f"
     },
     "app/components/date-picker/parse.js": {
       "sha256": "c070ae61a509bc2eab3601276790ac290fc93666c94269a2978740f2aca8cb9b"
@@ -120,7 +120,7 @@
       "sha256": "10ea68596439e5598ed2b5a328f70709aa2c29c2442b49fd1829414cb3ff480f"
     },
     "app/components/duration-input.js": {
-      "sha256": "879d465a75f6e912dbfcabf0b4902c2ef96800c0b9b84259f98bcd87b90341f9"
+      "sha256": "0e3fdf08e6ead7f544db175162e49a6cb504a93302d1cee55e77a86278cbc9d9"
     },
     "app/components/expand.js": {
       "sha256": "9b3f0ac0631f11ea21fd3b998de9bd1d33115e437860f3456171a3a070bde437"
@@ -136,6 +136,9 @@
     },
     "app/components/image-preview.js": {
       "sha256": "f71b5af2bed051ad23f292f5552d2cb2be05e1dc3f01a840caa5e633734c1262"
+    },
+    "app/components/legend.js": {
+      "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
@@ -174,16 +177,28 @@
       "sha256": "482f54c360cf314c7e7391f2a8156c7cf9bd995dc892074c56eaafcc5212b597"
     },
     "app/components/time-picker.js": {
-      "sha256": "97435605bb9c3b5398a28f495fa58020d690eac565b0d76af1804d0e40e6eae4"
+      "sha256": "9711eaa4ac76d29244d0f5a77c303a48837ce7eb9813ea4fb05a5338d3a5d547"
+    },
+    "app/components/time-picker/field.js": {
+      "sha256": "3d556429b03a088357cbedf1b35dce5fafb5782238b46e9af11b45edc7a80a95"
+    },
+    "app/components/time-picker/index.js": {
+      "sha256": "6d149a21871c02611af377e975b76b9f36207e2439b66ed6d365346e4a60406e"
+    },
+    "app/components/time-picker/panel.js": {
+      "sha256": "f0cb3dbbe4cf8b6d9fb2a7d9fc94dae4d4ef13c3f27f7a01804c66bb1d52893a"
+    },
+    "app/components/toggle-button.js": {
+      "sha256": "42c834104fde855b9f4f08bcebcc5768b2ff27fdbef3884469d8cde007de37f9"
     },
     "app/components/toggle.js": {
-      "sha256": "e2f9c98506e8fffe580f864ea12ca023cb8026bb24ec48578f2c948f793f124a"
+      "sha256": "aee44b761098d8f7b779b954a4275cca4dea95f95c8a475006f111a0f32b0598"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
     },
     "app/components/tutorial.js": {
-      "sha256": "199e1cab5fac0296de8eb1556005e2a46033e172ff72def7f9e57dde9019599f"
+      "sha256": "41ef40f0f6c4dcb2616881f142fd04c905904256999f99568896b858600c352f"
     },
     "app/css/code-block.css": {
       "sha256": "f8d9d8f49cc5cca8f72e6d0c5a55208d7b1a20da36afb92fa44763db13363594"
@@ -192,13 +207,13 @@
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"
     },
     "app/css/controls-buttons.css": {
-      "sha256": "cde1a0a8a0faabbc9388c7960c40c0b365112660dc8a19783370992f71f504ef"
+      "sha256": "820177992b2110044e6d9c29ca73a517796b8cc91528625fb28dc9c8ef317b72"
     },
     "app/css/controls-charts.css": {
       "sha256": "6b491aaf5adc9c75310b63ed3acb962db791460ab86261625d8a91146965f286"
     },
     "app/css/controls-chips.css": {
-      "sha256": "1568970bc1a3dbba798f50cf63568539c6543152a37e38c7c66c5aca18305cce"
+      "sha256": "4a5a685a02775527a9d7263270b457b8994e39838e0501a1fce567f9cc29ff92"
     },
     "app/css/controls-color.css": {
       "sha256": "150bbb11447e82597dfc9225286ea5cbfeb52cc9f0208265423934a61926b5b9"
@@ -210,7 +225,7 @@
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
     },
     "app/css/controls-fields.css": {
-      "sha256": "3eb0ceac813fe334a583b6f6c70fea108003e1d894fb0675d5df464acd7b7cdb"
+      "sha256": "f179e6eee1b9b61952eff1b52a12e2f0de3a14d6ad8090ef2e5fdea7c5c8c74f"
     },
     "app/css/controls-file.css": {
       "sha256": "2dd93b29594da190aaa6b6a12f019e1a99fbce834ea928970106a9e83a0b4df3"
@@ -222,16 +237,16 @@
       "sha256": "3d583f7c1572077865a5779cc597f0a7f9ce4a9433e0dee4ad14afad7174a667"
     },
     "app/css/controls-section-panel.css": {
-      "sha256": "1cfb674b5260bef0baa01f1354c43505424d6f8b198bb68ae0f2658fa8915719"
+      "sha256": "e3d7ee5ff1cc095f894b04eee22f28ac577b0840b3d84b8a6098c34c80ed06f2"
     },
     "app/css/controls-tabular-input.css": {
       "sha256": "e63764fba1fbd95acc81e69314be87c4047cdfb827c808d003870126692eead7"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "e5cc81cc9b54cf39c27411ead5452b9687b14daf0d5048dd22d471a25c96de5b"
+      "sha256": "37cd4a0203dd05919821e873eae87cb4873022196cfe97572b47826bb5ed9b3b"
     },
     "app/css/layout.css": {
-      "sha256": "38200fdff68354e5bb8e51b55066df5927a6ed7b67622302e6a9c73dffee541a"
+      "sha256": "bb08ccdf4eb8d7f0f844026762fa9e38a96640323121073d6654639314f4f4f2"
     },
     "app/css/overlays.css": {
       "sha256": "f5e690965a7ee2569e85bcdcb31f86c872930a8ebbff9ccecb55cd67837530c2"
@@ -261,13 +276,13 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "7b51031ef78819f6d46ade85a99f7ffea36455c69f66103768be2a500b088272"
+      "sha256": "42f60de4596666fa537334eb10683589282f34b61e6b8576334cba50270132a3"
     },
     "app/shell/shell.js": {
       "sha256": "7bc59c18faeecf7bcce15d586547c00c76fdc908a832c1206d9b4e4fdc2f165a"
     },
     "app/shell/sticky.js": {
-      "sha256": "3e8e8c532bd3a76b4660894e15a47b51e09f753e36e9690658b8815255f01336"
+      "sha256": "4fbe8284625f6a7865bae63153aeced7ed46221f498875dc9e18e7e054bbe77a"
     },
     "app/shell/theme.js": {
       "sha256": "3b992e024cb2af8673730e9ab8cd8c100bd71fb7b4e6f549c0c8c161a8aee6aa"
@@ -282,7 +297,7 @@
       "sha256": "3f9f55c503dec155b391c71c7a3ab3ed5c659de5df5695084831155e51e95f0b"
     },
     "app/tokens.css": {
-      "sha256": "222fa35f080a70ca0abba79de4fde42de01a5d27f1fedd2daab95279869b70ac"
+      "sha256": "b2ddd5b1c927cad0320725052d404df62f05d041d56844ab0a4e29b6a2bc58f2"
     },
     "app/utils/also-see-svg.js": {
       "sha256": "af1ff194fde0ba9ffe09edf885fde4562bac5f14592fd2f348c366296447e854"
@@ -297,22 +312,22 @@
       "sha256": "b17da2f325d37b2719d374dd2ab1f0f68c2a7232317fb17d19ab6cb52a60447a"
     },
     "app/utils/document-listeners.js": {
-      "sha256": "21cc35d5ce94dc5b88d67ef50a9f7763a360308376fa9739e1ec8316e8b36f2f"
+      "sha256": "af0b66fc6147906c9049c7425cec5b735dea048ce182ca28a55e34598c173c57"
     },
     "app/utils/dom.js": {
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-template.js": {
-      "sha256": "99f3e57e8fd1585abf0030597aeb62d281e21d0abaf8bbd8db5263657eed70f0"
+      "sha256": "3c5435bee06cc42dacd6dfa09231b4bf8dac66fa7829501d870a24cd23a9e930"
     },
     "app/utils/icons.js": {
-      "sha256": "ba304e051e7753012afd1ddbaea1c120d0ea3d20be913f89aa8bddfdb8eacbda"
+      "sha256": "219ca86cb4b8a7bd91033a3cb229d6c031357a2de039fe9f09311238ba9b6ebd"
     },
     "app/utils/menu.js": {
-      "sha256": "e58869226dfd2ccef4f91738582f70a85909346c0abf1885d9664b8f7b4d0a29"
+      "sha256": "d3dd6ac565d600b06f8a8925487c782f8495a11f2ba202a0602333afd78fba53"
     },
     "app/utils/sanitize-svg.js": {
-      "sha256": "4f55c12634aab20d45937abf6dd3158539ff05c1b6804e9608a6bfc224a8f3ad"
+      "sha256": "433ca97df4ed3a0ad45c227448d0606a019a4be70215f3a0648eca0ab2b1f0ce"
     },
     "app/vendor/d3-scale/README.md": {
       "sha256": "b4ecd72cc23d8f3309030c5df852dfb87f56e39e70c3760610bca10e5d585dbd"
@@ -1149,10 +1164,10 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "0dbf422b5910dc3a9f2bbe4e0a91398fad4dae9afdeeb1ec067e2026abf4226d"
+      "sha256": "af6adb5120561eb6fc44ec03ee094d436daf8b5c450ff2295515dd735d4a99ab"
     },
     ".cursor/rules/demo-isolation.mdc": {
-      "sha256": "c3b54ede01da4e28263086993067158810f3db781f869eff709751ba8b54324f"
+      "sha256": "c04c50223d9417ac372fa394ffc84e84b602b5414b77f3c99b399e9b44906929"
     },
     ".cursor/rules/icons.mdc": {
       "sha256": "62b3855317cc749c6082073602d4395767d0c8dc578ec28971c6c09775fcf077"
@@ -1164,7 +1179,7 @@
       "sha256": "fdd604c1062cfb03da9aca9ee9d2609d5924d40192798bda3950dc192f410697"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "c97c51c70ccc8a69999d46c78004b416b049d9519ed2203090920fbb9d72095e"
+      "sha256": "770d033f6be0bb9d8f0ca3e1660966785a1d7cdeb0644c4ac1297715597abf02"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1176,7 +1191,7 @@
       "sha256": "622f1d12f32b7f19100d6a94298a4808960b5f029512131594e15ffc3582542e"
     },
     ".cursor/skills/author-component/SKILL.md": {
-      "sha256": "99145e4cf0a7249ca4315112a34d37be37d1b8a6f6a6a8a742ed49314b0a93a2"
+      "sha256": "b39a43799ebf81a7f48f492969c112a9c5c7f8f2640798c3170d5753c6c2f4ac"
     },
     ".cursor/skills/finalize-app/SKILL.md": {
       "sha256": "1fa503b27e65b0f5b901112af92e85cf7bb1de9b093543c50a99b72c11c1d892"
@@ -1185,10 +1200,10 @@
       "sha256": "074c69598d57bc4d82a691b73f99f885d4e300941c46ddaa531f16c08b7d93ff"
     },
     ".cursor/skills/health-check/SKILL.md": {
-      "sha256": "0d61abcdc79a3671eacedb50ec74e790fb13ccea4855a9755805983e915c454b"
+      "sha256": "96bdf88f0f9818d73eb7ee3803e3a52b535140a2edbefa5ba4892e40c8b11df3"
     },
     ".cursor/skills/init-app/SKILL.md": {
-      "sha256": "501b26aa0ed9a8b709c04daed9519ea538198ca4e5b3d9c85288731c3df9661f"
+      "sha256": "5128bad42684fd911e05dfa957cd2926403815cb407bb1a1102103e22dfa8902"
     },
     ".cursor/skills/manage-color/SKILL.md": {
       "sha256": "992c829286618a8cfa484d5cf4b60da070d55051e07292dfb0293096cf8b4a7c"
@@ -1197,16 +1212,16 @@
       "sha256": "348c94a4ca9fda3dbac1f1ed02f631f3d8d0a04bfc78398503830fc805db7098"
     },
     ".cursor/skills/migrate-template/SKILL.md": {
-      "sha256": "02d08bf46eb07896855b8932b10cf09fad013529896fc5c9f40bcbb2b658a097"
+      "sha256": "ac1cb2d88c5cdb9dcf6a843677ce64c657f2cbc85419e63579baa9d4397f2a35"
     },
     ".cursor/skills/release-template/SKILL.md": {
-      "sha256": "f71c8514745d20dd39bb6c5941b1ea181ae1754f52a49ca2fc6d278144e28ea0"
+      "sha256": "3e0e1abe13c51b125444a6cd15955b1d58849f1aabb559221c1071b713519758"
     },
     ".cursor/skills/restore-component/SKILL.md": {
-      "sha256": "9f865544de78aedee781a3d5e81b713be36feb1462e18faecbebfe1a5a50496d"
+      "sha256": "1658123fe04979895d5aab3e6e6794146f0ff718f191340e6228c7b331193cfc"
     },
     ".cursor/skills/sync-shell/SKILL.md": {
-      "sha256": "f2c8fed9cedd2bc5af220339ad16b45303014f597a6bee1ff0ed4683912c0492"
+      "sha256": "73090dee5ca403c5e99d980e5493a454ade2713950b39e23e4a4912aca7968f5"
     }
   },
   "core": {
@@ -1423,6 +1438,19 @@
         "icons"
       ]
     },
+    "legend": {
+      "files": [
+        "app/components/legend.js"
+      ],
+      "css": [
+        "controls-chips.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [],
+      "notes": "Coloured category chips; slots 1–8; optional toggle; tooltips via data-tooltip / initShell"
+    },
     "combobox": {
       "files": [
         "app/components/combobox.js"
@@ -1444,7 +1472,10 @@
       "files": [
         "app/components/date-picker/index.js",
         "app/components/date-picker/calendar.js",
-        "app/components/date-picker/parse.js"
+        "app/components/date-picker/parse.js",
+        "app/components/time-picker/index.js",
+        "app/components/time-picker/panel.js",
+        "app/components/time-picker/field.js"
       ],
       "css": [
         "controls-fields.css"
@@ -1452,40 +1483,62 @@
       "vendor": [],
       "vendorFiles": [],
       "icons": [
-        "calendar"
+        "calendar",
+        "chevron-up",
+        "chevron-down"
       ],
       "infra": [
         "dom",
-        "document-listeners"
-      ]
+        "document-listeners",
+        "icons"
+      ],
+      "notes": "Optional side-by-side time panel"
     },
     "time-picker": {
       "files": [
-        "app/components/time-picker.js"
+        "app/components/time-picker.js",
+        "app/components/time-picker/index.js",
+        "app/components/time-picker/panel.js",
+        "app/components/time-picker/field.js"
       ],
       "css": [
         "controls-fields.css"
       ],
       "vendor": [],
       "vendorFiles": [],
-      "icons": [],
+      "icons": [
+        "clock",
+        "chevron-up",
+        "chevron-down"
+      ],
       "infra": [
-        "dom"
-      ]
+        "dom",
+        "document-listeners",
+        "icons"
+      ],
+      "notes": "Custom segmented popup; legacy native field fallback"
     },
     "duration-input": {
       "files": [
-        "app/components/duration-input.js"
+        "app/components/duration-input.js",
+        "app/components/time-picker/panel.js"
       ],
       "css": [
         "controls-fields.css"
       ],
       "vendor": [],
       "vendorFiles": [],
-      "icons": [],
+      "icons": [
+        "clock",
+        "chevron-up",
+        "chevron-down"
+      ],
       "infra": [
-        "dom"
-      ]
+        "dom",
+        "document-listeners",
+        "icons"
+      ],
+      "notes": "Inline segments + shared popup in duration mode"
     },
     "color-input": {
       "files": [
@@ -1572,6 +1625,25 @@
         "dom",
         "icons"
       ]
+    },
+    "toggle-button": {
+      "files": [
+        "app/components/toggle-button.js"
+      ],
+      "css": [
+        "controls-buttons.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [
+        "fullscreen",
+        "fullscreen-exit"
+      ],
+      "infra": [
+        "dom",
+        "icons"
+      ],
+      "notes": "Pressed .btn-toggle; optional next-action label/icon swap; data-toggle-button-always-active"
     },
     "checkbox": {
       "files": [
@@ -2389,7 +2461,8 @@
     ],
     "controls-buttons.css": [
       "buttons",
-      "toolbar"
+      "toolbar",
+      "toggle-button"
     ],
     "overlays.css": [
       "tooltip",
@@ -2413,7 +2486,8 @@
       "dropdown-toggle"
     ],
     "controls-chips.css": [
-      "chip"
+      "chip",
+      "legend"
     ],
     "controls-fields.css": [
       "fields",

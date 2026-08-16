@@ -1,5 +1,17 @@
 import { setHidden } from "../../utils/dom.js";
-import { onDocumentClickOutside, onDocumentEscape } from "../../utils/document-listeners.js";
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "../../utils/document-listeners.js";
+import {
+  formatTimePickerParts,
+  mountTimePickerPanel,
+  normalizeTimePickerParts,
+} from "../time-picker/panel.js";
+import { parseTimeValue } from "../time-picker/index.js";
+import { initTimeFieldSegments } from "../time-picker/field.js";
 import {
   buildMonthCells,
   ensureWeekdayLabels,
@@ -7,7 +19,6 @@ import {
   monthLabel,
 } from "./calendar.js";
 import {
-  formatClockTime,
   formatDisplayDate,
   formatResult,
   getTodayDate,
@@ -20,20 +31,40 @@ import {
 } from "./parse.js";
 
 /**
- * Custom calendar popup with optional time input.
+ * Custom calendar popup with optional side-by-side time panel.
  *
  * Markup:
  *   <div class="date-picker" data-date-picker-time>
- *     <div class="date-picker-popup hidden" role="dialog" aria-modal="true" aria-label="Choose date" hidden>
- *       …
+ *     <div class="date-picker-row">
+ *       <div class="date-picker-control">…</div>
+ *       <input type="text" class="input date-picker-time" />
+ *     </div>
+ *     <div class="date-picker-popup hidden" role="dialog" …>
+ *       <!-- calendar contents; init wraps into a shell with a time panel -->
  *     </div>
  *   </div>
  *
- * data-date-picker-time — show `.date-picker-time` on the same row inside `.date-picker-row`
+ * data-date-picker-time — pair a time field + mount the time panel beside the calendar
+ * data-date-picker-seconds — include seconds in the paired time panel
  * data-date-min / data-date-max — ISO date strings (YYYY-MM-DD)
  */
 
 /** @typedef {"days" | "months" | "years"} DatePickerView */
+
+function partsFromTimeString(value, { showSeconds = false } = {}) {
+  const parsed = parseTimeValue(value);
+  if (!parsed) {
+    return normalizeTimePickerParts(
+      { hours: 0, minutes: 0, seconds: 0 },
+      { mode: "time", showSeconds }
+    );
+  }
+  const [hours, minutes, seconds] = parsed.split(":").map(Number);
+  return normalizeTimePickerParts(
+    { hours, minutes, seconds: seconds || 0 },
+    { mode: "time", showSeconds }
+  );
+}
 
 export function initDatePicker(
   pickerEl,
@@ -61,12 +92,140 @@ export function initDatePicker(
   const hasTime =
     pickerEl.hasAttribute("data-date-picker-time") ||
     pickerEl.dataset.datePickerTime === "true";
+  const showSeconds =
+    pickerEl.hasAttribute("data-date-picker-seconds") ||
+    pickerEl.dataset.datePickerSeconds === "true";
 
   const minDate = parseISODate(min ?? pickerEl.dataset.dateMin);
   const maxDate = parseISODate(max ?? pickerEl.dataset.dateMax);
 
-  if (hasTime && timeInput) {
+  /** @type {ReturnType<typeof mountTimePickerPanel> | null} */
+  let timePanelApi = null;
+  /** @type {HTMLElement | null} */
+  let timePanelHost = null;
+  /** @type {HTMLElement | null} */
+  let timePanelEl = null;
+
+  function getTimeValue() {
+    if (!hasTime) return "";
+    if (timePanelApi) return timePanelApi.getValue();
+    return timeInput?.value || "";
+  }
+
+  function setTimeValue(next, { emitEvent = false } = {}) {
+    if (!hasTime) return;
+    const parts = partsFromTimeString(next, { showSeconds });
+    const value = formatTimePickerParts(parts, {
+      mode: "time",
+      showSeconds,
+    });
+    if (timeInput) timeInput.value = value;
+    timePanelApi?.setParts(parts);
+    if (emitEvent && selectedDate) emitChange();
+  }
+
+  function ensureTimeField() {
+    if (!hasTime) return;
+
+    const row =
+      pickerEl.querySelector(".date-picker-row") ||
+      displayInput.closest(".date-picker-control")?.parentElement;
+
+    if (!timeInput) {
+      timeInput = document.createElement("input");
+      timeInput.type = "text";
+      timeInput.className = "input date-picker-time";
+      timeInput.inputMode = "numeric";
+      timeInput.autocomplete = "off";
+      timeInput.setAttribute("aria-label", "Time");
+      (row || pickerEl).append(timeInput);
+    } else if (timeInput.type === "time") {
+      timeInput.type = "text";
+      timeInput.inputMode = "numeric";
+      timeInput.autocomplete = "off";
+      timeInput.classList.add("input", "date-picker-time");
+    }
+
+    timeInput.removeAttribute("hidden");
     setHidden(timeInput, false);
+    if (!timeInput.value) {
+      timeInput.value = parseTimeValue(defaultTime) ?? (showSeconds ? "00:00:00" : "00:00");
+    }
+  }
+
+  function ensureTimeShell() {
+    if (!hasTime) return;
+
+    pickerEl.classList.add("date-picker--with-time");
+    ensureTimeField();
+
+    let shell = popup.querySelector(":scope > .date-picker-shell");
+    if (!shell) {
+      const calendar = document.createElement("div");
+      calendar.className = "date-picker-calendar";
+      while (popup.firstChild) {
+        calendar.append(popup.firstChild);
+      }
+
+      const divider = document.createElement("div");
+      divider.className = "date-picker-time-divider";
+      divider.setAttribute("aria-hidden", "true");
+      divider.setAttribute("role", "presentation");
+
+      timePanelHost = document.createElement("div");
+      timePanelHost.className = "date-picker-time-panel";
+
+      shell = document.createElement("div");
+      shell.className = "date-picker-shell";
+      shell.append(calendar, divider, timePanelHost);
+      popup.append(shell);
+    } else {
+      timePanelHost = shell.querySelector(".date-picker-time-panel");
+      if (!timePanelHost) {
+        timePanelHost = document.createElement("div");
+        timePanelHost.className = "date-picker-time-panel";
+        shell.append(timePanelHost);
+      }
+    }
+
+    if (!timePanelEl) {
+      timePanelEl = timePanelHost.querySelector(":scope > .time-picker-panel");
+      if (!timePanelEl) {
+        timePanelEl = document.createElement("div");
+        timePanelHost.append(timePanelEl);
+      }
+    }
+
+    // One shared action bar under both columns — the time panel keeps none.
+    actionsEl = popup.querySelector(".date-picker-actions");
+    if (actionsEl && actionsEl.parentElement !== popup) {
+      popup.append(actionsEl);
+    }
+    todayBtn = actionsEl?.querySelector("[data-date-picker-today]") ?? null;
+    nowBtn = actionsEl?.querySelector("[data-date-picker-now]") ?? null;
+
+    if (!timePanelApi && timePanelEl) {
+      timePanelApi = mountTimePickerPanel(timePanelEl, {
+        parts: partsFromTimeString(timeInput?.value || defaultTime, {
+          showSeconds,
+        }),
+        mode: "time",
+        showSeconds,
+        showZero: false,
+        showNow: false,
+        onInput({ value }) {
+          if (timeInput) timeInput.value = value;
+          if (selectedDate) emitChange();
+        },
+        onChange({ value }) {
+          if (timeInput) timeInput.value = value;
+          if (selectedDate) emitChange();
+        },
+      });
+      if (timeInput) {
+        timeInput.value = timePanelApi.getValue();
+      }
+    }
   }
 
   const popupId = popup.id || `date-picker-popup-${Math.random().toString(36).slice(2, 9)}`;
@@ -81,6 +240,11 @@ export function initDatePicker(
   let actionsEl = popup.querySelector(".date-picker-actions");
   let todayBtn = actionsEl?.querySelector("[data-date-picker-today]") ?? null;
   let nowBtn = actionsEl?.querySelector("[data-date-picker-now]") ?? null;
+
+  ensureTimeShell();
+  actionsEl = popup.querySelector(".date-picker-actions");
+  todayBtn = actionsEl?.querySelector("[data-date-picker-today]") ?? null;
+  nowBtn = actionsEl?.querySelector("[data-date-picker-now]") ?? null;
 
   function isDisabledDate(date) {
     if (minDate && isBeforeDay(date, minDate)) return true;
@@ -109,8 +273,10 @@ export function initDatePicker(
       pickerEl,
       date: selectedDate,
       isoDate: selectedDate ? toISODate(selectedDate) : "",
-      time: hasTime && timeInput ? timeInput.value : "",
-      display: selectedDate ? formatResult(selectedDate, timeInput?.value, hasTime) : "",
+      time: hasTime ? getTimeValue() : "",
+      display: selectedDate
+        ? formatResult(selectedDate, getTimeValue(), hasTime)
+        : "",
     });
   }
 
@@ -170,8 +336,22 @@ export function initDatePicker(
     viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
     viewMode = "days";
 
-    if (hasTime && timeInput) {
-      timeInput.value = useNow ? formatClockTime(new Date()) : "00:00";
+    if (hasTime) {
+      const now = new Date();
+      setTimeValue(
+        useNow
+          ? formatTimePickerParts(
+              {
+                hours: now.getHours(),
+                minutes: now.getMinutes(),
+                seconds: now.getSeconds(),
+              },
+              { mode: "time", showSeconds }
+            )
+          : showSeconds
+            ? "00:00:00"
+            : "00:00"
+      );
     }
 
     displayInput.removeAttribute("aria-invalid");
@@ -191,7 +371,7 @@ export function initDatePicker(
     if (!todayBtn) {
       todayBtn = document.createElement("button");
       todayBtn.type = "button";
-      todayBtn.className = "btn date-picker-quick-btn";
+      todayBtn.className = "btn btn-slim date-picker-quick-btn";
       todayBtn.dataset.datePickerToday = "";
       todayBtn.textContent = "Today";
       actionsEl.append(todayBtn);
@@ -209,7 +389,7 @@ export function initDatePicker(
       if (!nowBtn) {
         nowBtn = document.createElement("button");
         nowBtn.type = "button";
-        nowBtn.className = "btn date-picker-quick-btn";
+        nowBtn.className = "btn btn-slim date-picker-quick-btn";
         nowBtn.dataset.datePickerNow = "";
         nowBtn.textContent = "Now";
         actionsEl.append(nowBtn);
@@ -331,9 +511,12 @@ export function initDatePicker(
         syncInputs();
         viewMode = "days";
         render();
-        closePopup();
-        if (hasTime && timeInput) timeInput.focus();
-        else displayInput.focus();
+        if (hasTime && timePanelApi) {
+          timePanelApi.focus();
+        } else {
+          closePopup();
+          displayInput.focus();
+        }
       });
 
       grid.append(dayBtn);
@@ -434,6 +617,7 @@ export function initDatePicker(
 
   function openPopup() {
     if (isOpen) return;
+    registerOpenPopup(closePopup);
     isOpen = true;
     viewMode = "days";
     const viewFrom = selectedDate ?? parseInputDate(displayInput.value).date;
@@ -447,6 +631,7 @@ export function initDatePicker(
   }
 
   function closePopup() {
+    unregisterOpenPopup(closePopup);
     if (!isOpen) return;
     isOpen = false;
     viewMode = "days";
@@ -546,8 +731,32 @@ export function initDatePicker(
   });
 
   timeInput?.addEventListener("change", () => {
+    const parsed = parseTimeValue(timeInput.value);
+    if (!parsed) {
+      timeInput.setAttribute("aria-invalid", "true");
+      return;
+    }
+    timeInput.removeAttribute("aria-invalid");
+    setTimeValue(parsed);
     if (selectedDate) emitChange();
   });
+
+  timeInput?.addEventListener("focus", () => {
+    timeInput.removeAttribute("aria-invalid");
+  });
+
+  const timeSegments = hasTime
+    ? initTimeFieldSegments(timeInput, {
+        showSeconds,
+        getParts: () => partsFromTimeString(timeInput?.value, { showSeconds }),
+        applyParts(parts) {
+          setTimeValue(
+            formatTimePickerParts(parts, { mode: "time", showSeconds }),
+            { emitEvent: true }
+          );
+        },
+      })
+    : null;
 
   const removeClickOutside = onDocumentClickOutside((event) => {
     if (!pickerEl.contains(event.target)) {
@@ -564,8 +773,8 @@ export function initDatePicker(
     return true;
   }, { priority: 50 });
 
-  if (defaultTime && timeInput) {
-    timeInput.value = defaultTime;
+  if (defaultTime && hasTime) {
+    setTimeValue(defaultTime);
   }
 
   ensureQuickActions();
@@ -582,7 +791,7 @@ export function initDatePicker(
     getValue: () => ({
       date: selectedDate,
       isoDate: selectedDate ? toISODate(selectedDate) : "",
-      time: hasTime && timeInput ? timeInput.value : "",
+      time: hasTime ? getTimeValue() : "",
     }),
     setValue: ({ date, isoDate, time } = {}) => {
       const nextDate = date ?? parseISODate(isoDate);
@@ -590,13 +799,16 @@ export function initDatePicker(
       if (nextDate) {
         viewDate = new Date(nextDate.getFullYear(), nextDate.getMonth(), 1);
       }
-      if (time !== undefined && timeInput) timeInput.value = time;
+      if (time !== undefined && hasTime) setTimeValue(time);
       syncInputs();
       if (isOpen) render();
     },
     destroy: () => {
       removeClickOutside();
       removeEscape();
+      timeSegments?.destroy();
+      timePanelApi?.destroy();
+      timePanelApi = null;
       closePopup();
     },
   };

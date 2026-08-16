@@ -1,12 +1,10 @@
 import { setHidden } from "./dom.js";
-import { onDocumentClickOutside, onDocumentEscape } from "./document-listeners.js";
-
-/**
- * Open popup menus (dropdown, combo, also-see, …). Toggle clicks use
- * `stopPropagation`, so peers never see an outside click — close them here.
- * @type {Set<(options?: { restoreFocus?: boolean }) => void>}
- */
-const openPopupMenus = new Set();
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "./document-listeners.js";
 
 /** Primary label for a menu item (ignores `.dropdown-menu-item-subtitle`). */
 export function menuItemLabel(item) {
@@ -124,7 +122,7 @@ export function initPopupMenu({
   function closeMenu({ restoreFocus = true } = {}) {
     if (!isOpen) return;
     isOpen = false;
-    openPopupMenus.delete(closeMenu);
+    unregisterOpenPopup(closeMenu);
     setHidden(menuEl, true);
     clearFixedPosition();
     toggleEl?.setAttribute("aria-expanded", "false");
@@ -134,11 +132,8 @@ export function initPopupMenu({
   }
 
   function openMenu() {
-    for (const closePeer of [...openPopupMenus]) {
-      if (closePeer !== closeMenu) closePeer({ restoreFocus: false });
-    }
     isOpen = true;
-    openPopupMenus.add(closeMenu);
+    registerOpenPopup(closeMenu);
     setHidden(menuEl, false);
     toggleEl?.setAttribute("aria-expanded", "true");
     positionFixedMenu();
@@ -253,7 +248,7 @@ export function initPopupMenu({
     toggleMenu,
     isOpen: () => isOpen,
     destroy() {
-      openPopupMenus.delete(closeMenu);
+      unregisterOpenPopup(closeMenu);
       toggleEl?.removeEventListener("click", onToggleClick);
       menuEl.removeEventListener("click", onMenuClick);
       menuEl.removeEventListener("keydown", onMenuKeydown);

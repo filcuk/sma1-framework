@@ -1,7 +1,7 @@
 ---
 name: sync-shell
 description: >-
-  Light-sync shell, theme, tokens, and shared infra from upstream microapp-template
+  Light-sync shell, theme, tokens, and shared infra from upstream SMA1 Framework
   without touching optional app components or main.js logic. Use when pulling
   shell-only updates, theme/token fixes, or chrome changes without a full migrate.
 ---

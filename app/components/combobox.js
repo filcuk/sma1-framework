@@ -1,6 +1,11 @@
 import { initBadge } from "./badge.js";
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
-import { onDocumentClickOutside, onDocumentEscape } from "../utils/document-listeners.js";
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "../utils/document-listeners.js";
 
 /**
  * Text input with a filterable suggestion list.
@@ -391,6 +396,7 @@ export function initCombobox(
       return;
     }
 
+    registerOpenPopup(closeList);
     isOpen = true;
     setHidden(list, false);
     input.setAttribute("aria-expanded", "true");
@@ -398,6 +404,7 @@ export function initCombobox(
   }
 
   function closeList({ restoreInput = false } = {}) {
+    unregisterOpenPopup(closeList);
     if (!isOpen && !restoreInput) return;
 
     isOpen = false;
@@ -842,6 +849,7 @@ export function initCombobox(
       input.removeEventListener("keydown", onInputKeydown);
       list.removeEventListener("click", onListClick);
       list.removeEventListener("mousedown", onListPointerDown);
+      unregisterOpenPopup(closeList);
       removeClickOutside();
       removeEscape();
     },

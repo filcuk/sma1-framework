@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Demo isolation — do not leak showcase chrome into shared code
 
-`demo.html` / `app/demo.js` may use **`demo-*`** classes for showcase-only helpers (e.g. `.demo-row`, `.demo-grid`, `.demo-card`, `.demo-hint`). Those are not part of the reusable design system.
+Demo visual primitives use shared generic classes such as `.section-panel`, `.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, and `.panel-grid`. Only catalogue-specific wiring or visualisation in `demo.html` / `app/demo.js` may remain **`demo-*`** prefixed.
 
 ## Never
 
@@ -22,5 +22,5 @@ alwaysApply: false
 
 ## Allowed `demo-*` usage
 
-- Classes and ids that exist only in `demo.html` / `app/demo.js` / demo-only CSS helpers in `layout.css`
+- Catalogue-specific classes that exist only in `demo.html` / `app/demo.js` and their demo-only CSS (for example `.demo-colour-*` and `.demo-banner-*`)
 - Element ids like `demo-combobox` for demo wiring

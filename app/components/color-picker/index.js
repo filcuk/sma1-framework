@@ -33,7 +33,12 @@
  */
 
 import { parseBooleanAttr, setHidden } from "../../utils/dom.js";
-import { onDocumentClickOutside, onDocumentEscape } from "../../utils/document-listeners.js";
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "../../utils/document-listeners.js";
 import { initColorSet } from "../color-set/index.js";
 import {
   DEFAULT_PICKER_RGBA,
@@ -254,6 +259,7 @@ export function initColorPicker(
    */
   function open({ focus = true } = {}) {
     if (isEmbedded || isOpen || !popup) return;
+    registerOpenPopup(close);
     isOpen = true;
     setHidden(popup, false);
     trigger?.setAttribute("aria-expanded", "true");
@@ -262,6 +268,7 @@ export function initColorPicker(
 
   function close() {
     if (isEmbedded) return;
+    unregisterOpenPopup(close);
     if (setsOpen) {
       setsOpen = false;
       syncSetsVisibility();

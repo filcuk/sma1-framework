@@ -1,6 +1,8 @@
 /**
- * Duration input — hours / minutes (optional seconds) as a segmented control.
+ * Duration input — hours / minutes (optional seconds) as a segmented control
+ * with a shared time-picker popup in duration mode.
  * Focus/click selects the whole segment (parity with native `type="time"`).
+ * Clicking the control background (padding / separators) focuses hours.
  *
  * Markup:
  *   <div class="duration-input" id="my-duration" data-duration-default="1:30">
@@ -13,6 +15,7 @@
  *         aria-label="Minutes" maxlength="2" />
  *     </div>
  *     <input type="hidden" class="duration-input-value" name="duration" />
+ *     <!-- Trigger and popup are created automatically when omitted. -->
  *   </div>
  *
  * Optional seconds field: `.duration-input-seconds` or `data-duration-seconds`.
@@ -23,7 +26,15 @@
  * data-duration-disabled — disable the control
  */
 
-import { parseBooleanAttr } from "../utils/dom.js";
+import { parseBooleanAttr, setHidden } from "../utils/dom.js";
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "../utils/document-listeners.js";
+import { createIcon } from "../utils/icons.js";
+import { mountTimePickerPanel } from "./time-picker/panel.js";
 
 /**
  * @typedef {{ hours: number, minutes: number, seconds: number }} DurationParts
@@ -165,6 +176,9 @@ export function initDurationInput(
   const minutesInput = durationEl.querySelector(".duration-input-minutes");
   let secondsInput = durationEl.querySelector(".duration-input-seconds");
   const valueInput = durationEl.querySelector(".duration-input-value");
+  let trigger = durationEl.querySelector(".duration-input-trigger");
+  let popup = durationEl.querySelector(".duration-input-popup");
+  let panelEl = popup?.querySelector(".time-picker-panel");
 
   if (!control || !hoursInput || !minutesInput) return null;
 
@@ -177,6 +191,39 @@ export function initDurationInput(
     const fromAttr = Number(durationEl.dataset.durationMaxHours);
     return Number.isFinite(fromAttr) && fromAttr >= 0 ? Math.trunc(fromAttr) : 99;
   })();
+
+  const createdTrigger = !trigger;
+  if (!trigger) {
+    trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "duration-input-trigger";
+    trigger.setAttribute("aria-label", "Open duration picker");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.append(createIcon("clock", { className: "duration-input-icon" }));
+    control.append(trigger);
+  }
+
+  const createdPopup = !popup;
+  if (!popup) {
+    popup = document.createElement("div");
+    popup.className = "time-picker-popup duration-input-popup hidden";
+    popup.setAttribute("role", "dialog");
+    popup.setAttribute("aria-label", "Choose duration");
+    popup.hidden = true;
+    panelEl = document.createElement("div");
+    panelEl.className = "time-picker-panel";
+    popup.append(panelEl);
+    durationEl.append(popup);
+  } else if (!panelEl) {
+    panelEl = document.createElement("div");
+    panelEl.className = "time-picker-panel";
+    popup.append(panelEl);
+  }
+
+  const popupId =
+    popup.id || `duration-input-popup-${Math.random().toString(36).slice(2, 9)}`;
+  if (!popup.id) popup.id = popupId;
+  trigger.setAttribute("aria-controls", popupId);
 
   if (withSeconds && !secondsInput) {
     const sep = document.createElement("span");
@@ -196,6 +243,9 @@ export function initDurationInput(
 
   /** @type {DurationParts} */
   let parts = { hours: 0, minutes: 0, seconds: 0 };
+  let isOpen = false;
+  /** @type {ReturnType<typeof mountTimePickerPanel> | null} */
+  let panelApi = null;
 
   function syncFields({ padMinutes = false } = {}) {
     hoursInput.value = String(parts.hours);
@@ -240,6 +290,7 @@ export function initDurationInput(
     hoursInput.removeAttribute("aria-invalid");
     minutesInput.removeAttribute("aria-invalid");
     secondsInput?.removeAttribute("aria-invalid");
+    panelApi?.setParts(parts);
     if (emitEvent) emit(onChange, source);
   }
 
@@ -312,6 +363,17 @@ export function initDurationInput(
   // (matches native `type="time"` segment highlight).
   function onFieldClick(event) {
     selectSegment(event.target);
+  }
+
+  // Native `type="time"` selects hours when the field background is clicked.
+  function onControlClick(event) {
+    if (isDisabled) return;
+    if (event.target.closest?.(".duration-input-trigger")) return;
+    if (event.target instanceof HTMLInputElement && fields.includes(event.target)) {
+      return;
+    }
+    hoursInput.focus();
+    selectSegment(hoursInput);
   }
 
   function onFieldInput(event) {
@@ -396,8 +458,11 @@ export function initDurationInput(
     for (const el of [hoursInput, minutesInput, secondsInput]) {
       if (el) el.disabled = isDisabled;
     }
+    trigger.disabled = isDisabled;
     if (valueInput) valueInput.disabled = isDisabled;
+    panelApi?.setDisabled(isDisabled);
     durationEl.classList.toggle("duration-input--disabled", isDisabled);
+    if (isDisabled) closePopup();
   }
 
   const initial =
@@ -407,9 +472,70 @@ export function initDurationInput(
     { hours: 0, minutes: 0, seconds: 0 };
 
   applyParts(initial, { emitEvent: false, padMinutes: true });
-  setDisabled(isDisabled);
 
   const fields = [hoursInput, minutesInput, secondsInput].filter(Boolean);
+  panelApi = mountTimePickerPanel(panelEl, {
+    parts,
+    mode: "duration",
+    maxHours: resolvedMaxHours,
+    showSeconds: withSeconds,
+    showZero: true,
+    showNow: false,
+    disabled: isDisabled,
+    onInput(detail) {
+      parts = { ...detail.parts };
+      syncFields({ padMinutes: true });
+      syncHidden();
+      emit(onInput, detail.source);
+    },
+    onChange(detail) {
+      applyParts(detail.parts, { source: detail.source });
+      if (detail.source === "zero") {
+        closePopup();
+        hoursInput.focus();
+        hoursInput.select();
+      }
+    },
+  });
+  if (!panelApi) {
+    if (createdTrigger) trigger.remove();
+    if (createdPopup) popup.remove();
+    return null;
+  }
+
+  function openPopup() {
+    if (isOpen || isDisabled) return;
+    registerOpenPopup(closePopup);
+    isOpen = true;
+    commitFields({ emitEvent: false, source: "open" });
+    panelApi.setParts(parts);
+    setHidden(popup, false);
+    trigger.setAttribute("aria-expanded", "true");
+    panelApi.focus();
+  }
+
+  function closePopup() {
+    unregisterOpenPopup(closePopup);
+    if (!isOpen) return;
+    isOpen = false;
+    setHidden(popup, true);
+    trigger.setAttribute("aria-expanded", "false");
+  }
+
+  function onTriggerClick(event) {
+    event.stopPropagation();
+    if (isOpen) closePopup();
+    else openPopup();
+  }
+
+  function onPopupClick(event) {
+    event.stopPropagation();
+  }
+
+  setDisabled(isDisabled);
+  control.addEventListener("click", onControlClick);
+  trigger.addEventListener("click", onTriggerClick);
+  popup.addEventListener("click", onPopupClick);
   for (const field of fields) {
     field.addEventListener("focus", onFieldFocus);
     field.addEventListener("click", onFieldClick);
@@ -417,6 +543,19 @@ export function initDurationInput(
     field.addEventListener("blur", onFieldBlur);
     field.addEventListener("keydown", onFieldKeydown);
   }
+
+  const removeClickOutside = onDocumentClickOutside((event) => {
+    if (!durationEl.contains(event.target)) {
+      commitFields({ source: "outside" });
+      closePopup();
+    }
+  });
+  const removeEscape = onDocumentEscape(() => {
+    if (!isOpen) return false;
+    closePopup();
+    trigger.focus();
+    return true;
+  }, { priority: 50 });
 
   return {
     getValue() {
@@ -441,7 +580,15 @@ export function initDurationInput(
       applyParts(parsed ?? { hours: 0, minutes: 0, seconds: 0 });
     },
     setDisabled,
+    open: openPopup,
+    close: closePopup,
     destroy() {
+      removeClickOutside();
+      removeEscape();
+      closePopup();
+      control.removeEventListener("click", onControlClick);
+      trigger.removeEventListener("click", onTriggerClick);
+      popup.removeEventListener("click", onPopupClick);
       for (const field of fields) {
         field.removeEventListener("focus", onFieldFocus);
         field.removeEventListener("click", onFieldClick);
@@ -449,6 +596,10 @@ export function initDurationInput(
         field.removeEventListener("blur", onFieldBlur);
         field.removeEventListener("keydown", onFieldKeydown);
       }
+      panelApi?.destroy();
+      panelApi = null;
+      if (createdTrigger) trigger.remove();
+      if (createdPopup) popup.remove();
     },
   };
 }

@@ -1,12 +1,39 @@
 # Changelog
 
-All notable changes to **microapp-template** are documented in this file.
+All notable changes to **SMA1 Framework** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
+
+## [0.12.0] - 2026-08-16
+
+### Added
+
+- Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; template `clock` icon (`ic:round-schedule`).
+- Slim toggle variant (`.toggle--slim`) — thin track with an oversized overhanging thumb and no icon; Forms demo and USAGE docs.
+- Toggle button (`initToggleButton` / `initToggleButtons`) — `.btn-toggle` pressed state with optional next-action label/icon swapping; `data-toggle-button-always-active` keeps the default button appearance for controls where both states are actions; Actions demo shows pressed-state and swapping icon toggles at standard and slim sizes.
+- Legend (`initLegend` / `initLegends`) — coloured category chips for charts and code highlights; eight numbered palette slots; optional toggle and `data-tooltip`; demo under Chips.
+- Footer “also see” links accept optional per-app `accent` and `accentHover` hex colours in remote JSON or local config, scoping menu hover highlights to the destination app.
+
+### Changed
+
+- Date picker time mode now pairs the calendar and time panel side by side with one full-width Today / Now action bar; Today selects `00:00`, while Now selects the current date and time.
+- Duration input uses the shared popup in duration mode with two-way field synchronisation, optional seconds, independent popup-column wrapping, and a 00:00 reset action.
+- Anchored menus, combobox lists, and date / time / duration / colour popups share a one-popup-at-a-time registry (with grouped colour set + picker support).
+- Checked and mixed checkboxes use an inset `--surface` face (rounded square when checked, disc when mixed) on an accent fill to match the toggle thumb — no check / minus glyphs. Radio selected dots use the same 2px inset and `--surface` face. Checkbox and radio snap into the selected state and ease out over `--control-hover-ms`, matching other controls.
+
+### Fixed
+
+- Time field block selection occurs on pointer press without briefly showing a text caret; quick actions close standalone popups and duration popups anchor to their fields.
+- Duration input: clicking the control background (padding or separators) focuses and selects hours, matching native `type="time"`.
+- Selected radio dots and toggle thumb glyphs no longer rest inside a transform (radio uses `transform: none` when checked; thumb icons centre with insets and `margin: auto`), so they rasterize on whole device pixels instead of drifting about a pixel off centre at some scroll positions and display scalings.
+- `.panel-split` vertical rules now meet an adjacent `.panel-divider` instead of stopping ~1.6px short: next to a rule the split bleeds by the panel gap plus the new `--panel-divider-margin` token rather than one panel padding.
+- Sticky section headings no longer flash a transparent background on reload before the pinned fill applies.
+- Tutorial popover placement stays stable while scrolling / resizing during a step.
+- Legend chip hover styling aligns with other selectable chips.
 
 ## [0.11.0] - 2026-08-12
 
@@ -155,11 +182,11 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 - Accordion, date/time picker, combobox.
 - Radio and related form control polish; banner lifetime / expire indicator.
 
-[Unreleased]: https://github.com/filcuk/microapp-template/compare/v0.11.0...HEAD
-[0.11.0]: https://github.com/filcuk/microapp-template/compare/v0.10.0...v0.11.0
-[0.10.0]: https://github.com/filcuk/microapp-template/compare/v0.9.0...v0.10.0
-[0.9.0]: https://github.com/filcuk/microapp-template/compare/v0.8.0...v0.9.0
-[0.8.0]: https://github.com/filcuk/microapp-template/compare/v0.7.0...v0.8.0
-[0.7.0]: https://github.com/filcuk/microapp-template/compare/v0.6.0...v0.7.0
-[0.6.0]: https://github.com/filcuk/microapp-template/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/filcuk/microapp-template/releases/tag/v0.5.0
+[Unreleased]: https://github.com/filcuk/sma1-framework/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/filcuk/sma1-framework/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/filcuk/sma1-framework/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/filcuk/sma1-framework/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/filcuk/sma1-framework/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/filcuk/sma1-framework/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/filcuk/sma1-framework/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/filcuk/sma1-framework/releases/tag/v0.5.0

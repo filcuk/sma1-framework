@@ -18,7 +18,14 @@
  *   npm run capture:demo -- --show-titles
  *
  * Default output: res/demo-scroll.avif (animated). Use --format for webp/webm/gif.
- * Titles (Theme, Properties, …) are stripped by default; pass --show-titles to keep.
+ * Titles and section subtitles (Theme, Properties, …) are stripped by default;
+ * pass --show-titles to keep.
+ *
+ * Smooth playback depends on two rules: the scroll advances a whole number of
+ * pixels per frame, and the encoder delivers those frames with timestamps that
+ * match --duration (frameCount / encodeFps ≈ duration). --out-fps only chooses
+ * step size for avif/webp; raising --fps does not make the scroll faster or
+ * slower, and no longer overrides --out-fps when planning.
  */
 
 import { spawnSync } from "node:child_process";
@@ -31,6 +38,7 @@ import { fileURLToPath } from "node:url";
 import {
   CAPTURE_STYLE,
   DEFAULT_THEME_STORAGE_KEY,
+  alignCaptureLoopToStep,
   applyCaptureLayout,
   captureInitScript,
 } from "./lib/capture-demo-prepare.mjs";
@@ -69,9 +77,9 @@ function parseArgs(argv) {
   const out = {
     theme: "dark",
     width: "1400",
-    height: "1000",
-    duration: "45000",
-    fps: "30",
+    height: "900",
+    duration: "60000",
+    fps: "60",
     dpr: "1",
     outDir: DEFAULT_OUT_DIR,
     basename: "demo-scroll",
@@ -82,7 +90,7 @@ function parseArgs(argv) {
     hideTitles: true,
     settleMs: "800",
     quality: "70",
-    outFps: "40",
+    outFps: "30",
     maxMb: "10",
     outWidth: "1000",
     avifCrf: "32",
@@ -172,16 +180,24 @@ function printHelp() {
 
 Site header/footer/page-nav are removed. #main is duplicated so scrolling one
 copy height overscrolls into the first section again (infinite carousel).
-Tier/section titles (Theme, Properties, …) and their gaps are stripped by
-default so the scroll is a continuous run of demo sections.
+Tier/section titles (Theme, Properties, …), section subtitles (.panel-hint
+directly under a content-section), and related gaps are stripped by default
+so the scroll is a continuous run of demo sections.
 Frames are captured only during the scroll — no frozen lead-in/outro.
+
+Each frame advances by a whole number of pixels (fractional steps render as
+3,3,3,4 judder). --duration sets how long one loop lasts; the encode frame rate
+is derived so the file plays back in about that many milliseconds. --out-fps
+(avif/webp) or --fps (webm/gif) only chooses how fine the scroll steps are.
 
 Options:
   --theme light|dark   Forced theme (default: dark)
   --width <px>         Viewport width (default: 1400; px suffix ok)
-  --height <px>        Viewport height (default: 1200; px suffix ok)
-  --duration <ms>      Scroll duration for one loop (default: 50000)
-  --fps <n>            Capture / encode frame rate (default: 60)
+  --height <px>        Viewport height (default: 900; px suffix ok)
+  --duration <ms>      Length of one loop / scroll speed (default: 60000).
+                       60000 → ~60s of video covering the full demo once.
+  --fps <n>            Sampling rate for webm/gif (default: 40). Not used to
+                       plan avif/webp steps — use --out-fps for those.
   --dpr <n>            Device scale factor (default: 1) — sharper capture pixels,
                        NOT output downscale (use --out-width for that)
   --out-dir <path>     Output directory (default: res/)
@@ -189,7 +205,9 @@ Options:
   --settle-ms <ms>     Wait after load before capture (default: 800; not in video)
   --format <list>      Output format(s): avif (default), webp, webm, gif
                        Comma-separated for several, e.g. avif,webp or webm
-  --out-fps <n>        Animated image delivery fps (avif/webp; default: 20)
+  --out-fps <n>        Target sampling rate for avif/webp planning (default: 40).
+                       Actual encode fps may differ slightly so duration stays exact.
+                       Size-budget passes may thin by a whole factor only.
   --out-width <px>     Encode width for avif/webp (default: 1000). E.g. capture 1400,
                        export 900: --width 1400 --out-width 900
   --max-mb <n>         Re-encode until under this size (avif/webp; default: 10; 0 = off)
@@ -201,8 +219,8 @@ Options:
   --preview            Open prepared page (no recording)
   --headed             Show the browser while capturing frames
   --no-loop            Do not duplicate #main
-  --hide-titles        Strip tier/section titles and related gaps (default)
-  --show-titles        Keep Theme / Properties headings and spacing
+  --hide-titles        Strip tier/section titles, section subtitles, and gaps (default)
+  --show-titles        Keep Theme / Properties headings, subtitles, and spacing
   -h, --help           Show this help
 
   Legacy aliases: --webp-fps, --webp-width, --webp-max-mb, --webp-quality
@@ -364,43 +382,48 @@ async function openPreparedDemo(page, demoUrl, { loop, settleMs, hideTitles = tr
 }
 
 /**
+ * Pick a whole-pixel scroll step for the capture.
+ *
+ * `--duration` is authoritative for how long one loop lasts (and thus how fast
+ * content scrolls). `--out-fps` / `--fps` only choose how finely that motion is
+ * sampled: smaller steps → more frames → higher encode fps, but
+ * frameCount / encodeFps still equals duration.
+ *
+ * Fractional steps are avoided: `scrollTo` snaps to device pixels, so a 3.27px
+ * mean step becomes a 3,3,3,4 pattern (visible judder). The frame rate absorbs
+ * the remainder instead. Steps are also capped at ~0.35% of the viewport height.
+ *
+ * @param {{ scrollBy: number, durationMs: number, targetFps: number, viewportHeight: number }} opts
+ * @returns {{ stepPx: number, frameCount: number, encodeFps: number }}
+ */
+function planScrollCadence({ scrollBy, durationMs, targetFps, viewportHeight }) {
+  const durationSec = durationMs / 1000;
+  const maxStepPx = Math.max(1, Math.floor(viewportHeight * 0.0035));
+  const idealStepPx = scrollBy / (durationSec * targetFps);
+  const stepPx = Math.min(maxStepPx, Math.max(1, Math.round(idealStepPx)));
+  const frameCount = Math.max(2, Math.ceil(scrollBy / stepPx));
+  // Tie the encode rate to duration so players always get ~durationSec of video.
+  return { stepPx, frameCount, encodeFps: frameCount / durationSec };
+}
+
+/**
  * Capture only in-motion frames at exact scroll offsets (constant spatial
  * sampling → constant playback speed). Uses CDP from-surface screenshots so
  * each frame is a finished composite, not a mid-paint snapshot.
  *
- * Frame count is at least duration×fps, and also high enough that each step
- * stays ≤ ~0.35% of the viewport height (avoids visible “choppy” jumps).
+ * Every frame advances by the same whole `stepPx`, so playback speed is
+ * constant and the encoder receives one frame per delivered frame.
  *
  * @param {import("playwright").Page} page
- * @param {number} scrollBy
- * @param {number} durationMs
- * @param {number} fps
- * @param {number} viewportHeight
- * @param {string} framesDir
+ * @param {{ stepPx: number, frameCount: number, encodeFps: number, framesDir: string }} plan
  * @returns {Promise<{ frameCount: number, encodeFps: number }>}
  */
 async function captureScrollFrames(
   page,
-  scrollBy,
-  durationMs,
-  fps,
-  viewportHeight,
-  framesDir
+  { stepPx, frameCount, encodeFps, framesDir }
 ) {
   fs.rmSync(framesDir, { recursive: true, force: true });
   fs.mkdirSync(framesDir, { recursive: true });
-
-  const maxStepPx = Math.max(1, viewportHeight * 0.0035);
-  const minFramesForSmoothness = Math.ceil(scrollBy / maxStepPx);
-  const framesForDuration = Math.round((durationMs / 1000) * fps);
-  const frameCount = Math.max(2, framesForDuration, minFramesForSmoothness);
-  const encodeFps = frameCount / (durationMs / 1000);
-
-  if (frameCount > framesForDuration) {
-    console.log(
-      `Boosting to ${frameCount} frames (~${encodeFps.toFixed(1)} fps) so each scroll step stays ≤ ${maxStepPx.toFixed(1)}px`
-    );
-  }
 
   const client = await page.context().newCDPSession(page);
   await page.evaluate(() => {
@@ -408,18 +431,25 @@ async function captureScrollFrames(
     document.documentElement.style.scrollBehavior = "auto";
   });
 
+  let offTargetFrames = 0;
+
   for (let i = 0; i < frameCount; i++) {
-    const y = Math.round((scrollBy * i) / frameCount);
-    await page.evaluate(async (scrollY) => {
+    const y = i * stepPx;
+    const landedY = await page.evaluate(async (scrollY) => {
       window.scrollTo(0, scrollY);
       // Two frames: layout then paint. Retry scroll if the engine clamped late.
       await new Promise((r) => requestAnimationFrame(r));
       await new Promise((r) => requestAnimationFrame(r));
-      if (Math.abs(window.scrollY - scrollY) > 1) {
+      if (Math.abs(window.scrollY - scrollY) > 0.5) {
         window.scrollTo(0, scrollY);
         await new Promise((r) => requestAnimationFrame(r));
       }
+      return window.scrollY;
     }, y);
+
+    // A clamped or ignored scroll repeats the previous position, which reads as
+    // a stall followed by a double-length jump.
+    if (Math.abs(landedY - y) > 0.5) offTargetFrames += 1;
 
     const shot = await client.send("Page.captureScreenshot", {
       format: "jpeg",
@@ -440,6 +470,12 @@ async function captureScrollFrames(
     ) {
       console.log(`  frame ${i + 1}/${frameCount} @ y=${y}`);
     }
+  }
+
+  if (offTargetFrames > 0) {
+    console.warn(
+      `  warning: ${offTargetFrames} frame(s) did not reach their scroll offset — expect judder there`
+    );
   }
 
   await client.detach().catch(() => {});
@@ -526,6 +562,63 @@ function runFfmpeg(ffmpegBin, args, label) {
 }
 
 /**
+ * ffmpeg rate argument. Capture rates are usually fractional (whole-pixel scroll
+ * steps rarely divide the duration evenly), so avoid rounding to an integer.
+ *
+ * @param {number} fps
+ * @returns {string}
+ */
+function formatRate(fps) {
+  return String(Number(fps.toFixed(6)));
+}
+
+/**
+ * Smallest whole factor by which the capture rate can be thinned to reach the
+ * requested delivery rate.
+ *
+ * Only integer factors are used: `fps=` with an arbitrary target keeps some
+ * frames and discards others unevenly, which is seen as periodic stutter even
+ * though the source motion is smooth.
+ *
+ * @param {number} captureFps
+ * @param {number} requestedFps
+ * @returns {number}
+ */
+function fpsDecimationFactor(captureFps, requestedFps) {
+  if (!(requestedFps > 0) || requestedFps >= captureFps) return 1;
+  return Math.max(1, Math.round(captureFps / requestedFps));
+}
+
+/**
+ * @param {number} captureFps
+ * @param {number} factor  1 keeps every frame (no resampling filter)
+ * @param {number} evenWidth
+ * @returns {string}
+ */
+function buildFilterChain(captureFps, factor, evenWidth) {
+  const steps = [];
+  if (factor > 1) {
+    // Integer thinning only. Pair with `-r` at the delivery rate so the muxer
+    // cannot keep the capture timestamps (which would shorten the video and
+    // make the scroll look faster).
+    steps.push(`fps=${formatRate(captureFps / factor)}`);
+  }
+  // -2 keeps the height even: an odd height forces a non-square pixel ratio
+  // under yuv420p, which players resample (and soften) on playback.
+  steps.push(`scale=${evenWidth}:-2:flags=lanczos`, "format=yuv420p");
+  return steps.join(",");
+}
+
+/**
+ * Output-rate args so filtered frames keep the intended duration.
+ * @param {number} deliveryFps
+ * @returns {string[]}
+ */
+function deliveryRateArgs(deliveryFps) {
+  return ["-r", formatRate(deliveryFps), "-fps_mode", "cfr"];
+}
+
+/**
  * Encode animated WebP sized for README (~10MB by default).
  * Capture can stay at 60fps; delivery fps/quality/scale are reduced as needed.
  *
@@ -546,7 +639,6 @@ function encodeWebpFromFrames(ffmpegBin, framesDir, webpPath, options) {
   const captureFps = Number(options.captureFps);
   const width = Number(options.width);
   let quality = Number(options.quality);
-  let deliveryFps = Math.min(Number(options.deliveryFps), captureFps);
   let encodeWidth = width;
   const maxMb = Number(options.maxMb);
 
@@ -557,17 +649,19 @@ function encodeWebpFromFrames(ffmpegBin, framesDir, webpPath, options) {
     throw new Error(`encodeWebpFromFrames: invalid width ${options.width}`);
   }
   if (!Number.isFinite(quality)) quality = 58;
-  if (!Number.isFinite(deliveryFps) || deliveryFps <= 0) deliveryFps = 30;
+  let fpsFactor = fpsDecimationFactor(captureFps, Number(options.deliveryFps));
+  let deliveryFps = captureFps / fpsFactor;
 
   const pattern = path.join(framesDir, "frame-%05d.jpg");
 
   /**
    * @param {number} q
-   * @param {number} fpsOut
+   * @param {number} factor
    * @param {number} w
    */
-  function encodeOnce(q, fpsOut, w) {
+  function encodeOnce(q, factor, w) {
     const evenWidth = w % 2 === 0 ? w : w - 1;
+    const outFps = captureFps / factor;
     // libwebp: use -quality (global -q:v is ignored for this encoder).
     // Preset "picture" applies stronger deblocking than "drawing", which suits
     // the anti-aliased UI capture and encodes ~7% smaller at equal quality.
@@ -578,11 +672,11 @@ function encodeWebpFromFrames(ffmpegBin, framesDir, webpPath, options) {
       [
         "-y",
         "-framerate",
-        String(captureFps),
+        formatRate(captureFps),
         "-i",
         pattern,
         "-vf",
-        `fps=${fpsOut},scale=${evenWidth}:-1:flags=lanczos,format=yuv420p`,
+        buildFilterChain(captureFps, factor, evenWidth),
         "-an",
         "-c:v",
         "libwebp_anim",
@@ -594,18 +688,17 @@ function encodeWebpFromFrames(ffmpegBin, framesDir, webpPath, options) {
         String(q),
         "-loop",
         "0",
-        "-fps_mode",
-        "cfr",
+        ...deliveryRateArgs(outFps),
         webpPath,
       ],
       "webp encode"
     );
   }
 
-  encodeOnce(quality, deliveryFps, encodeWidth);
+  encodeOnce(quality, fpsFactor, encodeWidth);
   let sizeMb = fs.statSync(webpPath).size / (1024 * 1024);
   console.log(
-    `  webp pass q=${quality} fps=${deliveryFps} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
+    `  webp pass q=${quality} fps=${deliveryFps.toFixed(2)} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
   );
 
   if (!(maxMb > 0)) return;
@@ -615,25 +708,26 @@ function encodeWebpFromFrames(ffmpegBin, framesDir, webpPath, options) {
     guard += 1;
     if (quality > 40) {
       quality = Math.max(40, quality - 6);
-    } else if (deliveryFps > 18) {
-      deliveryFps = Math.max(18, deliveryFps - 4);
+    } else if (captureFps / (fpsFactor + 1) >= 18) {
+      fpsFactor += 1;
     } else if (encodeWidth > 900) {
       encodeWidth = Math.max(900, Math.round(encodeWidth * 0.88));
     } else if (quality > 28) {
       quality = Math.max(28, quality - 4);
-    } else if (deliveryFps > 12) {
-      deliveryFps = Math.max(12, deliveryFps - 3);
+    } else if (captureFps / (fpsFactor + 1) >= 12) {
+      fpsFactor += 1;
     } else {
       console.warn(
         `  webp still ${sizeMb.toFixed(2)} MB after compression passes (target ${maxMb} MB)`
       );
       break;
     }
+    deliveryFps = captureFps / fpsFactor;
 
-    encodeOnce(quality, deliveryFps, encodeWidth);
+    encodeOnce(quality, fpsFactor, encodeWidth);
     sizeMb = fs.statSync(webpPath).size / (1024 * 1024);
     console.log(
-      `  webp pass q=${quality} fps=${deliveryFps} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
+      `  webp pass q=${quality} fps=${deliveryFps.toFixed(2)} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
     );
   }
 
@@ -662,7 +756,6 @@ function encodeAvifFromFrames(ffmpegBin, framesDir, avifPath, options) {
   const captureFps = Number(options.captureFps);
   const width = Number(options.width);
   let crf = Number(options.crf);
-  let deliveryFps = Math.min(Number(options.deliveryFps), captureFps);
   let encodeWidth = width;
   const maxMb = Number(options.maxMb);
 
@@ -674,28 +767,30 @@ function encodeAvifFromFrames(ffmpegBin, framesDir, avifPath, options) {
   }
   if (!Number.isFinite(crf)) crf = 32;
   crf = Math.max(0, Math.min(63, Math.round(crf)));
-  if (!Number.isFinite(deliveryFps) || deliveryFps <= 0) deliveryFps = 20;
+  let fpsFactor = fpsDecimationFactor(captureFps, Number(options.deliveryFps));
+  let deliveryFps = captureFps / fpsFactor;
 
   const pattern = path.join(framesDir, "frame-%05d.jpg");
 
   /**
    * @param {number} crfOut
-   * @param {number} fpsOut
+   * @param {number} factor
    * @param {number} w
    */
-  function encodeOnce(crfOut, fpsOut, w) {
+  function encodeOnce(crfOut, factor, w) {
     const evenWidth = w % 2 === 0 ? w : w - 1;
+    const outFps = captureFps / factor;
     // libaom CRF needs -b:v 0. Muxer -loop 0 = infinite (also the default).
     runFfmpeg(
       ffmpegBin,
       [
         "-y",
         "-framerate",
-        String(captureFps),
+        formatRate(captureFps),
         "-i",
         pattern,
         "-vf",
-        `fps=${fpsOut},scale=${evenWidth}:-1:flags=lanczos,format=yuv420p`,
+        buildFilterChain(captureFps, factor, evenWidth),
         "-an",
         "-c:v",
         "libaom-av1",
@@ -709,8 +804,7 @@ function encodeAvifFromFrames(ffmpegBin, framesDir, avifPath, options) {
         "0",
         "-still-picture",
         "0",
-        "-fps_mode",
-        "cfr",
+        ...deliveryRateArgs(outFps),
         "-loop",
         "0",
         avifPath,
@@ -719,10 +813,10 @@ function encodeAvifFromFrames(ffmpegBin, framesDir, avifPath, options) {
     );
   }
 
-  encodeOnce(crf, deliveryFps, encodeWidth);
+  encodeOnce(crf, fpsFactor, encodeWidth);
   let sizeMb = fs.statSync(avifPath).size / (1024 * 1024);
   console.log(
-    `  avif pass crf=${crf} fps=${deliveryFps} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
+    `  avif pass crf=${crf} fps=${deliveryFps.toFixed(2)} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
   );
 
   if (!(maxMb > 0)) return;
@@ -732,25 +826,26 @@ function encodeAvifFromFrames(ffmpegBin, framesDir, avifPath, options) {
     guard += 1;
     if (crf < 40) {
       crf = Math.min(40, crf + 3);
-    } else if (deliveryFps > 16) {
-      deliveryFps = Math.max(16, deliveryFps - 2);
+    } else if (captureFps / (fpsFactor + 1) >= 16) {
+      fpsFactor += 1;
     } else if (encodeWidth > 900) {
       encodeWidth = Math.max(900, Math.round(encodeWidth * 0.88));
     } else if (crf < 48) {
       crf = Math.min(48, crf + 2);
-    } else if (deliveryFps > 12) {
-      deliveryFps = Math.max(12, deliveryFps - 2);
+    } else if (captureFps / (fpsFactor + 1) >= 12) {
+      fpsFactor += 1;
     } else {
       console.warn(
         `  avif still ${sizeMb.toFixed(2)} MB after compression passes (target ${maxMb} MB)`
       );
       break;
     }
+    deliveryFps = captureFps / fpsFactor;
 
-    encodeOnce(crf, deliveryFps, encodeWidth);
+    encodeOnce(crf, fpsFactor, encodeWidth);
     sizeMb = fs.statSync(avifPath).size / (1024 * 1024);
     console.log(
-      `  avif pass crf=${crf} fps=${deliveryFps} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
+      `  avif pass crf=${crf} fps=${deliveryFps.toFixed(2)} w=${encodeWidth} → ${sizeMb.toFixed(2)} MB`
     );
   }
 
@@ -991,7 +1086,7 @@ async function main() {
     if (args.preview) {
       console.log(`
 Preview mode — chrome removed, #main duplicated for the carousel seam.
-${hideTitles ? "Tier/section titles hidden for a continuous section scroll.\n" : ""}Scroll one copy height to see the first section again after the last.
+${hideTitles ? "Tier/section titles and section subtitles hidden for a continuous section scroll.\n" : ""}Scroll one copy height to see the first section again after the last.
 Press Ctrl+C to stop.
 `);
       const { browser, context } = await createCaptureContext(playwright, {
@@ -1026,27 +1121,62 @@ Press Ctrl+C to stop.
 
     const page = await context.newPage();
     try {
-      const scrollBy = await openPreparedDemo(page, demoUrl, {
+      const rawScrollBy = await openPreparedDemo(page, demoUrl, {
         loop,
         settleMs,
         hideTitles,
       });
-      console.log(
-        `Capturing ${Math.round(scrollBy)}px over ${durationMs}ms (target ${fps} fps, scroll frames only${hideTitles ? ", titles hidden" : ""})…`
+      // Duration owns loop length / scroll speed. For avif/webp, --out-fps picks
+      // the sampling density (step size). --fps is only the rate for webm/gif —
+      // using max(fps, outFps) here previously forced 1px steps and a huge
+      // capture rate whenever --fps was raised, which then fought --out-fps in
+      // the encoder and could play back too fast.
+      const wantsAnimatedImage = formats.some(
+        (format) => format === "avif" || format === "webp"
       );
-      const captured = await captureScrollFrames(
-        page,
-        scrollBy,
+      const targetFps = wantsAnimatedImage ? outFps : fps;
+      if (wantsAnimatedImage && fps !== outFps) {
+        console.log(
+          `Note: avif/webp step planning uses --out-fps ${outFps} (ignoring --fps ${fps}; that flag is for webm/gif).`
+        );
+      }
+      let plan = planScrollCadence({
+        scrollBy: rawScrollBy,
         durationMs,
-        fps,
-        height,
-        framesDir
+        targetFps,
+        viewportHeight: height,
+      });
+
+      if (loop) {
+        // Pad the seam so frameCount × stepPx lands exactly on the clone.
+        const aligned = await page.evaluate(alignCaptureLoopToStep, {
+          stepPx: plan.stepPx,
+        });
+        plan = planScrollCadence({
+          scrollBy: Number(aligned?.scrollBy) || rawScrollBy,
+          durationMs,
+          targetFps,
+          viewportHeight: height,
+        });
+        await page.evaluate(() => window.scrollTo(0, 0));
+      }
+
+      const plannedSec = plan.frameCount / plan.encodeFps;
+      console.log(
+        `Capturing ${plan.frameCount * plan.stepPx}px over ${durationMs}ms → ~${plannedSec.toFixed(1)}s @ ${plan.encodeFps.toFixed(2)} fps (${plan.stepPx}px/frame${hideTitles ? ", titles hidden" : ""})…`
       );
+      const captured = await captureScrollFrames(page, {
+        stepPx: plan.stepPx,
+        frameCount: plan.frameCount,
+        encodeFps: plan.encodeFps,
+        framesDir,
+      });
       encodeFps = captured.encodeFps;
       writeFramesMeta(framesDir, {
         basename,
         frameCount: captured.frameCount,
         encodeFps: captured.encodeFps,
+        stepPx: plan.stepPx,
         durationMs,
         fps,
         width,

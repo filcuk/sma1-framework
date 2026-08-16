@@ -23,6 +23,7 @@
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
+import { openPopupGroup } from "../utils/document-listeners.js";
 import { isPartialHexInput, paintHexMirror, parseHexColor } from "../utils/color.js";
 import { initColorSet } from "./color-set/index.js";
 import { initColorPicker } from "./color-picker/index.js";
@@ -268,8 +269,11 @@ export function initColorInput(
   }
 
   function openTargets({ focus = true } = {}) {
-    if (openMode === "set" || openMode === "both") colorSetApi?.open?.({ focus });
-    if (openMode === "picker" || openMode === "both") pickerApi?.open?.({ focus });
+    // `both` shows the set and the picker side by side — keep them as one unit.
+    openPopupGroup(() => {
+      if (openMode === "set" || openMode === "both") colorSetApi?.open?.({ focus });
+      if (openMode === "picker" || openMode === "both") pickerApi?.open?.({ focus });
+    });
   }
 
   function closeTargets() {

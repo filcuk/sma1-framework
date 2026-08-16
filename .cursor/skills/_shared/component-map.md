@@ -24,12 +24,12 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | Partial (`app/css/`) | Features that need it |
 | -------------------- | --------------------- |
 | `layout.css` | Shell, section layout, page nav, footer, theme toggle, sticky, title numbering |
-| `controls-buttons.css` | Buttons, toolbar (always with shell) |
+| `controls-buttons.css` | Buttons, toolbar, toggle-button (always with shell) |
 | `overlays.css` | tooltip, banner, dialog, callout, popover |
 | `tutorial.css` | tutorial |
 | `code-block.css` | code-block, expandable-surface |
 | `controls-badges.css` | badge |
-| `controls-chips.css` | chip |
+| `controls-chips.css` | chip, legend |
 | `controls-fields.css` | field/input (CSS-only), combobox, date-picker, time-picker, duration-input |
 | `controls-widgets.css` | toggle, checkbox, segmented-control, pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
@@ -60,15 +60,17 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | tutorial | `app/components/tutorial.js` | `tutorial.css`, `overlays.css` | — | Via popover: `clear`, `chevron-left`, `chevron-right` | `dom`, `document-listeners`; wraps `popover` | Spotlight tour; Escape priority 110 |
 | badge | `app/components/badge.js` | `controls-badges.css` | — | — | `dom` | |
 | chip | `app/components/chip.js` | `controls-chips.css` | — | — | `dom` | |
+| legend | `app/components/legend.js` | `controls-chips.css` | — | — | — | Coloured category chips; slots 1–8; optional toggle; tooltips via `data-tooltip` |
 | combobox | `app/components/combobox.js` | `controls-fields.css`; multi also `controls-badges.css` | — | — | `dom`, `document-listeners`; multi: badge | Multi via `data-combobox-multi` |
-| date-picker | `app/components/date-picker/` (`index.js`, `calendar.js`, `parse.js`) | `controls-fields.css` | — | Markup: `calendar` | `dom`, `document-listeners` | |
-| time-picker | `app/components/time-picker.js` | `controls-fields.css` | — | — | `dom` | Native `type="time"` |
-| duration-input | `app/components/duration-input.js` | `controls-fields.css` | — | — | `dom` | Hours:minutes; optional seconds |
+| date-picker | `app/components/date-picker/` (`index.js`, `calendar.js`, `parse.js`) + time panel (`time-picker/index.js`, `panel.js`, `field.js`) | `controls-fields.css` | — | `calendar`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `icons` | Optional side-by-side time panel |
+| time-picker | `app/components/time-picker.js`, `app/components/time-picker/` (`index.js`, `panel.js`, `field.js`) | `controls-fields.css` | — | `clock`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `icons` | Custom segmented popup; legacy native field fallback |
+| duration-input | `app/components/duration-input.js`, `app/components/time-picker/panel.js` | `controls-fields.css` | — | `clock`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `icons` | Inline segments + shared popup in duration mode |
 | color-input | `app/components/color-input.js` | `controls-widgets.css` | — | — | `dom`, `color`; optional `color-set` / `color-picker` via `openOnClick` | Hex field + swatch; optional alpha; `openTrigger` `either`/`swatch`/`input` |
 | color-set | `app/components/color-set/` (`index.js`, `panel.js`, `registry.js`, `sets/*`) | `controls-color.css` | — | — | `dom`, `document-listeners`, `color` | Named palette gallery; popup or embedded; one module per set |
 | color-picker | `app/components/color-picker/` (`index.js`, `panel.js`) | `controls-color.css`, `controls-menus.css`, `controls-widgets.css` | — | JS: `chevron-down` (format menu), `palette` (colour sets toggle) | `dom`, `document-listeners`, `color`, `menu`, `icons`; uses `slider`; optional `color-set` | Spectrum / channel picker; RGB/CMYK/alpha via `initSlider`; format menu on hex field; optional adjacent colour set |
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
-| checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | JS face: `check`, `minus` | `dom`, `icons` | Tri-state checkbox; faces via `initIcons` / `ensureCheckboxFace` |
+| toggle-button | `app/components/toggle-button.js` | `controls-buttons.css` | — | Optional: `fullscreen`, `fullscreen-exit` (or any pair) | `dom`, `icons` | Pressed `.btn-toggle`; optional next-action label/icon swap; `data-toggle-button-always-active` drops the pressed accent styling |
+| checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | — | `dom`, `icons` | Tri-state checkbox; inset face via `initIcons` / `ensureCheckboxFace` |
 | segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
 | progress-bar | `app/components/progress-bar.js` | `controls-widgets.css` | — | — | `dom` | |
@@ -97,7 +99,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 
 | id | Markup / CSS | Notes |
 | -- | ------------ | ----- |
-| buttons | `.btn*`, `controls-buttons.css` | Always keep with shell |
+| buttons | `.btn*`, `controls-buttons.css` | Always keep with shell; `.btn-toggle` pressed styles shared with toggle-button |
 | toolbar | `.toolbar` | Layout helper; no JS module |
 | fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css` |
 | section-panel | `.section-panel`, `controls-section-panel.css` | Demo pattern; drop partial if unused |

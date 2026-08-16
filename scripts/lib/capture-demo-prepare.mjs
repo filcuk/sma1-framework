@@ -4,7 +4,8 @@
  *
  * Builds an infinite-carousel layout: site chrome removed, `#main` duplicated,
  * scroll distance = one copy so the last frame matches the first when looped.
- * Optionally strips tier/section titles for a continuous section scroll.
+ * Optionally strips tier/section titles and section subtitles for a continuous
+ * section scroll.
  */
 
 export const CAPTURE_STYLE = `
@@ -154,9 +155,13 @@ export function applyCaptureLayout({ loop, styleText, hideTitles = true }) {
   }
 
   if (hideTitles) {
-    // Tier headers (e.g. Theme + lead) and section titles (e.g. Properties).
+    // Tier headers (e.g. Theme + lead), section titles (e.g. Properties), and
+    // section subtitles (direct .panel-hint under .content-section). Panel-level
+    // hints stay.
     document
-      .querySelectorAll(".content-tier-header, .section-title")
+      .querySelectorAll(
+        ".content-tier-header, .section-title, .content-section > .panel-hint",
+      )
       .forEach((el) => el.remove());
   }
 
@@ -222,4 +227,49 @@ export function applyCaptureLayout({ loop, styleText, hideTitles = true }) {
 
   window.scrollTo(0, 0);
   return { scrollBy, mainHeight };
+}
+
+/**
+ * Pad the seam so the loop distance is a whole multiple of the per-frame scroll
+ * step. Frames can then advance by a constant integer pixel count (uniform
+ * motion) while the last frame still lands exactly on the clone. Padding is
+ * always less than one step, so the seam gap stays visually unchanged.
+ *
+ * Pass to `page.evaluate` after `applyCaptureLayout`.
+ *
+ * @param {{ stepPx: number }} opts
+ * @returns {{ scrollBy: number, padPx: number }}
+ */
+export function alignCaptureLoopToStep({ stepPx }) {
+  const main = document.getElementById("main");
+  const clone = document.getElementById("main-capture-clone");
+  const measure = () => {
+    if (!main || !clone) return 0;
+    const mainTop = main.getBoundingClientRect().top + window.scrollY;
+    const cloneTop = clone.getBoundingClientRect().top + window.scrollY;
+    return cloneTop - mainTop;
+  };
+
+  const scrollBy = measure();
+  if (!main || !clone || !(stepPx > 0) || !(scrollBy > 0)) {
+    return { scrollBy, padPx: 0 };
+  }
+
+  const target = Math.ceil(scrollBy / stepPx) * stepPx;
+  const padPx = target - scrollBy;
+
+  let spacer = document.getElementById("capture-loop-spacer");
+  if (!spacer) {
+    spacer = document.createElement("div");
+    spacer.id = "capture-loop-spacer";
+    spacer.setAttribute("aria-hidden", "true");
+    clone.before(spacer);
+  }
+  // Padding (not margin) so it cannot collapse into the surrounding blocks.
+  spacer.style.height = `${padPx}px`;
+  spacer.style.margin = "0";
+  spacer.style.padding = "0";
+
+  window.scrollTo(0, 0);
+  return { scrollBy: measure(), padPx };
 }

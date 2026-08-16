@@ -207,7 +207,15 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 
 .date-picker-row .date-picker-time {
   flex: 0 0 auto;
-  width: auto;
+  box-sizing: border-box;
+  min-height: var(--control-height);
+  /* hh:mm — 4 digits + a colon (≈0.45ch) — plus field padding and borders. */
+  width: calc(4.45ch + 1.5rem + 2px);
+  font-variant-numeric: tabular-nums;
+}
+
+.date-picker--with-time[data-date-picker-seconds] .date-picker-time {
+  width: calc(6.9ch + 1.5rem + 2px);
 }
 
 .date-picker-input {
@@ -265,6 +273,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 }
 
 .time-picker {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -277,11 +286,169 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   align-self: flex-start;
 }
 
+.time-picker-control {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.time-picker-input {
+  /* hh:mm — 4 digits + a colon (≈0.45ch) — plus padding, icon slot, borders. */
+  width: calc(4.45ch + 0.75rem + 2.5rem + 2px);
+  max-width: 100%;
+  padding-right: 2.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-picker[data-time-picker-seconds] .time-picker-input {
+  width: calc(6.9ch + 0.75rem + 2.5rem + 2px);
+}
+
+.time-picker-input[aria-invalid="true"] {
+  border-color: var(--banner-error-border);
+  outline-color: var(--banner-error-border);
+}
+
+.time-picker-trigger {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 0 6px 6px 0;
+}
+
+.time-picker-trigger:hover {
+  color: var(--accent);
+}
+
+.time-picker-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.time-picker-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.time-picker-popup {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 60;
+  --panel-padding: 0.75rem;
+  width: fit-content;
+  max-width: calc(100vw - 2 * var(--page-padding-x));
+  padding: var(--panel-padding);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
+}
+
+:root[data-theme="dark"] .time-picker-popup {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.time-picker-panel {
+  /* Column count comes from the panel (2, or 3 with seconds) */
+  --time-picker-columns: 2;
+  --time-picker-column-width: 3.5rem;
+  --time-picker-column-gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: calc(
+    var(--time-picker-columns) * var(--time-picker-column-width) +
+      (var(--time-picker-columns) - 1) * var(--time-picker-column-gap)
+  );
+  min-width: 0;
+}
+
+.time-picker-fields {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--time-picker-column-gap);
+}
+
+.time-picker-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.time-picker-nudge.btn-icon {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height-slim);
+  min-height: var(--control-height-slim);
+  padding: 0;
+  color: var(--muted);
+}
+
+.time-picker-nudge:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.time-picker-nudge-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.time-picker-segment {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--control-height);
+  padding: 0 0.25rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-picker-segment[aria-invalid="true"] {
+  border-color: var(--banner-error-border);
+  outline-color: var(--banner-error-border);
+}
+
+.time-picker-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  margin-inline: calc(-1 * var(--panel-padding, 0.75rem));
+  padding: 0.75rem var(--panel-padding, 0.75rem) 0;
+  border-top: 1px solid var(--border);
+}
+
+.time-picker-quick-btn {
+  flex: 1;
+}
+
+.time-picker-panel--disabled,
 .time-picker--disabled {
   opacity: 0.5;
 }
 
+.time-picker--disabled .time-picker-trigger {
+  cursor: not-allowed;
+}
+
 .duration-input {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -291,6 +458,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 }
 
 .duration-input-control {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -299,7 +467,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   min-height: var(--control-height);
   width: auto;
   max-width: 100%;
-  padding: 0 0.75rem;
+  padding: 0 2.5rem 0 0.75rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--input-bg);
@@ -323,10 +491,11 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 .duration-input-seconds {
   box-sizing: border-box;
   flex: 0 0 auto;
+  align-self: stretch;
   width: 2ch;
   min-width: 2ch;
   min-height: 0;
-  height: 1.25rem;
+  height: auto;
   margin: 0;
   padding: 0;
   border: none;
@@ -370,19 +539,107 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   cursor: not-allowed;
 }
 
+.duration-input-trigger {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 0 6px 6px 0;
+}
+
+.duration-input-trigger:hover {
+  color: var(--accent);
+}
+
+.duration-input-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.duration-input-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.duration-input-popup {
+  top: calc(100% + 0.35rem);
+}
+
+.duration-input--disabled .duration-input-trigger {
+  cursor: not-allowed;
+}
+
 .date-picker-popup {
   position: absolute;
   top: calc(100% + 0.35rem);
   left: 0;
   /* Match .dropdown-menu — above sticky chrome (20–41). */
   z-index: 60;
+  --panel-padding: 0.75rem;
   width: 18rem;
   max-width: calc(100vw - 2 * var(--page-padding-x));
-  padding: 0.75rem;
+  padding: var(--panel-padding);
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
   box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
+}
+
+/* Full-height time divider: drop popup padding and pad the columns instead. */
+.date-picker--with-time .date-picker-popup {
+  width: max-content;
+  padding: 0;
+}
+
+.date-picker-shell {
+  display: grid;
+  grid-template-columns: 18rem 1px auto;
+  column-gap: 0;
+  align-items: stretch;
+}
+
+.date-picker-calendar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 18rem;
+  padding: var(--panel-padding, 0.75rem);
+}
+
+.date-picker-time-divider {
+  width: 1px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  align-self: stretch;
+  background-color: var(--border);
+}
+
+.date-picker-time-panel {
+  box-sizing: border-box;
+  display: flex;
+  align-self: stretch;
+  padding: var(--panel-padding, 0.75rem);
+}
+
+.date-picker-time-panel > .time-picker-panel {
+  flex: 0 0 auto;
+}
+
+/* Single action bar spanning both columns. */
+.date-picker--with-time .date-picker-popup > .date-picker-actions {
+  margin-top: 0;
+  margin-inline: 0;
+  padding: 0.75rem var(--panel-padding, 0.75rem);
 }
 
 :root[data-theme="dark"] .date-picker-popup {
@@ -518,14 +775,13 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   display: flex;
   gap: 0.5rem;
   margin-top: 0.75rem;
-  padding-top: 0.75rem;
+  margin-inline: calc(-1 * var(--panel-padding, 0.75rem));
+  padding: 0.75rem var(--panel-padding, 0.75rem) 0;
   border-top: 1px solid var(--border);
 }
 
 .date-picker-quick-btn {
   flex: 1;
-  min-height: 2rem;
-  padding: 0 0.75rem;
 }
 
 .checkbox-group {
@@ -544,8 +800,8 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   line-height: 1.4;
 }
 
-/* Custom paint so checked glyphs match primary fills (`--accent-fg`).
-   Glyphs are `check` / `minus` icons mounted by initIcons / ensureCheckboxFace. */
+/* Custom paint mirrors the toggle thumb: inset `--surface` face on accent fill.
+   Face host is mounted by initIcons / ensureCheckboxFace (no glyph icons). */
 .checkbox-control {
   position: relative;
   display: inline-grid;
@@ -568,41 +824,38 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   color: var(--accent-fg);
   cursor: pointer;
   grid-area: 1 / 1;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
-.checkbox-glyphs {
-  display: grid;
-  place-items: center;
-  grid-area: 1 / 1;
-  width: 0.75rem;
-  height: 0.75rem;
+.checkbox-face {
+  position: absolute;
+  /* Inset (not centred) so each edge is measured from the box and gaps stay even.
+     Whole pixels at 1x — a fractional inset cannot rasterize evenly there. */
+  inset: 2px;
+  border-radius: 2px;
+  background: transparent;
   pointer-events: none;
-  color: var(--accent-fg);
+  transition: background var(--control-hover-ms) ease-out, border-radius var(--control-hover-ms) ease-out;
 }
 
-.checkbox-glyph {
-  display: none;
-  grid-area: 1 / 1;
-  width: 0.75rem;
-  height: 0.75rem;
-  overflow: visible;
-  /* Round Material paths read thin at 12px — stroke fattens the silhouette */
-  stroke: currentColor;
-  stroke-width: 5px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  paint-order: stroke fill;
+/* Where half pixels are real, tighten to the toggle's inset ratio (2px on a 22px track). */
+@media (min-resolution: 2dppx) {
+  .checkbox-face {
+    inset: 1.5px;
+  }
 }
 
-.checkbox-control:has(.checkbox-input:checked) .checkbox-glyph--check,
-.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-glyph--minus,
-.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-glyph--minus {
-  display: block;
+.checkbox-control:has(.checkbox-input:checked) .checkbox-face,
+.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-face,
+.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-face {
+  background: var(--surface);
+  border-radius: 2px;
+  transition-duration: 0s;
 }
 
-.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-glyph--check,
-.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-glyph--check {
-  display: none;
+.checkbox-control:has(.checkbox-input:indeterminate) .checkbox-face,
+.checkbox-control:has(.checkbox-input[aria-checked="mixed"]) .checkbox-face {
+  border-radius: 999px;
 }
 
 .checkbox-input:checked,
@@ -610,6 +863,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 .checkbox-input[aria-checked="mixed"] {
   background: var(--accent);
   border-color: var(--accent);
+  transition-duration: 0s;
 }
 
 .checkbox-input:focus-visible {
@@ -654,27 +908,34 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   border: 1px solid var(--border);
   border-radius: 50%;
   background: var(--input-bg);
-  color: var(--accent-fg);
   cursor: pointer;
   flex-shrink: 0;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
 .radio-input::before {
   content: "";
-  width: 0.5rem;
-  height: 0.5rem;
+  /* Same 2px outer-to-face gap as `.checkbox-face` */
+  width: calc(1rem - 4px);
+  height: calc(1rem - 4px);
   border-radius: 50%;
-  background: currentColor;
+  background: var(--surface);
   transform: scale(0);
+  transition: transform var(--control-hover-ms) ease-out;
 }
 
 .radio-input:checked {
   background: var(--accent);
   border-color: var(--accent);
+  transition-duration: 0s;
 }
 
+/* `none` rather than `scale(1)`: an untransformed resting face rasterizes on whole
+   device pixels, so the dot cannot land half a pixel off centre (same reason
+   `.checkbox-face` is inset rather than centred). */
 .radio-input:checked::before {
-  transform: scale(1);
+  transform: none;
+  transition-duration: 0s;
 }
 
 .radio-input:focus-visible {
@@ -697,7 +958,7 @@ li:not([hidden]):has(> .combobox-option.is-selected)
     appearance: auto;
   }
 
-  .checkbox-glyphs,
+  .checkbox-face,
   .radio-input::before {
     display: none;
   }

@@ -89,6 +89,33 @@ test("resolveSelection for dialog pulls overlays css and dialog.js only among op
   assert.ok(selection.components.includes("banner"));
 });
 
+test("picker selections include their shared time panel dependencies", () => {
+  const manifest = loadManifest();
+
+  const time = resolveSelection(
+    { templateVersion: "0.11.0", components: ["time-picker"] },
+    manifest
+  );
+  assert.ok(time.files.includes("app/components/time-picker/index.js"));
+  assert.ok(time.files.includes("app/components/time-picker/panel.js"));
+  assert.ok(time.files.includes("app/components/time-picker/field.js"));
+  assert.ok(time.files.includes("app/utils/icons.js"));
+
+  const date = resolveSelection(
+    { templateVersion: "0.11.0", components: ["date-picker"] },
+    manifest
+  );
+  assert.ok(date.files.includes("app/components/time-picker/panel.js"));
+  assert.ok(date.files.includes("app/components/time-picker/field.js"));
+
+  const duration = resolveSelection(
+    { templateVersion: "0.11.0", components: ["duration-input"] },
+    manifest
+  );
+  assert.ok(duration.files.includes("app/components/time-picker/panel.js"));
+  assert.ok(duration.files.includes("app/utils/document-listeners.js"));
+});
+
 test("resolveCssIndex keeps catalogue order", () => {
   const manifest = loadManifest();
   const css = resolveCssIndex(manifest, ["dialog", "tooltip", "banner"]);
@@ -118,12 +145,12 @@ test("buildUpdatedLock preserves skills and bumps schemaVersion", () => {
       customNote: "keep-me",
     },
     manifest,
-    "filcuk/microapp-template"
+    "filcuk/sma1-framework"
   );
   assert.equal(next.schemaVersion, 2);
   assert.deepEqual(next.skills, ["*", "-release-template"]);
   assert.equal(next.customNote, "keep-me");
-  assert.equal(next.source, "filcuk/microapp-template");
+  assert.equal(next.source, "filcuk/sma1-framework");
 });
 
 test("verifyTemplateTree passes on this repository", () => {
@@ -227,7 +254,7 @@ test("sync --from self into a temp root with dialog-only lock", async () => {
         {
           schemaVersion: 1,
           templateVersion: "0.9.0",
-          source: "filcuk/microapp-template",
+          source: "filcuk/sma1-framework",
           components: ["dialog"],
           skills: ["*", "-release-template"],
         },

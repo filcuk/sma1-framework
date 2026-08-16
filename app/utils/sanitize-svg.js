@@ -174,9 +174,21 @@ function sanitizeFallback(source) {
  * @param {unknown} raw
  * @returns {string} Safe SVG markup, or "" when empty/invalid/unsafe
  */
+/**
+ * Drop XML prolog / DOCTYPE so fetched `.svg` files still match the root check.
+ * @param {string} source
+ * @returns {string}
+ */
+function stripSvgProlog(source) {
+  return source
+    .replace(/^<\?xml\b[\s\S]*?\?>\s*/i, "")
+    .replace(/^<!DOCTYPE\b[\s\S]*?>\s*/i, "");
+}
+
 export function sanitizeSvgMarkup(raw) {
-  const source = typeof raw === "string" ? raw.trim() : "";
+  let source = typeof raw === "string" ? raw.trim() : "";
   if (!source) return "";
+  source = stripSvgProlog(source);
   if (!/^<\s*svg\b/i.test(source)) return "";
 
   if (typeof DOMParser !== "undefined") {

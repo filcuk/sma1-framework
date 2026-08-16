@@ -114,7 +114,28 @@ a.btn.btn-primary:hover {
   color: var(--text);
 }
 
+/* Both states are actions, not an on/off indicator — keep the default look */
+.btn-toggle.btn-toggle--always-active[aria-pressed="true"] {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-toggle.btn-toggle--always-active[aria-pressed="true"]:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+.btn-toggle:has(.btn-toggle-label) {
+  gap: 0.375rem;
+}
+
 .btn-icon-svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.btn-slim .btn-icon-svg {
   width: 1rem;
   height: 1rem;
 }

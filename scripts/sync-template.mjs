@@ -2,7 +2,7 @@
  * Sync template-owned files from an upstream revision into this app tree.
  *
  * Usage:
- *   node scripts/sync-template.mjs --from ../microapp-template
+ *   node scripts/sync-template.mjs --from ../sma1-framework
  *   node scripts/sync-template.mjs --version 0.9.0
  *   node scripts/sync-template.mjs --from . --dry-run
  *   node scripts/sync-template.mjs --from . --prune
@@ -184,7 +184,7 @@ export async function runSync(argv = process.argv.slice(2)) {
     lock = { ...lock, templateVersion: args.version.replace(/^v/, "") };
   }
 
-  const source = lock.source || "filcuk/microapp-template";
+  const source = lock.source || "filcuk/sma1-framework";
   let upstreamRoot;
   /** @type {string | null} */
   let tempDir = null;
@@ -193,7 +193,7 @@ export async function runSync(argv = process.argv.slice(2)) {
     if (args.from) {
       upstreamRoot = path.resolve(args.from);
     } else {
-      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "microapp-template-sync-"));
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "sma1-framework-sync-"));
       console.log(`Fetching ${source}@v${lock.templateVersion}…`);
       upstreamRoot = await fetchTaggedTree(source, lock.templateVersion, tempDir);
     }

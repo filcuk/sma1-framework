@@ -1,7 +1,7 @@
 ﻿---
 name: author-component
 description: >-
-  Author a new reusable component into microapp-template itself: scaffold
+  Author a new reusable component in SMA1 Framework itself: scaffold
   initX/initXs JS, CSS partial, demo, USAGE/AGENTS docs, and component-map.
   Use when adding a new template component, not when restoring one into a fork.
 ---

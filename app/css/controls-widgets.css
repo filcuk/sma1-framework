@@ -69,15 +69,16 @@
 
 .toggle-thumb-icon {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  /* Centred by insets + auto margins rather than a translate, so the glyph snaps to
+     whole device pixels inside the thumb (which is itself transformed when on). */
+  inset: 0;
+  margin: auto;
   display: block;
   flex-shrink: 0;
   width: 0.75rem;
   height: 0.75rem;
   color: var(--accent);
   opacity: 0;
-  transform: translate(-50%, -50%);
   transition: opacity 0.15s ease;
 }
 
@@ -117,6 +118,34 @@
 
 .toggle--disabled {
   opacity: 0.5;
+}
+
+/* Slim: thin track with an oversized thumb that overhangs the slot (no icon) */
+.toggle--slim .toggle-track {
+  width: 2rem;
+  height: 0.75rem;
+  overflow: visible;
+}
+
+.toggle--slim .toggle-thumb {
+  top: calc((0.75rem - 1.125rem) / 2);
+  left: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid var(--border);
+  box-sizing: border-box;
+}
+
+.toggle--slim .toggle-thumb-icon {
+  display: none;
+}
+
+.toggle--slim .toggle-btn[aria-checked="true"] .toggle-thumb {
+  transform: translateX(calc(2rem - 1.125rem));
+}
+
+.toggle--slim .toggle-btn[aria-checked="mixed"] .toggle-thumb {
+  transform: translateX(calc((2rem - 1.125rem) / 2));
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,14 +1,15 @@
 /** Fork-sensitive defaults — edit when creating your app from this template. */
 export const APP_CONFIG = {
   /** Public site URL (GitHub Pages / custom domain). Used to hide this app in “also see”. */
-  appUrl: "https://filcuk.github.io/microapp-template/",
-  repoUrl: "https://github.com/filcuk/microapp-template",
+  appUrl: "https://filcuk.github.io/sma1-framework/",
+  repoUrl: "https://github.com/filcuk/sma1-framework",
   themeStorageKey: "microapp-theme",
   themeChangeEvent: "microapp-theme-change",
   /**
    * Remote JSON for the footer “also see” menu.
    * Top-level array of `{ topic, items, order? }` sections and/or flat link objects.
-   * Optional `order` on topics/links; `iconSvg` / `iconSvgLight` / `iconSvgDark` for
+   * Optional `order` on topics/links; `accent` / `accentHover` hex colours for
+   * per-app menu highlighting; `iconSvg` / `iconSvgLight` / `iconSvgDark` for
    * embedded SVG (wins over URL icons). Prefer a raw.githubusercontent.com or
    * GitHub Pages URL. Empty = skip fetch. On success, shows the remote list
    * (merged with local when `alsoSeeIncludeLocal` is true). Local is never used
@@ -42,6 +43,8 @@ export const APP_CONFIG = {
           url: "https://example.com/app-a",
           iconLight: "app/res/app-light.svg",
           iconDark: "app/res/app-dark.svg",
+          accent: "#8250df",
+          accentHover: "#6639ba",
           order: 10,
         },
         {
@@ -50,6 +53,8 @@ export const APP_CONFIG = {
           url: "https://example.com/app-b",
           iconLight: "app/res/app-light.svg",
           iconDark: "app/res/app-dark.svg",
+          accent: "#1a7f37",
+          accentHover: "#116329",
           order: 20,
         },
       ],
