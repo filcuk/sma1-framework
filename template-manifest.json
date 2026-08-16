@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.11.0",
-  "generatedAt": "2026-08-15T13:44:12.288Z",
+  "generatedAt": "2026-08-16T07:20:17.133Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -51,16 +51,16 @@
       "sha256": "007526ca24962ac1c5d71efef266b93841ce91b1e235b2bb6207d71637c1e024"
     },
     "app/components/color-input.js": {
-      "sha256": "f3838ca01e41d8ecf985bb8fec35c531ee69207636eb8e0f911c92fa9847ca6d"
+      "sha256": "3ac48a3018c93a7d069967caee75d1fc5186f839e42dd14d22be05c582ca6e92"
     },
     "app/components/color-picker/index.js": {
-      "sha256": "4256c1e52ddffcf3ccc8ceaf3c267faa1e29ac33d82d09787d001dd9f63140a7"
+      "sha256": "bb9d0f6eb9d570d7a6efaea9c661960df9f2e6854dab9f93cf33714d05b97d83"
     },
     "app/components/color-picker/panel.js": {
       "sha256": "dfaa5f077af2acd6d7fcf10e52c15cf64a15d959a9e25c7851518bbfbf913a64"
     },
     "app/components/color-set/index.js": {
-      "sha256": "ed2af1221b24498962a5a6ded7e9808bba020445cefe2142fa3bcef7f96359dc"
+      "sha256": "4add3bbdf2051eaf8c07ac66731ac36ddc621570ac6ed65b28053e09ead9d127"
     },
     "app/components/color-set/panel.js": {
       "sha256": "2c912d2a27176c7a95ec2b8aab69a3a93cacca3a77093082c80dce007b58e845"
@@ -96,13 +96,13 @@
       "sha256": "a0a43f7e59f6f8e13ec4f6e89e1f96d02cfd1283dbaa868fcd511140b9bdb04f"
     },
     "app/components/combobox.js": {
-      "sha256": "f650d9e7005c76cdaaa07cb18fecc73c53f62d1bc1d7f41981753feef510604c"
+      "sha256": "d012718f4374c3af6b03f6399a244733278951b6668617ed888dc5618813f64e"
     },
     "app/components/date-picker/calendar.js": {
       "sha256": "97363b28d82da42733d867150fba07d7d55bb9d4b663f3057362b901194877be"
     },
     "app/components/date-picker/index.js": {
-      "sha256": "097744454cea178c37145b6b08ae296ea0a6b7466af1c5a41732f1b47343a5ca"
+      "sha256": "a360f2d1d9c72ac65d462ef948fd4ebd22bef348ee56a0210714c420aa76576f"
     },
     "app/components/date-picker/parse.js": {
       "sha256": "c070ae61a509bc2eab3601276790ac290fc93666c94269a2978740f2aca8cb9b"
@@ -120,7 +120,7 @@
       "sha256": "10ea68596439e5598ed2b5a328f70709aa2c29c2442b49fd1829414cb3ff480f"
     },
     "app/components/duration-input.js": {
-      "sha256": "879d465a75f6e912dbfcabf0b4902c2ef96800c0b9b84259f98bcd87b90341f9"
+      "sha256": "0e3fdf08e6ead7f544db175162e49a6cb504a93302d1cee55e77a86278cbc9d9"
     },
     "app/components/expand.js": {
       "sha256": "9b3f0ac0631f11ea21fd3b998de9bd1d33115e437860f3456171a3a070bde437"
@@ -177,7 +177,16 @@
       "sha256": "482f54c360cf314c7e7391f2a8156c7cf9bd995dc892074c56eaafcc5212b597"
     },
     "app/components/time-picker.js": {
-      "sha256": "97435605bb9c3b5398a28f495fa58020d690eac565b0d76af1804d0e40e6eae4"
+      "sha256": "9711eaa4ac76d29244d0f5a77c303a48837ce7eb9813ea4fb05a5338d3a5d547"
+    },
+    "app/components/time-picker/field.js": {
+      "sha256": "3d556429b03a088357cbedf1b35dce5fafb5782238b46e9af11b45edc7a80a95"
+    },
+    "app/components/time-picker/index.js": {
+      "sha256": "6d149a21871c02611af377e975b76b9f36207e2439b66ed6d365346e4a60406e"
+    },
+    "app/components/time-picker/panel.js": {
+      "sha256": "f0cb3dbbe4cf8b6d9fb2a7d9fc94dae4d4ef13c3f27f7a01804c66bb1d52893a"
     },
     "app/components/toggle-button.js": {
       "sha256": "42c834104fde855b9f4f08bcebcc5768b2ff27fdbef3884469d8cde007de37f9"
@@ -216,7 +225,7 @@
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
     },
     "app/css/controls-fields.css": {
-      "sha256": "a631d79243a55bc173925fec8ea51ad16e7fe39156be26faf157a7233150c9f3"
+      "sha256": "f179e6eee1b9b61952eff1b52a12e2f0de3a14d6ad8090ef2e5fdea7c5c8c74f"
     },
     "app/css/controls-file.css": {
       "sha256": "2dd93b29594da190aaa6b6a12f019e1a99fbce834ea928970106a9e83a0b4df3"
@@ -237,7 +246,7 @@
       "sha256": "37cd4a0203dd05919821e873eae87cb4873022196cfe97572b47826bb5ed9b3b"
     },
     "app/css/layout.css": {
-      "sha256": "38200fdff68354e5bb8e51b55066df5927a6ed7b67622302e6a9c73dffee541a"
+      "sha256": "c3371b541be4b88ff68b84a792656db11aee368e0915044670393d0343bb83ab"
     },
     "app/css/overlays.css": {
       "sha256": "f5e690965a7ee2569e85bcdcb31f86c872930a8ebbff9ccecb55cd67837530c2"
@@ -303,19 +312,19 @@
       "sha256": "b17da2f325d37b2719d374dd2ab1f0f68c2a7232317fb17d19ab6cb52a60447a"
     },
     "app/utils/document-listeners.js": {
-      "sha256": "21cc35d5ce94dc5b88d67ef50a9f7763a360308376fa9739e1ec8316e8b36f2f"
+      "sha256": "af0b66fc6147906c9049c7425cec5b735dea048ce182ca28a55e34598c173c57"
     },
     "app/utils/dom.js": {
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-template.js": {
-      "sha256": "99f3e57e8fd1585abf0030597aeb62d281e21d0abaf8bbd8db5263657eed70f0"
+      "sha256": "3c5435bee06cc42dacd6dfa09231b4bf8dac66fa7829501d870a24cd23a9e930"
     },
     "app/utils/icons.js": {
       "sha256": "219ca86cb4b8a7bd91033a3cb229d6c031357a2de039fe9f09311238ba9b6ebd"
     },
     "app/utils/menu.js": {
-      "sha256": "e58869226dfd2ccef4f91738582f70a85909346c0abf1885d9664b8f7b4d0a29"
+      "sha256": "d3dd6ac565d600b06f8a8925487c782f8495a11f2ba202a0602333afd78fba53"
     },
     "app/utils/sanitize-svg.js": {
       "sha256": "4f55c12634aab20d45937abf6dd3158539ff05c1b6804e9608a6bfc224a8f3ad"
@@ -1170,7 +1179,7 @@
       "sha256": "fdd604c1062cfb03da9aca9ee9d2609d5924d40192798bda3950dc192f410697"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "d72b5c52b32ef14021ebcf90e8ba3c775220b3cbc439850fa9be9eda8f2fafeb"
+      "sha256": "770d033f6be0bb9d8f0ca3e1660966785a1d7cdeb0644c4ac1297715597abf02"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c5894ee77f4505215424fc0ac51e8e3fecbeb500c3869f783958a719fb51164b"
@@ -1463,7 +1472,10 @@
       "files": [
         "app/components/date-picker/index.js",
         "app/components/date-picker/calendar.js",
-        "app/components/date-picker/parse.js"
+        "app/components/date-picker/parse.js",
+        "app/components/time-picker/index.js",
+        "app/components/time-picker/panel.js",
+        "app/components/time-picker/field.js"
       ],
       "css": [
         "controls-fields.css"
@@ -1471,40 +1483,62 @@
       "vendor": [],
       "vendorFiles": [],
       "icons": [
-        "calendar"
+        "calendar",
+        "chevron-up",
+        "chevron-down"
       ],
       "infra": [
         "dom",
-        "document-listeners"
-      ]
+        "document-listeners",
+        "icons"
+      ],
+      "notes": "Optional side-by-side time panel"
     },
     "time-picker": {
       "files": [
-        "app/components/time-picker.js"
+        "app/components/time-picker.js",
+        "app/components/time-picker/index.js",
+        "app/components/time-picker/panel.js",
+        "app/components/time-picker/field.js"
       ],
       "css": [
         "controls-fields.css"
       ],
       "vendor": [],
       "vendorFiles": [],
-      "icons": [],
+      "icons": [
+        "clock",
+        "chevron-up",
+        "chevron-down"
+      ],
       "infra": [
-        "dom"
-      ]
+        "dom",
+        "document-listeners",
+        "icons"
+      ],
+      "notes": "Custom segmented popup; legacy native field fallback"
     },
     "duration-input": {
       "files": [
-        "app/components/duration-input.js"
+        "app/components/duration-input.js",
+        "app/components/time-picker/panel.js"
       ],
       "css": [
         "controls-fields.css"
       ],
       "vendor": [],
       "vendorFiles": [],
-      "icons": [],
+      "icons": [
+        "clock",
+        "chevron-up",
+        "chevron-down"
+      ],
       "infra": [
-        "dom"
-      ]
+        "dom",
+        "document-listeners",
+        "icons"
+      ],
+      "notes": "Inline segments + shared popup in duration mode"
     },
     "color-input": {
       "files": [

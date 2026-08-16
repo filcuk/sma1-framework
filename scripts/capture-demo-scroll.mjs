@@ -68,9 +68,9 @@ function parseArgs(argv) {
   /** @type {Record<string, string | boolean | string[]>} */
   const out = {
     theme: "dark",
-    width: "1400",
-    height: "1000",
-    duration: "45000",
+    width: "1200",
+    height: "900",
+    duration: "60000",
     fps: "30",
     dpr: "1",
     outDir: DEFAULT_OUT_DIR,

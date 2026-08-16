@@ -421,6 +421,7 @@ app/
   components/
     dialog.js, combo.js, dropdown.js, tabs.js, …
     date-picker/        # parse.js, calendar.js, index.js
+    time-picker/        # field.js, panel.js, index.js
   prism.css             # Prism token colours (optional)
   toastui-editor.css    # Vendored Toast UI base CSS (optional)
   vendor/               # Prism, Toast UI, TanStack Charts, Mermaid, d3-scale, d3-shape (optional)
@@ -475,9 +476,9 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Colour input** | Hex text input with swatch attached on the left; optional alpha (`#RRGGBBAA`); optional `openOnClick` + `openTrigger` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
 | **Colour set** | Named palette gallery (popup or embedded); built-in sets as one module each. [`app/components/color-set/`](app/components/color-set/). |
 | **Colour picker** | Spectrum / channel colour selector (HEX / RGB / HSL / HSV / CMYK); optional alpha and adjacent colour set. [`app/components/color-picker/`](app/components/color-picker/). |
-| **Date picker** | Calendar popup with optional time field. [`app/components/date-picker/`](app/components/date-picker/). |
-| **Time picker** | Time-of-day field (no date) via native `<input type="time">`. [`app/components/time-picker.js`](app/components/time-picker.js). |
-| **Duration input** | Segmented hours:minutes (optional seconds) duration field. [`app/components/duration-input.js`](app/components/duration-input.js). |
+| **Date picker** | Calendar popup with an optional side-by-side time panel and shared Today / Now action bar. [`app/components/date-picker/`](app/components/date-picker/). |
+| **Time picker** | Editable time-of-day field with a segmented popup, optional seconds, and 00:00 / Now actions. [`app/components/time-picker/`](app/components/time-picker/). |
+| **Duration input** | Segmented hours:minutes (optional seconds) field with the shared popup in duration mode. [`app/components/duration-input.js`](app/components/duration-input.js). |
 | **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) cycles off → on → mixed. [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
 | **Segmented control** | Toggle button group for single selection; optional linked panels. [`app/segmented-control.js`](app/segmented-control.js). |
@@ -1239,7 +1240,7 @@ initTriStateCheckboxes(document); // all `[data-checkbox-tristate]` inputs
 
 #### Date picker
 
-Calendar popup via [`app/components/date-picker/index.js`](app/components/date-picker/index.js). Add `data-date-picker-time` for an optional time field on the same row as the date control.
+Calendar popup via [`app/components/date-picker/index.js`](app/components/date-picker/index.js). Add `data-date-picker-time` for an editable time field and side-by-side time panel; add `data-date-picker-seconds` to include seconds.
 
 ```html
 <div class="date-picker" id="my-date-picker" data-date-picker-time>
@@ -1252,8 +1253,10 @@ Calendar popup via [`app/components/date-picker/index.js`](app/components/date-p
       <button type="button" class="date-picker-trigger" aria-label="Open calendar"
         data-icon="calendar" data-icon-class="date-picker-icon" aria-expanded="false"></button>
     </div>
-    <input type="time" class="input date-picker-time hidden" hidden />
-    <div class="date-picker-popup hidden" role="dialog" aria-modal="true" aria-label="Choose date" hidden>
+    <input type="text" class="input date-picker-time" value="00:00"
+      inputmode="numeric" autocomplete="off" aria-label="Time" />
+    <div class="date-picker-popup hidden" role="dialog" aria-modal="true"
+      aria-label="Choose date and time" hidden>
       <div class="date-picker-header">
         <button type="button" class="date-picker-nav btn btn-link" data-date-picker-prev aria-label="Previous month">‹</button>
         <div class="date-picker-caption" aria-live="polite"></div>
@@ -1293,16 +1296,24 @@ The date field accepts typed or pasted values (for example `2026-06-20` or `Jun 
 
 The calendar grid starts weeks on Monday. Weekday labels in markup are optional — `initDatePicker()` fills `.date-picker-weekdays` when missing or out of date.
 
-The day view includes quick actions below the calendar: **Today** (date-only pickers) or **Today** and **Now** when `data-date-picker-time` is set. Today selects the current date and sets time to `00:00`; Now selects the current date and time.
+The day view includes **Today** below a date-only calendar. Combined pickers have one action bar spanning both panels: **Today** selects the current date at `00:00`, while **Now** selects the current date and time.
 
 #### Time picker
 
-Time of day without a date — styled wrapper around a native `<input type="time">`.
+Time of day without a date. The editable text field opens a popup with independently wrapping hour, minute, and optional second columns. The legacy native `<input type="time">` markup remains supported when no custom popup is present.
 
 ```html
 <div class="time-picker" id="my-time-picker" data-time-picker-default="14:30">
   <label class="field-label" for="my-time-picker-input">Time</label>
-  <input type="time" id="my-time-picker-input" class="input date-picker-time" />
+  <div class="time-picker-control">
+    <input type="text" id="my-time-picker-input" class="input time-picker-input"
+      value="14:30" inputmode="numeric" autocomplete="off" />
+    <button type="button" class="time-picker-trigger" aria-label="Open time picker"
+      data-icon="clock" data-icon-class="time-picker-icon" aria-expanded="false"></button>
+  </div>
+  <div class="time-picker-popup hidden" role="dialog" aria-label="Choose time" hidden>
+    <div class="time-picker-panel"></div>
+  </div>
   <input type="hidden" class="time-picker-value" name="time" />
 </div>
 ```
@@ -1315,7 +1326,9 @@ const timePicker = initTimePicker(document.getElementById("my-time-picker"), {
   // defaultValue: "14:30",
   // min: "09:00",
   // max: "17:00",
-  // step: 60,
+  // showSeconds: true,
+  // showZero: true,
+  // showNow: true,
 });
 
 timePicker?.getValue();
@@ -1324,11 +1337,15 @@ timePicker?.setValue("09:15");
 initTimePickers(document);
 ```
 
-`data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-step`, and `data-time-picker-disabled` mirror the JS options.
+`data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-seconds`, `data-time-picker-zero`, `data-time-picker-now`, and `data-time-picker-disabled` mirror the JS options. The popup defaults to **00:00** and **Now** quick actions; either can be disabled with a false option / attribute value. Quick actions commit and close the popup.
+
+Clicking the field selects the hour, minute, or second block under the pointer; keyboard focus selects hours. Arrow Up / Down wraps the selected block independently, Arrow Left / Right or `:` moves between blocks, and Alt+Arrow Down opens the popup.
 
 #### Duration input
 
-Segmented hours and minutes (optional seconds). Stores `H:MM` or `H:MM:SS` in `.duration-input-value`. Focusing or clicking a segment selects its full value (like a native time field); clicking the control background focuses hours. Arrow Up/Down nudges the focused segment (carries across fields; saturates at 0 and the max instead of wrapping); `:` or Arrow Right moves to the next field.
+Segmented hours and minutes (optional seconds) with a clock-triggered popup using the same panel as the time picker in duration mode. Stores `H:MM` or `H:MM:SS` in `.duration-input-value`. The trigger and popup are created automatically when omitted.
+
+Focusing or clicking an inline segment selects its full value; clicking the control background focuses hours. Inline Arrow Up / Down nudges the focused segment, while popup buttons wrap each column independently (`0` ↔ `maxHours` for hours, `00` ↔ `59` otherwise). `:` or Arrow Right moves to the next inline field. The popup **00:00** action resets the duration and closes.
 
 ```html
 <div class="duration-input" id="my-duration" data-duration-default="1:30">
@@ -1360,6 +1377,8 @@ duration?.getValue(); // last committed value (not the in-progress draft)
 duration?.getSeconds();
 duration?.setValue("2:05");
 duration?.setSeconds(90);
+duration?.open();
+duration?.close();
 
 initDurationInputs(document);
 ```

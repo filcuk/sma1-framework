@@ -89,6 +89,33 @@ test("resolveSelection for dialog pulls overlays css and dialog.js only among op
   assert.ok(selection.components.includes("banner"));
 });
 
+test("picker selections include their shared time panel dependencies", () => {
+  const manifest = loadManifest();
+
+  const time = resolveSelection(
+    { templateVersion: "0.11.0", components: ["time-picker"] },
+    manifest
+  );
+  assert.ok(time.files.includes("app/components/time-picker/index.js"));
+  assert.ok(time.files.includes("app/components/time-picker/panel.js"));
+  assert.ok(time.files.includes("app/components/time-picker/field.js"));
+  assert.ok(time.files.includes("app/utils/icons.js"));
+
+  const date = resolveSelection(
+    { templateVersion: "0.11.0", components: ["date-picker"] },
+    manifest
+  );
+  assert.ok(date.files.includes("app/components/time-picker/panel.js"));
+  assert.ok(date.files.includes("app/components/time-picker/field.js"));
+
+  const duration = resolveSelection(
+    { templateVersion: "0.11.0", components: ["duration-input"] },
+    manifest
+  );
+  assert.ok(duration.files.includes("app/components/time-picker/panel.js"));
+  assert.ok(duration.files.includes("app/utils/document-listeners.js"));
+});
+
 test("resolveCssIndex keeps catalogue order", () => {
   const manifest = loadManifest();
   const css = resolveCssIndex(manifest, ["dialog", "tooltip", "banner"]);

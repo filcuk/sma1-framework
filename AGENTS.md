@@ -96,9 +96,9 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
-| `initDatePicker()` / `initDatePickers()` | Calendar popup with optional time input |
-| `initTimePicker()` / `initTimePickers()` | Time-of-day field (native `type="time"`) |
-| `initDurationInput()` / `initDurationInputs()` | Segmented hours:minutes (optional seconds) duration |
+| `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
+| `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
+| `initDurationInput()` / `initDurationInputs()` | Segmented duration field with the shared popup in duration mode |
 | `initSlider()` / `initSliders()` | Range slider with editable value (integer, decimal, percentage) |
 | `initProgressBar()` / `initProgressBars()` | Progress bar with optional percent or fraction label |
 | `initSpinner()` / `initSpinners()` | Loading spinner; optional blocking overlay on a host |
@@ -136,7 +136,7 @@ When a module registers listeners, store and call the returned unsubscribe in `d
 
 ### One popup at a time
 
-Anchored popups (dropdown / combo menus, combobox lists, date, time, colour set, and colour picker popups) also register with the same module:
+Anchored popups (dropdown / combo menus, combobox lists, date, time, duration, colour set, and colour picker popups) also register with the same module:
 
 - Call `registerOpenPopup(close)` when opening — it closes every other open popup first
 - Call `unregisterOpenPopup(close)` when closing and in `destroy()`
