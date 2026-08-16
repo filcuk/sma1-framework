@@ -414,7 +414,7 @@ app/
     title-numbering.js  # Optional hierarchical outline title prefixes
   utils/
     dom.js              # setHidden(), parseBooleanAttr(), focus helpers
-    document-listeners.js
+    document-listeners.js # Outside click, Escape, one-popup-at-a-time registry
     menu.js             # Shared popup menu logic
     icons.js            # Inline SVG icon registry
     brand-icon.js       # Theme-aware logo paths
@@ -439,6 +439,12 @@ JS modules live under `app/shell/`, `app/utils/`, and `app/components/` — the 
 | **Components** | `app/components/` | Import and init only the features your page uses; delete unused files |
 
 Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via `styles.css`). Match a component to its partial: form controls in `controls-fields.css`, menus in `controls-menus.css`, modals in `overlays.css`, and so on. Put app-only rules in `css/app.css`.
+
+#### One popup open at a time
+
+[`app/utils/document-listeners.js`](app/utils/document-listeners.js) owns the single `document` click and Escape listeners (`onDocumentClickOutside`, `onDocumentEscape`) plus a registry that keeps only one anchored popup open. Dropdown and combo menus, combobox lists, and the date, time, colour set, and colour picker popups all take part: opening any of them closes the previous one.
+
+A custom popup joins in by calling `registerOpenPopup(close)` when it opens and `unregisterOpenPopup(close)` when it closes (and in `destroy()`). Peers are closed as `close({ restoreFocus: false })`. Wrap opens in `openPopupGroup(() => …)` when two popups belong to one control and should stay open together — colour input with `data-color-input-open="both"` does this for its set and picker.
 
 ---
 

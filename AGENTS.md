@@ -123,6 +123,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initChart()` / `initCharts()` | TanStack Charts host (`mountChart`); requires vendored ESM + import map for `d3-scale` / `d3-shape` when using bars |
 | `initDiagram()` / `initDiagrams()` | Mermaid text→SVG host; requires vendored ESM + chunks under `app/vendor/mermaid/` |
 | `onDocumentClickOutside()` / `onDocumentEscape()` | Shared document listeners — do not add per-instance `document` listeners for these |
+| `registerOpenPopup()` / `unregisterOpenPopup()` / `openPopupGroup()` | One anchored popup open at a time (menus, pickers, combobox lists) |
 
 ### Document listeners
 
@@ -132,6 +133,17 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 - **Escape:** handlers sorted by priority (higher first). Return `true` when handled. Tutorials use priority `110`, dialogs `100`, expandable surfaces `90`, menus / popovers use `50`.
 
 When a module registers listeners, store and call the returned unsubscribe in `destroy()` if provided.
+
+### One popup at a time
+
+Anchored popups (dropdown / combo menus, combobox lists, date, time, colour set, and colour picker popups) also register with the same module:
+
+- Call `registerOpenPopup(close)` when opening — it closes every other open popup first
+- Call `unregisterOpenPopup(close)` when closing and in `destroy()`
+- The closer is invoked as `close({ restoreFocus: false })`, so a peer never steals focus
+- Wrap a multi-popup open in `openPopupGroup(() => …)` when two popups belong together (colour input `open="both"`)
+
+Triggers call `stopPropagation`, so outside-click alone cannot close peers — new popup components must register.
 
 ### Visibility
 

@@ -701,7 +701,7 @@
               </div>
             </div>
             <hr class="panel-divider" />
-            <div class="demo-row">
+            <div class="demo-row demo-row--spread">
               <div class="field date-picker" id="demo-date-picker">
                 <label class="field-label" for="demo-date-picker-input">Date</label>
                 <div class="date-picker-control">
@@ -738,8 +738,9 @@
                     <button type="button" class="date-picker-trigger" aria-label="Open calendar"
                       data-icon="calendar" data-icon-class="date-picker-icon" aria-expanded="false"></button>
                   </div>
-                  <input type="time" class="input date-picker-time hidden" hidden />
-                  <div class="date-picker-popup hidden" role="dialog" aria-modal="true" aria-label="Choose date" hidden>
+                  <input type="text" class="input date-picker-time" value="00:00" inputmode="numeric"
+                    autocomplete="off" aria-label="Time" />
+                  <div class="date-picker-popup hidden" role="dialog" aria-modal="true" aria-label="Choose date and time" hidden>
                     <div class="date-picker-header">
                       <button type="button" class="date-picker-nav btn btn-link" data-date-picker-prev
                         aria-label="Previous month">‹</button>
@@ -773,7 +774,7 @@
               </div>
               <div class="field time-picker" id="demo-time-picker-seconds"
                 data-time-picker-default="14:30:00" data-time-picker-seconds>
-                <label class="field-label" for="demo-time-picker-seconds-input">Time with seconds</label>
+                <label class="field-label" for="demo-time-picker-seconds-input">Seconds</label>
                 <div class="time-picker-control">
                   <input type="text" id="demo-time-picker-seconds-input" class="input time-picker-input"
                     value="14:30:00" inputmode="numeric" autocomplete="off" />

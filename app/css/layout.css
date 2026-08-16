@@ -438,6 +438,11 @@ main {
   gap: 0.75rem;
 }
 
+/* Spread items across the full line instead of bunching them at the start. */
+.demo-row--spread {
+  justify-content: space-between;
+}
+
 .demo-inline {
   display: inline-flex;
   flex-wrap: wrap;

@@ -207,7 +207,15 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 
 .date-picker-row .date-picker-time {
   flex: 0 0 auto;
-  width: auto;
+  box-sizing: border-box;
+  min-height: var(--control-height);
+  /* hh:mm — 4 digits + a colon (≈0.45ch) — plus field padding and borders. */
+  width: calc(4.45ch + 1.5rem + 2px);
+  font-variant-numeric: tabular-nums;
+}
+
+.date-picker--with-time[data-date-picker-seconds] .date-picker-time {
+  width: calc(6.9ch + 1.5rem + 2px);
 }
 
 .date-picker-input {
@@ -287,14 +295,15 @@ li:not([hidden]):has(> .combobox-option.is-selected)
 }
 
 .time-picker-input {
-  width: calc(8ch + 2.5rem);
+  /* hh:mm — 4 digits + a colon (≈0.45ch) — plus padding, icon slot, borders. */
+  width: calc(4.45ch + 0.75rem + 2.5rem + 2px);
   max-width: 100%;
   padding-right: 2.5rem;
   font-variant-numeric: tabular-nums;
 }
 
 .time-picker[data-time-picker-seconds] .time-picker-input {
-  width: calc(11ch + 2.5rem);
+  width: calc(6.9ch + 0.75rem + 2.5rem + 2px);
 }
 
 .time-picker-input[aria-invalid="true"] {
@@ -542,6 +551,54 @@ li:not([hidden]):has(> .combobox-option.is-selected)
   border-radius: 6px;
   background: var(--surface);
   box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
+}
+
+/* Full-height time divider: drop popup padding and pad the columns instead. */
+.date-picker--with-time .date-picker-popup {
+  width: max-content;
+  padding: 0;
+}
+
+.date-picker-shell {
+  display: grid;
+  grid-template-columns: 18rem 1px auto;
+  column-gap: 0;
+  align-items: stretch;
+}
+
+.date-picker-calendar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 18rem;
+  padding: var(--panel-padding, 0.75rem);
+}
+
+.date-picker-time-divider {
+  width: 1px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  align-self: stretch;
+  background-color: var(--border);
+}
+
+.date-picker-time-panel {
+  box-sizing: border-box;
+  display: flex;
+  align-self: stretch;
+  padding: var(--panel-padding, 0.75rem);
+}
+
+.date-picker-time-panel > .time-picker-panel {
+  flex: 0 0 auto;
+}
+
+/* Single action bar spanning both columns. */
+.date-picker--with-time .date-picker-popup > .date-picker-actions {
+  margin-top: 0;
+  margin-inline: 0;
+  padding: 0.75rem var(--panel-padding, 0.75rem);
 }
 
 :root[data-theme="dark"] .date-picker-popup {

@@ -1,6 +1,10 @@
 /**
  * Time picker — editable field with an optional custom popup panel.
  *
+ * The field keeps native `<input type="time">` habits via `field.js`: a click
+ * selects the hour / minute / second block, Arrow Up / Down nudge it, and
+ * Alt + Arrow Down opens the popup.
+ *
  * The legacy native `<input type="time">` markup remains supported while
  * consumers migrate to `.time-picker-control` + `.time-picker-popup`.
  */
@@ -9,12 +13,15 @@ import { parseBooleanAttr, setHidden } from "../../utils/dom.js";
 import {
   onDocumentClickOutside,
   onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
 } from "../../utils/document-listeners.js";
 import {
   formatTimePickerParts,
   mountTimePickerPanel,
   normalizeTimePickerParts,
 } from "./panel.js";
+import { initTimeFieldSegments } from "./field.js";
 
 const TIME_PATTERN = /^([01]?\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
 const DURATION_PATTERN = /^(\d+):([0-5]?\d)(?::([0-5]?\d))?$/;
@@ -351,6 +358,11 @@ export function initTimePicker(
       currentParts = { ...detail.parts };
       syncHost();
       onChange?.(buildDetail(detail.source));
+      // Quick actions pick a final value — dismiss like the date picker does.
+      if (detail.source === "zero" || detail.source === "now") {
+        closePopup();
+        input.focus();
+      }
     },
   });
   if (!panelApi) {
@@ -360,6 +372,7 @@ export function initTimePicker(
 
   function openPopup({ focus = true } = {}) {
     if (isOpen || isDisabled) return;
+    registerOpenPopup(closePopup);
     isOpen = true;
     panelApi.setParts(currentParts);
     setHidden(popup, false);
@@ -368,6 +381,7 @@ export function initTimePicker(
   }
 
   function closePopup() {
+    unregisterOpenPopup(closePopup);
     if (!isOpen) return;
     isOpen = false;
     setHidden(popup, true);
@@ -388,7 +402,7 @@ export function initTimePicker(
     return true;
   }
 
-  function commitInput() {
+  function commitInput({ emitEvent = true } = {}) {
     const raw = input.value.trim();
     if (!raw) {
       syncHost();
@@ -406,7 +420,7 @@ export function initTimePicker(
     currentParts = parsed;
     panelApi.setParts(currentParts);
     syncHost();
-    onChange?.(buildDetail("change"));
+    if (emitEvent) onChange?.(buildDetail("change"));
     return true;
   }
 
@@ -429,7 +443,8 @@ export function initTimePicker(
   const onInputFocus = () => input.removeAttribute("aria-invalid");
   const onInputChange = () => commitInput();
   const onInputKeydown = (event) => {
-    if (event.key === "ArrowDown" && !isOpen) {
+    // Arrow Up / Down nudge the selected block, so the popup opens on Alt+Down.
+    if (event.altKey && event.key === "ArrowDown" && !isOpen) {
       event.preventDefault();
       openPopup();
     } else if (event.key === "Enter") {
@@ -438,6 +453,21 @@ export function initTimePicker(
       closePopup();
     }
   };
+
+  const segments = initTimeFieldSegments(input, {
+    mode: resolvedMode,
+    maxHours: resolvedMaxHours,
+    showSeconds: withSeconds,
+    getParts: () => currentParts,
+    applyParts(parts, { source }) {
+      currentParts = { ...parts };
+      panelApi.setParts(currentParts);
+      syncHost();
+      onChange?.(buildDetail(source));
+    },
+    commit: () => commitInput({ emitEvent: false }),
+    isDisabled: () => isDisabled,
+  });
 
   trigger?.addEventListener("click", onTriggerClick);
   popup.addEventListener("click", onPopupClick);
@@ -478,6 +508,7 @@ export function initTimePicker(
       input.removeEventListener("focus", onInputFocus);
       input.removeEventListener("change", onInputChange);
       input.removeEventListener("keydown", onInputKeydown);
+      segments?.destroy();
       panelApi.destroy();
       closePopup();
       delete pickerEl.dataset.timePickerInit;

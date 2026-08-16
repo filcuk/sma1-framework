@@ -28,7 +28,12 @@
  */
 
 import { parseBooleanAttr, setHidden } from "../../utils/dom.js";
-import { onDocumentClickOutside, onDocumentEscape } from "../../utils/document-listeners.js";
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "../../utils/document-listeners.js";
 import { parseHexColor } from "../../utils/color.js";
 import { getColorSet, listColorSets } from "./registry.js";
 import { ensureBuiltinColorSets } from "./sets/index.js";
@@ -203,6 +208,7 @@ export function initColorSet(
    */
   function open({ focus = true } = {}) {
     if (isEmbedded || isOpen || !popup) return;
+    registerOpenPopup(close);
     isOpen = true;
     setHidden(popup, false);
     trigger?.setAttribute("aria-expanded", "true");
@@ -210,7 +216,9 @@ export function initColorSet(
   }
 
   function close() {
-    if (isEmbedded || !isOpen || !popup) return;
+    if (isEmbedded) return;
+    unregisterOpenPopup(close);
+    if (!isOpen || !popup) return;
     isOpen = false;
     setHidden(popup, true);
     trigger?.setAttribute("aria-expanded", "false");
