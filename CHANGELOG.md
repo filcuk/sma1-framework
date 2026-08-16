@@ -28,6 +28,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 - Time field block selection occurs on pointer press without briefly showing a text caret; quick actions close standalone popups and duration popups anchor to their fields.
 - Duration input: clicking the control background (padding or separators) focuses and selects hours, matching native `type="time"`.
 - Selected radio dots and toggle thumb glyphs no longer rest inside a transform (radio uses `transform: none` when checked; thumb icons centre with insets and `margin: auto`), so they rasterize on whole device pixels instead of drifting about a pixel off centre at some scroll positions and display scalings.
+- `.panel-split` vertical rules now meet an adjacent `.panel-divider` instead of stopping ~1.6px short: next to a rule the split bleeds by the panel gap plus the new `--panel-divider-margin` token rather than one panel padding.
 
 ## [0.11.0] - 2026-08-12
 

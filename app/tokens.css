@@ -59,6 +59,9 @@
   --page-width: 1200px;
   --page-padding-x: 1.5rem;
   --page-padding-y: 1rem;
+  /* Breathing room around a full-bleed `.panel-divider`; splits bleed by the
+   * same amount so their vertical rail meets the rule. */
+  --panel-divider-margin: 0.35rem;
   --sticky-header-offset: 0px;
   --sticky-gap: 0.5rem;
   /* Tighter space between pinned tier title and section heading */

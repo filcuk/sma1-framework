@@ -548,7 +548,7 @@ main {
  * inherits; nested wrappers break the negative margin. */
 .panel-divider {
   align-self: stretch;
-  margin-block: 0.35rem;
+  margin-block: var(--panel-divider-margin, 0.35rem);
   margin-inline: calc(-1 * var(--panel-padding, 1rem));
   border: none;
   border-top: 1px solid var(--border);
@@ -611,6 +611,16 @@ main {
   grid-row: 2;
 }
 
+/* Against the panel edge the bleed is one padding; against a full-bleed rule it
+ * is the panel gap plus that rule's own margin, so the rail meets the rule. */
+.panel-split:has(+ .panel-divider) {
+  margin-bottom: calc(-1 * (var(--panel-gap, 0.75rem) + var(--panel-divider-margin, 0.35rem)));
+}
+
+.panel-divider + .panel-split:not(.panel-split--after-heading) {
+  margin-top: calc(-1 * (var(--panel-gap, 0.75rem) + var(--panel-divider-margin, 0.35rem)));
+}
+
 /* Keep a normal gap under in-panel headings/hints; still bleed into adjacent hrs. */
 .panel-split--after-heading {
   margin-top: 0;
@@ -650,7 +660,9 @@ main {
 @media (max-width: 900px) {
   .panel-split,
   .panel-split--3,
-  .panel-split--3x2 {
+  .panel-split--3x2,
+  .panel-split:has(+ .panel-divider),
+  .panel-divider + .panel-split:not(.panel-split--after-heading) {
     grid-template-columns: 1fr;
     grid-template-rows: none;
     margin-block: 0;
