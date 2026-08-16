@@ -8,6 +8,8 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-08-16
+
 ### Added
 
 - Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; template `clock` icon (`ic:round-schedule`).
@@ -29,6 +31,9 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 - Duration input: clicking the control background (padding or separators) focuses and selects hours, matching native `type="time"`.
 - Selected radio dots and toggle thumb glyphs no longer rest inside a transform (radio uses `transform: none` when checked; thumb icons centre with insets and `margin: auto`), so they rasterize on whole device pixels instead of drifting about a pixel off centre at some scroll positions and display scalings.
 - `.panel-split` vertical rules now meet an adjacent `.panel-divider` instead of stopping ~1.6px short: next to a rule the split bleeds by the panel gap plus the new `--panel-divider-margin` token rather than one panel padding.
+- Sticky section headings no longer flash a transparent background on reload before the pinned fill applies.
+- Tutorial popover placement stays stable while scrolling / resizing during a step.
+- Legend chip hover styling aligns with other selectable chips.
 
 ## [0.11.0] - 2026-08-12
 
