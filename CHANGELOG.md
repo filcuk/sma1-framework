@@ -8,6 +8,10 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+### Added
+
+- Also-see links accept a theme pair (`accentLight` / `accentDark`, and the same for hover) as well as a single `accent` / `accentHover`; the pair wins and a missing side clones the other.
+
 ## [0.12.0] - 2026-08-16
 
 ### Added
