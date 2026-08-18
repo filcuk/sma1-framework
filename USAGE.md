@@ -455,7 +455,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | -------- | ----------- |
 | **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`template.css`](app/css/template.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
-| **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; template version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentHover`, and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
+| **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; template version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
 | **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
@@ -888,6 +888,7 @@ alsoSee: [
         iconDark: "app/res/app-dark.svg",
         accent: "#8250df", // optional per-app menu highlight (hex only)
         accentHover: "#6639ba",
+        // or theme pair: accentLight / accentDark (and accentHoverLight / accentHoverDark)
         order: 10, // optional — lower first within the topic
       },
     ],
@@ -917,7 +918,8 @@ alsoSee: [
 | `appUrl` | Any entry whose `url` matches (trailing slash / case ignored) is excluded; empty topics are dropped |
 | `alsoSee: []` or `false` | Hides the control when there is no successful remote list |
 | `order` (number) | Optional on topic sections and links; ascending sort; missing/`NaN` after numbered; ungrouped flat links always last (link `order` still applies within that group) |
-| `accent` / `accentHover` | Optional per-link hex colours (`#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`) applied as local `--accent` / `--accent-hover`; invalid values are ignored |
+| `accent` / `accentHover` | Optional per-link hex (`#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`) for both themes; applied as local `--accent` / `--accent-hover`; invalid values are ignored |
+| `accentLight` / `accentDark` | Optional theme pair (same hex rules); wins over `accent`; a missing side clones the other. Hover has `accentHoverLight` / `accentHoverDark` (independent of accent; wins over `accentHover`) |
 
 Remote / local JSON is a top-level array of **topic sections** and/or **flat links**:
 
@@ -956,6 +958,13 @@ Prefer a `raw.githubusercontent.com` or GitHub Pages URL and a simple `GET` (no 
 2. `iconSvg` — single always-visible embedded SVG
 3. `iconLight` + `iconDark` — theme-swapped image URLs/paths (`brand-icon--light` / `brand-icon--dark`)
 4. `icon` — single always-visible image URL/path
+
+**Colours** (accent and hover are independent; pair wins over single in each role):
+
+- Accent: `accentLight` + `accentDark` (missing side clones the other), else `accent`
+- Hover: `accentHoverLight` + `accentHoverDark`, else `accentHover`
+
+Omit hover to keep the inherited `--accent-hover` mix (it follows the resolved `--accent`). Hex only (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`); invalid values are ignored.
 
 Embedded SVG should be a full `<svg viewBox="…">…</svg>` (or inner shape markup). Keep `viewBox` and fills; omit `width`/`height`/`class`/`data-*`. Escape `"` as `\"` in JSON. Markup is sanitized before inline render (scripts, event handlers, and disallowed tags are stripped). Prefer URL icons when the logo is already hosted. Flat legacy arrays (links only, no topics) still work. Extra JSON properties are ignored.
 

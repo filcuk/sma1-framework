@@ -484,6 +484,70 @@ test("normalizeAlsoSee keeps valid per-link accent colours", () => {
   const item = sections[0].items[0];
   assert.equal(item.accent, "#8250df");
   assert.equal(item.accentHover, "#6639ba");
+  assert.equal(item.accentLight, "");
+  assert.equal(item.accentDark, "");
+  assert.equal(item.accentHoverLight, "");
+  assert.equal(item.accentHoverDark, "");
+});
+
+test("normalizeAlsoSee prefers accentLight/accentDark over accent", () => {
+  const sections = normalizeAlsoSee(
+    [
+      {
+        label: "Themed",
+        url: "https://example.com/themed",
+        accent: "#8250df",
+        accentHover: "#6639ba",
+        accentLight: "#1a7f37",
+        accentDark: "#3fb950",
+        accentHoverLight: "#116329",
+        accentHoverDark: "#56d364",
+      },
+    ],
+    "",
+    ["*"]
+  );
+
+  const item = sections[0].items[0];
+  assert.equal(item.accent, "");
+  assert.equal(item.accentHover, "");
+  assert.equal(item.accentLight, "#1a7f37");
+  assert.equal(item.accentDark, "#3fb950");
+  assert.equal(item.accentHoverLight, "#116329");
+  assert.equal(item.accentHoverDark, "#56d364");
+});
+
+test("normalizeAlsoSee clones a missing accentLight/accentDark side", () => {
+  const lightOnly = normalizeAlsoSee(
+    [
+      {
+        label: "Light",
+        url: "https://example.com/light",
+        accentLight: "#1a7f37",
+      },
+    ],
+    "",
+    ["*"]
+  )[0].items[0];
+  assert.equal(lightOnly.accentLight, "#1a7f37");
+  assert.equal(lightOnly.accentDark, "#1a7f37");
+
+  const darkOnly = normalizeAlsoSee(
+    [
+      {
+        label: "Dark",
+        url: "https://example.com/dark",
+        accentDark: "#3fb950",
+        accentHoverDark: "#56d364",
+      },
+    ],
+    "",
+    ["*"]
+  )[0].items[0];
+  assert.equal(darkOnly.accentLight, "#3fb950");
+  assert.equal(darkOnly.accentDark, "#3fb950");
+  assert.equal(darkOnly.accentHoverLight, "#56d364");
+  assert.equal(darkOnly.accentHoverDark, "#56d364");
 });
 
 test("normalizeAlsoSee rejects non-hex accent values", () => {
@@ -494,6 +558,8 @@ test("normalizeAlsoSee rejects non-hex accent values", () => {
         url: "https://example.com/unsafe",
         accent: "red; background: url(https://example.com/tracker)",
         accentHover: "oklch(50% 0.2 120)",
+        accentLight: "green",
+        accentDark: "var(--accent)",
       },
     ],
     "",
@@ -503,6 +569,8 @@ test("normalizeAlsoSee rejects non-hex accent values", () => {
   const item = sections[0].items[0];
   assert.equal(item.accent, "");
   assert.equal(item.accentHover, "");
+  assert.equal(item.accentLight, "");
+  assert.equal(item.accentDark, "");
 });
 
 test("renderAlsoSeeMarkup scopes accent colours to their link", () => {
@@ -522,7 +590,11 @@ test("renderAlsoSeeMarkup scopes accent colours to their link", () => {
           iconSvgLight: "",
           iconSvgDark: "",
           accent: "#8250df",
+          accentLight: "",
+          accentDark: "",
           accentHover: "#6639ba",
+          accentHoverLight: "",
+          accentHoverDark: "",
           order: null,
         },
       ],
@@ -532,6 +604,80 @@ test("renderAlsoSeeMarkup scopes accent colours to their link", () => {
   assert.match(
     markup,
     /style="--accent: #8250df; --accent-hover: #6639ba"/
+  );
+  assert.doesNotMatch(markup, /footer-also-see-item--accent-pair/);
+});
+
+test("renderAlsoSeeMarkup scopes theme-pair accent colours to their link", () => {
+  const markup = renderAlsoSeeMarkup([
+    {
+      topic: null,
+      order: null,
+      items: [
+        {
+          label: "Themed",
+          subtitle: "",
+          url: "https://example.com/themed",
+          icon: "",
+          iconLight: "",
+          iconDark: "",
+          iconSvg: "",
+          iconSvgLight: "",
+          iconSvgDark: "",
+          accent: "",
+          accentLight: "#1a7f37",
+          accentDark: "#3fb950",
+          accentHover: "",
+          accentHoverLight: "#116329",
+          accentHoverDark: "#56d364",
+          order: null,
+        },
+      ],
+    },
+  ]);
+
+  assert.match(markup, /footer-also-see-item--accent-pair/);
+  assert.match(markup, /footer-also-see-item--accent-hover-pair/);
+  assert.match(
+    markup,
+    /style="--also-see-accent-light: #1a7f37; --also-see-accent-dark: #3fb950; --also-see-accent-hover-light: #116329; --also-see-accent-hover-dark: #56d364"/
+  );
+  assert.doesNotMatch(markup, /--accent:/);
+});
+
+test("renderAlsoSeeMarkup allows mixed single accent and hover pair", () => {
+  const markup = renderAlsoSeeMarkup([
+    {
+      topic: null,
+      order: null,
+      items: [
+        {
+          label: "Mixed",
+          subtitle: "",
+          url: "https://example.com/mixed",
+          icon: "",
+          iconLight: "",
+          iconDark: "",
+          iconSvg: "",
+          iconSvgLight: "",
+          iconSvgDark: "",
+          accent: "#8250df",
+          accentLight: "",
+          accentDark: "",
+          accentHover: "",
+          accentHoverLight: "#6639ba",
+          accentHoverDark: "#a371f7",
+          order: null,
+        },
+      ],
+    },
+  ]);
+
+  assert.doesNotMatch(markup, /footer-also-see-item--accent-pair/);
+  assert.match(markup, /footer-also-see-item--accent-hover-pair/);
+  assert.match(
+    markup,
+    /style="--accent: #8250df; --also-see-accent-hover-light: #6639ba; --also-see-accent-hover-dark: #a371f7"/
   );
 });
 
