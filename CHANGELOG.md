@@ -22,7 +22,8 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Fixed
 
-- Dropdown, combo, and toggle-dropdown menus use fixed positioning so lists escape stacking and overflow clipping (e.g. above code-block gutter chrome).
+- Dropdown and combo menus elevate their host while open so lists paint above neighbouring code-block gutter chrome.
+- Fixed popup menus no longer stretch to full viewport width (`min-width: 100%` on `position: fixed`).
 - Tabular input top-row selection spacing — header gap row replaces padding on the first body row.
 
 ## [0.12.1] - 2026-08-18
