@@ -340,6 +340,10 @@
   background: transparent;
 }
 
+.tabular-input .table tbody tr.tabular-input-add-row-tr:hover td {
+  box-shadow: none;
+}
+
 /* Half on each side so adjacent cells match the outer edge inset */
 .tabular-input .table th,
 .tabular-input .table td {

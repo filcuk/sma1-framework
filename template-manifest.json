@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.12.1",
-  "generatedAt": "2026-08-19T15:37:58.773Z",
+  "generatedAt": "2026-08-19T16:30:04.064Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -240,7 +240,7 @@
       "sha256": "e3d7ee5ff1cc095f894b04eee22f28ac577b0840b3d84b8a6098c34c80ed06f2"
     },
     "app/css/controls-tabular-input.css": {
-      "sha256": "e63764fba1fbd95acc81e69314be87c4047cdfb827c808d003870126692eead7"
+      "sha256": "1a65b7387c7a1b56725fd8eccbe0e44fdf8f3faef371d533a106a98c1357c429"
     },
     "app/css/controls-widgets.css": {
       "sha256": "37cd4a0203dd05919821e873eae87cb4873022196cfe97572b47826bb5ed9b3b"
@@ -255,7 +255,7 @@
       "sha256": "4d84f29a1bf8293bab17152f535c189b419677af04be7e66cde3b135ef292693"
     },
     "app/css/table.css": {
-      "sha256": "9ff4e8c9eb6eaad983885fdf27f528b370ab5eb21d692ba3c5d58e119e0d8d3f"
+      "sha256": "04407220ba3f862db96741bd82f8f0d4f479ab5a6a2fa5d7e92b104e43a0f50c"
     },
     "app/css/tutorial.css": {
       "sha256": "c5386d468d0dd1af74448d977e6e9d2c8bc9d41a41ec7fe5e84e72e5cc397042"
