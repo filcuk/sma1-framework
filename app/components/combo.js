@@ -12,6 +12,9 @@ export function initCombo(comboEl, { onMainClick, onSelect } = {}) {
     menuEl: menu,
     toggleEl: toggleBtn,
     itemSelector: ".combo-menu-item",
+    // Fixed so menu escapes stacking/overflow clipping (e.g. above
+    // code-block gutter chrome).
+    fixed: true,
     onSelect: (detail) => onSelect?.({ comboEl, ...detail }),
   });
 

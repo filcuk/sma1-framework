@@ -8,6 +8,23 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-08-19
+
+### Added
+
+- Data table row hover uses one outer accent border per row instead of a box around every cell.
+- Tabular input logical columns use the slim toggle (`.toggle--slim`) instead of a checkbox.
+
+### Changed
+
+- Tabular input copy tooltip reads “Copy in tabular format”; column rename tooltip reads “Select to edit”.
+- Tabular input reset button uses danger styling (`.btn-danger`).
+
+### Fixed
+
+- Dropdown, combo, and toggle-dropdown menus use fixed positioning so lists escape stacking and overflow clipping (e.g. above code-block gutter chrome).
+- Tabular input top-row selection spacing — header gap row replaces padding on the first body row.
+
 ## [0.12.1] - 2026-08-18
 
 ### Added

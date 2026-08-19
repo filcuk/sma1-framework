@@ -2675,7 +2675,7 @@ initTables(document);
 
 ### Tabular input
 
-Editable data grid for collecting rows of typed values. Mount an empty `.tabular-input` root; `initTabularInput()` renders the table and controls. Column types are **`text`**, **`number`**, and **`logical`** (checkbox). Other kinds of values (dates, enums, etc.) use **text**.
+Editable data grid for collecting rows of typed values. Mount an empty `.tabular-input` root; `initTabularInput()` renders the table and controls. Column types are **`text`**, **`number`**, and **`logical`** (slim toggle). Other kinds of values (dates, enums, etc.) use **text**.
 
 **Chrome**
 

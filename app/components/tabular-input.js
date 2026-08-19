@@ -33,7 +33,8 @@
  */
 
 import { parseBooleanAttr, setHidden, getFocusableElements, FOCUSABLE_SELECTOR } from "../utils/dom.js";
-import { createIcon, ensureCheckboxFace } from "../utils/icons.js";
+import { createIcon } from "../utils/icons.js";
+import { initToggle } from "./toggle.js";
 import { initPopupMenu } from "../utils/menu.js";
 import { onDocumentClickOutside, onDocumentEscape } from "../utils/document-listeners.js";
 import { copyText, readText, armPasteCapture } from "../utils/clipboard.js";
@@ -425,7 +426,7 @@ export function initTabularInput(
   copyBtn.type = "button";
   copyBtn.className = "btn tabular-input-copy";
   copyBtn.setAttribute("aria-label", "Copy table");
-  copyBtn.dataset.tooltip = "Copy for Excel";
+  copyBtn.dataset.tooltip = "Copy in tabular format";
   const copyLabelEl = document.createElement("span");
   copyLabelEl.className = "tabular-input-action-label";
   copyLabelEl.textContent = "Copy";
@@ -481,7 +482,7 @@ export function initTabularInput(
 
   const resetBtn = document.createElement("button");
   resetBtn.type = "button";
-  resetBtn.className = "btn btn-icon tabular-input-reset";
+  resetBtn.className = "btn btn-danger btn-icon tabular-input-reset";
   resetBtn.setAttribute("aria-label", "Reset table");
   resetBtn.dataset.tooltip = "Reset table";
   resetBtn.setAttribute("aria-haspopup", "dialog");
@@ -853,31 +854,51 @@ export function initTabularInput(
     const value = row.cells[column.id];
 
     if (column.type === "logical") {
-      const label = document.createElement("label");
-      label.className = "checkbox tabular-input-logical";
+      const toggleEl = document.createElement("div");
+      toggleEl.className = "toggle toggle--slim tabular-input-logical";
 
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.className = "checkbox-input";
-      input.checked = Boolean(value);
-      input.disabled = isDisabled;
-      input.setAttribute(
+      const toggleBtn = document.createElement("button");
+      toggleBtn.type = "button";
+      toggleBtn.className = "toggle-btn";
+      toggleBtn.setAttribute("role", "switch");
+      toggleBtn.setAttribute(
+        "aria-checked",
+        value ? "true" : "false"
+      );
+      toggleBtn.setAttribute(
         "aria-label",
         `${column.label}, row ${rowIndex + 1}`
       );
-      input.dataset.tabularInputCell = "";
-      input.dataset.rowId = row.id;
-      input.dataset.columnId = column.id;
+      toggleBtn.dataset.tabularInputCell = "";
+      toggleBtn.dataset.rowId = row.id;
+      toggleBtn.dataset.columnId = column.id;
 
-      input.addEventListener("change", () => {
-        if (isDisabled) return;
-        row.cells[column.id] = input.checked;
-        emit("input");
+      const track = document.createElement("span");
+      track.className = "toggle-track";
+      track.setAttribute("aria-hidden", "true");
+      const thumb = document.createElement("span");
+      thumb.className = "toggle-thumb";
+      track.append(thumb);
+      toggleBtn.append(track);
+
+      const hiddenInput = document.createElement("input");
+      hiddenInput.type = "hidden";
+      hiddenInput.className = "toggle-value";
+      hiddenInput.value = value ? "true" : "false";
+
+      toggleEl.append(toggleBtn, hiddenInput);
+
+      initToggle(toggleEl, {
+        defaultChecked: Boolean(value),
+        disabled: isDisabled,
+        onChange: ({ checked, source }) => {
+          if (isDisabled || source === "init") return;
+          row.cells[column.id] = checked;
+          emit("input");
+        },
       });
 
-      label.append(input);
-      ensureCheckboxFace(input);
-      return label;
+      return toggleEl;
     }
 
     const input = document.createElement("input");
@@ -970,7 +991,7 @@ export function initTabularInput(
     labelInput.dataset.tabularInputRename = "";
     labelInput.dataset.columnId = column.id;
     if (!isDisabled) {
-      labelInput.dataset.tooltip = "Click to edit";
+      labelInput.dataset.tooltip = "Select to edit";
     }
 
     const field = document.createElement("div");
@@ -1000,7 +1021,7 @@ export function initTabularInput(
     labelInput.addEventListener("blur", () => {
       field.classList.remove("is-editing");
       if (!isDisabled) {
-        labelInput.dataset.tooltip = "Click to edit";
+        labelInput.dataset.tooltip = "Select to edit";
       }
       if (isDisabled) return;
       const previous = renameDrafts.get(column.id) ?? column.label;
@@ -1280,6 +1301,17 @@ export function initTabularInput(
     return tr;
   }
 
+  function createHeaderGapRow() {
+    const tr = document.createElement("tr");
+    tr.className = "tabular-input-header-gap";
+    tr.setAttribute("aria-hidden", "true");
+
+    const td = document.createElement("td");
+    td.colSpan = Math.max(columns.length, 1) + 2;
+    tr.append(td);
+    return tr;
+  }
+
   function render() {
     closeTooltip();
     for (const menu of typeMenus) menu.destroy();
@@ -1295,6 +1327,8 @@ export function initTabularInput(
     }
     headerRow.append(createTrailingHeader());
     theadEl.append(headerRow);
+
+    tbodyEl.append(createHeaderGapRow());
 
     rows.forEach((row, rowIndex) => {
       const tr = document.createElement("tr");
@@ -1881,7 +1915,7 @@ export function initTabularInput(
   function resetCopyButtonLabel() {
     setActionButtonLabel(copyBtn, "Copy");
     copyBtn.setAttribute("aria-label", "Copy table");
-    copyBtn.dataset.tooltip = "Copy for Excel";
+    copyBtn.dataset.tooltip = "Copy in tabular format";
     delete copyBtn.dataset.tooltipTone;
   }
 
