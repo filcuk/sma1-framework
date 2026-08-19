@@ -1280,6 +1280,17 @@ export function initTabularInput(
     return tr;
   }
 
+  function createHeaderGapRow() {
+    const tr = document.createElement("tr");
+    tr.className = "tabular-input-header-gap";
+    tr.setAttribute("aria-hidden", "true");
+
+    const td = document.createElement("td");
+    td.colSpan = Math.max(columns.length, 1) + 2;
+    tr.append(td);
+    return tr;
+  }
+
   function render() {
     closeTooltip();
     for (const menu of typeMenus) menu.destroy();
@@ -1295,6 +1306,8 @@ export function initTabularInput(
     }
     headerRow.append(createTrailingHeader());
     theadEl.append(headerRow);
+
+    tbodyEl.append(createHeaderGapRow());
 
     rows.forEach((row, rowIndex) => {
       const tr = document.createElement("tr");

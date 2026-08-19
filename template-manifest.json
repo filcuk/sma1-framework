@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.12.1",
-  "generatedAt": "2026-08-19T16:30:04.064Z",
+  "generatedAt": "2026-08-19T16:37:43.905Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -174,7 +174,7 @@
       "sha256": "43709468cd60d208a356de53347d85b6dbb2ca3caa9d2f7cfb75659f52c984e4"
     },
     "app/components/tabular-input.js": {
-      "sha256": "4762b232507cba58ce07c2d19e91205ec10a0dd3e8cdfc965b4250bc1a207880"
+      "sha256": "b69b55bbb3247ce0e19ea4598d4eb977872e591ed62dd403d84419e34988a262"
     },
     "app/components/time-picker.js": {
       "sha256": "9711eaa4ac76d29244d0f5a77c303a48837ce7eb9813ea4fb05a5338d3a5d547"
@@ -240,7 +240,7 @@
       "sha256": "e3d7ee5ff1cc095f894b04eee22f28ac577b0840b3d84b8a6098c34c80ed06f2"
     },
     "app/css/controls-tabular-input.css": {
-      "sha256": "1a65b7387c7a1b56725fd8eccbe0e44fdf8f3faef371d533a106a98c1357c429"
+      "sha256": "1bae834e8a2c39f80ee10e8f89d3507301a9623a3e50f4a9c6aba879c4184937"
     },
     "app/css/controls-widgets.css": {
       "sha256": "37cd4a0203dd05919821e873eae87cb4873022196cfe97572b47826bb5ed9b3b"

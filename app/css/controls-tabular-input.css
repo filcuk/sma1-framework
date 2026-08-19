@@ -344,6 +344,19 @@
   box-shadow: none;
 }
 
+.tabular-input .table tbody tr.tabular-input-header-gap td {
+  height: calc(var(--tabular-input-cell-gap) / 2);
+  padding: 0;
+  line-height: 0;
+  vertical-align: top;
+}
+
+.tabular-input .table tbody tr.tabular-input-header-gap:hover,
+.tabular-input .table tbody tr.tabular-input-header-gap:hover td {
+  background: transparent;
+  box-shadow: none;
+}
+
 /* Half on each side so adjacent cells match the outer edge inset */
 .tabular-input .table th,
 .tabular-input .table td {
@@ -353,11 +366,6 @@
 
 .tabular-input .table thead th {
   border-bottom: 1px solid var(--border);
-}
-
-/* Full gap below the header band (band keeps its own bottom padding above that). */
-.tabular-input .table tbody tr:first-child > * {
-  padding-top: var(--tabular-input-cell-gap);
 }
 
 /* Match outer left/right inset below the add-row footer. */
