@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.12.1",
-  "generatedAt": "2026-08-19T16:48:14.276Z",
+  "generatedAt": "2026-08-19T16:52:22.884Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -174,7 +174,7 @@
       "sha256": "43709468cd60d208a356de53347d85b6dbb2ca3caa9d2f7cfb75659f52c984e4"
     },
     "app/components/tabular-input.js": {
-      "sha256": "e4885f01b4f16e513919344bf6ae5a59417655e5cb318d82cd0c46c12a10b0c9"
+      "sha256": "33edca732bf9c0075a07cc3182e24ebecfe7f17eec8be56743ed263e7260789e"
     },
     "app/components/time-picker.js": {
       "sha256": "9711eaa4ac76d29244d0f5a77c303a48837ce7eb9813ea4fb05a5338d3a5d547"

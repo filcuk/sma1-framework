@@ -482,7 +482,7 @@ export function initTabularInput(
 
   const resetBtn = document.createElement("button");
   resetBtn.type = "button";
-  resetBtn.className = "btn btn-icon tabular-input-reset";
+  resetBtn.className = "btn btn-danger btn-icon tabular-input-reset";
   resetBtn.setAttribute("aria-label", "Reset table");
   resetBtn.dataset.tooltip = "Reset table";
   resetBtn.setAttribute("aria-haspopup", "dialog");
