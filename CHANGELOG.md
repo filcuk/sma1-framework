@@ -8,6 +8,13 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ## [Unreleased]
 
+## [0.12.3] - 2026-08-19
+
+### Fixed
+
+- Dropdown and combo menus elevate their host while open so lists paint above neighbouring code-block gutter chrome (replaces the fixed-position approach in 0.12.2).
+- Fixed popup menus no longer stretch to full viewport width (`min-width: 100%` on `position: fixed`).
+
 ## [0.12.2] - 2026-08-19
 
 ### Added
