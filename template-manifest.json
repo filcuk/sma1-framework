@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "templateVersion": "0.12.1",
-  "generatedAt": "2026-08-18T16:07:31.629Z",
+  "generatedAt": "2026-08-19T15:37:58.773Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -93,7 +93,7 @@
       "sha256": "03afa4f0e89e289aa3e2a186db826361fa15a7d41e5a207b8de3f71a052cb17d"
     },
     "app/components/combo.js": {
-      "sha256": "a0a43f7e59f6f8e13ec4f6e89e1f96d02cfd1283dbaa868fcd511140b9bdb04f"
+      "sha256": "9b8ae6481c7cb1366814dfe64150a5889671bbedca2b28dfbc66a93ff8c6cdb7"
     },
     "app/components/combobox.js": {
       "sha256": "d012718f4374c3af6b03f6399a244733278951b6668617ed888dc5618813f64e"
@@ -114,10 +114,10 @@
       "sha256": "81103e0d8b908fc495a21f3a503a92c1f01f06a45460fcd4e9f0efe9519a4a33"
     },
     "app/components/dropdown-toggle.js": {
-      "sha256": "83a1c4bb73cbe958b2db9f13a4913f4fe62a2449fb8a0f673b31303e78d44e94"
+      "sha256": "1c588d8fcdc18665c66515d3a0ec08d6bf16268921dcbbacfa1162792d8cc496"
     },
     "app/components/dropdown.js": {
-      "sha256": "10ea68596439e5598ed2b5a328f70709aa2c29c2442b49fd1829414cb3ff480f"
+      "sha256": "09313636ae2017d66debef5d7192fbec2770b376e740fd27a1d97f532a2de09b"
     },
     "app/components/duration-input.js": {
       "sha256": "0e3fdf08e6ead7f544db175162e49a6cb504a93302d1cee55e77a86278cbc9d9"
@@ -174,7 +174,7 @@
       "sha256": "43709468cd60d208a356de53347d85b6dbb2ca3caa9d2f7cfb75659f52c984e4"
     },
     "app/components/tabular-input.js": {
-      "sha256": "482f54c360cf314c7e7391f2a8156c7cf9bd995dc892074c56eaafcc5212b597"
+      "sha256": "4762b232507cba58ce07c2d19e91205ec10a0dd3e8cdfc965b4250bc1a207880"
     },
     "app/components/time-picker.js": {
       "sha256": "9711eaa4ac76d29244d0f5a77c303a48837ce7eb9813ea4fb05a5338d3a5d547"

@@ -136,6 +136,9 @@ export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
     toggleEl: trigger,
     itemSelector,
     closeOnSelect: false,
+    // Fixed so menu escapes stacking/overflow clipping (e.g. above
+    // code-block gutter chrome).
+    fixed: true,
     onSelect: ({ item, value, label }) => {
       const selected = !isItemSelected(item);
       setItemSelected(item, selected);
