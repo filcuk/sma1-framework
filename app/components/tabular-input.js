@@ -863,7 +863,7 @@ export function initTabularInput(
       toggleBtn.setAttribute("role", "switch");
       toggleBtn.setAttribute(
         "aria-checked",
-        Boolean(value) ? "true" : "false"
+        value ? "true" : "false"
       );
       toggleBtn.setAttribute(
         "aria-label",
@@ -884,7 +884,7 @@ export function initTabularInput(
       const hiddenInput = document.createElement("input");
       hiddenInput.type = "hidden";
       hiddenInput.className = "toggle-value";
-      hiddenInput.value = Boolean(value) ? "true" : "false";
+      hiddenInput.value = value ? "true" : "false";
 
       toggleEl.append(toggleBtn, hiddenInput);
 

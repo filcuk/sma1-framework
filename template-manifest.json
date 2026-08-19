@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "templateVersion": "0.12.1",
-  "generatedAt": "2026-08-19T16:52:22.884Z",
+  "templateVersion": "0.12.2",
+  "generatedAt": "2026-08-19T16:56:30.195Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -174,7 +174,7 @@
       "sha256": "43709468cd60d208a356de53347d85b6dbb2ca3caa9d2f7cfb75659f52c984e4"
     },
     "app/components/tabular-input.js": {
-      "sha256": "33edca732bf9c0075a07cc3182e24ebecfe7f17eec8be56743ed263e7260789e"
+      "sha256": "22b10c8e3546f0d905cb37e3ebad8cc19b8a01c7f14d03d14011e57315065f4a"
     },
     "app/components/time-picker.js": {
       "sha256": "9711eaa4ac76d29244d0f5a77c303a48837ce7eb9813ea4fb05a5338d3a5d547"
@@ -1164,7 +1164,7 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "7ab2ee79137c398354f230bf50282e23347c71eddece83f84df4bc0cd858017c"
+      "sha256": "844371bce7e9875bf4bf41943ff49127c8096da69af90c243dee0ce56e85a7a2"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c04c50223d9417ac372fa394ffc84e84b602b5414b77f3c99b399e9b44906929"
