@@ -33,7 +33,8 @@
  */
 
 import { parseBooleanAttr, setHidden, getFocusableElements, FOCUSABLE_SELECTOR } from "../utils/dom.js";
-import { createIcon, ensureCheckboxFace } from "../utils/icons.js";
+import { createIcon } from "../utils/icons.js";
+import { initToggle } from "./toggle.js";
 import { initPopupMenu } from "../utils/menu.js";
 import { onDocumentClickOutside, onDocumentEscape } from "../utils/document-listeners.js";
 import { copyText, readText, armPasteCapture } from "../utils/clipboard.js";
@@ -853,31 +854,51 @@ export function initTabularInput(
     const value = row.cells[column.id];
 
     if (column.type === "logical") {
-      const label = document.createElement("label");
-      label.className = "checkbox tabular-input-logical";
+      const toggleEl = document.createElement("div");
+      toggleEl.className = "toggle toggle--slim tabular-input-logical";
 
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.className = "checkbox-input";
-      input.checked = Boolean(value);
-      input.disabled = isDisabled;
-      input.setAttribute(
+      const toggleBtn = document.createElement("button");
+      toggleBtn.type = "button";
+      toggleBtn.className = "toggle-btn";
+      toggleBtn.setAttribute("role", "switch");
+      toggleBtn.setAttribute(
+        "aria-checked",
+        Boolean(value) ? "true" : "false"
+      );
+      toggleBtn.setAttribute(
         "aria-label",
         `${column.label}, row ${rowIndex + 1}`
       );
-      input.dataset.tabularInputCell = "";
-      input.dataset.rowId = row.id;
-      input.dataset.columnId = column.id;
+      toggleBtn.dataset.tabularInputCell = "";
+      toggleBtn.dataset.rowId = row.id;
+      toggleBtn.dataset.columnId = column.id;
 
-      input.addEventListener("change", () => {
-        if (isDisabled) return;
-        row.cells[column.id] = input.checked;
-        emit("input");
+      const track = document.createElement("span");
+      track.className = "toggle-track";
+      track.setAttribute("aria-hidden", "true");
+      const thumb = document.createElement("span");
+      thumb.className = "toggle-thumb";
+      track.append(thumb);
+      toggleBtn.append(track);
+
+      const hiddenInput = document.createElement("input");
+      hiddenInput.type = "hidden";
+      hiddenInput.className = "toggle-value";
+      hiddenInput.value = Boolean(value) ? "true" : "false";
+
+      toggleEl.append(toggleBtn, hiddenInput);
+
+      initToggle(toggleEl, {
+        defaultChecked: Boolean(value),
+        disabled: isDisabled,
+        onChange: ({ checked, source }) => {
+          if (isDisabled || source === "init") return;
+          row.cells[column.id] = checked;
+          emit("input");
+        },
       });
 
-      label.append(input);
-      ensureCheckboxFace(input);
-      return label;
+      return toggleEl;
     }
 
     const input = document.createElement("input");

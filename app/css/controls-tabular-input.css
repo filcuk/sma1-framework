@@ -233,6 +233,33 @@
   border-color: var(--accent);
 }
 
+.tabular-input-logical {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.tabular-input-logical.toggle--disabled {
+  cursor: not-allowed;
+}
+
+.tabular-input-logical .toggle-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  cursor: inherit;
+}
+
+.tabular-input-logical .toggle-btn:focus-visible .toggle-track {
+  outline: none;
+}
+
 .tabular-input-cell:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -252,15 +279,7 @@
 }
 
 .tabular-input-logical-cell {
-  text-align: center;
-}
-
-.tabular-input-logical {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  line-height: 0;
+  vertical-align: middle;
 }
 
 .tabular-input-row-move-col {
