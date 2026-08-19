@@ -425,7 +425,7 @@ export function initTabularInput(
   copyBtn.type = "button";
   copyBtn.className = "btn tabular-input-copy";
   copyBtn.setAttribute("aria-label", "Copy table");
-  copyBtn.dataset.tooltip = "Copy for Excel";
+  copyBtn.dataset.tooltip = "Copy in tabular format";
   const copyLabelEl = document.createElement("span");
   copyLabelEl.className = "tabular-input-action-label";
   copyLabelEl.textContent = "Copy";
@@ -1881,7 +1881,7 @@ export function initTabularInput(
   function resetCopyButtonLabel() {
     setActionButtonLabel(copyBtn, "Copy");
     copyBtn.setAttribute("aria-label", "Copy table");
-    copyBtn.dataset.tooltip = "Copy for Excel";
+    copyBtn.dataset.tooltip = "Copy in tabular format";
     delete copyBtn.dataset.tooltipTone;
   }
 
