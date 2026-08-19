@@ -991,7 +991,7 @@ export function initTabularInput(
     labelInput.dataset.tabularInputRename = "";
     labelInput.dataset.columnId = column.id;
     if (!isDisabled) {
-      labelInput.dataset.tooltip = "Click to edit";
+      labelInput.dataset.tooltip = "Select to edit";
     }
 
     const field = document.createElement("div");
@@ -1021,7 +1021,7 @@ export function initTabularInput(
     labelInput.addEventListener("blur", () => {
       field.classList.remove("is-editing");
       if (!isDisabled) {
-        labelInput.dataset.tooltip = "Click to edit";
+        labelInput.dataset.tooltip = "Select to edit";
       }
       if (isDisabled) return;
       const previous = renameDrafts.get(column.id) ?? column.label;
