@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "templateVersion": "0.12.3",
-  "generatedAt": "2026-08-22T13:59:02.935Z",
+  "frameworkVersion": "0.12.3",
+  "generatedAt": "2026-08-22T14:18:46.563Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -20,9 +20,9 @@
     ]
   },
   "derived": {
-    "app/css/template.css": {
+    "app/css/framework.css": {
       "generator": "css-index",
-      "sha256": "4556ce24199200e40a16d6780a44fad0440733e6f8656611be28f6a0809aba5a"
+      "sha256": "c7eae0e7e9b189c73cd4c513af9fafb1bef39745646f4b7dace47c6d9db088e4"
     }
   },
   "files": {
@@ -153,7 +153,7 @@
       "sha256": "d757d5234d16110d89136612ae8c51078500fdb60d67bc98386e2677f32172b5"
     },
     "app/components/rich-text-editor.js": {
-      "sha256": "f742ee2cf6c7bd0c662646c15f08d09089c85ea2fbfe8b0ee74c28813576c5a1"
+      "sha256": "8104c59225e70bb285e5b3a306f46fbafcd94a20f4251958a0ab153a6c02a295"
     },
     "app/components/segmented-control.js": {
       "sha256": "da46f5c892bb605f92e385cd7037281b70d9c4323876c4ff725007172d2151ef"
@@ -252,7 +252,7 @@
       "sha256": "f5e690965a7ee2569e85bcdcb31f86c872930a8ebbff9ccecb55cd67837530c2"
     },
     "app/css/rich-text-editor.css": {
-      "sha256": "4d84f29a1bf8293bab17152f535c189b419677af04be7e66cde3b135ef292693"
+      "sha256": "d111287589509fc59852cbf4f7d4d249a39a49b03424bc6e40d1813adbfeaabc"
     },
     "app/css/table.css": {
       "sha256": "04407220ba3f862db96741bd82f8f0d4f479ab5a6a2fa5d7e92b104e43a0f50c"
@@ -270,16 +270,16 @@
       "sha256": "6a1e0d52b04d6f115419de2bac85b2e5581a7e0212fa6d6a32c64a8d0bb45fdc"
     },
     "app/shell/heading-link.js": {
-      "sha256": "656dd0292c1e551dded5afc6c93855ec332f3be49955c20db007954e1e453985"
+      "sha256": "1f33f28a432f15e60d9d75393fc6cc3d8818a6565830f6408a2d0b70bcff41e5"
     },
     "app/shell/page-nav.js": {
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "fc2ee3d7fd12a094df436603fc988697c63e6ee5d28031b965286ba8e39b2e0a"
+      "sha256": "e41d80f5c866bc94c344d78ddf697716ee44242fbf43f5c990c64b10ebb1c9ee"
     },
     "app/shell/shell.js": {
-      "sha256": "7bc59c18faeecf7bcce15d586547c00c76fdc908a832c1206d9b4e4fdc2f165a"
+      "sha256": "7f6e8eef71649319640edc5ff09d2ef1a35cd54a42c182b0ef63d1b8e58b2a92"
     },
     "app/shell/sticky.js": {
       "sha256": "4fbe8284625f6a7865bae63153aeced7ed46221f498875dc9e18e7e054bbe77a"
@@ -317,11 +317,11 @@
     "app/utils/dom.js": {
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
-    "app/utils/icons-template.js": {
-      "sha256": "3c5435bee06cc42dacd6dfa09231b4bf8dac66fa7829501d870a24cd23a9e930"
+    "app/utils/icons-framework.js": {
+      "sha256": "f5ce4b9e680d2b428d33a7625edf2b0865661b3a13a3278e3d136e76d4f71202"
     },
     "app/utils/icons.js": {
-      "sha256": "219ca86cb4b8a7bd91033a3cb229d6c031357a2de039fe9f09311238ba9b6ebd"
+      "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
     },
     "app/utils/menu.js": {
       "sha256": "db3ff47802e2dd140f6d6616443687f042f2b79675f578ed813cb7d151a368b4"
@@ -1164,13 +1164,13 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "c06d3ad9c2a9bd527e13b0df967ca18265261d280e9c0deb751955b38f274e18"
+      "sha256": "82ae995c29b986363abc6324c164e0260cd330520f844b711f7a0adc8e4355af"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c04c50223d9417ac372fa394ffc84e84b602b5414b77f3c99b399e9b44906929"
     },
     ".cursor/rules/icons.mdc": {
-      "sha256": "710a4fd4b55b61e3c9738c62ab1a331b053f8968d58ca4454874a4be1e882fec"
+      "sha256": "30696dbd6562a8b00a088a14afcf8254a08bda4748dc8544f2d305e2edd5d667"
     },
     ".cursor/rules/usage-docs.mdc": {
       "sha256": "b21e49bc4da399ca84e69e7efab13a1afa15fa1c79dc2490d737286cfbeea6ac"
@@ -1179,31 +1179,31 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "770d033f6be0bb9d8f0ca3e1660966785a1d7cdeb0644c4ac1297715597abf02"
+      "sha256": "0026c6aa5be2395e0a7549961421b5afd21d2bdcac56568a5f001d172b91483f"
     },
     ".cursor/skills/_shared/invariants.md": {
-      "sha256": "781b6581bb39fbc9ad440199544ae4005b734dacc4a7b9b25a96612de82ba2cb"
+      "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
     },
     ".cursor/skills/add-icon/SKILL.md": {
-      "sha256": "6029e59f84615605d11a0aaa277309aed5817d0e941631332c7f87469d2d5754"
+      "sha256": "c0446c94badf9983b52f10c0fd3f3fc0eb83e911f918360973920b30845edd23"
     },
     ".cursor/skills/add-icon/scripts/fetch-icon.mjs": {
-      "sha256": "622f1d12f32b7f19100d6a94298a4808960b5f029512131594e15ffc3582542e"
+      "sha256": "316b5083a1638d0f5ab3689f83c2155e67e111a26aef27c297417eaf8e8360c3"
     },
     ".cursor/skills/author-component/SKILL.md": {
-      "sha256": "199242f708b365c5dac77a3189d549e55b94c14f9f9e1cbefccee1dcc29cbd5d"
+      "sha256": "9abc20e53ce7dbe999b5ab8993ecf362b57ed4cadc888bc202cd19d661f3f5b9"
     },
     ".cursor/skills/finalize-app/SKILL.md": {
-      "sha256": "2f5b5f01e74ac755a44ec8b97944c8e0e9ec1e7323d5d024e27bdac7984a84ba"
+      "sha256": "f1f1295637714e38ab2e0f9969104093744bea9fea04edd127e3c273cc54229f"
     },
     ".cursor/skills/handle-assets/SKILL.md": {
-      "sha256": "074c69598d57bc4d82a691b73f99f885d4e300941c46ddaa531f16c08b7d93ff"
+      "sha256": "3ec92bb78776fd2a883c189a820b7a4566187fd012bd5ce9352a5a79c0894f84"
     },
     ".cursor/skills/health-check/SKILL.md": {
-      "sha256": "65b94ea1d9843ec7806731c73a4b7ffaf14b4d12b6fef3e7c1952ae7aece45e3"
+      "sha256": "f3c4ec46e4607241e21db405a0d05e081911f868a2be20b3c00a6e402aba8243"
     },
     ".cursor/skills/init-app/SKILL.md": {
-      "sha256": "db55ff7c60f5e5eafad8fb293ee8679238a3a98f3d57555e8a9eed161c0ce2e4"
+      "sha256": "34409554fea51d78574986f87dad28f2dfa530e7d3e9f40c7c56b93d249892e1"
     },
     ".cursor/skills/manage-color/SKILL.md": {
       "sha256": "f995fff5ddfe92ac6c41d7afbb5d02e9a99e36eb103739fa67afac04931910e4"
@@ -1211,17 +1211,17 @@
     ".cursor/skills/manage-color/scripts/contrast.mjs": {
       "sha256": "348c94a4ca9fda3dbac1f1ed02f631f3d8d0a04bfc78398503830fc805db7098"
     },
-    ".cursor/skills/migrate-template/SKILL.md": {
-      "sha256": "9d8404dfe2ecfeb4498ae0cefe86d7454ce35866ba3718fed4493f8616140031"
+    ".cursor/skills/migrate-framework/SKILL.md": {
+      "sha256": "4ec04229009700a2039e99a05496f6024dde99bbb657a396eef378e15684e1c6"
     },
-    ".cursor/skills/release-template/SKILL.md": {
-      "sha256": "297b36ce3d0b473d4293726081f1b70bc4ba8dc25a3940c3f76d6e37802f4f01"
+    ".cursor/skills/release-framework/SKILL.md": {
+      "sha256": "3e7904d9161006cf6ce7e6519893415ba9c4b5e0a6299b0a2b473346a0e5763e"
     },
     ".cursor/skills/restore-component/SKILL.md": {
-      "sha256": "a85d2e2345eb3ee2e71fb2d3c9e0650cde7798f4c89356145d929c8a036475bc"
+      "sha256": "6f2df9010820410a9c5a130fbb9d15dae8cac892a2cd6399a0f37bc963adf871"
     },
     ".cursor/skills/sync-shell/SKILL.md": {
-      "sha256": "c87adf0b61cdcfe64ad267045d79d385458af4d01ea8a91b2f6a89664e6d09bb"
+      "sha256": "4a9cdc1ede990be1f2bc5084673fcd59c26bb9dc0f7d66ff2cb6b015911c2fd1"
     }
   },
   "core": {
@@ -1242,7 +1242,7 @@
       "app/utils/document-listeners.js",
       "app/utils/clipboard.js",
       "app/utils/icons.js",
-      "app/utils/icons-template.js",
+      "app/utils/icons-framework.js",
       "app/utils/brand-icon.js",
       "app/utils/also-see-svg.js",
       "app/utils/menu.js",
@@ -1279,7 +1279,7 @@
     ],
     "icons": [
       "app/utils/icons.js",
-      "app/utils/icons-template.js"
+      "app/utils/icons-framework.js"
     ],
     "menu": [
       "app/utils/menu.js"
@@ -2349,9 +2349,9 @@
         ],
         "forkFacing": true
       },
-      "migrate-template": {
+      "migrate-framework": {
         "files": [
-          ".cursor/skills/migrate-template/SKILL.md"
+          ".cursor/skills/migrate-framework/SKILL.md"
         ],
         "forkFacing": true
       },
@@ -2405,9 +2405,9 @@
         ],
         "forkFacing": false
       },
-      "release-template": {
+      "release-framework": {
         "files": [
-          ".cursor/skills/release-template/SKILL.md"
+          ".cursor/skills/release-framework/SKILL.md"
         ],
         "forkFacing": false
       }

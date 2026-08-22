@@ -27,5 +27,5 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Verify template
-        run: npm run verify:template
+      - name: Verify framework
+        run: npm run verify:framework

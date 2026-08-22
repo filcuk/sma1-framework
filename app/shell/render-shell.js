@@ -1,5 +1,5 @@
 import { APP_CONFIG } from "../config.js";
-import { APP_VERSION, TEMPLATE_VERSION } from "../version.js";
+import { APP_VERSION, FRAMEWORK_VERSION } from "../version.js";
 import { sanitizeAlsoSeeSvg } from "../utils/also-see-svg.js";
 
 const DEFAULTS = {
@@ -10,7 +10,7 @@ const DEFAULTS = {
   alsoSeeTopics: APP_CONFIG.alsoSeeTopics,
   alsoSeeIncludeLocal: APP_CONFIG.alsoSeeIncludeLocal,
   appVersion: APP_VERSION,
-  templateVersion: TEMPLATE_VERSION,
+  frameworkVersion: FRAMEWORK_VERSION,
 };
 
 /** Required markup for {@link initPageNav} — also injected by {@link renderPageShell}. */
@@ -844,7 +844,7 @@ export function renderPageShell(options = {}) {
     alsoSeeIncludeLocal,
     appUrl,
     appVersion,
-    templateVersion,
+    frameworkVersion,
   } = {
     ...DEFAULTS,
     ...overrides,
@@ -860,7 +860,7 @@ export function renderPageShell(options = {}) {
     `<footer id="app-page-footer">
       <div class="footer-meta">
         <div class="footer-meta-copy">
-          <span class="footer-version" data-tooltip="based on SMA1 framework v${templateVersion}" data-tooltip-position="top" tabindex="0">v${appVersion}</span>
+          <span class="footer-version" data-tooltip="based on SMA1 framework v${frameworkVersion}" data-tooltip-position="top" tabindex="0">v${appVersion}</span>
           <span class="footer-meta-sep" aria-hidden="true">·</span>
           <span data-tooltip="or suggest a feature" data-tooltip-position="top" tabindex="0">report an
           <a href="${issuesUrl}" target="_blank" rel="noopener noreferrer">issue</a></span>

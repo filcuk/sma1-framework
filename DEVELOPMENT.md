@@ -14,8 +14,8 @@ npx serve .     # http://localhost:3000 — ES modules need a local server
 ```bash
 npm run lint
 npm test
-npm run manifest:template   # regenerate template-manifest.json after catalogue changes
-npm run verify:template     # check tree vs template.lock.json + manifest hashes
+npm run manifest:framework   # regenerate framework-manifest.json after catalogue changes
+npm run verify:framework     # check tree vs framework.lock.json + manifest hashes
 ```
 
 See [USAGE.md](USAGE.md) for forking, Pages deploy, and the component catalogue.
@@ -91,4 +91,4 @@ Frames are kept in `res/.demo-scroll-frames/` after capture (with `frames-meta.j
 
 ### Release habit
 
-When the demo changed in a meaningful way, regenerate media before cutting a framework release (`release-template` checklist includes this as optional).
+When the demo changed in a meaningful way, regenerate media before cutting a framework release (`release-framework` checklist includes this as optional).

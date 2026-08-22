@@ -1,16 +1,16 @@
 ---
-name: migrate-template
+name: migrate-framework
 description: >-
   Upgrade a microapp fork to a newer SMA1 Framework version with partial
   (used components only) or full catalogue upgrade. Use when migrating,
-  upgrading the framework, syncing from upstream, or bumping TEMPLATE_VERSION.
+  upgrading the framework, syncing from upstream, or bumping FRAMEWORK_VERSION.
 ---
 
 # Migrate framework
 
 Bring a fork onto a newer framework revision without clobbering app-specific work.
 
-Prefer `npm run sync:template` + `npm run verify:template` over hand-merging framework files. Read [../_shared/invariants.md](../_shared/invariants.md) and [../_shared/component-map.md](../_shared/component-map.md). Prefer upstream `CHANGELOG.md` for the version range when it exists. For the full lock/manifest model, see **Framework lock, manifest, and upgrades** in [`USAGE.md`](../../../USAGE.md).
+Prefer `npm run sync:framework` + `npm run verify:framework` over hand-merging framework files. Read [../_shared/invariants.md](../_shared/invariants.md) and [../_shared/component-map.md](../_shared/component-map.md). Prefer upstream `CHANGELOG.md` for the version range when it exists. For the full lock/manifest model, see **Framework lock, manifest, and upgrades** in [`USAGE.md`](../../../USAGE.md).
 
 ## 1. Required ask — upgrade style
 
@@ -23,15 +23,15 @@ Do not proceed until the user picks one.
 
 ## 2. Establish versions and source
 
-1. Read fork `TEMPLATE_VERSION` and `APP_VERSION` from `app/version.js`.
+1. Read fork `FRAMEWORK_VERSION` and `APP_VERSION` from `app/version.js`.
 2. Identify upstream (default `filcuk/sma1-framework`, or user-specified remote/path).
 3. Resolve target **tag** `vX.Y.Z` (required for fetch-based sync). Local `--from` is allowed for unreleased checkouts.
 4. Read upstream `CHANGELOG.md` for entries between fork version and target (if present).
-5. Note any **deprecated** / **retired** entries in upstream `template-manifest.json` (`replacedBy`, `previousFiles`).
+5. Note any **deprecated** / **retired** entries in upstream `framework-manifest.json` (`replacedBy`, `previousFiles`).
 
 ## 3. Protect app-owned files
 
-Sync already refuses to overwrite these (see `template-manifest.json` → `appOwned`):
+Sync already refuses to overwrite these (see `framework-manifest.json` → `appOwned`):
 
 - `index.html` / `demo.html`
 - `app/main.js`, `app/demo.js`
@@ -39,7 +39,7 @@ Sync already refuses to overwrite these (see `template-manifest.json` → `appOw
 - `app/styles.css`, `app/css/app.css`
 - `app/utils/icons-app.js`
 - `app/res/`
-- `APP_VERSION` inside `app/version.js` (merged; `TEMPLATE_VERSION` updates)
+- `APP_VERSION` inside `app/version.js` (merged; `FRAMEWORK_VERSION` updates)
 
 Fork-local skills under `.cursor/skills/<other-id>/` are never copied (only catalogue skill ids are). Still merge carefully by hand when boot/chrome HTML in entry pages needs upstream fixes — sync does not rewrite entry HTML.
 
@@ -52,12 +52,12 @@ If the fork still uses flat `app/dialog.js`-style paths, map them with component
 ### Partial
 
 1. Trace used features (same discovery as `finalize-app`).
-2. Set `template.lock.json`:
+2. Set `framework.lock.json`:
 
 ```json
 {
   "schemaVersion": 2,
-  "templateVersion": "X.Y.Z",
+  "frameworkVersion": "X.Y.Z",
   "source": "filcuk/sma1-framework",
   "components": ["dialog", "combobox"],
   "skills": ["*"]
@@ -69,9 +69,9 @@ Always-on shell pieces (`tooltip`, `banner`, core CSS, etc.) are included automa
 3. Run:
 
 ```bash
-npm run sync:template -- --version X.Y.Z
-# or: npm run sync:template -- --from /path/to/sma1-framework
-npm run verify:template
+npm run sync:framework -- --version X.Y.Z
+# or: npm run sync:framework -- --from /path/to/sma1-framework
+npm run verify:framework
 ```
 
 4. Reconcile **hard** verify drift (`modified` / `missing` / `unexpected`) on catalogue `app/` files. Agent skill/rule drift (`agentModified` / `agentMissing`) is soft — report it, do not “fix” docs to appease the hash unless the fork intends to track upstream skills.
@@ -93,7 +93,7 @@ Same as partial, but `"components": ["*"]`.
 - If verify warns about prune candidates (retired / `previousFiles` still on disk), ask before running:
 
 ```bash
-npm run sync:template -- --from /path/to/upstream --prune
+npm run sync:framework -- --from /path/to/upstream --prune
 ```
 
 (or `--version X.Y.Z --prune`). Prune skips paths still referenced from app-owned files.
@@ -112,6 +112,6 @@ npm run sync:template -- --from /path/to/upstream --prune
 
 ## 5. Finish
 
-1. Confirm `TEMPLATE_VERSION` matches the target (sync merges this into `app/version.js`).
+1. Confirm `FRAMEWORK_VERSION` matches the target (sync merges this into `app/version.js`).
 2. Summarize what changed, agent-file drift, and any remaining manual conflicts for the user.
 3. Run **`health-check`**.

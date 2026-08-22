@@ -7,7 +7,7 @@ alwaysApply: true
 
 Inline UI icons are defined in:
 
-- [`app/utils/icons-template.js`](app/utils/icons-template.js) — framework catalogue (`TEMPLATE_ICONS`; synced / hashed)
+- [`app/utils/icons-framework.js`](app/utils/icons-framework.js) — framework catalogue (`FRAMEWORK_ICONS`; synced / hashed)
 - [`app/utils/icons-app.js`](app/utils/icons-app.js) — fork / app icons (`APP_ICONS`; never overwritten by sync)
 - [`app/utils/icons.js`](app/utils/icons.js) — merges both (app wins on key clash) and exports `createIcon` / `initIcons`
 
@@ -26,7 +26,7 @@ See the **Available** lists in the framework catalogue and app file headers.
 2. **Reuse** an existing icon if one is close enough (`data-icon`, `createIcon()`, or `{ ref: "other-icon" }`).
 3. **Pull from Icônes** via the [`add-icon`](../skills/add-icon/SKILL.md) skill (Iconify fetch script — exact markup, `name`, and `attribution`). Prefer [Material Icons Round (`ic`)](https://icones.js.org/collection/ic?s=info&variant=Round); fall back to Material Symbols Rounded. Ask for the app id and place (framework catalogue vs app) if the user did not provide them.
 4. Or ask the user to supply their own vector asset / paste markup — then use [`handle-assets`](../skills/handle-assets/SKILL.md) for stubs and wiring.
-5. You may add a **blank placeholder entry** in `APP_ICONS` / `TEMPLATE_ICONS` using the entry stub in those files (empty `markup`, correct `viewBox`) so wiring (`data-icon`, imports) can land in the same change — then tell the user to fill in the paths (or finish with `add-icon`).
+5. You may add a **blank placeholder entry** in `APP_ICONS` / `FRAMEWORK_ICONS` using the entry stub in those files (empty `markup`, correct `viewBox`) so wiring (`data-icon`, imports) can land in the same change — then tell the user to fill in the paths (or finish with `add-icon`).
 
 ## Allowed without user-provided paths
 
