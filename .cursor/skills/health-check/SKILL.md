@@ -2,14 +2,14 @@
 name: health-check
 description: >-
   Verify an SMA1 Framework app or fork against boot conventions, Pages
-  deploy config, versions, icons/assets hygiene, template lock/verify, and
+  deploy config, versions, icons/assets hygiene, framework lock/verify, and
   optional lint/test. Use after init, migrate, sync, restore, finalize, or
-  when the user asks to health-check / verify / sanity-check the template or app.
+  when the user asks to health-check / verify / sanity-check the framework or app.
 ---
 
 # Health check
 
-Run after any lifecycle skill, or when the user asks to verify the app/template.
+Run after any lifecycle skill, or when the user asks to verify the app/framework.
 
 Read [../_shared/invariants.md](../_shared/invariants.md) and [../_shared/component-map.md](../_shared/component-map.md) as needed.
 
@@ -25,7 +25,7 @@ Health check:
 - [ ] config / version
 - [ ] Assets / icons
 - [ ] Accent colour (if app.css overrides --accent)
-- [ ] Template lock / verify
+- [ ] Framework lock / verify
 - [ ] Lint / test (if node_modules)
 - [ ] Unused scan (optional)
 ```
@@ -58,7 +58,7 @@ Read `.github/workflows/pages.yml`:
 
 ### 4. Config / version
 
-- [ ] `app/config.js`: `repoUrl`, `appUrl` look intentional (not leftover template placeholders on a shipping fork, unless user kept them)
+- [ ] `app/config.js`: `repoUrl`, `appUrl` look intentional (not leftover framework placeholders on a shipping fork, unless user kept them)
 - [ ] `app/version.js`: valid SemVer for `APP_VERSION` and `TEMPLATE_VERSION`
 - [ ] Theme storage key in `config.js` matches `__MICROAPP__.themeStorageKey` when overridden
 
@@ -84,9 +84,9 @@ node .cursor/skills/manage-color/scripts/contrast.mjs <accent-hex> [fg-hex]
 
 **Fail** if contrast fails or accent was edited only in `tokens.css` on a fork. Point at **`manage-color`**. Skip when `app.css` does not set `--accent`.
 
-### 7. Template lock / verify (hard gate when present)
+### 7. Framework lock / verify (hard gate when present)
 
-When `template.lock.json` and `template-manifest.json` exist (template repo and modern forks):
+When `template.lock.json` and `template-manifest.json` exist (framework repo and modern forks):
 
 ```bash
 npm run verify:template
@@ -123,7 +123,7 @@ When finalizing or on request: compare entry import graphs + markup hooks to [co
 | Check | Status | Notes |
 | ----- | ------ | ----- |
 | Boot | pass / fail / skip | … |
-| Template verify | pass / fail / skip | … |
+| Framework verify | pass / fail / skip | … |
 | … | … | … |
 
 **Blockers:** …

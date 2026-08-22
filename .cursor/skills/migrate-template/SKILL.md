@@ -3,21 +3,21 @@ name: migrate-template
 description: >-
   Upgrade a microapp fork to a newer SMA1 Framework version with partial
   (used components only) or full catalogue upgrade. Use when migrating,
-  upgrading the template, syncing from upstream, or bumping TEMPLATE_VERSION.
+  upgrading the framework, syncing from upstream, or bumping TEMPLATE_VERSION.
 ---
 
-# Migrate template
+# Migrate framework
 
-Bring a fork onto a newer template revision without clobbering app-specific work.
+Bring a fork onto a newer framework revision without clobbering app-specific work.
 
-Prefer `npm run sync:template` + `npm run verify:template` over hand-merging template files. Read [../_shared/invariants.md](../_shared/invariants.md) and [../_shared/component-map.md](../_shared/component-map.md). Prefer upstream `CHANGELOG.md` for the version range when it exists. For the full lock/manifest model, see **Template lock, manifest, and upgrades** in [`USAGE.md`](../../../USAGE.md).
+Prefer `npm run sync:template` + `npm run verify:template` over hand-merging framework files. Read [../_shared/invariants.md](../_shared/invariants.md) and [../_shared/component-map.md](../_shared/component-map.md). Prefer upstream `CHANGELOG.md` for the version range when it exists. For the full lock/manifest model, see **Framework lock, manifest, and upgrades** in [`USAGE.md`](../../../USAGE.md).
 
 ## 1. Required ask — upgrade style
 
 Before changing files, ask:
 
 - **Partial** — upgrade shell/infra/tokens **and** only components the app already uses (or the user lists). Prefer for production forks.
-- **Full** — upgrade the entire template surface (`components: ["*"]`). Prefer when the fork still tracks the full catalogue.
+- **Full** — upgrade the entire framework surface (`components: ["*"]`). Prefer when the fork still tracks the full catalogue.
 
 Do not proceed until the user picks one.
 
@@ -82,8 +82,8 @@ Same as partial, but `"components": ["*"]`.
 
 ### Agent skills after sync
 
-- Sync refreshes listed template skills and `.cursor/rules/*`.
-- To customise a template skill: **fork it** — copy to a new folder id, change frontmatter `name` and `description`, then exclude the original:
+- Sync refreshes listed framework skills and `.cursor/rules/*`.
+- To customise a framework skill: **fork it** — copy to a new folder id, change frontmatter `name` and `description`, then exclude the original:
 
 ```json
 "skills": ["*", "-init-app"]

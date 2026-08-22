@@ -11,7 +11,7 @@ description: >-
 
 # Add icon
 
-Fetch icons from [Icônes](https://icones.js.org) (Iconify API) into the template catalogue or fork app icons. **Never invent or approximate path data** — only insert bodies returned by the fetch script.
+Fetch icons from [Icônes](https://icones.js.org) (Iconify API) into the framework catalogue or fork app icons. **Never invent or approximate path data** — only insert bodies returned by the fetch script.
 
 Aligns with [`.cursor/rules/icons.mdc`](../../rules/icons.mdc) and [../_shared/invariants.md](../_shared/invariants.md). For brand rasters / blank stubs / path wiring without a catalogue pull, use [`handle-assets`](../handle-assets/SKILL.md).
 
@@ -19,7 +19,7 @@ Aligns with [`.cursor/rules/icons.mdc`](../../rules/icons.mdc) and [../_shared/i
 
 | Priority | Iconify prefix | Variant | `attribution` |
 | -------- | -------------- | ------- | ------------- |
-| 1 — template core | `ic` | Round (`round-*`) | `ICON_ATTRIBUTIONS.materialIcons` |
+| 1 — framework core | `ic` | Round (`round-*`) | `ICON_ATTRIBUTIONS.materialIcons` |
 | 2 — fallback | `material-symbols` | Rounded (`*-rounded`) | `ICON_ATTRIBUTIONS.materialSymbols` |
 | 3 — other | explicit `prefix:name` (e.g. `mdi:…`) | as published | existing `ICON_ATTRIBUTIONS` key, or add one with user approval |
 
@@ -31,16 +31,16 @@ Do not prefer Material Symbols when an `ic` Round match exists, unless the user 
 | ----- | --------- | ------- |
 | Collection icon id | Yes | e.g. `round-keyboard-arrow-down`, `keyboard-arrow-down-rounded`, or `mdi:chevron-down` |
 | App id | If not given, **ask** | Key in `TEMPLATE_ICONS` / `APP_ICONS` (e.g. `chevron-down`) — used as `data-icon` |
-| Place | If not given, **ask** | `template` → `app/utils/icons-template.js` · `app` → `app/utils/icons-app.js` |
+| Place | If not given, **ask** | `framework` → `app/utils/icons-template.js` · `app` → `app/utils/icons-app.js` |
 
 ### Example conversation
 
 1. User: add `round-keyboard-arrow-down`
-2. Agent: asks for **app id** and **place** (template vs app) if missing
-3. User: template, name `chevron-down`
+2. Agent: asks for **app id** and **place** (framework catalogue vs app) if missing
+3. User: framework catalogue, name `chevron-down`
 4. Agent: fetches, inserts, done
 
-If the user already provides all three (`round-keyboard-arrow-down` as template `chevron-down`), skip the questions.
+If the user already provides all three (`round-keyboard-arrow-down` as framework catalogue `chevron-down`), skip the questions.
 
 ## Workflow
 
@@ -93,7 +93,7 @@ For unknown collections (`attributionKey: null`), show `attributionHint` and ask
 
 Target:
 
-- **template** → `TEMPLATE_ICONS` in `app/utils/icons-template.js` (import `ICON_ATTRIBUTIONS` already in-file)
+- **framework catalogue** → `TEMPLATE_ICONS` in `app/utils/icons-template.js` (import `ICON_ATTRIBUTIONS` already in-file)
 - **app** → `APP_ICONS` in `app/utils/icons-app.js` (import `ICON_ATTRIBUTIONS` from `./icons.js` or `./icons-template.js` if needed)
 
 Entry shape:
@@ -138,4 +138,4 @@ Same workflow: fetch the collection id, confirm overwrite of the app id, replace
 - Do not copy SVG from memory or a stale local string when a fetch is possible
 - Do not set `name` to the app id (app id is the object key; `name` is the collection id)
 - Do not use Material Symbols when `ic` Round resolved successfully, unless the user asked for Symbols
-- Do not put fork-specific icons in `icons-template.js` or template catalogue icons in `icons-app.js` unless the user overrides place
+- Do not put fork-specific icons in `icons-template.js` or framework catalogue icons in `icons-app.js` unless the user overrides place

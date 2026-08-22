@@ -17,7 +17,7 @@ Prefer the sync script over hand-copying. Read [../_shared/component-map.md](../
 Ask which component-map / catalogue `id`(s) to restore (e.g. `dialog`, `code-block`, `tabular-input`). Confirm source:
 
 - Prefer upstream **tag matching** this fork’s `TEMPLATE_VERSION` (`vX.Y.Z`).
-- If mid-migrate to a newer template, use that newer revision (or run `migrate-template` first).
+- If mid-migrate to a newer framework release, use that newer revision (or run `migrate-template` first).
 
 Default upstream: `filcuk/sma1-framework` (or the remote / local path the user specifies).
 
@@ -30,7 +30,7 @@ Default upstream: `filcuk/sma1-framework` (or the remote / local path the user s
 
 ```bash
 npm run sync:template -- --version <X.Y.Z>
-# or, with a local checkout of the template:
+# or, with a local checkout of the framework:
 npm run sync:template -- --from /path/to/sma1-framework
 ```
 
@@ -44,7 +44,7 @@ npm run verify:template
 
 ## 3. Icons
 
-Required icon ids: reuse template catalogue entries (`icons-template.js` is synced). Missing **app-specific** artwork → **`handle-assets`** (stub in `icons-app.js` + request; never invent paths).
+Required icon ids: reuse framework catalogue entries (`icons-template.js` is synced). Missing **app-specific** artwork → **`handle-assets`** (stub in `icons-app.js` + request; never invent paths).
 
 ## 4. Wire the app
 

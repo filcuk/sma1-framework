@@ -3,13 +3,13 @@ name: release-template
 description: >-
   Release an SMA1 Framework version: SemVer bump TEMPLATE_VERSION, update
   CHANGELOG.md, regenerate template-manifest.json, verify, and create git tag
-  vX.Y.Z. Use when cutting a template release, bumping TEMPLATE_VERSION, or
+  vX.Y.Z. Use when cutting a framework release, bumping TEMPLATE_VERSION, or
   publishing changelog notes.
 ---
 
-# Release template
+# Release framework
 
-For **template maintainers** shipping a new `TEMPLATE_VERSION`. Forks bumping their own app use `APP_VERSION` only — not this skill.
+For **framework maintainers** shipping a new `TEMPLATE_VERSION`. Forks bumping their own app use `APP_VERSION` only — not this skill.
 
 ## SemVer (`TEMPLATE_VERSION`)
 

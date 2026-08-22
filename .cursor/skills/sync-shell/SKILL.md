@@ -25,7 +25,7 @@ Pull these from upstream (tag matching fork `TEMPLATE_VERSION`, or a newer revis
 | Infra | `app/utils/dom.js`, `document-listeners.js`, `brand-icon.js` |
 | Icons | `app/utils/icons-template.js` (replace from upstream); `icons.js` merge helpers if changed; **never** overwrite `icons-app.js` |
 
-Also update `TEMPLATE_VERSION` in `app/version.js` when the sync intentionally tracks a newer template release (ask if unclear). Do not change `APP_VERSION`. Prefer full-catalogue upgrades via `migrate-template` (`sync:template`) when more than shell/tokens changed.
+Also update `TEMPLATE_VERSION` in `app/version.js` when the sync intentionally tracks a newer framework release (ask if unclear). Do not change `APP_VERSION`. Prefer full-catalogue upgrades via `migrate-template` (`sync:template`) when more than shell/tokens changed.
 
 ## Scope (out)
 

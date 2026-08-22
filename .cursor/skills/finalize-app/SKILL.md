@@ -1,7 +1,7 @@
 ---
 name: finalize-app
 description: >-
-  Review a finished microapp fork and remove unused template components, CSS
+  Review a finished microapp fork and remove unused framework components, CSS
   partials, vendor bundles, and demo files using the shared component map. Use
   when finalizing, trimming unused components, or cleaning up before ship.
 ---
@@ -47,7 +47,7 @@ Get explicit user approval. Then:
 3. Drop unused `@import`s from `app/css/template.css` (sync regenerates this when used); delete orphaned partial files.
 4. Update `pages.yml` if demo HTML was removed.
 5. Remove stale demo links from `index.html` / docs if present.
-6. Do not strip template icon catalogue entries that shell or remaining features still need; optional cleanup of unused ids in `icons-app.js` only.
+6. Do not strip framework icon catalogue entries that shell or remaining features still need; optional cleanup of unused ids in `icons-app.js` only.
 
 ### 4. Finish
 

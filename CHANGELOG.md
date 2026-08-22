@@ -42,7 +42,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
-- Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; template `clock` icon (`ic:round-schedule`).
+- Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; framework `clock` icon (`ic:round-schedule`).
 - Slim toggle variant (`.toggle--slim`) — thin track with an oversized overhanging thumb and no icon; Forms demo and USAGE docs.
 - Toggle button (`initToggleButton` / `initToggleButtons`) — `.btn-toggle` pressed state with optional next-action label/icon swapping; `data-toggle-button-always-active` keeps the default button appearance for controls where both states are actions; Actions demo shows pressed-state and swapping icon toggles at standard and slim sizes.
 - Legend (`initLegend` / `initLegends`) — coloured category chips for charts and code highlights; eight numbered palette slots; optional toggle and `data-tooltip`; demo under Chips.
@@ -92,14 +92,14 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
 - Colour picker (`initColorPicker`) — HSV/HSL plane + hue slider, RGB/CMYK/alpha via shared `initSlider`, HEX field; format switch changes the visual; optional adjacent colour-set panel (palette icon toggle on the value row).
-- Template icon `palette` (`ic:round-palette`).
+- Framework icon `palette` (`ic:round-palette`).
 - Colour input `openOnClick` / `data-color-input-open` (`none` \| `picker` \| `set` \| `both`) with `openTrigger` / `data-color-input-open-trigger` (`either` default \| `swatch` \| `input`) — opens a nested or passed colour set / picker and keeps values in sync.
 - `--control-height-micro` token (half of `--control-height`) for compact colour swatches and similar micro controls.
 - Image preview (`initImagePreview`) — checkerboard host for SVG / image URLs / Blob; optional maximise icon and click-to-expand via expandable-surface (`data-image-preview-maximize`, `data-image-preview-expand-on-click`); optional floating download and muted dimensions / file-size / SMIL frame + duration meta (`data-image-preview-download`, `data-image-preview-dimensions`, `data-image-preview-file-size`, `data-image-preview-frames`, `data-image-preview-duration`); meta strip visibility via `data-image-preview-meta` (`hover` default, `always`, `never`).
 - Expandable surface: `data-expandable-surface-click` (toggle on surface click) and `data-expandable-surface-control="false"` (omit floating maximise button).
 - Manifest **schema v2**: hashed Cursor agent skills/rules, `agent` catalogue, empty `deprecated` / `retired` lifecycle maps, and lock `skills` selection (`*` / `-id`).
 - `sync:template --prune` to remove `previousFiles` / retired paths when safe (skips if still referenced from app-owned files).
-- USAGE section **Template lock, manifest, and upgrades** documenting versions, lock/manifest, sync/verify, ids, deprecate→retire, and forking skills.
+- USAGE section **Framework lock, manifest, and upgrades** documenting versions, lock/manifest, sync/verify, ids, deprecate→retire, and forking skills.
 - Popover (`initPopover`) — anchored speech-bubble card with a notch, title, body, and actions; pure `computePopoverPlacement` for flip/clamp positioning.
 - Tutorial (`initTutorial`) — guided spotlight tour over a JS step script (back / next / close); multiple scripts per page with one active at a time; optional interactive steps (`advanceOn: "click"`).
 - About dialog (`initAboutDialog`) — tagline “What?” opener with progressive Huh? / Uhh… simplification stages declared in markup (`data-about-stage`, `data-about-next-label`, `data-about-final`), same pattern as [pqm-stepper](https://github.com/filcuk/pqm-stepper); demo on `demo.html`.
@@ -119,12 +119,12 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 ### Changed
 
 - Soft verify for agent skill/rule drift (`agentModified` / `agentMissing` does not fail CI); hard verify remains for catalogue `app/` hashes.
-- Rich text editor Markdown / WYSIWYG switch uses the template segmented control (Toast UI’s native mode tabs are hidden).
+- Rich text editor Markdown / WYSIWYG switch uses the framework segmented control (Toast UI’s native mode tabs are hidden).
 - Heading outline: site `h1`, tier `h2.segment-title` (was `.content-tier-title`), section `h3.section-title` (was `h2.section-heading`). Page nav and heading links default to `main :is(h2, h3)[id]`.
 - Content tier headers are plain larger titles with an underline instead of accent-edged cards (card chrome moved to `.callout`).
 - Sticky chrome stacks site header, tier header, and section headings; pinned bars fade in gap fill and a single edge hairline/shadow (`data-sticky-stuck` / `data-sticky-stuck-edge`) instead of always-on cover strips.
 - Split inline icons into `icons-template.js` (catalogue), `icons-app.js` (fork-owned, empty here), and merging `icons.js` (public API unchanged).
-- Split styles into fork-owned `styles.css` / `css/app.css` and template partial index `css/template.css`.
+- Split styles into fork-owned `styles.css` / `css/app.css` and framework partial index `css/template.css`.
 - Toggle dropdown selection count uses a **badge** on the trigger instead of appending `(n)` to the label text.
 - Renamed the hex colour field component from colour picker to **colour input** (`color-input` / `initColorInput`) so “colour picker” can mean a future spectrum selector.
 - Also-see menu lays topics out full width on a shared grid, choosing the column count that leaves the fewest empty cells.
@@ -204,7 +204,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
-- Initial template: theme toggle, layout shell, buttons, banners, tooltips, dialogs.
+- Initial framework: theme toggle, layout shell, buttons, banners, tooltips, dialogs.
 - Code blocks (Prism), expandable surfaces, page navigation, heading links, external-link icons.
 - Section panel, toolbar, USAGE.md, disclaimer, SemVer `TEMPLATE_VERSION` / `APP_VERSION`.
 - Checkbox, expand, tabs, combo / dropdown / toggle-dropdown.

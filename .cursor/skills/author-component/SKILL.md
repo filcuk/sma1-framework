@@ -3,12 +3,12 @@ name: author-component
 description: >-
   Author a new reusable component in SMA1 Framework itself: scaffold
   initX/initXs JS, CSS partial, demo, USAGE/AGENTS docs, and component-map.
-  Use when adding a new template component, not when restoring one into a fork.
+  Use when adding a new framework component, not when restoring one into a fork.
 ---
 
 # Author component
 
-For **template maintainers** adding a new reusable feature. Forks restoring an existing feature should use `restore-component` instead.
+For **framework maintainers** adding a new reusable feature. Forks restoring an existing feature should use `restore-component` instead.
 
 Follow [../_shared/invariants.md](../_shared/invariants.md) and `.cursor/rules/usage-docs.mdc`. Confirm with the user before adding npm packages, CDN libraries, or a build step.
 
@@ -43,4 +43,4 @@ Agree with the user:
 npm run verify:template
 ```
 
-Run **`health-check`**. Leave `APP_VERSION` at `0.0.0` on the template repo.
+Run **`health-check`**. Leave `APP_VERSION` at `0.0.0` on the framework repo.

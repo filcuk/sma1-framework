@@ -1,6 +1,6 @@
 # Development
 
-Local checks, preview, and maintainer tooling for this template repository.
+Local checks, preview, and maintainer tooling for this framework repository.
 
 ## Setup
 
@@ -91,4 +91,4 @@ Frames are kept in `res/.demo-scroll-frames/` after capture (with `frames-meta.j
 
 ### Release habit
 
-When the demo changed in a meaningful way, regenerate media before cutting a template release (`release-template` checklist includes this as optional).
+When the demo changed in a meaningful way, regenerate media before cutting a framework release (`release-template` checklist includes this as optional).
