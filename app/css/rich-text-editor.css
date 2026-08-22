@@ -95,7 +95,7 @@
   transition-duration: 0s;
 }
 
-/* Prefer template tooltips (`data-tooltip`); Toast sets inline display:block on hover. */
+/* Prefer framework tooltips (`data-tooltip`); Toast sets inline display:block on hover. */
 .rich-text-editor .toastui-editor-tooltip {
   display: none !important;
 }
@@ -157,7 +157,7 @@
   color: var(--accent-hover);
 }
 
-/* Mode switch — template segmented control */
+/* Mode switch — framework segmented control */
 
 .rich-text-editor-mode {
   display: flex;

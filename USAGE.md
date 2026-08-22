@@ -1,10 +1,10 @@
 # Usage guide
 
-How to fork this template into your own app, deploy it, and use the design system components.
+How to fork this framework into your own app, deploy it, and use the design system components.
 
-## Creating a new app from this template
+## Creating a new app from this framework
 
-Cursor agents can drive this with skills under [`.cursor/skills/`](.cursor/skills/): **`init-app`** (fork setup), **`handle-assets`** (logos/icons — user supplies files), **`manage-color`** (primary accent + contrast), **`finalize-app`** (trim unused components before ship), plus migrate/sync/restore helpers listed in [`AGENTS.md`](AGENTS.md#lifecycle-skills). How lock, manifest, sync, and deprecate/retire work is documented in [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades). Forks created before template lock/versioning should follow [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades).
+Cursor agents can drive this with skills under [`.cursor/skills/`](.cursor/skills/): **`init-app`** (fork setup), **`handle-assets`** (logos/icons — user supplies files), **`manage-color`** (primary accent + contrast), **`finalize-app`** (trim unused components before ship), plus migrate/sync/restore helpers listed in [`AGENTS.md`](AGENTS.md#lifecycle-skills). How lock, manifest, sync, and deprecate/retire work is documented in [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades). Forks created before framework lock/versioning should follow [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades).
 
 ### 1. Create the repository
 
@@ -50,7 +50,7 @@ initShell({
 });
 ```
 
-### App and template versions
+### App and framework versions
 
 Versions use [Semantic Versioning 2.0.0](https://semver.org/) and live in [`app/version.js`](app/version.js):
 
@@ -62,9 +62,9 @@ export const APP_VERSION = "0.0.0";      // your app — bump when you ship
 | Constant | Who sets it | Shown in UI |
 | -------- | ----------- | ----------- |
 | `APP_VERSION` | You, on your fork | Footer label (`v0.0.0`) |
-| `TEMPLATE_VERSION` | Template maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
+| `TEMPLATE_VERSION` | Framework maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
 
-After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream template, the maintainer may have raised `TEMPLATE_VERSION` — hover the footer version to see which template release you are on.
+After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream framework, the maintainer may have raised `TEMPLATE_VERSION` — hover the footer version to see which framework release you are on.
 
 Optional runtime override (rare):
 
@@ -198,7 +198,7 @@ Forks created before lock/versioning lack `template.lock.json`, the sync scripts
 
 | Copy | Purpose |
 | ---- | ------- |
-| `.cursor/skills/` and `.cursor/rules/` | Agent playbooks and template rules (later refreshed by sync) |
+| `.cursor/skills/` and `.cursor/rules/` | Agent playbooks and framework rules (later refreshed by sync) |
 | `scripts/sync-template.mjs`, `scripts/verify-template.mjs`, `scripts/lib/` | Sync / verify tooling |
 | `scripts/generate-template-manifest.mjs` (optional on forks) | Only needed if you regenerate manifests locally |
 
@@ -225,11 +225,11 @@ Add `template.lock.json` (use `"components": ["*"]` for a full catalogue, or lis
 }
 ```
 
-Then run the **`migrate-template`** skill (or `npm run sync:template -- --version 0.9.0` + `npm run verify:template`) to pull the tagged template into the fork. See [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades) for ongoing upgrades.
+Then run the **`migrate-template`** skill (or `npm run sync:template -- --version 0.9.0` + `npm run verify:template`) to pull the tagged framework release into the fork. See [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades) for ongoing upgrades.
 
 ---
 
-## Template lock, manifest, and upgrades
+## Framework lock, manifest, and upgrades
 
 How forks stay aligned with a tagged SMA1 Framework release without clobbering app-owned work.
 
@@ -237,16 +237,16 @@ How forks stay aligned with a tagged SMA1 Framework release without clobbering a
 
 | Constant | File | Who bumps |
 | -------- | ---- | --------- |
-| `TEMPLATE_VERSION` | `app/version.js` | Template maintainers; sync updates it on the fork |
+| `TEMPLATE_VERSION` | `app/version.js` | Framework maintainers; sync updates it on the fork |
 | `APP_VERSION` | `app/version.js` | App authors on the fork (sync preserves it) |
 
-Fetch-based sync requires a git tag `vX.Y.Z` on the upstream template that matches `template.lock.json` → `templateVersion`. Local checkouts can use `npm run sync:template -- --from /path/to/sma1-framework`.
+Fetch-based sync requires a git tag `vX.Y.Z` on the upstream framework that matches `template.lock.json` → `templateVersion`. Local checkouts can use `npm run sync:template -- --from /path/to/sma1-framework`.
 
 ### Manifest (`template-manifest.json`)
 
 Generated by `npm run manifest:template` from [`scripts/lib/template-catalogue.mjs`](scripts/lib/template-catalogue.mjs) (`schemaVersion` **2**). It records:
 
-- **Hashed files** — SHA-256 (LF-canonical) for template-owned `app/` paths plus listed Cursor agent skills/rules under `.cursor/`
+- **Hashed files** — SHA-256 (LF-canonical) for framework-owned `app/` paths plus listed Cursor agent skills/rules under `.cursor/`
 - **Component graph** — stable ids, `files` / `css` / `vendor` / `icons` / `infra`
 - **Agent catalogue** — `agent.skills` and `agent.rules`
 - **App-owned** paths sync must never overwrite (`appOwned`)
@@ -272,7 +272,7 @@ Fork pin for what to install:
 | `components` | Catalogue ids to install, or `["*"]` for the full set. Always-on shell pieces are added automatically. |
 | `skills` | Agent skill ids to install (`["*"]` default when omitted on schema v2). Support `-id` exclusions (e.g. `["*", "-release-template"]`). Rules under `.cursor/rules/` always sync when any skill is selected. |
 | `source` | GitHub `owner/repo` used by `--version` fetch |
-| `templateVersion` | Target template SemVer (without the `v` prefix) |
+| `templateVersion` | Target framework SemVer (without the `v` prefix) |
 
 ### Sync
 
@@ -311,9 +311,9 @@ Components and skills are selected by **id** (usually matching the file or folde
 
 **Retired / `previousFiles` paths must never be reused** by a new live file. Manifest generation rejects overlaps.
 
-### Customising template skills
+### Customising framework skills
 
-Do not edit a template skill in place (the next sync overwrites it). **Fork** it:
+Do not edit a framework skill in place (the next sync overwrites it). **Fork** it:
 
 1. Copy `.cursor/skills/<id>/` to a new folder id.
 2. Change frontmatter `name` and `description` so agents pick the fork copy.
@@ -345,7 +345,7 @@ npm run verify:template     # check tree vs template.lock.json + manifest hashes
 # npm run sync:template -- --from ../sma1-framework --prune
 ```
 
-Forks that predate lock/sync should bootstrap first — see [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades). Day-to-day upgrades: [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades).
+Forks that predate lock/sync should bootstrap first — see [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades). Day-to-day upgrades: [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades).
 
 Then open `http://localhost:3000` and, if kept, `http://localhost:3000/demo.html`.
 
@@ -378,8 +378,8 @@ app/
   styles.css            # Fork entry: tokens.css → css/template.css → css/app.css
   tokens.css            # Design tokens, base typography, reduced motion
   css/
-    template.css        # Template partial index (sync regenerates in forks)
-    app.css             # Fork-owned app styles (empty in the template)
+    template.css        # Framework partial index (sync regenerates in forks)
+    app.css             # Fork-owned app styles (empty in the framework)
     layout.css          # Page shell, sections, page nav, footer, theme toggle
     code-block.css      # Code blocks and expandable surfaces
     controls-buttons.css  # Toolbar, buttons
@@ -455,7 +455,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | -------- | ----------- |
 | **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`template.css`](app/css/template.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
-| **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; template version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
+| **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
 | **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
@@ -2851,11 +2851,11 @@ initRichTextEditors(document); // every `.rich-text-editor` with a mount node
 
 Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/theme.js`](app/theme.js).
 
-Markdown ↔ WYSIWYG uses the template [segmented control](#segmented-control) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use template [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
+Markdown ↔ WYSIWYG uses the framework [segmented control](#segmented-control) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use framework [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
 
 ### Charts (TanStack Charts)
 
-Thin host around vendored [TanStack Charts](https://tanstack.com/charts/latest) (`mountChart`). You author the chart definition (`defineChart`, marks, scales); this template only mounts it into a `.charts` host and refreshes on theme change. Upstream is **pre-alpha** — expect API churn.
+Thin host around vendored [TanStack Charts](https://tanstack.com/charts/latest) (`mountChart`). You author the chart definition (`defineChart`, marks, scales); this framework only mounts it into a `.charts` host and refreshes on theme change. Upstream is **pre-alpha** — expect API churn.
 
 Prefer **narrow** vendor entry files (e.g. `bar.js`, `scene.js`) over the root barrel so unused marks stay out of the module graph.
 
@@ -3049,7 +3049,7 @@ Add other language components under `app/vendor/prism/` as needed from [Prism](h
 
 ### Icons
 
-All inline UI icons are defined in [`app/utils/icons-template.js`](app/utils/icons-template.js) (template catalogue) and [`app/utils/icons-app.js`](app/utils/icons-app.js) (fork / app additions). [`app/utils/icons.js`](app/utils/icons.js) merges them (app wins on key clash) and mounts via `initIcons()`.
+All inline UI icons are defined in [`app/utils/icons-template.js`](app/utils/icons-template.js) (framework catalogue) and [`app/utils/icons-app.js`](app/utils/icons-app.js) (fork / app additions). [`app/utils/icons.js`](app/utils/icons.js) merges them (app wins on key clash) and mounts via `initIcons()`.
 
 Browse and copy SVG paths from [Icônes — Google Material Icons (Round variant)](https://icones.js.org/collection/ic?s=info&variant=Round) (`ic` collection, `variant=Round`).
 
@@ -3070,7 +3070,7 @@ const svg = createIcon("lines", { className: "btn-icon-svg" });
 button.append(svg);
 ```
 
-Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Template catalogue changes go in `TEMPLATE_ICONS` in `icons-template.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.
+Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Framework catalogue changes go in `TEMPLATE_ICONS` in `icons-template.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.
 
 Licensed icon sets (e.g. Material Icons) can use optional metadata on each entry:
 

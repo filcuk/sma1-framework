@@ -8,19 +8,19 @@ Multi-step workflows live under [`.cursor/skills/`](.cursor/skills/). Read the m
 
 | Skill | Use when |
 | ----- | -------- |
-| [`init-app`](.cursor/skills/init-app/SKILL.md) | Fork / scaffold a new app from this template |
-| [`migrate-template`](.cursor/skills/migrate-template/SKILL.md) | Upgrade a fork to a newer template (partial or full) via lock + sync |
+| [`init-app`](.cursor/skills/init-app/SKILL.md) | Fork / scaffold a new app from this framework |
+| [`migrate-framework`](.cursor/skills/migrate-framework/SKILL.md) | Upgrade a fork to a newer framework release (partial or full) via lock + sync |
 | [`sync-shell`](.cursor/skills/sync-shell/SKILL.md) | Pull shell/theme/tokens/infra only |
 | [`restore-component`](.cursor/skills/restore-component/SKILL.md) | Add a trimmed catalogue component back into a fork (lock + sync) |
 | [`finalize-app`](.cursor/skills/finalize-app/SKILL.md) | Remove unused components before shipping |
-| [`author-component`](.cursor/skills/author-component/SKILL.md) | Add a **new** reusable component to the template itself |
-| [`release-template`](.cursor/skills/release-template/SKILL.md) | Bump `TEMPLATE_VERSION`, regenerate manifest, tag `vX.Y.Z` |
+| [`author-component`](.cursor/skills/author-component/SKILL.md) | Add a **new** reusable component to the framework itself |
+| [`release-framework`](.cursor/skills/release-framework/SKILL.md) | Bump `FRAMEWORK_VERSION`, regenerate manifest, tag `vX.Y.Z` |
 | [`handle-assets`](.cursor/skills/handle-assets/SKILL.md) | Wire logos/favicons/res — never invent artwork; request files from the user |
 | [`manage-color`](.cursor/skills/manage-color/SKILL.md) | Set / validate light+dark `--accent` and `--accent-fg` (WCAG AA) in `app.css` |
-| [`add-icon`](.cursor/skills/add-icon/SKILL.md) | Pull Icônes / Iconify SVG into `icons-template.js` or `icons-app.js` (prefer `ic` Round; Material Symbols fallback) |
-| [`health-check`](.cursor/skills/health-check/SKILL.md) | Verify boot, Pages, config, assets, and `verify:template` |
+| [`add-icon`](.cursor/skills/add-icon/SKILL.md) | Pull Icônes / Iconify SVG into `icons-framework.js` or `icons-app.js` (prefer `ic` Round; Material Symbols fallback) |
+| [`health-check`](.cursor/skills/health-check/SKILL.md) | Verify boot, Pages, config, assets, and `verify:framework` |
 
-Template lock, manifest hashes, sync/verify, deprecate→retire, and forking skills: see **[Template lock, manifest, and upgrades](USAGE.md#template-lock-manifest-and-upgrades)** in `USAGE.md`.
+Framework lock, manifest hashes, sync/verify, deprecate→retire, and forking skills: see **[Framework lock, manifest, and upgrades](USAGE.md#framework-lock-manifest-and-upgrades)** in `USAGE.md`.
 
 ## Confirm before complexity
 
@@ -30,7 +30,7 @@ Ask the user before adding:
 - Build tools or bundlers (Vite, Webpack, Rollup, etc.)
 - Non-trivial architecture (state managers, routers, SSR)
 
-Prefer the simplest approach that fits the existing template.
+Prefer the simplest approach that fits the existing framework.
 
 ## Stay vanilla
 
@@ -54,7 +54,7 @@ Prose in documentation (`USAGE.md`, `README.md`, `CHANGELOG.md`, `DESIGN.md`, de
 - Use CSS custom properties from `app/tokens.css` (`--bg`, `--surface`, `--input-bg`, `--accent`, `--accent-hover`, `--accent-fg`, etc.)
 - Fork brand colour: override `--accent` (and `--accent-fg` when needed) in `app/css/app.css` — see **`manage-color`**; do not edit `tokens.css` in a fork for primary colour
 - Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.callout`, `.popover`, `.section-panel`, `.code-block`, `.theme-toggle`
-- Add or edit inline UI icons in `app/utils/icons-template.js` (catalogue) or `app/utils/icons-app.js` (fork) only — do not duplicate SVG paths in HTML
+- Add or edit inline UI icons in `app/utils/icons-framework.js` (catalogue) or `app/utils/icons-app.js` (fork) only — do not duplicate SVG paths in HTML
 - Do not introduce parallel styling systems (Tailwind, CSS-in-JS, component libraries)
 
 ## Page boot conventions
@@ -62,7 +62,7 @@ Prose in documentation (`USAGE.md`, `README.md`, `CHANGELOG.md`, `DESIGN.md`, de
 Every HTML entry point should:
 
 1. Include blocking `app/theme-init.js` in `<head>` (prevents theme flash)
-2. Link `app/styles.css` (fork entry: `tokens.css` → `css/template.css` → `css/app.css`)
+2. Link `app/styles.css` (fork entry: `tokens.css` → `css/framework.css` → `css/app.css`)
 3. Call `initShell()` from `app/shell/shell.js` as the first step in the page module
 
 `initShell()` renders shared chrome via `renderPageShell()` (`app/render-shell.js`), then boots icons, external links, heading links, title numbering, theme toggle, sticky chrome offsets, tooltips, and page navigation. Do **not** duplicate footer, theme toggle, or `#page-nav` markup in HTML.
@@ -153,8 +153,8 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 
 - Declare icons with `data-icon="name"` and optional `data-icon-class="…"` in HTML
 - Call `initIcons()` (via `initShell()`) to inject SVGs
-- **Agents must not invent or generate SVG paths** — see [`.cursor/rules/icons.mdc`](.cursor/rules/icons.mdc). If an icon is missing, reuse an existing id / `{ ref }`, or follow the [`add-icon`](.cursor/skills/add-icon/SKILL.md) skill to pull from Icônes (ask for app id + template vs app if needed). Blank stubs via [`handle-assets`](.cursor/skills/handle-assets/SKILL.md) when the user will supply custom artwork.
-- Users / agents add icon entries in `icons-app.js` / `icons-template.js` only — `icons.js` merges them; do not duplicate SVG paths in HTML
+- **Agents must not invent or generate SVG paths** — see [`.cursor/rules/icons.mdc`](.cursor/rules/icons.mdc). If an icon is missing, reuse an existing id / `{ ref }`, or follow the [`add-icon`](.cursor/skills/add-icon/SKILL.md) skill to pull from Icônes (ask for app id + framework catalogue vs app if needed). Blank stubs via [`handle-assets`](.cursor/skills/handle-assets/SKILL.md) when the user will supply custom artwork.
+- Users / agents add icon entries in `icons-app.js` / `icons-framework.js` only — `icons.js` merges them; do not duplicate SVG paths in HTML
 - Prefer [Icônes — Google Material Icons (Round)](https://icones.js.org/collection/ic?s=info&variant=Round) via `add-icon`; Material Symbols Rounded is the fallback. Set `name` to the collection id and `attribution` from `ICON_ATTRIBUTIONS`
 - For sourced icons, set `name` to the original collection id (e.g. `round-info`) — metadata for traceability; omit for custom or in-house icons. The merged `ICONS` object key remains the app id used in `data-icon`
 - To alias one app id to another, use `{ ref: "other-icon" }` instead of duplicating markup (e.g. `lines: { ref: "note" }`)
@@ -164,9 +164,9 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 
 | File | Contents |
 | ---- | -------- |
-| `app/styles.css` | Fork-owned entry — `@import` tokens, `css/template.css`, `css/app.css` |
-| `app/css/template.css` | Template partial index (regenerated by sync; full catalogue here) |
-| `app/css/app.css` | Fork-owned app styles (empty in the template) |
+| `app/styles.css` | Fork-owned entry — `@import` tokens, `css/framework.css`, `css/app.css` |
+| `app/css/framework.css` | Framework partial index (regenerated by sync; full catalogue here) |
+| `app/css/app.css` | Fork-owned app styles (empty in the framework) |
 | `app/tokens.css` | Reset, `:root` tokens, dark theme, base typography, `.hidden`, reduced-motion |
 | `app/css/layout.css` | Page shell, sections, content tiers, section panels, page nav, footer, theme toggle |
 | `app/css/code-block.css` | Code blocks and expandable surfaces |
@@ -189,7 +189,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/table.css` | Data table layout, sort controls, and selection column |
 | `app/css/controls-tabular-input.css` | Editable typed grid (tabular input) |
 
-Keep HTML linking only `styles.css`. Edit tokens, `app/css/app.css`, or the relevant partial under `app/css/`; do not merge back into a monolith. Trimming partials updates `template.css` (or sync regenerates it).
+Keep HTML linking only `styles.css`. Edit tokens, `app/css/app.css`, or the relevant partial under `app/css/`; do not merge back into a monolith. Trimming partials updates `framework.css` (or sync regenerates it).
 
 ### Demo vs shared layout
 
@@ -205,9 +205,9 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | ----- | -------- | ---- |
 | Entry | `main.js`, `demo.js`, `theme-init.js`, `config.js`, `version.js` | Loaded directly from HTML |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
-| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `icons.js` (+ `icons-template.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
+| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
-| Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put template wrappers here |
+| Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put framework wrappers here |
 
 ### Vendor access
 
@@ -224,7 +224,7 @@ npm run lint
 npm test
 ```
 
-CI runs the same checks on push and pull requests (`.github/workflows/ci.yml`). Template maintainers regenerate `template-manifest.json` with `npm run manifest:template` when the catalogue or hashed files change (including `.cursor/skills/` and `.cursor/rules/`). Forks pin a revision in `template.lock.json` (`components` + `skills`) and use `npm run sync:template` / `npm run verify:template`. Details: [USAGE.md — Template lock, manifest, and upgrades](USAGE.md#template-lock-manifest-and-upgrades).
+CI runs the same checks on push and pull requests (`.github/workflows/ci.yml`). Framework maintainers regenerate `framework-manifest.json` with `npm run manifest:framework` when the catalogue or hashed files change (including `.cursor/skills/` and `.cursor/rules/`). Forks pin a revision in `framework.lock.json` (`components` + `skills`) and use `npm run sync:framework` / `npm run verify:framework`. Details: [USAGE.md — Framework lock, manifest, and upgrades](USAGE.md#framework-lock-manifest-and-upgrades).
 
 ## Keep GitHub Pages deployable
 
@@ -259,7 +259,7 @@ Two styles ([`DESIGN.md`](DESIGN.md)): **standard** (accent border + tinted back
 - Popup menus: `aria-expanded` on toggle buttons
 - Page nav: outer `<nav aria-label="Page navigation">`; jump buttons have `aria-label`; section links are plain anchors with hash `href`; use `data-page-nav-tier` on group headings for nested nav lists
 
-## When extending this template
+## When extending this framework
 
 1. Read `USAGE.md` for available components and fork instructions; read `DESIGN.md` for interaction philosophy
 2. Check `demo.html` for usage examples

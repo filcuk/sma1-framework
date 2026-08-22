@@ -1,8 +1,8 @@
 # Component dependency map
 
-Authoritative inventory for lifecycle skills (`init-app`, `finalize-app`, `restore-component`, `migrate-template`, etc.). Paths are relative to the repo root. Prefer this file over stale flat-path examples in USAGE.md (`app/dialog.js` → `app/components/dialog.js`).
+Authoritative inventory for lifecycle skills (`init-app`, `finalize-app`, `restore-component`, `migrate-framework`, etc.). Paths are relative to the repo root. Prefer this file over stale flat-path examples in USAGE.md (`app/dialog.js` → `app/components/dialog.js`).
 
-Machine-readable twin: [`scripts/lib/template-catalogue.mjs`](../../scripts/lib/template-catalogue.mjs) → generated [`template-manifest.json`](../../template-manifest.json) via `npm run manifest:template`. When this map changes, update the catalogue module and regenerate the manifest.
+Machine-readable twin: [`scripts/lib/framework-catalogue.mjs`](../../scripts/lib/framework-catalogue.mjs) → generated [`framework-manifest.json`](../../framework-manifest.json) via `npm run manifest:framework`. When this map changes, update the catalogue module and regenerate the manifest.
 
 When trimming: delete a feature’s JS only if unused; remove a **shared** CSS partial only when **no** remaining feature in that partial’s group needs it; never delete [invariants](invariants.md).
 
@@ -10,9 +10,9 @@ When trimming: delete a feature’s JS only if unused; remove a **shared** CSS p
 
 | Area | Paths |
 | ---- | ----- |
-| Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/template.css` (generated index), `app/css/app.css` (fork-owned) |
+| Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/framework.css` (generated index), `app/css/app.css` (fork-owned) |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js` |
-| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-template.js`, `icons-app.js`, `brand-icon.js` |
+| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js` |
 | Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js` (imported by `shell.js`) |
 | Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
 | Brand | `app/res/` logos as wired in HTML / `__MICROAPP__` |
@@ -44,7 +44,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
 
-Also wired from `app/css/template.css`: every partial above is `@import`ed there (and pulled in via `app/styles.css`). When removing the last consumer of a partial, drop its `@import` from `template.css` (sync regenerates this index from the lock/manifest).
+Also wired from `app/css/framework.css`: every partial above is `@import`ed there (and pulled in via `app/styles.css`). When removing the last consumer of a partial, drop its `@import` from `framework.css` (sync regenerates this index from the lock/manifest).
 
 ## Feature catalogue
 
@@ -105,7 +105,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | section-panel | `.section-panel`, `controls-section-panel.css` | Demo pattern; drop partial if unused |
 | callout | `.callout`, `overlays.css` | CSS-only tip card; keep `overlays.css` if banners/tooltips/dialogs remain |
 | page-nav | `app/shell/page-nav.js`, `layout.css` | Via `initShell` |
-| heading-link | `app/shell/heading-link.js` | Icon: `link` |
+| heading-link | `app/shell/heading-link.js` | Icon: `link`; opt out with `initShell({ headingLinks: false })`, `data-no-heading-links`, or `data-no-heading-link` |
 | external-link | `app/shell/external-link.js` | Icon: `arrow-outward` |
 | also-see | `app/shell/also-see.js` | Icon: `arrow-outward` |
 | theme-toggle | `app/shell/theme.js` + render-shell | Icons: `light-mode`, `dark-mode`, `auto-mode` |
@@ -130,7 +130,7 @@ Do not remove these from `ICONS` while using `initShell`:
 | Old (USAGE / older forks) | Current |
 | ------------------------- | ------- |
 | `app/dialog.js`, `app/combo.js`, … | `app/components/<name>.js` |
-| `app/icons.js` | `app/utils/icons.js` (merge API; definitions in `icons-template.js` / `icons-app.js`) |
+| `app/icons.js` | `app/utils/icons.js` (merge API; definitions in `icons-framework.js` / `icons-app.js`) |
 | `app/page-nav.js`, `app/heading-link.js`, … | `app/shell/<name>.js` |
 | `app/file-dropzone.js` | `app/components/file-dropzone.js` |
 | `app/components/toastui-editor.js` | Merged into `app/components/rich-text-editor.js` (no separate seam) |
@@ -141,5 +141,5 @@ Do not remove these from `ICONS` while using `initShell`:
 2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file-dropzone`, etc.).
 3. Mark a catalogue `id` **used** if imported or markup-matched.
 4. Unused ids → candidates to delete (JS + exclusive vendor).
-5. For each CSS partial, if no remaining used feature maps to it → drop `@import` from `app/css/template.css` and delete the file.
+5. For each CSS partial, if no remaining used feature maps to it → drop `@import` from `app/css/framework.css` and delete the file.
 6. Never delete Always keep / shell-required icons / invariants.
