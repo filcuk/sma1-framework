@@ -36,7 +36,7 @@ initShell(); // footer, theme toggle, page nav, tooltips, icons, links
 // …your app-specific inits…
 ```
 
-Optional shell overrides (repo link, related apps, page nav scan):
+Optional shell overrides (repo link, related apps, page nav scan, heading links):
 
 ```javascript
 initShell({
@@ -47,6 +47,7 @@ initShell({
   alsoSeeTopics: ["*"], // remote filter: ["*"]=all; ["*","-Topic"]=all except; ["A",""]=whitelist
   alsoSeeIncludeLocal: false, // true = include local alsoSee in full (alone or merged with remote)
   pageNav: { headingSelector: "main :is(h2, h3)[id]" },
+  // headingLinks: false, // disable copy-link icons (or data-no-heading-links on <html>)
 });
 ```
 
@@ -55,21 +56,21 @@ initShell({
 Versions use [Semantic Versioning 2.0.0](https://semver.org/) and live in [`app/version.js`](app/version.js):
 
 ```javascript
-export const TEMPLATE_VERSION = "0.6.0"; // SMA1 Framework release — sync with app/version.js
+export const FRAMEWORK_VERSION = "0.6.0"; // SMA1 Framework release — sync with app/version.js
 export const APP_VERSION = "0.0.0";      // your app — bump when you ship
 ```
 
 | Constant | Who sets it | Shown in UI |
 | -------- | ----------- | ----------- |
 | `APP_VERSION` | You, on your fork | Footer label (`v0.0.0`) |
-| `TEMPLATE_VERSION` | Framework maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
+| `FRAMEWORK_VERSION` | Framework maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
 
-After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream framework, the maintainer may have raised `TEMPLATE_VERSION` — hover the footer version to see which framework release you are on.
+After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream framework, the maintainer may have raised `FRAMEWORK_VERSION` — hover the footer version to see which framework release you are on.
 
 Optional runtime override (rare):
 
 ```javascript
-initShell({ appVersion: "1.2.3", templateVersion: "0.6.0" });
+initShell({ appVersion: "1.2.3", frameworkVersion: "0.6.0" });
 ```
 
 ### Configuration
@@ -194,38 +195,38 @@ For pair-mode header logos, set a meaningful `alt` on the visible theme variant 
 
 ## How to bootstrap pre-v0.9.0 upgrades
 
-Forks created before lock/versioning lack `template.lock.json`, the sync scripts, and `.cursor/skills/`. For a **one-time** bootstrap, copy those from a current [SMA1 Framework](https://github.com/filcuk/sma1-framework) checkout (or tagged release) into the fork. After that, rely on lock + sync — do not keep re-copying the whole `.cursor/skills/` tree by hand (that would overwrite fork-local skills).
+Forks created before lock/versioning lack `framework.lock.json`, the sync scripts, and `.cursor/skills/`. For a **one-time** bootstrap, copy those from a current [SMA1 Framework](https://github.com/filcuk/sma1-framework) checkout (or tagged release) into the fork. After that, rely on lock + sync — do not keep re-copying the whole `.cursor/skills/` tree by hand (that would overwrite fork-local skills).
 
 | Copy | Purpose |
 | ---- | ------- |
 | `.cursor/skills/` and `.cursor/rules/` | Agent playbooks and framework rules (later refreshed by sync) |
-| `scripts/sync-template.mjs`, `scripts/verify-template.mjs`, `scripts/lib/` | Sync / verify tooling |
-| `scripts/generate-template-manifest.mjs` (optional on forks) | Only needed if you regenerate manifests locally |
+| `scripts/sync-framework.mjs`, `scripts/verify-framework.mjs`, `scripts/lib/` | Sync / verify tooling |
+| `scripts/generate-framework-manifest.mjs` (optional on forks) | Only needed if you regenerate manifests locally |
 
 Ensure `package.json` has `"type": "module"` and:
 
 ```json
 {
   "scripts": {
-    "sync:template": "node scripts/sync-template.mjs",
-    "verify:template": "node scripts/verify-template.mjs"
+    "sync:framework": "node scripts/sync-framework.mjs",
+    "verify:framework": "node scripts/verify-framework.mjs"
   }
 }
 ```
 
-Add `template.lock.json` (use `"components": ["*"]` for a full catalogue, or list only what the app uses):
+Add `framework.lock.json` (use `"components": ["*"]` for a full catalogue, or list only what the app uses):
 
 ```json
 {
   "schemaVersion": 2,
-  "templateVersion": "0.9.0",
+  "frameworkVersion": "0.9.0",
   "source": "filcuk/sma1-framework",
   "components": ["*"],
   "skills": ["*"]
 }
 ```
 
-Then run the **`migrate-template`** skill (or `npm run sync:template -- --version 0.9.0` + `npm run verify:template`) to pull the tagged framework release into the fork. See [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades) for ongoing upgrades.
+Then run the **`migrate-framework`** skill (or `npm run sync:framework -- --version 0.9.0` + `npm run verify:framework`) to pull the tagged framework release into the fork. See [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades) for ongoing upgrades.
 
 ---
 
@@ -237,30 +238,30 @@ How forks stay aligned with a tagged SMA1 Framework release without clobbering a
 
 | Constant | File | Who bumps |
 | -------- | ---- | --------- |
-| `TEMPLATE_VERSION` | `app/version.js` | Framework maintainers; sync updates it on the fork |
+| `FRAMEWORK_VERSION` | `app/version.js` | Framework maintainers; sync updates it on the fork |
 | `APP_VERSION` | `app/version.js` | App authors on the fork (sync preserves it) |
 
-Fetch-based sync requires a git tag `vX.Y.Z` on the upstream framework that matches `template.lock.json` → `templateVersion`. Local checkouts can use `npm run sync:template -- --from /path/to/sma1-framework`.
+Fetch-based sync requires a git tag `vX.Y.Z` on the upstream framework that matches `framework.lock.json` → `frameworkVersion`. Local checkouts can use `npm run sync:framework -- --from /path/to/sma1-framework`.
 
-### Manifest (`template-manifest.json`)
+### Manifest (`framework-manifest.json`)
 
-Generated by `npm run manifest:template` from [`scripts/lib/template-catalogue.mjs`](scripts/lib/template-catalogue.mjs) (`schemaVersion` **2**). It records:
+Generated by `npm run manifest:framework` from [`scripts/lib/framework-catalogue.mjs`](scripts/lib/framework-catalogue.mjs) (`schemaVersion` **2**). It records:
 
 - **Hashed files** — SHA-256 (LF-canonical) for framework-owned `app/` paths plus listed Cursor agent skills/rules under `.cursor/`
 - **Component graph** — stable ids, `files` / `css` / `vendor` / `icons` / `infra`
 - **Agent catalogue** — `agent.skills` and `agent.rules`
 - **App-owned** paths sync must never overwrite (`appOwned`)
-- **Derived** — e.g. `app/css/template.css` regenerated from the selected CSS index
+- **Derived** — e.g. `app/css/framework.css` regenerated from the selected CSS index
 - **Lifecycle maps** — `deprecated` and `retired` (usually empty)
 
-### Lock (`template.lock.json`)
+### Lock (`framework.lock.json`)
 
 Fork pin for what to install:
 
 ```json
 {
   "schemaVersion": 2,
-  "templateVersion": "0.9.0",
+  "frameworkVersion": "0.9.0",
   "source": "filcuk/sma1-framework",
   "components": ["*"],
   "skills": ["*"]
@@ -270,27 +271,27 @@ Fork pin for what to install:
 | Field | Meaning |
 | ----- | ------- |
 | `components` | Catalogue ids to install, or `["*"]` for the full set. Always-on shell pieces are added automatically. |
-| `skills` | Agent skill ids to install (`["*"]` default when omitted on schema v2). Support `-id` exclusions (e.g. `["*", "-release-template"]`). Rules under `.cursor/rules/` always sync when any skill is selected. |
+| `skills` | Agent skill ids to install (`["*"]` default when omitted on schema v2). Support `-id` exclusions (e.g. `["*", "-release-framework"]`). Rules under `.cursor/rules/` always sync when any skill is selected. |
 | `source` | GitHub `owner/repo` used by `--version` fetch |
-| `templateVersion` | Target framework SemVer (without the `v` prefix) |
+| `frameworkVersion` | Target framework SemVer (without the `v` prefix) |
 
 ### Sync
 
 ```bash
-npm run sync:template -- --version X.Y.Z
-npm run sync:template -- --from ../sma1-framework
-npm run sync:template -- --from ../sma1-framework --prune
-npm run sync:template -- --from . --dry-run
+npm run sync:framework -- --version X.Y.Z
+npm run sync:framework -- --from ../sma1-framework
+npm run sync:framework -- --from ../sma1-framework --prune
+npm run sync:framework -- --from . --dry-run
 ```
 
-Sync copies every path in the lock selection from upstream, regenerates `app/css/template.css`, merges `APP_VERSION` into `app/version.js`, and refreshes the lock (preserving `skills` and other fork fields). It does **not** overwrite app-owned paths and does **not** delete fork-local `.cursor/skills/<other-id>/` folders.
+Sync copies every path in the lock selection from upstream, regenerates `app/css/framework.css`, merges `APP_VERSION` into `app/version.js`, and refreshes the lock (preserving `skills` and other fork fields). It does **not** overwrite app-owned paths and does **not** delete fork-local `.cursor/skills/<other-id>/` folders.
 
 `--prune` deletes `previousFiles` from live moves and paths listed on **retired** ids, unless an app-owned file still references the path (then sync warns and skips).
 
 ### Verify
 
 ```bash
-npm run verify:template
+npm run verify:framework
 ```
 
 | Result | Effect on exit / CI |
@@ -321,7 +322,7 @@ Do not edit a framework skill in place (the next sync overwrites it). **Fork** i
 
 ### Agent-driven upgrades
 
-Prefer the **`migrate-template`** skill for version bumps (partial or full). **`sync-shell`** is a lighter path for chrome/tokens only and does **not** refresh agent skills/rules.
+Prefer the **`migrate-framework`** skill for version bumps (partial or full). **`sync-shell`** is a lighter path for chrome/tokens only and does **not** refresh agent skills/rules.
 
 ---
 
@@ -338,11 +339,11 @@ Optional quality checks (requires `npm ci` once):
 ```bash
 npm run lint
 npm test
-npm run manifest:template   # regenerate template-manifest.json after catalogue changes
-npm run verify:template     # check tree vs template.lock.json + manifest hashes
-# npm run sync:template -- --from ../sma1-framework
-# npm run sync:template -- --version 0.9.0
-# npm run sync:template -- --from ../sma1-framework --prune
+npm run manifest:framework   # regenerate framework-manifest.json after catalogue changes
+npm run verify:framework     # check tree vs framework.lock.json + manifest hashes
+# npm run sync:framework -- --from ../sma1-framework
+# npm run sync:framework -- --version 0.9.0
+# npm run sync:framework -- --from ../sma1-framework --prune
 ```
 
 Forks that predate lock/sync should bootstrap first — see [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades). Day-to-day upgrades: [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades).
@@ -369,16 +370,16 @@ The workflow copies only publishable files into `_site/` (`index.html`, optional
 index.html          # Your app homepage
 demo.html           # Component showcase (optional)
 .nojekyll           # Skip Jekyll on GitHub Pages
-template-manifest.json  # SHA-256 + component/agent graph (npm run manifest:template)
-template.lock.json      # Fork pin: templateVersion + components + skills
+framework-manifest.json  # SHA-256 + component/agent graph (npm run manifest:framework)
+framework.lock.json      # Fork pin: frameworkVersion + components + skills
 .cursor/
   skills/               # Template agent playbooks (hashed + synced; fork-local ids untouched)
   rules/                # Template Cursor rules (hashed + synced)
 app/
-  styles.css            # Fork entry: tokens.css → css/template.css → css/app.css
+  styles.css            # Fork entry: tokens.css → css/framework.css → css/app.css
   tokens.css            # Design tokens, base typography, reduced motion
   css/
-    template.css        # Framework partial index (sync regenerates in forks)
+    framework.css        # Framework partial index (sync regenerates in forks)
     app.css             # Fork-owned app styles (empty in the framework)
     layout.css          # Page shell, sections, page nav, footer, theme toggle
     code-block.css      # Code blocks and expandable surfaces
@@ -399,7 +400,7 @@ app/
     table.css            # Data tables
     controls-tabular-input.css # Editable typed grid
   config.js             # Fork defaults (repo URL, brand, theme key)
-  version.js            # APP_VERSION + TEMPLATE_VERSION (SemVer 2.0.0)
+  version.js            # APP_VERSION + FRAMEWORK_VERSION (SemVer 2.0.0)
   main.js               # index.html entry
   demo.js               # demo.html entry (optional)
   shell/
@@ -439,7 +440,7 @@ JS modules live under `app/shell/`, `app/utils/`, and `app/components/` — the 
 | **Infrastructure** | `app/utils/` | Keep if any popup menu, icons, or shared helpers remain |
 | **Components** | `app/components/` | Import and init only the features your page uses; delete unused files |
 
-Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via `styles.css`). Match a component to its partial: form controls in `controls-fields.css`, menus in `controls-menus.css`, modals in `overlays.css`, and so on. Put app-only rules in `css/app.css`.
+Component CSS lives under `app/css/` (indexed by `css/framework.css`, linked via `styles.css`). Match a component to its partial: form controls in `controls-fields.css`, menus in `controls-menus.css`, modals in `overlays.css`, and so on. Put app-only rules in `css/app.css`.
 
 #### One popup open at a time
 
@@ -453,7 +454,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 
 | Feature | Description |
 | -------- | ----------- |
-| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`template.css`](app/css/template.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
+| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`framework.css`](app/css/framework.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
@@ -494,7 +495,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/page-nav.js`](app/page-nav.js). |
 | **Dialogs** | Accessible modal: backdrop, focus trap, Escape, Enter (default action), focus restore. Markup uses `.modal` / `.modal-panel`; behaviour from [`app/components/dialog.js`](app/components/dialog.js). |
 | **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
-| **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). [`app/shell/heading-link.js`](app/shell/heading-link.js). |
+| **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/external-link.js`](app/external-link.js). Opt out with `data-no-external-icon`. |
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
@@ -972,11 +973,22 @@ Embedded SVG should be a full `<svg viewBox="…">…</svg>` (or inner shape mar
 
 Enabled by `initShell()`. Headings matching `main :is(h2, h3)[id]` show a link icon on hover with a “Get link” tooltip; click copies the full section URL and shows a timer success (“Copied!”) or error tip (icon-only control).
 
+Disable the page with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`. Skip one heading with `data-no-heading-link`. An explicit `headingLinks: true` (or `{ enabled: true }`) overrides the HTML opt-out. Pass `{ selector }` through `initShell({ headingLinks: { selector: "…" } })` to narrow which headings get a button.
+
 ```javascript
 import { initHeadingLinks } from "./shell/heading-link.js";
 
 initHeadingLinks(document); // default: main :is(h2, h3)[id]
 initHeadingLinks(document, { selector: "main h3[id]" }); // sections only
+initShell({ headingLinks: false }); // no copy-link buttons
+```
+
+```html
+<html lang="en" data-no-heading-links>
+```
+
+```html
+<h2 id="overview" data-no-heading-link>Overview</h2>
 ```
 
 ### Buttons
@@ -3049,7 +3061,7 @@ Add other language components under `app/vendor/prism/` as needed from [Prism](h
 
 ### Icons
 
-All inline UI icons are defined in [`app/utils/icons-template.js`](app/utils/icons-template.js) (framework catalogue) and [`app/utils/icons-app.js`](app/utils/icons-app.js) (fork / app additions). [`app/utils/icons.js`](app/utils/icons.js) merges them (app wins on key clash) and mounts via `initIcons()`.
+All inline UI icons are defined in [`app/utils/icons-framework.js`](app/utils/icons-framework.js) (framework catalogue) and [`app/utils/icons-app.js`](app/utils/icons-app.js) (fork / app additions). [`app/utils/icons.js`](app/utils/icons.js) merges them (app wins on key clash) and mounts via `initIcons()`.
 
 Browse and copy SVG paths from [Icônes — Google Material Icons (Round variant)](https://icones.js.org/collection/ic?s=info&variant=Round) (`ic` collection, `variant=Round`).
 
@@ -3070,7 +3082,7 @@ const svg = createIcon("lines", { className: "btn-icon-svg" });
 button.append(svg);
 ```
 
-Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Framework catalogue changes go in `TEMPLATE_ICONS` in `icons-template.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.
+Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Framework catalogue changes go in `FRAMEWORK_ICONS` in `icons-framework.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.
 
 Licensed icon sets (e.g. Material Icons) can use optional metadata on each entry:
 

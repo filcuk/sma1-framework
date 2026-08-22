@@ -12,6 +12,10 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 - Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).
 
+### Added
+
+- Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
+
 ## [0.12.3] - 2026-08-19
 
 ### Fixed
@@ -127,8 +131,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Heading outline: site `h1`, tier `h2.segment-title` (was `.content-tier-title`), section `h3.section-title` (was `h2.section-heading`). Page nav and heading links default to `main :is(h2, h3)[id]`.
 - Content tier headers are plain larger titles with an underline instead of accent-edged cards (card chrome moved to `.callout`).
 - Sticky chrome stacks site header, tier header, and section headings; pinned bars fade in gap fill and a single edge hairline/shadow (`data-sticky-stuck` / `data-sticky-stuck-edge`) instead of always-on cover strips.
-- Split inline icons into `icons-template.js` (catalogue), `icons-app.js` (fork-owned, empty here), and merging `icons.js` (public API unchanged).
-- Split styles into fork-owned `styles.css` / `css/app.css` and framework partial index `css/template.css`.
+- Split inline icons into `icons-framework.js` (catalogue), `icons-app.js` (fork-owned, empty here), and merging `icons.js` (public API unchanged).
+- Split styles into fork-owned `styles.css` / `css/app.css` and framework partial index `css/framework.css`.
 - Toggle dropdown selection count uses a **badge** on the trigger instead of appending `(n)` to the label text.
 - Renamed the hex colour field component from colour picker to **colour input** (`color-input` / `initColorInput`) so “colour picker” can mean a future spectrum selector.
 - Also-see menu lays topics out full width on a shared grid, choosing the column count that leaves the fewest empty cells.
