@@ -9,7 +9,7 @@ Multi-step workflows live under [`.cursor/skills/`](.cursor/skills/). Read the m
 | Skill | Use when |
 | ----- | -------- |
 | [`init-app`](.cursor/skills/init-app/SKILL.md) | Fork / scaffold a new app from this framework |
-| [`migrate-framework`](.cursor/skills/migrate-framework/SKILL.md) | Upgrade a fork to a newer framework release (partial or full) via lock + sync |
+| [`migrate-framework`](.cursor/skills/migrate-framework/SKILL.md) | Upgrade a fork to a newer framework release (partial or full) via lock + sync; optionally fold local workarounds into new framework APIs |
 | [`sync-shell`](.cursor/skills/sync-shell/SKILL.md) | Pull shell/theme/tokens/infra only |
 | [`restore-component`](.cursor/skills/restore-component/SKILL.md) | Add a trimmed catalogue component back into a fork (lock + sync) |
 | [`finalize-app`](.cursor/skills/finalize-app/SKILL.md) | Remove unused components before shipping |

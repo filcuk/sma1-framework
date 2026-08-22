@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-22T14:30:38.177Z",
+  "generatedAt": "2026-08-22T14:27:52.566Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -270,7 +270,7 @@
       "sha256": "6a1e0d52b04d6f115419de2bac85b2e5581a7e0212fa6d6a32c64a8d0bb45fdc"
     },
     "app/shell/heading-link.js": {
-      "sha256": "656dd0292c1e551dded5afc6c93855ec332f3be49955c20db007954e1e453985"
+      "sha256": "1f33f28a432f15e60d9d75393fc6cc3d8818a6565830f6408a2d0b70bcff41e5"
     },
     "app/shell/page-nav.js": {
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
@@ -279,7 +279,7 @@
       "sha256": "e41d80f5c866bc94c344d78ddf697716ee44242fbf43f5c990c64b10ebb1c9ee"
     },
     "app/shell/shell.js": {
-      "sha256": "7bc59c18faeecf7bcce15d586547c00c76fdc908a832c1206d9b4e4fdc2f165a"
+      "sha256": "7f6e8eef71649319640edc5ff09d2ef1a35cd54a42c182b0ef63d1b8e58b2a92"
     },
     "app/shell/sticky.js": {
       "sha256": "4fbe8284625f6a7865bae63153aeced7ed46221f498875dc9e18e7e054bbe77a"
@@ -1212,7 +1212,7 @@
       "sha256": "348c94a4ca9fda3dbac1f1ed02f631f3d8d0a04bfc78398503830fc805db7098"
     },
     ".cursor/skills/migrate-framework/SKILL.md": {
-      "sha256": "4ec04229009700a2039e99a05496f6024dde99bbb657a396eef378e15684e1c6"
+      "sha256": "b43fc003bb8701cea380b21c6450d92ebe2e19816fb21ac3567c0e79048fce02"
     },
     ".cursor/skills/release-framework/SKILL.md": {
       "sha256": "3e7904d9161006cf6ce7e6519893415ba9c4b5e0a6299b0a2b473346a0e5763e"
