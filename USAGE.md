@@ -322,7 +322,7 @@ Do not edit a framework skill in place (the next sync overwrites it). **Fork** i
 
 ### Agent-driven upgrades
 
-Prefer the **`migrate-framework`** skill for version bumps (partial or full). **`sync-shell`** is a lighter path for chrome/tokens only and does **not** refresh agent skills/rules.
+Prefer the **`migrate-framework`** skill for version bumps (partial or full). It also asks whether to check new changelog additions against local app workarounds and, if so, offers each match individually to switch onto the framework API. **`sync-shell`** is a lighter path for chrome/tokens only and does **not** refresh agent skills/rules.
 
 ---
 

@@ -4,6 +4,9 @@ description: >-
   Upgrade a microapp fork to a newer SMA1 Framework version with partial
   (used components only) or full catalogue upgrade. Use when migrating,
   upgrading the framework, syncing from upstream, or bumping FRAMEWORK_VERSION.
+  During migration, ask whether to check new changelog additions against local
+  app workarounds and offer each match individually to switch onto the
+  framework API.
 ---
 
 # Migrate framework
@@ -29,7 +32,16 @@ Do not proceed until the user picks one.
 4. Read upstream `CHANGELOG.md` for entries between fork version and target (if present).
 5. Note any **deprecated** / **retired** entries in upstream `framework-manifest.json` (`replacedBy`, `previousFiles`).
 
-## 3. Protect app-owned files
+## 3. Required ask — local workarounds for new additions
+
+Ask if it should also check for any new additions, and check whether similar additions were implemented locally in the app. If so, they should offer individually to migrate those to the framework features in order to reduce code spread.
+
+Do this **after** reading the changelog (step 2) so the ask can name the app-facing additions, and **before** changing files. Do not start the local scan until **after** sync (step 5) so the new APIs exist in the tree.
+
+1. From the changelog range, list **Added** items and API-facing **Changed** items an app might have polyfilled (`initShell` options, `data-*` attributes, new `initX` APIs, new CSS hooks). Skip bug fixes, demo-only, and docs-only lines. If the range has none, skip this ask.
+2. Ask whether to check the app for local equivalents. Record yes or no; the scan itself runs after sync.
+
+## 4. Protect app-owned files
 
 Sync already refuses to overwrite these (see `framework-manifest.json` → `appOwned`):
 
@@ -43,7 +55,7 @@ Sync already refuses to overwrite these (see `framework-manifest.json` → `appO
 
 Fork-local skills under `.cursor/skills/<other-id>/` are never copied (only catalogue skill ids are). Still merge carefully by hand when boot/chrome HTML in entry pages needs upstream fixes — sync does not rewrite entry HTML.
 
-## 4. Apply upgrade via lock + sync
+## 5. Apply upgrade via lock + sync
 
 ### Path moves (legacy forks)
 
@@ -109,9 +121,21 @@ npm run sync:framework -- --from /path/to/upstream --prune
 - Preserve `__MICROAPP__` / theme key renames the fork already made.
 - Do **not** bump `APP_VERSION` unless the user asks.
 - Missing icon artwork → **`handle-assets`** (`icons-app.js` only).
+- If the user opted in at step 3, fold local workarounds now (below). If they declined or the changelog range had nothing to check, skip.
 
-## 5. Finish
+### Fold local workarounds
+
+Only when the user opted in at step 3:
+
+1. Scan **app-owned** paths (`index.html`, `demo.html`, `app/main.js`, `app/demo.js`, `app/config.js`, `app/styles.css`, `app/css/app.css`, `app/utils/icons-app.js`, `app/res/`) plus other fork-local files under `app/` that are not in the framework catalogue.
+2. Look for the same UX implemented outside the new API: duplicate modules, CSS that hides or restyles the new framework UI, similar `data-*` / option names, custom copy of a shell helper, or comments that the framework lacked the feature.
+3. Present each candidate **individually** (framework API, local files, proposed deletion/switch). Wait for a yes/no on that item before changing it. Do not batch-apply. If unsure it is a match, ask. If the local behaviour is richer than the new API, say so and only migrate when the user accepts the gap.
+4. Apply accepted items only in app-owned / fork-local files. Do not patch hashed catalogue files to preserve a workaround.
+
+Example: changelog adds `initShell({ headingLinks: false })` / `data-no-heading-links`. Local CSS hiding `.heading-link-btn`, a patched `heading-link.js`, or a custom copy-link control is a candidate — switch to the framework opt-out and remove the local code.
+
+## 6. Finish
 
 1. Confirm `FRAMEWORK_VERSION` matches the target (sync merges this into `app/version.js`).
-2. Summarize what changed, agent-file drift, and any remaining manual conflicts for the user.
+2. Summarize what changed, agent-file drift, remaining manual conflicts, and which local workarounds were folded or declined.
 3. Run **`health-check`**.

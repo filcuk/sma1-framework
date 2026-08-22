@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-22T14:18:46.563Z",
+  "generatedAt": "2026-08-22T14:27:52.566Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -1212,7 +1212,7 @@
       "sha256": "348c94a4ca9fda3dbac1f1ed02f631f3d8d0a04bfc78398503830fc805db7098"
     },
     ".cursor/skills/migrate-framework/SKILL.md": {
-      "sha256": "4ec04229009700a2039e99a05496f6024dde99bbb657a396eef378e15684e1c6"
+      "sha256": "b43fc003bb8701cea380b21c6450d92ebe2e19816fb21ac3567c0e79048fce02"
     },
     ".cursor/skills/release-framework/SKILL.md": {
       "sha256": "3e7904d9161006cf6ce7e6519893415ba9c4b5e0a6299b0a2b473346a0e5763e"
