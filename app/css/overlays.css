@@ -73,7 +73,7 @@
   padding: 0 1rem;
   border-radius: 6px;
   font-size: inherit;
-  line-height: 1.5;
+  line-height: 1.25;
   border: 1px solid var(--border);
   overflow: hidden;
 }
@@ -141,7 +141,9 @@
   z-index: 1;
   flex: 1;
   min-width: 0;
-  line-height: 1.5;
+  line-height: 1.25;
+  /* Optical centre with the icon — Latin caps sit low at taller line-heights. */
+  transform: translateY(-0.0625rem);
 }
 
 .banner-warning,
