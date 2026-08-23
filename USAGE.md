@@ -1035,6 +1035,48 @@ Standard height uses `--control-height`. Add `.btn-slim` for the compact `--cont
   data-icon="lines" data-icon-class="btn-icon-svg"></button>
 ```
 
+### Button label flash
+
+In-place **Copy** → **Copied** / **Failed** feedback on labeled buttons. Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional). Icon-only controls should keep using timer `flashTooltip()` instead.
+
+```html
+<button type="button" class="btn btn-label-flash" aria-label="Copy">
+  <span class="btn-label-flash__label">Copy</span>
+</button>
+```
+
+```javascript
+import { copyText } from "./utils/clipboard.js";
+import {
+  prepareButtonLabelFlash,
+  setButtonLabelFlash,
+  flashButtonLabel,
+} from "./utils/button-label.js";
+
+const copyBtn = document.getElementById("copy-btn");
+
+prepareButtonLabelFlash(copyBtn, {
+  idle: "Copy",
+  success: "Copied",
+  fail: "Failed",
+  lockWidth: true, // optional — auto-measure idle/success/fail (+ measureLabels)
+  measureLabels: [], // optional extra states (e.g. "Ctrl+V")
+});
+
+copyBtn.addEventListener("click", async () => {
+  const ok = await copyText("…");
+  flashButtonLabel(copyBtn, ok, {
+    durationMs: 1500,
+    reset: () => {
+      copyBtn.setAttribute("aria-label", "Copy");
+      setButtonLabelFlash(copyBtn, "Copy");
+    },
+  });
+});
+```
+
+`lockWidth` defaults to **off**; enable it when a longer flash label would shift layout. Use `setButtonLabelFlash()` for other temporary labels (e.g. paste-arming **Ctrl+V**). See [`DESIGN.md`](DESIGN.md) (Action feedback).
+
 ### Toggle button
 
 Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/icon swapping. By default the pressed state shows the accent on/off appearance. Add `data-toggle-button-always-active` when both states are equally valid actions rather than on/off: the accent pressed styling is suppressed so the control keeps the default button appearance, and the swapped label/icon describes the **next action** (e.g. Enter fullscreen ↔ Exit fullscreen).

@@ -18,6 +18,12 @@ import {
   showPersistentTooltip,
   dismissPersistentTooltip,
 } from "./components/tooltip.js";
+import { copyText } from "./utils/clipboard.js";
+import {
+  prepareButtonLabelFlash,
+  setButtonLabelFlash,
+  flashButtonLabel,
+} from "./utils/button-label.js";
 import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
 import { initFileDropzone } from "./components/file-dropzone.js";
@@ -350,6 +356,29 @@ document.getElementById("demo-tooltip-flash-error")?.addEventListener("click", (
   const btn = e.currentTarget;
   if (!(btn instanceof HTMLElement)) return;
   flashTooltip(btn, { text: "Failed to copy", tone: "error" });
+});
+
+async function demoLabelFlashClick(button) {
+  if (!(button instanceof HTMLButtonElement)) return;
+  const ok = await copyText("demo");
+  flashButtonLabel(button, ok, {
+    reset: () => {
+      button.setAttribute("aria-label", "Copy");
+      setButtonLabelFlash(button, "Copy");
+    },
+  });
+}
+
+const demoLabelFlashShift = document.getElementById("demo-label-flash-shift");
+const demoLabelFlashFixed = document.getElementById("demo-label-flash-fixed");
+demoLabelFlashShift?.setAttribute("aria-label", "Copy");
+demoLabelFlashFixed?.setAttribute("aria-label", "Copy");
+prepareButtonLabelFlash(demoLabelFlashFixed, { idle: "Copy", lockWidth: true });
+demoLabelFlashShift?.addEventListener("click", (e) => {
+  void demoLabelFlashClick(e.currentTarget);
+});
+demoLabelFlashFixed?.addEventListener("click", (e) => {
+  void demoLabelFlashClick(e.currentTarget);
 });
 
 /** @type {string | null} */

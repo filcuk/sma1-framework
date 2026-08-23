@@ -68,6 +68,7 @@ export const CORE = {
     "app/utils/dom.js",
     "app/utils/document-listeners.js",
     "app/utils/clipboard.js",
+    "app/utils/button-label.js",
     "app/utils/icons.js",
     "app/utils/icons-framework.js",
     "app/utils/brand-icon.js",
@@ -96,6 +97,7 @@ export const INFRA = {
   dom: ["app/utils/dom.js"],
   "document-listeners": ["app/utils/document-listeners.js"],
   clipboard: ["app/utils/clipboard.js"],
+  "button-label": ["app/utils/button-label.js"],
   color: ["app/utils/color.js"],
   icons: ["app/utils/icons.js", "app/utils/icons-framework.js"],
   menu: ["app/utils/menu.js"],
@@ -413,7 +415,7 @@ export const COMPONENTS = {
     css: ["code-block.css"],
     vendor: ["app/vendor/prism/", "app/prism.css"],
     icons: ["clear", "copy", "paste", "lines", "highlight", "fullscreen"],
-    infra: ["dom", "clipboard", "icons"],
+    infra: ["dom", "clipboard", "button-label", "icons"],
   },
   "expandable-surface": {
     files: ["app/components/expandable-surface.js"],
@@ -443,7 +445,7 @@ export const COMPONENTS = {
       "chevron-up",
       "chevron-down",
     ],
-    infra: ["dom", "document-listeners", "menu", "icons", "clipboard"],
+    infra: ["dom", "document-listeners", "menu", "icons", "clipboard", "button-label"],
   },
   "rich-text-editor": {
     files: [

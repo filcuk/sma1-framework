@@ -189,3 +189,12 @@ a.btn.btn-danger:hover {
   background: transparent;
 }
 
+/* In-place label flash (Copy → Copied) — pair with button-label.js helpers */
+.btn-label-flash {
+  gap: 0.375rem;
+}
+
+.btn-label-flash__label {
+  line-height: 1;
+}
+

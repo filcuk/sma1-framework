@@ -19,6 +19,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
 - `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
+- Button label flash helpers ([`app/utils/button-label.js`](app/utils/button-label.js)): `.btn-label-flash` + `prepareButtonLabelFlash()` / `flashButtonLabel()` for in-place Copy → Copied feedback; optional `lockWidth` auto-measure (default off). Code block and tabular input labeled clipboard actions use this pattern.
 
 ## [0.12.3] - 2026-08-19
 

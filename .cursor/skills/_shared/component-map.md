@@ -12,7 +12,7 @@ When trimming: delete a feature’s JS only if unused; remove a **shared** CSS p
 | ---- | ----- |
 | Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/framework.css` (generated index), `app/css/app.css` (fork-owned) |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js` |
-| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js` |
+| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js` |
 | Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js` (imported by `shell.js`) |
 | Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
 | Brand | `app/res/` logos as wired in HTML / `__MICROAPP__` |
@@ -87,10 +87,10 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | file-dropzone | `app/components/file-dropzone.js` | `controls-file.css` | — | Markup: `upload`; JS: `error` | `dom`, `icons` | |
 | file-download | `app/components/file-download.js` | `controls-file.css` | — | `download` | `icons` | |
 | image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`, `sanitize-svg`; download uses `file-download`; maximise: expandable-surface | Checkerboard host; `setSvg` (sanitized) / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
-| code-block | `app/components/code-block.js` | `code-block.css` | `app/vendor/prism/`, `app/prism.css` | `clear`, `copy`, `paste`, `lines`, `highlight`, `fullscreen` | `dom`, `clipboard`, `icons` | Load Prism scripts on the page |
+| code-block | `app/components/code-block.js` | `code-block.css` | `app/vendor/prism/`, `app/prism.css` | `clear`, `copy`, `paste`, `lines`, `highlight`, `fullscreen` | `dom`, `clipboard`, `button-label`, `icons` | Load Prism scripts on the page |
 | expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
 | table | `app/components/table.js` | `table.css` | — | `chevron-up` (sort) | `dom`, `icons` | |
-| tabular-input | `app/components/tabular-input.js` | `controls-tabular-input.css` | — | `copy`, `paste`, `paste-special`, `plus`, `delete`, `remove`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `menu`, `icons`, `clipboard`; closes `tooltip` | |
+| tabular-input | `app/components/tabular-input.js` | `controls-tabular-input.css` | — | `copy`, `paste`, `paste-special`, `plus`, `delete`, `remove`, `chevron-up`, `chevron-down` | `dom`, `document-listeners`, `menu`, `icons`, `clipboard`, `button-label`; closes `tooltip` | |
 | rich-text-editor | `app/components/rich-text-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control; owns Toast UI global access (no separate seam file) |
 | charts | `app/components/charts.js` | `controls-charts.css` | `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` | — | `config` | Thin `mountChart` host; import map for `d3-scale` / `d3-shape` when using `barY` / `barX`; forks author `defineChart` |
 | diagram | `app/components/diagram.js` | `controls-diagram.css` | `app/vendor/mermaid/` | — | `config`, `dom` | Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark |

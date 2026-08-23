@@ -8,7 +8,7 @@ Aesthetics follow a GitHub-inspired palette (based on [pqm-stepper](https://gith
 
 When a control reacts to a user action (copy succeeded, save failed, and similar):
 
-1. **Default — in-place** on the control when it can show the outcome itself (e.g. labeled **Copy** → **Copied** / **Failed** for a short duration). Prefer this over a reaction tooltip.
+1. **Default — in-place** on the control when it can show the outcome itself (e.g. labeled **Copy** → **Copied** / **Failed** for a short duration). Use [`flashButtonLabel()`](app/utils/button-label.js) with `.btn-label-flash` for labeled buttons; prefer this over a reaction tooltip.
 2. **Fallback — timer tooltip** when in-place is not practical (icon-only controls such as the floating code-block copy button). Use success/error tones with check / × icons.
 3. **When requested — banner** for page-level or persistent status messaging.
 

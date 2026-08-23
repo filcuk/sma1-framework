@@ -47,18 +47,10 @@
   border-top: 1px solid var(--border);
 }
 
-.code-block-toolbar__btn--labeled {
-  gap: 0.4rem;
-}
-
 .code-block-toolbar__btn--labeled .btn-icon-svg {
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
-}
-
-.code-block-toolbar__label {
-  line-height: 1;
 }
 
 .code-block-body {
