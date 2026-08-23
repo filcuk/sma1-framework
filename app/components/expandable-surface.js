@@ -27,9 +27,22 @@ function onOverlayKeydown(event) {
  *   expandBtn: HTMLButtonElement | null,
  *   label: string,
  *   previouslyFocused: Element | null,
+ *   scrollX: number,
+ *   scrollY: number,
  *   onSurfaceClick: (event: Event) => void,
  * }} ExpandSession
  */
+
+/**
+ * Moving the surface in/out of the overlay changes page height and can shift
+ * scroll anchoring; restoring focus can also scroll the trigger into view.
+ * @param {{ scrollX: number, scrollY: number }} pos
+ */
+function restoreScrollPos(pos) {
+  if (window.scrollX !== pos.scrollX || window.scrollY !== pos.scrollY) {
+    window.scrollTo(pos.scrollX, pos.scrollY);
+  }
+}
 
 function ensureOverlay() {
   if (overlayEl) return;
@@ -157,10 +170,13 @@ function openSurface(session) {
   const { surface, placeholder, label } = session;
   if (!surface.parentNode) return;
 
+  session.scrollX = window.scrollX;
+  session.scrollY = window.scrollY;
+  session.previouslyFocused = document.activeElement;
+
   surface.parentNode.insertBefore(placeholder, surface);
   stageEl.appendChild(surface);
 
-  session.previouslyFocused = document.activeElement;
   activeSession = session;
 
   surface.classList.add("is-expanded");
@@ -171,6 +187,7 @@ function openSurface(session) {
   document.body.classList.add("expandable-surface-open");
   setPageInert(true);
 
+  restoreScrollPos(session);
   overlayEl.focus({ preventScroll: true });
   closeTooltip();
 }
@@ -194,8 +211,9 @@ function closeActive() {
   document.body.classList.remove("expandable-surface-open");
   setPageInert(false);
 
+  restoreScrollPos(session);
   if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
-    previouslyFocused.focus();
+    previouslyFocused.focus({ preventScroll: true });
   }
 
   closeTooltip();
@@ -290,6 +308,8 @@ export function initExpandableSurface(surface) {
     expandBtn,
     label,
     previouslyFocused: null,
+    scrollX: 0,
+    scrollY: 0,
     onSurfaceClick: (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
