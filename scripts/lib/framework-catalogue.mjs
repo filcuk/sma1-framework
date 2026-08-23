@@ -122,8 +122,8 @@ export const COMPONENTS = {
     files: ["app/components/banner.js"],
     css: ["overlays.css"],
     vendor: [],
-    icons: ["note", "info", "success", "important", "warning", "error"],
-    infra: ["dom"],
+    icons: ["note", "info", "success", "important", "warning", "error", "help", "experiment", "format-quote", "tip"],
+    infra: ["dom", "icons"],
     always: true,
   },
   dialog: {

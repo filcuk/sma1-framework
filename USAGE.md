@@ -500,7 +500,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
 | **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
-| **Banners** | `.banner.banner-*` variants with `data-icon`. Optional auto-hide via `data-banner-expire` (ms) and [`app/banner.js`](app/banner.js) (`showBanner` / `hideBanner`). Expire overlay + fade-out. |
+| **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/banner.js`](app/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
 | **Callouts** | `.callout` accent-edged tip cards for standing information (CSS-only). See **Callouts** under Using components. |
 | **Code blocks** | `.code-block` with Prism highlighting, configurable toolbar (top/bottom/none), hover copy/maximise, view/select/edit modes. [`app/code-block.js`](app/code-block.js). |
 | **Expandable surface** | Maximize code blocks or textareas to page width. [`app/expandable-surface.js`](app/expandable-surface.js). |
@@ -826,7 +826,35 @@ Escape closes the active tutorial (priority above dialogs). See [`DESIGN.md`](DE
 
 Markup uses `.banner` plus a variant (`banner-success`, `banner-error`, …) and a `data-icon` for the left icon.
 
+**Style variations** reuse an existing banner palette with a different semantic class and icon:
+
+| Variation class | Reuses style of | Icon id |
+| --------------- | --------------- | ------- |
+| `banner-question` | `banner-warning` | `help` |
+| `banner-example` | `banner-important` | `experiment` |
+| `banner-quote` | `banner-note` | `format-quote` |
+| `banner-tip` | `banner-success` | `tip` |
+
 Auto-hide after a delay — set `data-banner-expire` (milliseconds) and call `showBanner()`. A light overlay drains across the banner for the duration of the timeout, then the banner fades out quickly.
+
+**Rotating variations** — list ids on `data-banner-variations` (space- or comma-separated). The first id matches the visible markup; additional variations live in hidden source nodes. With `data-banner-rotate`, expiry advances to the next variation and restarts the timer instead of hiding (loops when there are two or more).
+
+```html
+<div id="status-banner" class="banner banner-warning hidden" role="status" hidden
+  data-banner-expire="3000" data-banner-rotate data-banner-variations="warning question">
+  <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg"></span>
+  <span class="banner-body"><strong class="banner-body-label">Warning:</strong> non-blocking notice.</span>
+  <div class="banner-variation-source" data-banner-variation="question"
+    data-banner-class="banner-question" hidden>
+    <span data-banner-variation-icon="help"></span>
+    <span data-banner-variation-body>
+      <strong class="banner-body-label">Question:</strong> something to decide.
+    </span>
+  </div>
+</div>
+```
+
+Single-variation auto-hide:
 
 ```html
 <div id="saved-banner" class="banner banner-success hidden" role="status" hidden
@@ -837,10 +865,11 @@ Auto-hide after a delay — set `data-banner-expire` (milliseconds) and call `sh
 ```
 
 ```javascript
-import { showBanner, hideBanner } from "./components/banner.js";
+import { showBanner, hideBanner, setBannerVariation } from "./components/banner.js";
 
 showBanner(document.getElementById("saved-banner"));
 // or override: showBanner(el, { expire: 3000 });
+setBannerVariation(el, "question");
 hideBanner(el);
 ```
 

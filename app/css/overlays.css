@@ -144,7 +144,8 @@
   line-height: 1.5;
 }
 
-.banner-warning {
+.banner-warning,
+.banner-question {
   background: var(--banner-warn-bg);
   color: var(--banner-warn-text);
   border-color: var(--banner-warn-border);
@@ -162,22 +163,29 @@
   border-color: var(--banner-info-border);
 }
 
-.banner-success {
+.banner-success,
+.banner-tip {
   background: var(--banner-success-bg);
   color: var(--banner-success-text);
   border-color: var(--banner-success-border);
 }
 
-.banner-note {
+.banner-note,
+.banner-quote {
   background: var(--banner-note-bg);
   color: var(--banner-note-text);
   border-color: var(--banner-note-border);
 }
 
-.banner-important {
+.banner-important,
+.banner-example {
   background: var(--banner-important-bg);
   color: var(--banner-important-text);
   border-color: var(--banner-important-border);
+}
+
+.banner-variation-source {
+  display: none;
 }
 
 /* Tooltips */

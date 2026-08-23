@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-23T07:43:20.167Z",
+  "generatedAt": "2026-08-23T08:58:22.282Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -36,7 +36,7 @@
       "sha256": "ddbde42721c3f3f439c0e80493eb2857211c918249dd971149d8d10d3aea01d7"
     },
     "app/components/banner.js": {
-      "sha256": "715504dbfb0448c1a88d3752ef922ef8d818c0e722138d1a146b3ce85863dadc"
+      "sha256": "99c871066b4c9552114572e51bc2a48930224af9192e14fcb901c6ed22938b50"
     },
     "app/components/charts.js": {
       "sha256": "f0b5a1d826940dbbf6ffa14bbd9c6c606b9e5835349c59d81f19f9082db936cc"
@@ -249,7 +249,7 @@
       "sha256": "2ca533dc2b7d390f49af8e5243c0abc60cad97fa9eeadff98ed7529570dfe66d"
     },
     "app/css/overlays.css": {
-      "sha256": "f5e690965a7ee2569e85bcdcb31f86c872930a8ebbff9ccecb55cd67837530c2"
+      "sha256": "aec74f9101b774e79f754dbb24a6594b5bbb7b6b678208a3756955778e700a32"
     },
     "app/css/rich-text-editor.css": {
       "sha256": "d111287589509fc59852cbf4f7d4d249a39a49b03424bc6e40d1813adbfeaabc"
@@ -318,7 +318,7 @@
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "f5ce4b9e680d2b428d33a7625edf2b0865661b3a13a3278e3d136e76d4f71202"
+      "sha256": "b5e72f86da466f6436df7d90b3a33aecca97921bd4db87e02193a8962e000be3"
     },
     "app/utils/icons.js": {
       "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
@@ -1179,7 +1179,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "0026c6aa5be2395e0a7549961421b5afd21d2bdcac56568a5f001d172b91483f"
+      "sha256": "3dcd45854b8fba4b70bc0679d31220e9b494ecd785c67abbce2ef704a231a023"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -1326,10 +1326,15 @@
         "success",
         "important",
         "warning",
-        "error"
+        "error",
+        "help",
+        "experiment",
+        "format-quote",
+        "tip"
       ],
       "infra": [
-        "dom"
+        "dom",
+        "icons"
       ],
       "always": true
     },

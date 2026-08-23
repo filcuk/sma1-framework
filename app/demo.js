@@ -12,7 +12,7 @@ import { initAccordion } from "./components/accordion.js";
 import { initTabs } from "./components/tabs.js";
 import { initCodeBlocks } from "./components/code-block.js";
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
-import { showBanner } from "./components/banner.js";
+import { showBanner, hideBanner } from "./components/banner.js";
 import {
   flashTooltip,
   showPersistentTooltip,
@@ -528,6 +528,13 @@ const bannerIds = [
   "demo-error-banner",
 ];
 
+const rotatingBannerIds = new Set([
+  "demo-note-banner",
+  "demo-success-banner",
+  "demo-important-banner",
+  "demo-warning-banner",
+]);
+
 const bannerTriggers = [
   ["trigger-note-banner", "demo-note-banner"],
   ["trigger-info-banner", "demo-info-banner"],
@@ -546,6 +553,9 @@ function getBannerElements() {
 }
 
 function showBannerBriefly(bannerEl) {
+  if (rotatingBannerIds.has(bannerEl.id)) {
+    hideBanner(bannerEl);
+  }
   showBanner(bannerEl, { expire: BANNER_TRIGGER_EXPIRE_MS });
 }
 
@@ -565,6 +575,12 @@ document.getElementById("trigger-all-banners")?.addEventListener("click", () => 
 
 document.getElementById("reset-banners")?.addEventListener("click", () => {
   for (const banner of getBannerElements()) {
+    hideBanner(banner);
     showBanner(banner);
   }
 });
+
+for (const bannerId of rotatingBannerIds) {
+  const bannerEl = document.getElementById(bannerId);
+  if (bannerEl) showBanner(bannerEl);
+}

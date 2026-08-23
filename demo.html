@@ -943,25 +943,45 @@
               </div>
             </div>
             <div class="demo-banner-stack">
-              <div id="demo-note-banner" class="banner banner-note" role="note">
+              <div id="demo-note-banner" class="banner banner-note" role="note"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="note quote">
                 <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Note:</strong> supplementary detail that is easy to skim past.</span>
+                <div class="banner-variation-source" data-banner-variation="quote" data-banner-class="banner-quote" hidden>
+                  <span data-banner-variation-icon="format-quote"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Quote:</strong> cited text or attribution worth highlighting.</span>
+                </div>
               </div>
               <div id="demo-info-banner" class="banner banner-info" role="status">
                 <span class="banner-icon" data-icon="info" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Info:</strong> neutral guidance or context.</span>
               </div>
-              <div id="demo-success-banner" class="banner banner-success" role="status">
+              <div id="demo-success-banner" class="banner banner-success" role="status"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="success tip">
                 <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Success:</strong> completed actions or positive outcomes.</span>
+                <div class="banner-variation-source" data-banner-variation="tip" data-banner-class="banner-tip" hidden>
+                  <span data-banner-variation-icon="tip"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Tip:</strong> a helpful shortcut or best practice.</span>
+                </div>
               </div>
-              <div id="demo-important-banner" class="banner banner-important" role="status">
+              <div id="demo-important-banner" class="banner banner-important" role="status"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="important example">
                 <span class="banner-icon" data-icon="important" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Important:</strong> high-priority messages.</span>
+                <div class="banner-variation-source" data-banner-variation="example" data-banner-class="banner-example" hidden>
+                  <span data-banner-variation-icon="experiment"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Example:</strong> a sample scenario or walkthrough.</span>
+                </div>
               </div>
-              <div id="demo-warning-banner" class="banner banner-warning" role="status">
+              <div id="demo-warning-banner" class="banner banner-warning" role="status"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="warning question">
                 <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Warning:</strong> non-blocking notices.</span>
+                <div class="banner-variation-source" data-banner-variation="question" data-banner-class="banner-question" hidden>
+                  <span data-banner-variation-icon="help"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Question:</strong> something the reader may need to decide.</span>
+                </div>
               </div>
               <div id="demo-error-banner" class="banner banner-error" role="alert">
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg"></span>

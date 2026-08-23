@@ -15,6 +15,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
 - `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
 
