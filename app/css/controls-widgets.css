@@ -175,6 +175,8 @@
   align-items: stretch;
   gap: 2px;
   max-width: 100%;
+  height: var(--control-height);
+  min-height: var(--control-height);
   padding: 2px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -186,10 +188,18 @@
   width: 100%;
 }
 
+.segmented-control--slim .segmented-control-list {
+  height: auto;
+  min-height: 0;
+}
+
 .segmented-control-item {
   flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
-  padding: calc(0.35rem - 1px) calc(0.875rem - 1px);
+  padding: 0 calc(0.875rem - 1px);
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
@@ -203,6 +213,10 @@
   white-space: nowrap;
   transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out,
     color var(--control-hover-ms) ease-out;
+}
+
+.segmented-control--slim .segmented-control-item {
+  padding: calc(0.35rem - 1px) calc(0.875rem - 1px);
 }
 
 .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]) {

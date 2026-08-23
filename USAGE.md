@@ -482,7 +482,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Duration input** | Segmented hours:minutes (optional seconds) field with the shared popup in duration mode. [`app/components/duration-input.js`](app/components/duration-input.js). |
 | **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) cycles off → on → mixed. [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
-| **Segmented control** | Toggle button group for single selection; optional linked panels. [`app/segmented-control.js`](app/segmented-control.js). |
+| **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
 | **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/progress-indicator.js`](app/progress-indicator.js). |
 | **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, and leading `.dropdown-menu-item-icon-wrap` icons. Behaviour from [`app/dropdown.js`](app/dropdown.js). |
 | **Toggle dropdown** | Multi-select dropdown; items toggle with `aria-checked`, menu stays open; selection count via badge. [`app/components/dropdown-toggle.js`](app/components/dropdown-toggle.js). |
@@ -2239,7 +2239,7 @@ initToggles(document); // all `.toggle` blocks
 
 Toggle button group for switching between a small set of options or views — like radio buttons in a joined control. Items use `role="radio"` and `aria-checked`; a hidden `.segmented-control-value` stores the selected value for forms.
 
-Add `.segmented-control--full` on the root to stretch the track to the field width. Optionally pair items with panels via `aria-controls` (same pattern as tabs).
+Default height matches `.btn` (`--control-height`). Add `.segmented-control--slim` for the compact size. Add `.segmented-control--full` on the root to stretch the track to the field width. Optionally pair items with panels via `aria-controls` (same pattern as tabs).
 
 ```html
 <div class="segmented-control segmented-control--full" id="my-segmented" data-segmented-control-default="list">
@@ -2250,6 +2250,21 @@ Add `.segmented-control--full` on the root to stretch the track to the field wid
       data-segmented-control-value="grid">Grid</button>
     <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
       data-segmented-control-value="map">Map</button>
+  </div>
+  <input type="hidden" class="segmented-control-value" name="view" value="list" />
+</div>
+```
+
+Compact (previous default) size:
+
+```html
+<div class="segmented-control segmented-control--slim" id="my-segmented-slim"
+  data-segmented-control-default="list">
+  <div class="segmented-control-list" role="radiogroup" aria-label="View mode">
+    <button type="button" class="segmented-control-item" role="radio" aria-checked="true"
+      data-segmented-control-value="list">List</button>
+    <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
+      data-segmented-control-value="grid">Grid</button>
   </div>
   <input type="hidden" class="segmented-control-value" name="view" value="list" />
 </div>
@@ -2863,7 +2878,7 @@ initRichTextEditors(document); // every `.rich-text-editor` with a mount node
 
 Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/theme.js`](app/theme.js).
 
-Markdown ↔ WYSIWYG uses the framework [segmented control](#segmented-control) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use framework [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
+Markdown ↔ WYSIWYG uses the framework [segmented control](#segmented-control) (`.segmented-control--slim`) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use framework [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
 
 ### Charts (TanStack Charts)
 

@@ -113,7 +113,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initChipGroup()` / `initChipGroups()` | Selectable filter chips (toggle pressed; not removable) |
 | `initChipInput()` / `initChipInputs()` | Text field that adds removable chips |
 | `initLegend()` / `initLegends()` | Coloured legend chips (optional toggle; slots `--1`…`--8` or `--legend-color`) |
-| `initSegmentedControl()` / `initSegmentedControls()` | Segmented control (toggle button group) |
+| `initSegmentedControl()` / `initSegmentedControls()` | Segmented control (toggle button group); optional `.segmented-control--slim` |
 | `initPagination()` / `initPaginations()` | Client-side pagination (numbered pages, no URL change) |
 | `initTable()` / `initTables()` | Data table with optional sortable columns (Shift+click multi-sort) and row selection |
 | `initTabularInput()` / `initTabularInputs()` | Editable typed grid; paste; reset; add/remove rows and columns; rename / type |

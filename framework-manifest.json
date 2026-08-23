@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-22T14:27:52.566Z",
+  "generatedAt": "2026-08-23T07:43:20.167Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -126,7 +126,7 @@
       "sha256": "9b3f0ac0631f11ea21fd3b998de9bd1d33115e437860f3456171a3a070bde437"
     },
     "app/components/expandable-surface.js": {
-      "sha256": "3959fb2b66ade2f81fed6ab7e90713b929242a54239e66c8577b3cf6eb3f7660"
+      "sha256": "568a84db76db965ffbd092f6ee6706969302d140e8a82f939cf14977e07182f2"
     },
     "app/components/file-download.js": {
       "sha256": "a059ed3f44f61a53fd7035688f0cac0796050e240645caeca6d65a8232d32b81"
@@ -153,10 +153,10 @@
       "sha256": "d757d5234d16110d89136612ae8c51078500fdb60d67bc98386e2677f32172b5"
     },
     "app/components/rich-text-editor.js": {
-      "sha256": "8104c59225e70bb285e5b3a306f46fbafcd94a20f4251958a0ab153a6c02a295"
+      "sha256": "8f6c491c0dc9bd7257761cc8c796271ae6d441a994e14d210b76317206d1de76"
     },
     "app/components/segmented-control.js": {
-      "sha256": "da46f5c892bb605f92e385cd7037281b70d9c4323876c4ff725007172d2151ef"
+      "sha256": "a47c40e4063c9e60ed6b0db6eccb77954bb11557cfbbc0e2a70548edcae41af6"
     },
     "app/components/slider.js": {
       "sha256": "d33e0abe0f79cd9ccd1498bb17e2a1fd4cf7c361f33c565996beb2bb90a14941"
@@ -243,7 +243,7 @@
       "sha256": "d4b0ccfdf46e566813bfcd1fa4e2b5a060a3d18e4f8abcc975753bd79dc5b2bd"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "37cd4a0203dd05919821e873eae87cb4873022196cfe97572b47826bb5ed9b3b"
+      "sha256": "e369e5a146fc46215e910feb97cabab8ca1fff1300c0359d383faedf584a8d41"
     },
     "app/css/layout.css": {
       "sha256": "2ca533dc2b7d390f49af8e5243c0abc60cad97fa9eeadff98ed7529570dfe66d"

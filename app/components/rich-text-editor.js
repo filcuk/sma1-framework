@@ -113,7 +113,7 @@ function createModeSwitch(defaultValue) {
   wrap.className = "rich-text-editor-mode";
 
   const control = document.createElement("div");
-  control.className = "segmented-control";
+  control.className = "segmented-control segmented-control--slim";
   control.dataset.segmentedControlDefault = defaultValue;
 
   const list = document.createElement("div");

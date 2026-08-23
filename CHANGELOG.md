@@ -11,6 +11,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 ### Changed
 
 - Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).
+- Segmented control default height matches standard buttons (`--control-height`); add `.segmented-control--slim` for the previous compact size.
 
 ### Added
 
