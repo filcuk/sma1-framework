@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import { computePopoverPlacement } from "../app/components/popover.js";
 import {
   clampTutorialIndex,
+  describeTutorialTarget,
+  formatTutorialMissingTargetMessage,
   normalizeTutorialSteps,
 } from "../app/components/tutorial.js";
 
@@ -116,6 +118,49 @@ test("normalizeTutorialSteps fills defaults and accepts advanceOn click", () => 
   assert.equal(step.advanceOn, "click");
   assert.equal(step.padding, 16);
   assert.equal(step.scroll, true);
+});
+
+test("describeTutorialTarget labels selectors, functions, and elements", () => {
+  assert.equal(describeTutorialTarget("#save-btn"), "#save-btn");
+  assert.equal(describeTutorialTarget(() => null), "[function target]");
+  assert.equal(describeTutorialTarget(null), "(none)");
+
+  const el = { tagName: "BUTTON", id: "save", getAttribute: () => null };
+  assert.equal(describeTutorialTarget(el), "#save");
+});
+
+test("formatTutorialMissingTargetMessage describes skip, stop, and disconnect", () => {
+  const step = { target: "#missing", title: "Save" };
+
+  assert.match(
+    formatTutorialMissingTargetMessage({
+      id: "getting-started",
+      index: 1,
+      step,
+      outcome: "skip-forward",
+    }),
+    /\[tutorial:getting-started\] Missing target for "Save" \(#missing\); skipping forward\./,
+  );
+
+  assert.match(
+    formatTutorialMissingTargetMessage({
+      id: "getting-started",
+      index: 1,
+      step,
+      outcome: "stop",
+    }),
+    /no reachable step — stopping tour\./,
+  );
+
+  assert.match(
+    formatTutorialMissingTargetMessage({
+      id: "getting-started",
+      index: 1,
+      step,
+      outcome: "disconnected",
+    }),
+    /is no longer in the document; advancing forward\./,
+  );
 });
 
 test("normalizeTutorialSteps ignores unknown position and non-click advanceOn", () => {

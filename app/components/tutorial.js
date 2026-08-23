@@ -129,6 +129,70 @@ export function resolveTutorialTarget(target) {
 }
 
 /**
+ * Short label for a step target ref (selectors, elements, resolvers).
+ * @param {NormalizedTutorialStep["target"]} target
+ * @returns {string}
+ */
+export function describeTutorialTarget(target) {
+  if (target === null || target === undefined || target === "") return "(none)";
+  if (typeof target === "string") return target;
+  if (typeof target === "function") return "[function target]";
+  if (
+    target &&
+    typeof target === "object" &&
+    typeof target.tagName === "string"
+  ) {
+    const el = /** @type {HTMLElement} */ (target);
+    if (el.id) return `#${el.id}`;
+    const name = el.getAttribute?.("name");
+    if (name) return `${el.tagName.toLowerCase()}[name="${name}"]`;
+    return `<${el.tagName.toLowerCase()}>`;
+  }
+  return String(target);
+}
+
+/**
+ * @param {{
+ *   id?: string,
+ *   index: number,
+ *   step: Pick<NormalizedTutorialStep, "target" | "title">,
+ *   outcome: "skip-forward" | "skip-backward" | "stop" | "disconnected",
+ * }} options
+ * @returns {string}
+ */
+export function formatTutorialMissingTargetMessage(options) {
+  const { id = "tutorial", index, step, outcome } = options;
+  const stepLabel = step.title ? `"${step.title}"` : `step ${index + 1}`;
+  const targetLabel = describeTutorialTarget(step.target);
+  const prefix = `[tutorial:${id}]`;
+
+  switch (outcome) {
+    case "skip-forward":
+      return `${prefix} Missing target for ${stepLabel} (${targetLabel}); skipping forward.`;
+    case "skip-backward":
+      return `${prefix} Missing target for ${stepLabel} (${targetLabel}); skipping backward.`;
+    case "disconnected":
+      return `${prefix} Target for ${stepLabel} (${targetLabel}) is no longer in the document; advancing forward.`;
+    case "stop":
+    default:
+      return `${prefix} Missing target for ${stepLabel} (${targetLabel}); no reachable step — stopping tour.`;
+  }
+}
+
+/**
+ * Log a missing-target problem to the console (`warn`, or `error` when stopping).
+ * @param {Parameters<typeof formatTutorialMissingTargetMessage>[0]} options
+ */
+export function reportTutorialMissingTarget(options) {
+  const message = formatTutorialMissingTargetMessage(options);
+  if (options.outcome === "stop") {
+    console.error(message);
+  } else {
+    console.warn(message);
+  }
+}
+
+/**
  * @param {string} template
  * @param {number} index
  * @param {number} total
@@ -600,9 +664,21 @@ export function initTutorial(options) {
         const nextIndex = direction === "backward" ? i - 1 : i + 1;
         const clamped = clampTutorialIndex(nextIndex, steps.length);
         if (clamped === i || clamped < 0) {
+          reportTutorialMissingTarget({
+            id,
+            index: i,
+            step,
+            outcome: "stop",
+          });
           stop({ reason: "missing-target" });
           return;
         }
+        reportTutorialMissingTarget({
+          id,
+          index: i,
+          step,
+          outcome: direction === "backward" ? "skip-backward" : "skip-forward",
+        });
         i = clamped;
         continue;
       }
@@ -645,6 +721,12 @@ export function initTutorial(options) {
       return;
     }
 
+    reportTutorialMissingTarget({
+      id,
+      index: clampTutorialIndex(index, steps.length),
+      step: steps[i] ?? { target: null, title: "" },
+      outcome: "stop",
+    });
     stop({ reason: "missing-target" });
   }
 
@@ -658,6 +740,12 @@ export function initTutorial(options) {
       step.target !== "" &&
       !target
     ) {
+      reportTutorialMissingTarget({
+        id,
+        index: stepIndex,
+        step,
+        outcome: "disconnected",
+      });
       showStep(stepIndex + 1, "forward");
       return;
     }

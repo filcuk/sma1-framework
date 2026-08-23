@@ -819,6 +819,9 @@ tour?.start(); // or rely on startTriggers
 | `advanceOn` | `"click"` — advance when the interactive target is clicked |
 | `padding` | Spotlight padding around the target (px) |
 | `scroll` | Scroll the target into view before opening the step popover (default `true`) |
+| `onEnter` / `onLeave` | Optional callbacks when a step is shown or left — use to reset pagination, tabs, etc. before the next target is resolved |
+
+Steps whose `target` cannot be resolved log a **console warning** and are skipped; if no step can be shown the tour logs a **console error** and stops (`onFinish` reason `missing-target`). If the current target leaves the document during the tour (scroll/resize), a warning is logged and the tour advances forward.
 
 Escape closes the active tutorial (priority above dialogs). See [`DESIGN.md`](DESIGN.md) for when to prefer a tutorial vs a persistent tooltip. Demo: [`demo.html`](demo.html).
 
