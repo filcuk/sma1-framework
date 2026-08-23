@@ -298,6 +298,23 @@ li:not(:first-child) > .dropdown-menu-group {
   white-space: normal;
 }
 
+/* Equal row height: stretch each link cell to the tallest item in the row. */
+.dropdown-menu.dropdown-menu--grid > li:has(> .dropdown-menu-item) {
+  display: flex;
+  min-width: 0;
+}
+
+.dropdown-menu.dropdown-menu--grid > li:has(> .dropdown-menu-item) > .dropdown-menu-item {
+  flex: 1;
+  align-self: stretch;
+}
+
+.dropdown-menu.dropdown-menu--grid
+  > li:has(> .dropdown-menu-item:is(a, button))
+  > .dropdown-menu-item:has(.dropdown-menu-item-icon-wrap) {
+  align-items: center;
+}
+
 /* Per-cell selection in grid mode (contiguous-run joining is list-only). */
 .dropdown-menu.dropdown-menu--grid .dropdown-menu-item.is-selected,
 .dropdown-menu.dropdown-menu--grid .dropdown-menu-item[aria-checked="true"] {

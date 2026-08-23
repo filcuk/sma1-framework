@@ -751,28 +751,29 @@ export function alsoSeeMenuColumns(sections) {
 /**
  * @param {AlsoSeeSection} section
  * @param {number} startIndex
+ * @param {{ isFirstSection?: boolean }} [options]
  * @returns {{ markup: string, nextIndex: number }}
  */
-function renderAlsoSeeTopic(section, startIndex) {
+function renderAlsoSeeTopic(section, startIndex, { isFirstSection = false } = {}) {
   let index = startIndex;
   const linksMarkup = section.items
     .map((link) => renderAlsoSeeLinkItem(link, index++))
     .join("");
 
   if (!section.topic) {
+    const breakMarkup = isFirstSection
+      ? ""
+      : `<li role="presentation" class="footer-also-see-section-break" aria-hidden="true"></li>`;
     return {
-      markup: `<li class="footer-also-see-topic footer-also-see-topic--ungrouped" role="presentation">
-          <ul class="footer-also-see-topic-links">${linksMarkup}</ul>
-        </li>`,
+      markup: `${breakMarkup}${linksMarkup}`,
       nextIndex: index,
     };
   }
 
   return {
-    markup: `<li class="footer-also-see-topic" role="group" aria-label="${escapeAttr(section.topic)}">
-          <div class="footer-also-see-topic-label">${escapeText(section.topic)}</div>
-          <ul class="footer-also-see-topic-links">${linksMarkup}</ul>
-        </li>`,
+    markup: `<li role="presentation">
+          <div class="dropdown-menu-group">${escapeText(section.topic)}</div>
+        </li>${linksMarkup}`,
     nextIndex: index,
   };
 }
@@ -788,8 +789,10 @@ export function renderAlsoSeeMarkup(sections) {
   const filled = sections.filter((section) => section.items.length > 0);
   const columns = alsoSeeMenuColumns(filled);
   const topicsMarkup = filled
-    .map((section) => {
-      const rendered = renderAlsoSeeTopic(section, index);
+    .map((section, sectionIndex) => {
+      const rendered = renderAlsoSeeTopic(section, index, {
+        isFirstSection: sectionIndex === 0,
+      });
       index = rendered.nextIndex;
       return rendered.markup;
     })
@@ -799,7 +802,7 @@ export function renderAlsoSeeMarkup(sections) {
         <span>find
           <span class="footer-also-see dropdown" id="footer-also-see">
             <button type="button" class="footer-also-see-trigger" id="footer-also-see-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="footer-also-see-menu" data-tooltip="other apps and tools" data-tooltip-position="top">more stuff</button>
-            <ul id="footer-also-see-menu" class="dropdown-menu footer-also-see-menu hidden" role="menu" hidden data-also-see-columns="${columns}" style="--also-see-columns: ${columns}">
+            <ul id="footer-also-see-menu" class="dropdown-menu footer-also-see-menu hidden" role="menu" hidden data-also-see-columns="${columns}">
               ${topicsMarkup}
             </ul>
           </span></span>`;

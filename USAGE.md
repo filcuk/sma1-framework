@@ -898,7 +898,7 @@ Enabled by `initShell()`. Any `http(s)` link to another origin gets an arrow-out
 
 ### Also see (related apps)
 
-Footer control after the GitHub link. Topics stack full width inside the menu and share one grid of equal-width link cells; the column count (1–3) is chosen from the link counts so the last row of each topic leaves as few empty cells as possible, and the menu sizes itself to that many columns. Narrow viewports fall back to a single column. Configure in [`app/config.js`](app/config.js) (or pass `alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal` to `initShell()` / `renderPageShell()`):
+Footer control after the GitHub link. Topics render as `.dropdown-menu-group` headers; link cells use the shared dropdown **auto grid** (`alsoSeeMenuColumns()` picks 1–3 columns from link counts so each topic’s last row leaves as few empty cells as possible). Narrow viewports fall back to a single column. Configure in [`app/config.js`](app/config.js) (or pass `alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal` to `initShell()` / `renderPageShell()`):
 
 ```javascript
 alsoSeeUrl: "https://raw.githubusercontent.com/you/shared/main/apps/links.json", // optional

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-23T09:51:42.468Z",
+  "generatedAt": "2026-08-23T10:16:41.096Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -234,7 +234,7 @@
       "sha256": "5588c5e7d60b18d21a5350d90f8e6a7e07b76e746ae831e4891b38fe51df48d1"
     },
     "app/css/controls-menus.css": {
-      "sha256": "0c4a34dfd7bd66b49f7cd485ce427022d490c75a9339bfea4c39c4fe4ddd0859"
+      "sha256": "8e290f8c1a3486c20056727aaa16b5cffb964f866b58a22d04721ffc2fb4c381"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "e3d7ee5ff1cc095f894b04eee22f28ac577b0840b3d84b8a6098c34c80ed06f2"
@@ -246,7 +246,7 @@
       "sha256": "e369e5a146fc46215e910feb97cabab8ca1fff1300c0359d383faedf584a8d41"
     },
     "app/css/layout.css": {
-      "sha256": "f857f336d224af9ecde484e2ba388b15cc48e3034851bb54467a2b395a9d01fe"
+      "sha256": "5cbbf73dc6b3766479279184516a09be5c7d13340431f5154fb132ab96e97932"
     },
     "app/css/overlays.css": {
       "sha256": "92a8578a7f97668b8fcc9dae523ff7b365e2933f704ab1af0406968553ac461b"
@@ -264,7 +264,7 @@
       "sha256": "310795b886280e2cbd427bb727db90f2bd111f7197229e6a9880c98d8274929e"
     },
     "app/shell/also-see.js": {
-      "sha256": "931ce20360fdc71b1c59a603409626f6ea24787df7d23865732e058fdab2a6c0"
+      "sha256": "e0035e39329ed2ace5b85e754ca8c02db77a3d607bdf8465a219e4c718bd9a4e"
     },
     "app/shell/external-link.js": {
       "sha256": "6a1e0d52b04d6f115419de2bac85b2e5581a7e0212fa6d6a32c64a8d0bb45fdc"
@@ -276,7 +276,7 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "e41d80f5c866bc94c344d78ddf697716ee44242fbf43f5c990c64b10ebb1c9ee"
+      "sha256": "f6807e386dd5765d30120f39b0ef3cd043b2b2b2845f7eac7a5aae1e8f0deaa7"
     },
     "app/shell/shell.js": {
       "sha256": "7f6e8eef71649319640edc5ff09d2ef1a35cd54a42c182b0ef63d1b8e58b2a92"
