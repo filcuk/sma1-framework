@@ -484,7 +484,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
 | **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
 | **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/progress-indicator.js`](app/progress-indicator.js). |
-| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, and leading `.dropdown-menu-item-icon-wrap` icons. Behaviour from [`app/dropdown.js`](app/dropdown.js). |
+| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, and auto grid layout (`data-dropdown-grid*`). Behaviour from [`app/dropdown.js`](app/dropdown.js). |
 | **Toggle dropdown** | Multi-select dropdown; items toggle with `aria-checked`, menu stays open; selection count via badge. [`app/components/dropdown-toggle.js`](app/components/dropdown-toggle.js). |
 | **Expand** | `.expand` disclosure with chevron + label trigger and collapsible `.expand-panel`; behaviour from [`app/components/expand.js`](app/components/expand.js). |
 | **Accordion** | `.accordion` vertical stack of collapsible sections; one open at a time by default. [`app/components/accordion.js`](app/components/accordion.js). |
@@ -1563,7 +1563,7 @@ Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
 ### Panel layout
 
-Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for compact inline content, and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
+Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for inline groups (layout only — does not change font size), and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
 
 ```html
 <section class="section-panel">
@@ -2417,9 +2417,15 @@ initProgressIndicators(document); // all `.progress-indicator` blocks
 ```javascript
 import { initDropdown } from "./components/dropdown.js";
 
-initDropdown(document.getElementById("my-dropdown"), {
+const dropdown = initDropdown(document.getElementById("my-dropdown"), {
   onSelect: ({ value, label }) => { /* item chosen */ },
+  gridMin: 8, // switch to grid when item count exceeds 8
+  gridCols: 2, // optional; default 2
 });
+
+dropdown?.setGridMin(10); // change threshold later
+dropdown?.setGridMin(false); // force single-column list
+dropdown?.syncMenuGrid(); // after adding/removing items in script
 ```
 
 Markup: `.dropdown` > `.dropdown-trigger` + `ul.dropdown-menu` with `.dropdown-menu-item` buttons.
@@ -2453,6 +2459,28 @@ Optional **icons** — leading light/dark image pair via `.dropdown-menu-item-ic
 ```
 
 `onSelect` / toggle APIs use `.dropdown-menu-item-label` when present (subtitle is not included in `label`).
+
+Optional **auto grid** — when a dropdown has more than a threshold of selectable items, the menu can switch to a multi-column grid (see Menus & pickers → Dropdown grid on `demo.html`).
+
+**Markup** — set on the `.dropdown` host:
+
+| Attribute | Meaning |
+| --- | --- |
+| `data-dropdown-grid="8"` | Enable auto grid; switch when item count **exceeds** `8` |
+| `data-dropdown-grid` | Enable with default threshold (`6`) |
+| `data-dropdown-grid="false"` | Force a single-column list |
+| `data-dropdown-grid-min="8"` | Same as numeric `data-dropdown-grid` (explicit name) |
+| `data-dropdown-grid-cols="2"` | Column count in grid mode (default `2`) |
+
+**JavaScript** — `gridMin` / `gridCols` on `initDropdown()` / `initToggleDropdown()` override markup. Pass `gridMin: false` to disable. The returned object also exposes `setGridMin()`, `setGridCols()`, `getGridConfig()`, and `syncMenuGrid()` (call after changing menu items). Default threshold constant: `DROPDOWN_GRID_DEFAULT_MIN` from [`app/utils/menu.js`](app/utils/menu.js).
+
+Layout is rechecked on init and each time the menu opens. In grid mode, arrow keys move within the column layout (left/right as well as up/down).
+
+```html
+<div class="dropdown" id="my-dropdown" data-dropdown-grid="8">
+  <!-- trigger + menu -->
+</div>
+```
 
 ```html
 <ul class="dropdown-menu hidden" role="menu">

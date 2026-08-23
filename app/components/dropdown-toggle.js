@@ -103,9 +103,13 @@ function ensureSelectionBadgeHost(dropdownEl, trigger, baseLabel) {
  * Base label: `.dropdown-trigger-label` or `data-toggle-dropdown-label`.
  *
  * @param {HTMLElement | null} dropdownEl
- * @param {{ onToggle?: (detail: object) => void }} [options]
+ * @param {{
+ *   onToggle?: (detail: object) => void;
+ *   gridMin?: number | false;
+ *   gridCols?: number;
+ * }} [options]
  */
-export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
+export function initToggleDropdown(dropdownEl, { onToggle, gridMin, gridCols } = {}) {
   if (!dropdownEl) return null;
 
   const trigger = dropdownEl.querySelector(".dropdown-trigger");
@@ -136,6 +140,8 @@ export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
     toggleEl: trigger,
     itemSelector,
     closeOnSelect: false,
+    gridMin,
+    gridCols,
     onSelect: ({ item, value, label }) => {
       const selected = !isItemSelected(item);
       setItemSelected(item, selected);

@@ -461,7 +461,6 @@ main {
   align-items: center;
   gap: 0.35rem;
   color: var(--muted);
-  font-size: 0.875rem;
 }
 
 .content-tier {

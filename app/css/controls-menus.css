@@ -281,6 +281,40 @@ li:not(:first-child) > .dropdown-menu-group {
   pointer-events: none;
 }
 
+/* Multi-column layout when a dropdown has many items (`data-dropdown-grid*`). */
+.dropdown-menu.dropdown-menu--grid {
+  display: grid;
+  grid-template-columns: repeat(var(--dropdown-menu-grid-cols, 2), minmax(0, 1fr));
+  gap: 0;
+  max-width: min(100vw - 3rem, 28rem);
+}
+
+.dropdown-menu.dropdown-menu--grid > li:has(.dropdown-menu-group),
+.dropdown-menu.dropdown-menu--grid > li:has(.dropdown-menu-separator) {
+  grid-column: 1 / -1;
+}
+
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item {
+  white-space: normal;
+}
+
+/* Per-cell selection in grid mode (contiguous-run joining is list-only). */
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item.is-selected,
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item[aria-checked="true"] {
+  border-radius: 6px;
+  border-width: 1px;
+  padding: calc(0.5rem - 1px) calc(1rem - 1px);
+}
+
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item.is-selected:hover,
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item.is-selected:focus-visible,
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item[aria-checked="true"]:hover,
+.dropdown-menu.dropdown-menu--grid .dropdown-menu-item[aria-checked="true"]:focus-visible {
+  border-radius: 6px;
+  border-width: 1px;
+  padding: calc(0.5rem - 1px) calc(1rem - 1px);
+}
+
 /* Dropdown */
 
 .dropdown {
