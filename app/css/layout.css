@@ -1020,7 +1020,7 @@ body > footer {
 
 .footer-also-see-trigger:hover,
 .footer-also-see-trigger:focus-visible {
-  text-decoration: underline;
+  color: var(--accent-hover);
   outline: none;
 }
 
