@@ -57,35 +57,42 @@ a.btn:hover {
 .btn-primary {
   background: var(--accent);
   color: var(--accent-fg);
-  border-color: var(--accent);
+  border-color: transparent;
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  border-color: var(--accent-border-hover);
   color: var(--accent-fg);
 }
 
-a.btn.btn-primary,
+a.btn.btn-primary {
+  color: var(--accent-fg);
+}
+
 a.btn.btn-primary:hover {
   color: var(--accent-fg);
 }
 
 /* Primary destructive action (delete, reset, irreversible confirm) */
 .btn-danger {
-  background: var(--banner-error-border);
-  color: #ffffff;
-  border-color: var(--banner-error-border);
+  background: var(--danger);
+  color: var(--danger-fg);
+  border-color: transparent;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: var(--banner-error-text);
-  border-color: var(--banner-error-text);
-  color: #ffffff;
+  background: var(--danger-hover);
+  border-color: var(--danger-border-hover);
+  color: var(--danger-fg);
 }
 
-:root[data-theme="dark"] .btn-danger:hover:not(:disabled) {
-  color: #0d1117;
+a.btn.btn-danger {
+  color: var(--danger-fg);
+}
+
+a.btn.btn-danger:hover {
+  color: var(--danger-fg);
 }
 
 .btn-icon {
@@ -106,6 +113,22 @@ a.btn.btn-primary:hover {
   height: var(--control-height-slim);
   min-height: var(--control-height-slim);
   padding: 0;
+}
+
+.btn-primary.btn-icon {
+  color: var(--accent-fg);
+}
+
+.btn-primary.btn-icon:hover:not(:disabled) {
+  color: var(--accent-fg);
+}
+
+.btn-danger.btn-icon {
+  color: var(--danger-fg);
+}
+
+.btn-danger.btn-icon:hover:not(:disabled) {
+  color: var(--danger-fg);
 }
 
 .btn-toggle[aria-pressed="true"] {

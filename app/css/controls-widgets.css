@@ -372,6 +372,7 @@
 .pagination-page[aria-current="page"]:hover:not(:disabled) {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
+  color: var(--accent-fg);
 }
 
 .pagination-page:disabled {
