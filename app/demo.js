@@ -336,8 +336,6 @@ initCombo(document.getElementById("demo-combo"), {
 
 initDropdown(document.getElementById("demo-dropdown"));
 initDropdown(document.getElementById("demo-dropdown-icons"));
-initDropdown(document.getElementById("demo-dropdown-grid"));
-initDropdown(document.getElementById("demo-dropdown-grid-list"));
 initToggleDropdown(document.getElementById("demo-toggle-dropdown"));
 
 initToggleButtons(document);

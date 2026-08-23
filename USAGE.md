@@ -469,7 +469,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/combo.js`](app/combo.js). |
-| **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge. [`app/components/combobox.js`](app/components/combobox.js). |
+| **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
 | **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/slider.js`](app/slider.js). |
 | **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/progress-bar.js`](app/progress-bar.js). |
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/spinner.js`](app/spinner.js). |
@@ -1707,11 +1707,16 @@ const combobox = initCombobox(document.getElementById("my-combobox"), {
   onSelect: ({ value, label }) => { /* item chosen from list */ },
   onChange: ({ value, label, input }) => { /* value committed or cleared */ },
   onInput: ({ query, matches }) => { /* filter text changed */ },
+  gridMin: 8, // optional; switch to grid when visible option count exceeds 8
+  gridCols: 2,
   // options: [{ value: "nyc", label: "New York" }, …],  // replace markup list
   // filter: (query, option) => option.label.startsWith(query),
   // allowCustom: true,
   // defaultValue: "nyc",
 });
+
+combobox?.setGridMin(10);
+combobox?.syncListGrid(); // after setOptions / filter changes visible count
 
 combobox?.getValue();
 combobox?.setValue("nyc");
@@ -1720,7 +1725,9 @@ combobox?.setOptions([{ value: "nyc", label: "New York" }]);
 initComboboxes(document); // all `.combobox` blocks
 ```
 
-Keyboard: ArrowDown / ArrowUp navigate suggestions, Enter selects, Escape closes and restores the last committed value.
+Keyboard: ArrowDown / ArrowUp navigate suggestions (left/right too in grid mode), Enter selects, Escape closes and restores the last committed value.
+
+Optional **auto grid** — same semantics as [Dropdown](#dropdown): set `data-combobox-grid="8"` (or `data-combobox-grid-min`, `data-combobox-grid-cols`, `data-combobox-grid="false"`) on the `.combobox` host, or pass `gridMin` / `gridCols` to `initCombobox()`. Layout uses the **visible** option count (after filtering). Adjacent selected cells share one rounded outline, including inner corners. The returned object exposes `setGridMin()`, `setGridCols()`, `getGridConfig()`, and `syncListGrid()`.
 
 #### Multi-select
 
@@ -2460,7 +2467,7 @@ Optional **icons** — leading light/dark image pair via `.dropdown-menu-item-ic
 
 `onSelect` / toggle APIs use `.dropdown-menu-item-label` when present (subtitle is not included in `label`).
 
-Optional **auto grid** — when a dropdown has more than a threshold of selectable items, the menu can switch to a multi-column grid (see Menus & pickers → Dropdown grid on `demo.html`).
+Optional **auto grid** — when a dropdown has more than a threshold of selectable items, the menu can switch to a multi-column grid (see Menus & pickers → Multi-select combobox on `demo.html`).
 
 **Markup** — set on the `.dropdown` host:
 
@@ -2474,7 +2481,7 @@ Optional **auto grid** — when a dropdown has more than a threshold of selectab
 
 **JavaScript** — `gridMin` / `gridCols` on `initDropdown()` / `initToggleDropdown()` override markup. Pass `gridMin: false` to disable. The returned object also exposes `setGridMin()`, `setGridCols()`, `getGridConfig()`, and `syncMenuGrid()` (call after changing menu items). Default threshold constant: `DROPDOWN_GRID_DEFAULT_MIN` from [`app/utils/menu.js`](app/utils/menu.js).
 
-Layout is rechecked on init and each time the menu opens. In grid mode, arrow keys move within the column layout (left/right as well as up/down).
+Layout is rechecked on init and each time the menu opens. In grid mode, arrow keys move within the column layout (left/right as well as up/down). Adjacent selected cells share one rounded outline, including inner corners.
 
 ```html
 <div class="dropdown" id="my-dropdown" data-dropdown-grid="8">

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-23T10:16:41.096Z",
+  "generatedAt": "2026-08-23T13:14:20.841Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -96,7 +96,7 @@
       "sha256": "a0a43f7e59f6f8e13ec4f6e89e1f96d02cfd1283dbaa868fcd511140b9bdb04f"
     },
     "app/components/combobox.js": {
-      "sha256": "d012718f4374c3af6b03f6399a244733278951b6668617ed888dc5618813f64e"
+      "sha256": "1231fa93a45e92ec264bcd8b1390382de2fe134482e1f7ed675435c784912059"
     },
     "app/components/date-picker/calendar.js": {
       "sha256": "97363b28d82da42733d867150fba07d7d55bb9d4b663f3057362b901194877be"
@@ -225,7 +225,7 @@
       "sha256": "2853382c0386badb73f3090132f35fd744d9ee57995174e4ff4372c634c57f69"
     },
     "app/css/controls-fields.css": {
-      "sha256": "f179e6eee1b9b61952eff1b52a12e2f0de3a14d6ad8090ef2e5fdea7c5c8c74f"
+      "sha256": "d1384bf5a71283aeaeece1fb6e6867b1654be53115b1091384a4eefbbca3b8e9"
     },
     "app/css/controls-file.css": {
       "sha256": "2dd93b29594da190aaa6b6a12f019e1a99fbce834ea928970106a9e83a0b4df3"
@@ -234,7 +234,7 @@
       "sha256": "5588c5e7d60b18d21a5350d90f8e6a7e07b76e746ae831e4891b38fe51df48d1"
     },
     "app/css/controls-menus.css": {
-      "sha256": "8e290f8c1a3486c20056727aaa16b5cffb964f866b58a22d04721ffc2fb4c381"
+      "sha256": "9f80f41131cd475b4fd650852adb548942e1b7f985c89670a8aba52f3e135df3"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "e3d7ee5ff1cc095f894b04eee22f28ac577b0840b3d84b8a6098c34c80ed06f2"
@@ -324,7 +324,7 @@
       "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
     },
     "app/utils/menu.js": {
-      "sha256": "4311f331ee75df94494d4f7e1235fcc7d085463949a66bdff5203c4086154523"
+      "sha256": "9ff7c2f75d4cc24cfe2297422eefec39423da0ff24bd2b03f582894b52d75924"
     },
     "app/utils/sanitize-svg.js": {
       "sha256": "433ca97df4ed3a0ad45c227448d0606a019a4be70215f3a0648eca0ab2b1f0ce"

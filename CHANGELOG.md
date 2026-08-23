@@ -15,7 +15,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
-- Dropdown auto grid: `data-dropdown-grid-min` (and related `data-dropdown-grid*` attributes) switch long menus to a multi-column layout; `data-dropdown-grid="false"` keeps a single column. Footer **also see** uses the same grid with `alsoSeeMenuColumns()` (1–3 columns).
+- Dropdown auto grid: `data-dropdown-grid-min` (and related `data-dropdown-grid*` attributes) switch long menus to a multi-column layout; `data-dropdown-grid="false"` keeps a single column. Footer **also see** and **combobox** lists use the same grid (`data-combobox-grid*`, `alsoSeeMenuColumns()`).
 - Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
 - `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
