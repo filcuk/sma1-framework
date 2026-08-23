@@ -480,7 +480,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Date picker** | Calendar popup with an optional side-by-side time panel and shared Today / Now action bar. [`app/components/date-picker/`](app/components/date-picker/). |
 | **Time picker** | Editable time-of-day field with a segmented popup, optional seconds, and 00:00 / Now actions. [`app/components/time-picker/`](app/components/time-picker/). |
 | **Duration input** | Segmented hours:minutes (optional seconds) field with the shared popup in duration mode. [`app/components/duration-input.js`](app/components/duration-input.js). |
-| **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) cycles off → on → mixed. [`app/components/toggle.js`](app/components/toggle.js). |
+| **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) with configurable cycle (`data-toggle-tristate-cycle`). [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
 | **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
 | **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/progress-indicator.js`](app/progress-indicator.js). |
@@ -2272,7 +2272,15 @@ Add `.toggle--slim` for a thin track with an oversized thumb that overhangs the 
 </div>
 ```
 
-Tri-state variant (`data-toggle-tristate`) cycles **off → on → mixed**. ARIA `switch` is boolean-only, so the button uses `role="checkbox"` with `aria-checked="mixed"`. Include a minus (`remove`) icon for the mixed thumb, or one is injected automatically.
+Tri-state variant (`data-toggle-tristate`) cycles through off, on, and mixed. Default order is **off → mixed → on**. Set `data-toggle-tristate-cycle` (or `tristateCycle` in JS) to change direction:
+
+| Cycle | Order |
+| ----- | ----- |
+| `default` (omit) | off → mixed → on → off |
+| `on-mixed` | off → on → mixed → off |
+| `mixed-both` | off → mixed → on → mixed → off |
+
+ARIA `switch` is boolean-only, so tri-state buttons use `role="checkbox"` with `aria-checked="mixed"`. Include a minus (`remove`) icon for the mixed thumb, or one is injected automatically.
 
 ```html
 <div class="toggle" id="my-toggle-tri" data-toggle-tristate data-toggle-default="mixed">
@@ -2310,11 +2318,12 @@ const tri = initToggle(document.getElementById("my-toggle-tri"), {
 tri?.getState(); // "true" | "false" | "mixed"
 tri?.setState("mixed");
 tri?.cycle();
+tri?.getTristateCycle(); // "default" | "on-mixed" | "mixed-both" | null
 
 initToggles(document); // all `.toggle` blocks
 ```
 
-`data-toggle-default`, `data-toggle-tristate`, and `data-toggle-disabled` mirror the JS options. For a group of switches, wrap items in `.toggle-group`.
+`data-toggle-default`, `data-toggle-tristate`, `data-toggle-tristate-cycle`, and `data-toggle-disabled` mirror the JS options. For a group of switches, wrap items in `.toggle-group`.
 
 ### Segmented control
 

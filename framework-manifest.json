@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.12.3",
-  "generatedAt": "2026-08-23T17:01:44.835Z",
+  "generatedAt": "2026-08-23T18:22:45.873Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -192,7 +192,7 @@
       "sha256": "42c834104fde855b9f4f08bcebcc5768b2ff27fdbef3884469d8cde007de37f9"
     },
     "app/components/toggle.js": {
-      "sha256": "aee44b761098d8f7b779b954a4275cca4dea95f95c8a475006f111a0f32b0598"
+      "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -249,7 +249,7 @@
       "sha256": "86b6f6eb270487f6d3c95a76bfb57eeafb967c63a7ffa7f22e87fb2618f70fae"
     },
     "app/css/overlays.css": {
-      "sha256": "92a8578a7f97668b8fcc9dae523ff7b365e2933f704ab1af0406968553ac461b"
+      "sha256": "4996f03cf5b44330d2509cb52f16d718389f639ba25bfb4ec23569766a015f2b"
     },
     "app/css/rich-text-editor.css": {
       "sha256": "d111287589509fc59852cbf4f7d4d249a39a49b03424bc6e40d1813adbfeaabc"
