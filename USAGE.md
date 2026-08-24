@@ -1435,6 +1435,8 @@ The calendar grid starts weeks on Monday. Weekday labels in markup are optional 
 
 The day view includes **Today** below a date-only calendar. Combined pickers have one action bar spanning both panels: **Today** selects the current date at `00:00`, while **Now** selects the current date and time.
 
+When `data-date-picker-time` is set, the side time column uses the shared time panel **without** its own **00:00** / **Now** row — those actions would duplicate the combined **Today** / **Now** bar under the calendar (`initDatePicker` mounts the time panel with `showZero: false` and `showNow: false`).
+
 #### Time picker
 
 Time of day without a date. The editable text field opens a popup with independently wrapping hour, minute, and optional second columns. The legacy native `<input type="time">` markup remains supported when no custom popup is present.
@@ -1474,7 +1476,16 @@ timePicker?.setValue("09:15");
 initTimePickers(document);
 ```
 
-`data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-seconds`, `data-time-picker-zero`, `data-time-picker-now`, and `data-time-picker-disabled` mirror the JS options. The popup defaults to **00:00** and **Now** quick actions; either can be disabled with a false option / attribute value. Quick actions commit and close the popup.
+`data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-seconds`, `data-time-picker-zero`, `data-time-picker-now`, and `data-time-picker-disabled` mirror the JS options.
+
+**Quick actions (`showZero` / `showNow`):** The popup can show **00:00** (`showZero`, default `true`) and **Now** (`showNow`, default `true` in time mode). Pass `showZero: false` / `showNow: false` or set `data-time-picker-zero="false"` / `data-time-picker-now="false"` to hide either button. **Now** is never shown in duration mode — clock “now” is not a meaningful duration preset.
+
+| Host | Popup quick actions | Configurable? |
+| ---- | ------------------- | ------------- |
+| Standalone [`initTimePicker`](#time-picker) | **00:00** + **Now** (defaults above) | Yes — options / `data-time-picker-zero` / `data-time-picker-now` |
+| [`initTimePicker` duration mode](#time-picker) | **00:00** only | `showZero` only (`showNow` ignored) |
+| [`initDurationInput`](#duration-input) | **00:00** (or **00:00:00** with seconds) | Fixed — always reset via popup; no **Now** |
+| [`initDatePicker` + time](#date-picker) | None on the time column | Fixed — use **Today** / **Now** in `.date-picker-actions` instead |
 
 **Duration mode:** `initTimePicker` also accepts `mode: "duration"` (or `data-time-picker-mode="duration"`) to render the hours / minutes / (optional seconds) panel without a clock time-of-day field — useful when embedding the panel elsewhere. For form duration fields, prefer [`initDurationInput`](#duration-input): it adds inline segments, a hidden `.duration-input-value`, and the clock trigger automatically.
 
@@ -1484,7 +1495,7 @@ Clicking the field selects the hour, minute, or second block under the pointer; 
 
 Segmented hours and minutes (optional seconds) with a clock-triggered popup using the same panel as the time picker in duration mode. Stores `H:MM` or `H:MM:SS` in `.duration-input-value`. The trigger and popup are created automatically when omitted.
 
-Focusing or clicking an inline segment selects its full value; clicking the control background focuses hours. Inline Arrow Up / Down nudges the focused segment, while popup buttons wrap each column independently (`0` ↔ `maxHours` for hours, `00` ↔ `59` otherwise). `:` or Arrow Right moves to the next inline field. The popup **00:00** action resets the duration and closes.
+Focusing or clicking an inline segment selects its full value; clicking the control background focuses hours. Inline Arrow Up / Down nudges the focused segment, while popup buttons wrap each column independently (`0` ↔ `maxHours` for hours, `00` ↔ `59` otherwise). `:` or Arrow Right moves to the next inline field. The popup **00:00** action (or **00:00:00** with seconds) resets the duration and closes — there is no **Now** action (`initDurationInput` always mounts the panel in duration mode with `showZero: true`, `showNow: false`; not configurable).
 
 ```html
 <div class="duration-input" id="my-duration" data-duration-default="1:30">

@@ -16,6 +16,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Press feedback hover / selected fills use `--control-hover-mix` / `--control-selected-mix` (no hardcoded 6% / 12%). Selected `.btn-toggle:active` uses `--control-press-mix`. Dropped dead `.combo-menu-item` selectors from grid-only menu rules.
 - Combobox hosts elevate with `.is-popup-open` while the suggestion list is open (same stacking fix as dropdown / combo). Table row hover, time-picker duration mode, slim-size APIs, and tri-state cycle scope documented in `USAGE.md` / `DESIGN.md`.
 - Date / time / duration field CSS shares one trigger, popup shell, icon, and quick-action bar block in `controls-fields.css` (duration popups reuse `.time-picker-popup`).
+- Documented time-panel **00:00** / **Now** defaults per host (standalone time picker, duration mode, duration input, date+time combined picker).
 
 ### Changed
 
