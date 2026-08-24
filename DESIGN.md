@@ -12,6 +12,8 @@ When a control reacts to a user action (copy succeeded, save failed, and similar
 2. **Fallback — timer tooltip** when in-place is not practical (icon-only controls such as the floating code-block copy button). Use success/error tones with check / × icons.
 3. **When requested — banner** for page-level or persistent status messaging.
 
+Pointer-down press feedback uses `:active` colour-mix tints: hover uses a lighter 6% mix, enabled click previews the selected look at 12%, and selected / on press uses a stronger 18% tint. Filled primaries darken via `--accent-active` / `--danger-active`.
+
 **Also in-place:** clipboard paste-arming (prompting “Press Ctrl+V” / showing `Ctrl+V` on the button for up to ~15s) is a waiting state on the control, not only a one-shot flash.
 
 Success and error **tooltips** (when used) use bold green / red styling (banner success/error tokens) and a small leading icon: check for success, clear (×) for error. Info tooltips stay neutral with text only.

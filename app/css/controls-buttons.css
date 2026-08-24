@@ -49,6 +49,17 @@ a.btn:hover {
   transition-duration: 0s;
 }
 
+.btn:not(:disabled):active:not(.btn-primary):not(.btn-danger) {
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  color: var(--text);
+  transition-duration: 0s;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -64,6 +75,12 @@ a.btn:hover {
   background: var(--accent-hover);
   border-color: var(--accent-border-hover);
   color: var(--accent-fg);
+}
+
+.btn-primary:not(:disabled):active {
+  background: var(--accent-active);
+  border-color: transparent;
+  transition-duration: 0s;
 }
 
 a.btn.btn-primary {
@@ -85,6 +102,12 @@ a.btn.btn-primary:hover {
   background: var(--danger-hover);
   border-color: var(--danger-border-hover);
   color: var(--danger-fg);
+}
+
+.btn-danger:not(:disabled):active {
+  background: var(--danger-active);
+  border-color: transparent;
+  transition-duration: 0s;
 }
 
 a.btn.btn-danger {
@@ -137,11 +160,33 @@ a.btn.btn-danger:hover {
   color: var(--text);
 }
 
+.btn-toggle[aria-pressed="true"]:active:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
 /* Both states are actions, not an on/off indicator — keep the default look */
 .btn-toggle.btn-toggle--always-active[aria-pressed="true"] {
   background: var(--surface);
   border-color: var(--border);
   color: var(--text);
+}
+
+.btn-toggle.btn-toggle--always-active[aria-pressed="true"]:active:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
 }
 
 .btn-toggle.btn-toggle--always-active[aria-pressed="true"]:hover:not(:disabled) {
@@ -187,6 +232,12 @@ a.btn.btn-danger:hover {
 .btn-link:hover:not(:disabled) {
   color: var(--accent-hover);
   background: transparent;
+}
+
+.btn-link:active:not(:disabled) {
+  color: var(--accent-active);
+  background: transparent;
+  transition-duration: 0s;
 }
 
 /* In-place label flash (Copy → Copied) — pair with button-label.js helpers */

@@ -754,10 +754,34 @@ export function initCombobox(
     input.focus();
   }
 
-  function onListPointerDown(event) {
-    if (event.target.closest(".combobox-option")) {
-      event.preventDefault();
+  let pressedOptionEl = null;
+  let removePressedListeners = null;
+
+  function clearPressedOption() {
+    pressedOptionEl?.classList.remove("is-pressed");
+    pressedOptionEl = null;
+    if (removePressedListeners) {
+      removePressedListeners();
+      removePressedListeners = null;
     }
+  }
+
+  function onListPointerDown(event) {
+    const optionEl = event.target.closest(".combobox-option");
+    if (!optionEl) return;
+    // Keep the input focused so blur does not close the list before click.
+    // preventDefault also suppresses :active — `.is-pressed` is the press tint.
+    event.preventDefault();
+    clearPressedOption();
+    pressedOptionEl = optionEl;
+    optionEl.classList.add("is-pressed");
+    const onUp = () => clearPressedOption();
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    removePressedListeners = () => {
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
   }
 
   // Initial selection
@@ -937,6 +961,7 @@ export function initCombobox(
       input.removeEventListener("keydown", onInputKeydown);
       list.removeEventListener("click", onListClick);
       list.removeEventListener("mousedown", onListPointerDown);
+      clearPressedOption();
       unregisterOpenPopup(closeList);
       removeClickOutside();
       removeEscape();

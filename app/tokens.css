@@ -78,6 +78,16 @@
   --sticky-shadow: rgb(0 0 0 / 0.2);
   --banner-fade-ms: 200ms;
   --control-hover-ms: 80ms;
+  /* Action feedback mix ladder.
+     Hover uses `--control-hover-mix` (existing 6% recipe). Click previews the
+     selected look at `--control-selected-mix` (12%). Selected / pressed uses
+     a stronger tint at `--control-press-mix` (18%). */
+  --control-hover-mix: 6%;
+  --control-selected-mix: 12%;
+  --control-press-mix: 18%;
+  /* Filled buttons press darken the accent fill (primary / danger). */
+  --accent-active: color-mix(in srgb, var(--accent) 85%, #000000);
+  --danger-active: color-mix(in srgb, var(--danger) 85%, #000000);
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   --mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,

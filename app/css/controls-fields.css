@@ -137,6 +137,19 @@
   transition-duration: 0s;
 }
 
+.combobox-option:active:not(:disabled),
+.combobox-option.is-pressed:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  color: var(--text);
+  outline: none;
+  transition-duration: 0s;
+}
+
 .combobox-option.is-selected {
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
   border-color: var(--accent);
@@ -147,6 +160,18 @@
 .combobox-option.is-selected:focus-visible,
 .combobox-option.is-selected.is-active {
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+.combobox-option.is-selected:active:not(:disabled),
+.combobox-option.is-selected.is-pressed:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-press-mix),
+    var(--surface)
+  );
   border-color: var(--accent);
   color: var(--text);
   transition-duration: 0s;

@@ -186,8 +186,10 @@ export function formatTutorialMissingTargetMessage(options) {
 export function reportTutorialMissingTarget(options) {
   const message = formatTutorialMissingTargetMessage(options);
   if (options.outcome === "stop") {
+    // eslint-disable-next-line no-console
     console.error(message);
   } else {
+    // eslint-disable-next-line no-console
     console.warn(message);
   }
 }

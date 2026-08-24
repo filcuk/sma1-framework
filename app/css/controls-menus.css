@@ -141,6 +141,19 @@ svg.dropdown-menu-item-icon {
   transition-duration: 0s;
 }
 
+.combo-menu-item:active:not(:disabled):not([aria-disabled="true"]),
+.dropdown-menu-item:active:not(:disabled):not([aria-disabled="true"]) {
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  color: var(--text);
+  outline: none;
+  transition-duration: 0s;
+}
+
 .dropdown-menu-item.is-selected,
 .dropdown-menu-item[aria-checked="true"],
 .combo-menu-item.is-selected {
@@ -162,6 +175,19 @@ svg.dropdown-menu-item-icon {
 .combo-menu-item.is-selected:hover,
 .combo-menu-item.is-selected:focus-visible {
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+.dropdown-menu-item.is-selected:active:not(:disabled):not([aria-disabled="true"]),
+.dropdown-menu-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]),
+.combo-menu-item.is-selected:active:not(:disabled):not([aria-disabled="true"]) {
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-press-mix),
+    var(--surface)
+  );
   border-color: var(--accent);
   color: var(--text);
   transition-duration: 0s;
@@ -472,6 +498,30 @@ li:not(:first-child) > .dropdown-menu-group {
     .combobox-option.is-selected
   ).is-active {
   background: transparent;
+  border-color: transparent;
+}
+
+/* Press fills this cell only (SVG outline stays). Combobox uses `.is-pressed`
+   because option mousedown preventDefault suppresses :active. */
+:is(.dropdown-menu--grid, .combobox-list--grid).is-selection-outlined
+  :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected,
+    .combobox-option.is-selected
+  ):active,
+:is(.dropdown-menu--grid, .combobox-list--grid).is-selection-outlined
+  :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected,
+    .combobox-option.is-selected
+  ).is-pressed {
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-press-mix),
+    var(--surface)
+  );
   border-color: transparent;
 }
 
