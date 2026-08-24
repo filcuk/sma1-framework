@@ -14,6 +14,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Dropdown / combobox / also-see auto grid stores column count on `data-grid-cols` (not an inline custom property), so the also-see narrow-viewport single-column rule can apply. Grid keyboard and selection joins follow visual columns across full-span group rows.
 - Corrected **Available features** module paths in `USAGE.md` (pre-move `app/*.js` links). Clarified heading-link disable order and also-see `accent` vs `accentHover` roles.
 - Press feedback hover / selected fills use `--control-hover-mix` / `--control-selected-mix` (no hardcoded 6% / 12%). Selected `.btn-toggle:active` uses `--control-press-mix`. Dropped dead `.combo-menu-item` selectors from grid-only menu rules.
+- Combobox hosts elevate with `.is-popup-open` while the suggestion list is open (same stacking fix as dropdown / combo). Table row hover, time-picker duration mode, slim-size APIs, and tri-state cycle scope documented in `USAGE.md` / `DESIGN.md`.
 
 ### Changed
 

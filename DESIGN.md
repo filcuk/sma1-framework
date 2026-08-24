@@ -59,4 +59,6 @@ Two selection highlight styles. Prefer **standard** for selectable items in cont
 
 **Light** recipe: selected / pressed state uses a softer fill only (today: `background: var(--code-bg)` on the theme toggle), without the accent selection border used by standard.
 
+**Table row hover** is pointer feedback, not selection: body rows use an accent-tinted background and one outer accent border on hover (same border/fill language as standard, but only while the pointer is over the row). Selected rows are indicated by the checkbox column only — do not add a third *selection* look.
+
 Do not invent a third selection look for new catalogue controls — pick **standard** or **light** and match an existing control’s CSS.

@@ -425,6 +425,7 @@ export function initCombobox(
 
     registerOpenPopup(closeList);
     isOpen = true;
+    comboboxEl.classList.add("is-popup-open");
     setHidden(list, false);
     input.setAttribute("aria-expanded", "true");
     renderList();
@@ -435,6 +436,7 @@ export function initCombobox(
     if (!isOpen && !restoreInput) return;
 
     isOpen = false;
+    comboboxEl.classList.remove("is-popup-open");
     setHidden(list, true);
     input.setAttribute("aria-expanded", "false");
     clearActiveOption();
@@ -962,6 +964,7 @@ export function initCombobox(
       list.removeEventListener("click", onListClick);
       list.removeEventListener("mousedown", onListPointerDown);
       clearPressedOption();
+      comboboxEl.classList.remove("is-popup-open");
       unregisterOpenPopup(closeList);
       removeClickOutside();
       removeEscape();

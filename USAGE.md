@@ -1373,7 +1373,7 @@ partial?.cycle();
 initTriStateCheckboxes(document); // all `[data-checkbox-tristate]` inputs
 ```
 
-`data-checkbox-default` accepts `"true"`, `"false"`, or `"mixed"`. Click cycles **unchecked → checked → mixed**. Native `indeterminate` is set for mixed; `aria-checked` mirrors the state. Use a wrapping `<label>` **or** `for` (not both) so a single click does not activate the control twice. Checked and mixed states use an inset `--surface` face (rounded square when checked, disc when mixed) mounted by `initIcons()` (via `initShell`); for checkboxes created later, call `ensureCheckboxFace(input)` from `app/utils/icons.js`.
+`data-checkbox-default` accepts `"true"`, `"false"`, or `"mixed"`. Click cycles **unchecked → checked → mixed** (fixed order — there is no `data-checkbox-tristate-cycle`; configurable cycle order is a **toggle** feature only). Native `indeterminate` is set for mixed; `aria-checked` mirrors the state. Use a wrapping `<label>` **or** `for` (not both) so a single click does not activate the control twice. Checked and mixed states use an inset `--surface` face (rounded square when checked, disc when mixed) mounted by `initIcons()` (via `initShell`); for checkboxes created later, call `ensureCheckboxFace(input)` from `app/utils/icons.js`.
 
 #### Date picker
 
@@ -1475,6 +1475,8 @@ initTimePickers(document);
 ```
 
 `data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-seconds`, `data-time-picker-zero`, `data-time-picker-now`, and `data-time-picker-disabled` mirror the JS options. The popup defaults to **00:00** and **Now** quick actions; either can be disabled with a false option / attribute value. Quick actions commit and close the popup.
+
+**Duration mode:** `initTimePicker` also accepts `mode: "duration"` (or `data-time-picker-mode="duration"`) to render the hours / minutes / (optional seconds) panel without a clock time-of-day field — useful when embedding the panel elsewhere. For form duration fields, prefer [`initDurationInput`](#duration-input): it adds inline segments, a hidden `.duration-input-value`, and the clock trigger automatically.
 
 Clicking the field selects the hour, minute, or second block under the pointer; keyboard focus selects hours. Arrow Up / Down wraps the selected block independently, Arrow Left / Right or `:` moves between blocks, and Alt+Arrow Down opens the popup.
 
@@ -2282,6 +2284,18 @@ initColorPickers(document);
 
 `data-color-picker-embedded`, `data-color-picker-default`, `data-color-picker-alpha`, `data-color-picker-format`, and `data-color-picker-color-set` mirror the JS options. Escape closes the colour-set panel first (when open), then the picker popup.
 
+### Control sizing
+
+Three different “slim” APIs — they are not interchangeable:
+
+| Class | Effect |
+| ----- | ------ |
+| `.btn-slim` | Compact button height via `--control-height-slim` |
+| `.segmented-control--slim` | Reduced padding on the track; does **not** use `--control-height-slim` |
+| `.toggle--slim` | Thin track with an oversized overhanging thumb; not a height token |
+
+Tabular input logical columns always use `.toggle--slim` (no standard-size toggle in that grid).
+
 ### Toggle
 
 On/off switch for boolean settings. Uses `role="switch"` and `aria-checked` on the button; a hidden `.toggle-value` field stores `"true"` or `"false"` for forms.
@@ -2314,7 +2328,7 @@ Add `.toggle--slim` for a thin track with an oversized thumb that overhangs the 
 </div>
 ```
 
-Tri-state variant (`data-toggle-tristate`) cycles through off, on, and mixed. Default order is **off → mixed → on**. Set `data-toggle-tristate-cycle` (or `tristateCycle` in JS) to change direction:
+Tri-state variant (`data-toggle-tristate`) cycles through off, on, and mixed. **`data-toggle-tristate-cycle` / `tristateCycle` apply to toggles only** — tri-state checkboxes use a fixed unchecked → checked → mixed order (see [Inputs](#inputs)). Default toggle order is **off → mixed → on**. Set `data-toggle-tristate-cycle` (or `tristateCycle` in JS) to change direction:
 
 | Cycle | Order |
 | ----- | ----- |
@@ -2792,7 +2806,7 @@ Styled data tables for lists of records. Wrap a semantic `<table>` in `.table-bl
 
 Optional **sortable** columns: set `data-table-sortable` on `.table-block` and `data-table-sort` on `<th>` cells. Add `data-sort-type="text"`, `"number"`, or `"date"` (default `text`). Put a `.table-sort-button` inside the header or let `initTable()` create one from the header text. Set `data-table-sort-default="ascending"` or `"descending"` on one or more sortable `<th>` cells to sort on load (document order = primary, then secondary, …), or pass `defaultSort: { columnIndex, direction }` / `defaultSort: [{ columnIndex, direction }, …]` to `initTable()`. Header clicks cycle **ascending → descending → unsorted** (restores the row order from init). Hold **Shift** while clicking another header to add or cycle a secondary sort column without clearing the primary; Shift-click through descending removes that column from the sort stack. `onSort` receives the clicked column plus `columns` (ordered active sorts); `getSortColumns()` returns the same list.
 
-Optional **row selection**: set `data-table-selectable` on `.table-block`, a `data-table-select-all` checkbox in the header row, and `data-table-row-select` on each row. Pair rows with `data-table-row-id` for stable ids in callbacks. Body rows highlight lightly on hover; when selectable, clicking anywhere on a row toggles that row (interactive controls inside the row are left alone).
+Optional **row selection**: set `data-table-selectable` on `.table-block`, a `data-table-select-all` checkbox in the header row, and `data-table-row-select` on each row. Pair rows with `data-table-row-id` for stable ids in callbacks. Body rows show accent-tinted hover feedback with one outer accent border per row (pointer feedback — not the same as checkbox selection). When selectable, clicking anywhere on a row toggles that row (interactive controls inside the row are left alone).
 
 ```html
 <div class="table-block" id="issues-table" data-table-sortable data-table-selectable>
