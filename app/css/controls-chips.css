@@ -35,7 +35,7 @@ button.chip {
 
 button.chip:hover:not(:disabled) {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
 }
 
@@ -62,7 +62,7 @@ button.chip:disabled {
 
 .chip[aria-pressed="true"],
 .chip.is-selected {
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   border-color: var(--accent);
   color: var(--text);
 }
@@ -76,13 +76,12 @@ button.chip:disabled {
 .chip.is-selected:hover:not(:disabled),
 button.chip.chip--removable:hover:not(:disabled) {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   color: var(--text);
 }
 
 .chip[aria-pressed="true"]:active:not(:disabled),
-.chip.is-selected:active:not(:disabled),
-button.chip.chip--removable:active:not(:disabled) {
+.chip.is-selected:active:not(:disabled) {
   border-color: var(--accent);
   background: color-mix(
     in srgb,

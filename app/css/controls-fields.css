@@ -151,7 +151,7 @@
 .combobox-option:focus-visible,
 .combobox-option.is-active {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   color: var(--text);
   outline: none;
   transition-duration: 0s;
@@ -171,7 +171,7 @@
 }
 
 .combobox-option.is-selected {
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   border-color: var(--accent);
   color: var(--text);
 }
@@ -179,7 +179,7 @@
 .combobox-option.is-selected:hover,
 .combobox-option.is-selected:focus-visible,
 .combobox-option.is-selected.is-active {
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   border-color: var(--accent);
   color: var(--text);
   transition-duration: 0s;
@@ -809,7 +809,7 @@
 
 .date-picker-day:hover:not(:disabled):not(.is-selected),
 .date-picker-choice:hover:not(:disabled):not(.is-selected) {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), transparent);
 }
 
 .date-picker-day.is-selected,

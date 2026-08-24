@@ -134,7 +134,7 @@ svg.dropdown-menu-item-icon {
 .dropdown-menu-item:hover,
 .dropdown-menu-item:focus-visible {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   /* Beat `a:hover` / footer link accent so highlighted text stays --text. */
   color: var(--text);
   outline: none;
@@ -157,7 +157,7 @@ svg.dropdown-menu-item-icon {
 .dropdown-menu-item.is-selected,
 .dropdown-menu-item[aria-checked="true"],
 .combo-menu-item.is-selected {
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   border-color: var(--accent);
   border-radius: 0;
   color: var(--text);
@@ -174,7 +174,7 @@ svg.dropdown-menu-item-icon {
 .dropdown-menu-item[aria-checked="true"]:focus-visible,
 .combo-menu-item.is-selected:hover,
 .combo-menu-item.is-selected:focus-visible {
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   border-color: var(--accent);
   color: var(--text);
   transition-duration: 0s;
@@ -370,12 +370,12 @@ li:not(:first-child) > .dropdown-menu-group {
   align-items: center;
 }
 
-/* Continuous selection in grid mode (`syncListGridSelectionJoins` join / corner classes). */
+/* Continuous selection in grid mode (`syncListGridSelectionJoins` join / corner classes).
+   Combo menus never use `--grid` — omit `.combo-menu-item` here. */
 :is(.dropdown-menu--grid, .combobox-list--grid)
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ) {
   position: relative;
@@ -386,7 +386,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-join-top {
   border-top-width: 0;
@@ -397,7 +396,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-join-bottom {
   border-bottom-width: 0;
@@ -408,7 +406,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-join-left {
   border-left-width: 0;
@@ -419,7 +416,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-join-right {
   border-right-width: 0;
@@ -430,7 +426,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-corner-tl {
   border-top-left-radius: 6px;
@@ -440,7 +435,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-corner-tr {
   border-top-right-radius: 6px;
@@ -450,7 +444,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-corner-bl {
   border-bottom-left-radius: 6px;
@@ -460,7 +453,6 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-selection-corner-br {
   border-bottom-right-radius: 6px;
@@ -482,7 +474,7 @@ li:not(:first-child) > .dropdown-menu-group {
 }
 
 :is(.dropdown-menu--grid, .combobox-list--grid) > .list-grid-selection-outline path {
-  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  fill: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
   fill-rule: evenodd;
   stroke: var(--accent);
   stroke-width: 1;
@@ -493,28 +485,24 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ),
 :is(.dropdown-menu--grid, .combobox-list--grid).is-selection-outlined
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ):hover,
 :is(.dropdown-menu--grid, .combobox-list--grid).is-selection-outlined
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ):focus-visible,
 :is(.dropdown-menu--grid, .combobox-list--grid).is-selection-outlined
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-active {
   background: transparent;
@@ -527,14 +515,12 @@ li:not(:first-child) > .dropdown-menu-group {
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ):active,
 :is(.dropdown-menu--grid, .combobox-list--grid).is-selection-outlined
   :is(
     .dropdown-menu-item.is-selected,
     .dropdown-menu-item[aria-checked="true"],
-    .combo-menu-item.is-selected,
     .combobox-option.is-selected
   ).is-pressed {
   background: color-mix(

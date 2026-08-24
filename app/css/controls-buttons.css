@@ -1,4 +1,4 @@
-﻿.toolbar {
+.toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -44,7 +44,7 @@ a.btn:hover {
 
 .btn:hover:not(:disabled) {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   color: var(--text);
   transition-duration: 0s;
 }
@@ -163,7 +163,7 @@ a.btn.btn-danger:hover {
 .btn-toggle[aria-pressed="true"]:active:not(:disabled) {
   background: color-mix(
     in srgb,
-    var(--accent) var(--control-selected-mix),
+    var(--accent) var(--control-press-mix),
     var(--surface)
   );
   border-color: var(--accent);
@@ -191,7 +191,7 @@ a.btn.btn-danger:hover {
 
 .btn-toggle.btn-toggle--always-active[aria-pressed="true"]:hover:not(:disabled) {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
 }
 
 .btn-toggle:has(.btn-toggle-label) {
