@@ -43,6 +43,11 @@ let activeTutorial = null;
  *   onLeave?: (ctx: { index: number, step: NormalizedTutorialStep }) => void,
  * }} TutorialStep
  *
+ * A node with a `steps` array is authoring sugar for a **group only**: it is
+ * flattened away and any sibling leaf fields (`target`, `title`, …) on that
+ * same object are ignored. `when` / `onEnter` / `onLeave` / `goTo` indices are
+ * always post-flatten leaf indices.
+ *
  * @typedef {{
  *   target: string | Element | (() => string | Element | null | undefined) | null,
  *   title: string,
@@ -83,6 +88,8 @@ function normalizeWhen(when) {
 
 /**
  * AND two step conditions. `undefined` / `true` are no-ops; `false` wins.
+ * Callers should pass values already normalised by {@link normalizeWhen}
+ * (boolean | function | undefined).
  * @param {TutorialWhen | undefined} parentWhen
  * @param {TutorialWhen | undefined} childWhen
  * @returns {TutorialWhen | undefined}
@@ -91,16 +98,7 @@ export function combineTutorialWhen(parentWhen, childWhen) {
   if (parentWhen === undefined || parentWhen === true) return childWhen;
   if (childWhen === undefined || childWhen === true) return parentWhen;
   if (parentWhen === false || childWhen === false) return false;
-  if (typeof parentWhen === "function" && typeof childWhen === "function") {
-    return (ctx) => Boolean(parentWhen(ctx)) && Boolean(childWhen(ctx));
-  }
-  if (typeof parentWhen === "function") {
-    return (ctx) => Boolean(parentWhen(ctx)) && Boolean(childWhen);
-  }
-  if (typeof childWhen === "function") {
-    return (ctx) => Boolean(parentWhen) && Boolean(childWhen(ctx));
-  }
-  return Boolean(parentWhen) && Boolean(childWhen);
+  return (ctx) => Boolean(parentWhen(ctx)) && Boolean(childWhen(ctx));
 }
 
 /**
@@ -190,8 +188,65 @@ export function isTutorialStepEligible(step, ctx) {
 }
 
 /**
- * Next eligible index at or after `fromIndex` (forward) / at or before (backward).
+ * Whether a step declares a spotlight target (selector, element, or resolver).
+ * @param {NormalizedTutorialStep | null | undefined} step
+ * @returns {boolean}
+ */
+export function tutorialStepHasTargetRef(step) {
+  if (!step) return false;
+  return step.target !== null && step.target !== undefined && step.target !== "";
+}
+
+/**
+ * Whether a step can be shown right now: `when` passes, and any target resolves.
+ * @param {NormalizedTutorialStep | null | undefined} step
+ * @param {TutorialWhenContext} [ctx]
+ * @param {{
+ *   resolveTarget?: (target: NormalizedTutorialStep["target"]) => HTMLElement | null,
+ * }} [options]
+ * @returns {boolean}
+ */
+export function isTutorialStepShowable(step, ctx, options) {
+  if (!isTutorialStepEligible(step, ctx)) return false;
+  if (!tutorialStepHasTargetRef(step)) return true;
+  const resolveTarget = options?.resolveTarget ?? resolveTutorialTarget;
+  return Boolean(resolveTarget(step.target));
+}
+
+/**
+ * Next showable index at or after `fromIndex` (forward) / at or before (backward).
+ * Showable = eligible `when` and a resolvable target (or no target).
  * Out-of-range `fromIndex` → `-1` (does not clamp into the array).
+ * @param {NormalizedTutorialStep[] | null | undefined} steps
+ * @param {number} fromIndex
+ * @param {"forward" | "backward"} [direction]
+ * @param {{
+ *   resolveTarget?: (target: NormalizedTutorialStep["target"]) => HTMLElement | null,
+ * }} [options]
+ * @returns {number}
+ */
+export function findShowableTutorialIndex(
+  steps,
+  fromIndex,
+  direction = "forward",
+  options,
+) {
+  if (!Array.isArray(steps) || steps.length === 0) return -1;
+  if (!Number.isFinite(fromIndex)) return -1;
+  let i = Math.trunc(fromIndex);
+  if (i < 0 || i >= steps.length) return -1;
+  const delta = direction === "backward" ? -1 : 1;
+  while (i >= 0 && i < steps.length) {
+    const step = steps[i];
+    if (isTutorialStepShowable(step, { index: i, step }, options)) return i;
+    i += delta;
+  }
+  return -1;
+}
+
+/**
+ * Next index that passes `when` only (ignores missing targets). Prefer
+ * {@link findShowableTutorialIndex} for navigation.
  * @param {NormalizedTutorialStep[] | null | undefined} steps
  * @param {number} fromIndex
  * @param {"forward" | "backward"} [direction]
@@ -216,33 +271,85 @@ export function findEligibleTutorialIndex(
 }
 
 /**
- * How many steps currently pass `when`.
+ * Closest showable index to `targetIndex` (itself first; then ±1, ±2, …).
+ * Equal distance prefers the forward neighbour.
  * @param {NormalizedTutorialStep[] | null | undefined} steps
+ * @param {number} targetIndex
+ * @param {{
+ *   resolveTarget?: (target: NormalizedTutorialStep["target"]) => HTMLElement | null,
+ * }} [options]
  * @returns {number}
  */
-export function countEligibleTutorialSteps(steps) {
+export function nearestShowableTutorialIndex(steps, targetIndex, options) {
+  if (!Array.isArray(steps) || steps.length === 0) return -1;
+  const start = clampTutorialIndex(targetIndex, steps.length);
+  if (start < 0) return -1;
+  if (
+    isTutorialStepShowable(steps[start], { index: start, step: steps[start] }, options)
+  ) {
+    return start;
+  }
+  for (let distance = 1; distance < steps.length; distance += 1) {
+    const forward = start + distance;
+    if (
+      forward < steps.length &&
+      isTutorialStepShowable(
+        steps[forward],
+        { index: forward, step: steps[forward] },
+        options,
+      )
+    ) {
+      return forward;
+    }
+    const backward = start - distance;
+    if (
+      backward >= 0 &&
+      isTutorialStepShowable(
+        steps[backward],
+        { index: backward, step: steps[backward] },
+        options,
+      )
+    ) {
+      return backward;
+    }
+  }
+  return -1;
+}
+
+/**
+ * How many steps are currently showable (`when` + resolvable target).
+ * @param {NormalizedTutorialStep[] | null | undefined} steps
+ * @param {{
+ *   resolveTarget?: (target: NormalizedTutorialStep["target"]) => HTMLElement | null,
+ * }} [options]
+ * @returns {number}
+ */
+export function countEligibleTutorialSteps(steps, options) {
   if (!Array.isArray(steps)) return 0;
   let count = 0;
   for (let i = 0; i < steps.length; i += 1) {
     const step = steps[i];
-    if (isTutorialStepEligible(step, { index: i, step })) count += 1;
+    if (isTutorialStepShowable(step, { index: i, step }, options)) count += 1;
   }
   return count;
 }
 
 /**
- * 0-based ordinal of `index` among currently eligible steps, or `-1`.
+ * 0-based ordinal of `index` among currently showable steps, or `-1`.
  * @param {NormalizedTutorialStep[] | null | undefined} steps
  * @param {number} index
+ * @param {{
+ *   resolveTarget?: (target: NormalizedTutorialStep["target"]) => HTMLElement | null,
+ * }} [options]
  * @returns {number}
  */
-export function eligibleTutorialOrdinal(steps, index) {
+export function eligibleTutorialOrdinal(steps, index, options) {
   if (!Array.isArray(steps) || !Number.isFinite(index)) return -1;
   const target = Math.trunc(index);
   let ordinal = 0;
   for (let i = 0; i < steps.length; i += 1) {
     const step = steps[i];
-    if (!isTutorialStepEligible(step, { index: i, step })) continue;
+    if (!isTutorialStepShowable(step, { index: i, step }, options)) continue;
     if (i === target) return ordinal;
     ordinal += 1;
   }
@@ -738,9 +845,9 @@ export function initTutorial(options) {
 
   function syncPopover(step, index, target) {
     const isFirst =
-      findEligibleTutorialIndex(steps, index - 1, "backward") < 0;
+      findShowableTutorialIndex(steps, index - 1, "backward") < 0;
     const isLast =
-      findEligibleTutorialIndex(steps, index + 1, "forward") < 0;
+      findShowableTutorialIndex(steps, index + 1, "forward") < 0;
 
     popover.setAnchor(target);
     popover.update({
@@ -806,6 +913,10 @@ export function initTutorial(options) {
   }
 
   /**
+   * Present a known-showable step, or scan from `index` in `direction` while
+   * reporting missing targets. Exhausted scan with nothing to show:
+   * - active tour already on a step → stay put (do not stop)
+   * - starting / nothing shown yet → stop (`missing-target` or `empty`)
    * @param {number} index
    * @param {"forward" | "backward"} [direction]
    */
@@ -818,13 +929,14 @@ export function initTutorial(options) {
       return;
     }
 
-    /* Skip ineligible `when` steps silently; skip missing targets with a warning. */
     let skippedMissingTarget = false;
+    /** @type {number} */
+    let lastMissingIndex = i;
+
     for (let attempts = 0; attempts < steps.length; attempts += 1) {
       const step = steps[i];
       const nextIndex = direction === "backward" ? i - 1 : i + 1;
-      const canAdvance =
-        nextIndex >= 0 && nextIndex < steps.length;
+      const canAdvance = nextIndex >= 0 && nextIndex < steps.length;
 
       if (!isTutorialStepEligible(step, { index: i, step })) {
         if (!canAdvance) break;
@@ -832,32 +944,25 @@ export function initTutorial(options) {
         continue;
       }
 
-      const hasTargetRef =
-        step.target !== null && step.target !== undefined && step.target !== "";
-      const target = resolveTutorialTarget(step.target);
-
-      if (hasTargetRef && !target) {
+      if (tutorialStepHasTargetRef(step) && !resolveTutorialTarget(step.target)) {
         skippedMissingTarget = true;
-        if (!canAdvance) {
-          reportTutorialMissingTarget({
-            id,
-            index: i,
-            step,
-            outcome: "stop",
-          });
-          stop({ reason: "missing-target" });
-          return;
-        }
+        lastMissingIndex = i;
         reportTutorialMissingTarget({
           id,
           index: i,
           step,
-          outcome: direction === "backward" ? "skip-backward" : "skip-forward",
+          outcome: canAdvance
+            ? direction === "backward"
+              ? "skip-backward"
+              : "skip-forward"
+            : "stop",
         });
+        if (!canAdvance) break;
         i = nextIndex;
         continue;
       }
 
+      const target = resolveTutorialTarget(step.target);
       leaveCurrentStep();
       stepIndex = i;
 
@@ -896,11 +1001,20 @@ export function initTutorial(options) {
       return;
     }
 
+    /* Nothing showable in this direction. Keep the current step when one is
+       already on screen (e.g. Back over a missing target). Stop only when the
+       tour has not presented anything yet. */
+    if (stepIndex >= 0) return;
+
     if (skippedMissingTarget) {
+      const missingStep = steps[lastMissingIndex] ?? {
+        target: null,
+        title: "",
+      };
       reportTutorialMissingTarget({
         id,
-        index: clampTutorialIndex(index, steps.length),
-        step: steps[i] ?? { target: null, title: "" },
+        index: lastMissingIndex,
+        step: missingStep,
         outcome: "stop",
       });
       stop({ reason: "missing-target" });
@@ -913,19 +1027,23 @@ export function initTutorial(options) {
     if (!isActive || stepIndex < 0) return;
     const step = steps[stepIndex];
     const target = resolveTutorialTarget(step.target);
-    if (
-      step.target !== null &&
-      step.target !== undefined &&
-      step.target !== "" &&
-      !target
-    ) {
+    if (tutorialStepHasTargetRef(step) && !target) {
       reportTutorialMissingTarget({
         id,
         index: stepIndex,
         step,
         outcome: "disconnected",
       });
-      showStep(stepIndex + 1, "forward");
+      const nextShowable = findShowableTutorialIndex(
+        steps,
+        stepIndex + 1,
+        "forward",
+      );
+      if (nextShowable < 0) {
+        stop({ reason: "missing-target" });
+        return;
+      }
+      showStep(nextShowable, "forward");
       return;
     }
     placeSpotlight(target, step.padding ?? defaultPadding, step.interactive);
@@ -953,7 +1071,35 @@ export function initTutorial(options) {
     stepIndex = -1;
     setHidden(overlay, false);
     document.body.classList.add("tutorial-open");
-    showStep(clampTutorialIndex(index, steps.length), "forward");
+
+    const showable = nearestShowableTutorialIndex(steps, index);
+    if (showable < 0) {
+      const anyMissing = steps.some(
+        (step, i) =>
+          isTutorialStepEligible(step, { index: i, step }) &&
+          tutorialStepHasTargetRef(step) &&
+          !resolveTutorialTarget(step.target),
+      );
+      if (anyMissing) {
+        const firstMissing = steps.findIndex(
+          (step, i) =>
+            isTutorialStepEligible(step, { index: i, step }) &&
+            tutorialStepHasTargetRef(step) &&
+            !resolveTutorialTarget(step.target),
+        );
+        reportTutorialMissingTarget({
+          id,
+          index: firstMissing,
+          step: steps[firstMissing],
+          outcome: "stop",
+        });
+        stop({ reason: "missing-target" });
+        return;
+      }
+      stop({ reason: "empty" });
+      return;
+    }
+    showStep(showable, "forward");
   }
 
   /**
@@ -996,22 +1142,32 @@ export function initTutorial(options) {
 
   function next() {
     if (!isActive) return;
-    if (findEligibleTutorialIndex(steps, stepIndex + 1, "forward") < 0) {
+    const nextShowable = findShowableTutorialIndex(
+      steps,
+      stepIndex + 1,
+      "forward",
+    );
+    if (nextShowable < 0) {
       stop({ reason: "done" });
       return;
     }
-    showStep(stepIndex + 1, "forward");
+    showStep(nextShowable, "forward");
   }
 
   function back() {
     if (!isActive) return;
-    if (findEligibleTutorialIndex(steps, stepIndex - 1, "backward") < 0) {
-      return;
-    }
-    showStep(stepIndex - 1, "backward");
+    const prevShowable = findShowableTutorialIndex(
+      steps,
+      stepIndex - 1,
+      "backward",
+    );
+    if (prevShowable < 0) return;
+    showStep(prevShowable, "backward");
   }
 
   /**
+   * Jump to the nearest showable step to `index`. No-op when none exist
+   * (keeps the current step if the tour is already showing one).
    * @param {number} index
    */
   function goTo(index) {
@@ -1019,8 +1175,10 @@ export function initTutorial(options) {
       start(index);
       return;
     }
-    const direction = index < stepIndex ? "backward" : "forward";
-    showStep(index, direction);
+    const showable = nearestShowableTutorialIndex(steps, index);
+    if (showable < 0) return;
+    const direction = showable < stepIndex ? "backward" : "forward";
+    showStep(showable, direction);
   }
 
   function onTriggerClick(event) {

@@ -803,7 +803,7 @@ const tour = initTutorial({
     },
   ],
   onFinish: ({ reason }) => {
-    // reason: done | close | escape | stop | …
+    // reason: done | close | escape | stop | missing-target | empty | …
   },
 });
 
@@ -821,11 +821,17 @@ tour?.start(); // or rely on startTriggers
 | `padding` | Spotlight padding around the target (px) |
 | `scroll` | Scroll the target into view before opening the step popover (default `true`) |
 | `onEnter` / `onLeave` | Optional callbacks when a step is shown or left — use to reset pagination, tabs, etc. before the next target is resolved |
-| `when` | `boolean` or `(ctx) => boolean` (`ctx`: `{ index, step }`). Re-evaluated on start / next / back / `goTo`. `false` skips the step silently (unlike a missing target, which warns) |
-| `steps` | Nested group (authoring sugar). Flattened at init; the group's `when` is AND-ed with each child's `when`. The group itself is not shown |
+| `when` | `boolean` or `(ctx) => boolean` (`ctx`: `{ index, step }`). `index` is the **post-flatten** leaf index (same as `goTo(i)` / `onEnter`). Re-evaluated on start / next / back / `goTo`. `false` skips the step silently (unlike a missing target, which warns). A thrown `when` is treated as ineligible and logged |
+| `steps` | Nested group (authoring sugar). Flattened at init; the group's `when` is AND-ed with each child's `when`. The group itself is not shown — if the same object also has `target` / `title` / `interactive`, those leaf fields are ignored |
 
 ```javascript
 let path = "a";
+
+initCombo(document.getElementById("mode-combo"), {
+  onSelect: ({ value }) => {
+    path = value;
+  },
+});
 
 initTutorial({
   id: "branching",
@@ -850,9 +856,9 @@ initTutorial({
 });
 ```
 
-`when` is not snapshotted when the tour starts, so a choice on an earlier interactive step can change the remaining path. Back / Done and `Step {n} of {N}` count only currently eligible steps. If the **current** step's `when` later becomes false, the tour stays on it until the user moves.
+`when` is not snapshotted when the tour starts, so a choice on an earlier interactive step can change the remaining path. Navigation (`next` / `back` / `goTo` / `start`) and Back / Done / `Step {n} of {N}` follow **showable** steps: currently eligible `when` **and** a resolvable target (or no target). `goTo(i)` jumps to the nearest showable step to `i` (itself first; equal distance prefers forward) and does not end the tour when none exist. If the **current** step's `when` later becomes false, the tour stays on it until the user moves.
 
-Steps whose `target` cannot be resolved log a **console warning** and are skipped; if no step can be shown the tour logs a **console error** and stops (`onFinish` reason `missing-target`). If the current target leaves the document during the tour (scroll/resize), a warning is logged and the tour advances forward.
+Steps whose `target` cannot be resolved log a **console warning** and are skipped; if no step can be shown when starting the tour logs a **console error** and stops (`onFinish` reason `missing-target`). If the current target leaves the document during the tour (scroll/resize), a warning is logged and the tour advances to the next showable step (or stops with `missing-target`).
 
 Escape closes the active tutorial (priority above dialogs). See [`DESIGN.md`](DESIGN.md) for when to prefer a tutorial vs a persistent tooltip. Demo: [`demo.html`](demo.html).
 

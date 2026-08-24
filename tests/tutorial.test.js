@@ -9,9 +9,13 @@ import {
   describeTutorialTarget,
   eligibleTutorialOrdinal,
   findEligibleTutorialIndex,
+  findShowableTutorialIndex,
   formatTutorialMissingTargetMessage,
   isTutorialStepEligible,
+  isTutorialStepShowable,
+  nearestShowableTutorialIndex,
   normalizeTutorialSteps,
+  tutorialStepHasTargetRef,
 } from "../app/components/tutorial.js";
 
 test("computePopoverPlacement centres without an anchor and hides the notch", () => {
@@ -259,6 +263,62 @@ test("findEligibleTutorialIndex skips ineligible steps and does not clamp", () =
   assert.equal(findEligibleTutorialIndex(steps, 4, "forward"), -1);
 });
 
+test("findShowableTutorialIndex skips missing targets as well as when", () => {
+  const resolveTarget = (target) =>
+    target === "#ok" ? /** @type {HTMLElement} */ ({}) : null;
+
+  const steps = normalizeTutorialSteps([
+    { title: "Intro" },
+    { title: "Missing", target: "#gone" },
+    { title: "Hidden", target: "#ok", when: false },
+    { title: "Visible", target: "#ok" },
+    { title: "Outro" },
+  ]);
+
+  assert.equal(
+    findShowableTutorialIndex(steps, 0, "forward", { resolveTarget }),
+    0,
+  );
+  assert.equal(
+    findShowableTutorialIndex(steps, 1, "forward", { resolveTarget }),
+    3,
+  );
+  assert.equal(
+    findShowableTutorialIndex(steps, 4, "backward", { resolveTarget }),
+    4,
+  );
+  assert.equal(
+    findShowableTutorialIndex(steps, 2, "backward", { resolveTarget }),
+    0,
+  );
+  assert.equal(
+    findEligibleTutorialIndex(steps, 1, "forward"),
+    1,
+    "when-only helper still lands on the missing target",
+  );
+});
+
+test("nearestShowableTutorialIndex prefers the requested index then forward", () => {
+  const resolveTarget = (target) =>
+    target === "#ok" ? /** @type {HTMLElement} */ ({}) : null;
+
+  const steps = normalizeTutorialSteps([
+    { title: "A", target: "#ok" },
+    { title: "B", target: "#gone" },
+    { title: "C", when: false },
+    { title: "D", target: "#ok" },
+  ]);
+
+  assert.equal(nearestShowableTutorialIndex(steps, 0, { resolveTarget }), 0);
+  assert.equal(nearestShowableTutorialIndex(steps, 1, { resolveTarget }), 0);
+  assert.equal(nearestShowableTutorialIndex(steps, 2, { resolveTarget }), 3);
+  assert.equal(tutorialStepHasTargetRef(steps[1]), true);
+  assert.equal(
+    isTutorialStepShowable(steps[1], { index: 1, step: steps[1] }, { resolveTarget }),
+    false,
+  );
+});
+
 test("eligible step counts and ordinals ignore the skipped branch", () => {
   const steps = normalizeTutorialSteps([
     { title: "Intro" },
@@ -274,6 +334,20 @@ test("eligible step counts and ordinals ignore the skipped branch", () => {
   assert.equal(eligibleTutorialOrdinal(steps, 3), 2);
 });
 
+test("showable counts omit missing targets", () => {
+  const resolveTarget = (target) =>
+    target === "#ok" ? /** @type {HTMLElement} */ ({}) : null;
+
+  const steps = normalizeTutorialSteps([
+    { title: "Intro" },
+    { title: "Gone", target: "#gone" },
+    { title: "Ok", target: "#ok" },
+  ]);
+
+  assert.equal(countEligibleTutorialSteps(steps, { resolveTarget }), 2);
+  assert.equal(eligibleTutorialOrdinal(steps, 2, { resolveTarget }), 1);
+});
+
 test("combineTutorialWhen ANDs parent and child conditions", () => {
   const child = () => true;
   assert.equal(combineTutorialWhen(undefined, child), child);
@@ -287,4 +361,41 @@ test("combineTutorialWhen ANDs parent and child conditions", () => {
   );
   assert.equal(typeof combined, "function");
   assert.equal(combined({ index: 0, step: {} }), false);
+});
+
+test("navigation helpers model next/back/goTo over a live when path", () => {
+  let path = "a";
+  const steps = normalizeTutorialSteps([
+    { title: "Pick" },
+    {
+      when: () => path === "b",
+      steps: [{ title: "Path B" }],
+    },
+    {
+      when: () => path !== "b",
+      steps: [{ title: "Path A" }],
+    },
+    { title: "Rejoin" },
+  ]);
+
+  /* Start → pick (0). */
+  assert.equal(nearestShowableTutorialIndex(steps, 0), 0);
+
+  /* Next from pick with default path A → Path A (flattened index 2). */
+  assert.equal(findShowableTutorialIndex(steps, 1, "forward"), 2);
+
+  path = "b";
+  assert.equal(findShowableTutorialIndex(steps, 1, "forward"), 1);
+  assert.equal(findShowableTutorialIndex(steps, 2, "forward"), 3);
+
+  /* Back from rejoin with path B → Path B, not Path A. */
+  assert.equal(findShowableTutorialIndex(steps, 2, "backward"), 1);
+
+  /* goTo(2) while path B → nearest showable is Path B (1) or Rejoin (3);
+     equal distance from 2 prefers forward → 3. */
+  assert.equal(nearestShowableTutorialIndex(steps, 2), 3);
+
+  path = "a";
+  assert.equal(countEligibleTutorialSteps(steps), 3);
+  assert.equal(eligibleTutorialOrdinal(steps, 2), 1);
 });
