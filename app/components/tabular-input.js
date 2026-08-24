@@ -471,18 +471,15 @@ export function initTabularInput(
 
   prepareButtonLabelFlash(copyBtn, {
     idle: "Copy",
-    lockWidth: true,
   });
   prepareButtonLabelFlash(pasteBtn, {
     idle: "Paste",
     success: "Pasted",
-    lockWidth: true,
     measureLabels: ["Ctrl+V"],
   });
   prepareButtonLabelFlash(pasteHeadersBtn, {
     idle: "Paste with Headers",
     success: "Pasted",
-    lockWidth: true,
     measureLabels: ["Ctrl+V"],
   });
 

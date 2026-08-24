@@ -17,6 +17,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Combobox hosts elevate with `.is-popup-open` while the suggestion list is open (same stacking fix as dropdown / combo). Table row hover, time-picker duration mode, slim-size APIs, and tri-state cycle scope documented in `USAGE.md` / `DESIGN.md`.
 - Date / time / duration field CSS shares one trigger, popup shell, icon, and quick-action bar block in `controls-fields.css` (duration popups reuse `.time-picker-popup`).
 - Documented time-panel **00:00** / **Now** defaults per host (standalone time picker, duration mode, duration input, date+time combined picker).
+- Banner rotation requires `data-banner-expire`; `hideBanner()` resets to the first variation. `prepareButtonLabelFlash()` defaults `lockWidth` to on. Section panel inner gaps use `--panel-gap`.
 
 ### Changed
 
@@ -29,7 +30,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
 - `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
-- Button label flash helpers ([`app/utils/button-label.js`](app/utils/button-label.js)): `.btn-label-flash` + `prepareButtonLabelFlash()` / `flashButtonLabel()` for in-place Copy → Copied feedback; optional `lockWidth` auto-measure (default off). Code block and tabular input labeled clipboard actions use this pattern.
+- Button label flash helpers ([`app/utils/button-label.js`](app/utils/button-label.js)): `.btn-label-flash` + `prepareButtonLabelFlash()` / `flashButtonLabel()` for in-place Copy → Copied feedback; `lockWidth` auto-measure defaults on (pass `false` to skip). Code block and tabular input labeled clipboard actions use this pattern.
 - Click press feedback for enabled toggle buttons, menu items, combobox options, and chips via `:active` tint (combobox options use `.is-pressed` because option `mousedown` `preventDefault` keeps the input focused and suppresses `:active`). Extended to file dropzone, colour-set swatches, table sort, legend chips, segmented control, pagination, tabs, and theme toggle; hover mixes use `--control-hover-mix` where they were still hardcoded.
 - Tutorial scripts accept `when` on steps and nested `{ when, steps }` groups. Navigation and `Step {n} of {N}` follow currently showable steps (eligible `when` and resolvable target).
 

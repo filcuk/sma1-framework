@@ -16,7 +16,7 @@
 .section-panel__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: var(--panel-gap);
   align-items: end;
 }
 
@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: var(--panel-gap);
 }
 
 .section-panel__feedback {
@@ -50,7 +50,7 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--panel-gap);
   justify-self: start;
   min-width: 0;
 }

@@ -68,7 +68,7 @@ export function prepareButtonLabelFlash(
     idle,
     success = "Copied",
     fail = "Failed",
-    lockWidth = false,
+    lockWidth = true,
     measureLabels = [],
   } = {}
 ) {

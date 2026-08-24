@@ -245,6 +245,7 @@ export function hideBanner(bannerEl) {
 /**
  * Show a banner. Auto-hides when `expire` is set (ms) or `data-banner-expire` is on the element.
  * With `data-banner-rotate` and multiple `data-banner-variations`, expiry advances instead of hiding.
+ * `hideBanner()` resets the variation index to the first id (next show starts at the first slide).
  *
  * @param {HTMLElement | null} bannerEl
  * @param {{ expire?: number | string }} [options]

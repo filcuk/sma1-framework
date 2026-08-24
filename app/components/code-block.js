@@ -238,8 +238,8 @@ function createToolbarButton(action, meta) {
 
 /** @type {Readonly<Record<string, Parameters<typeof prepareButtonLabelFlash>[1]>>} */
 const LABELED_TOOLBAR_FLASH = {
-  copy: { idle: "Copy", lockWidth: true },
-  paste: { idle: "Paste", lockWidth: true, measureLabels: ["Ctrl+V"] },
+  copy: { idle: "Copy" },
+  paste: { idle: "Paste", measureLabels: ["Ctrl+V"] },
 };
 
 /**

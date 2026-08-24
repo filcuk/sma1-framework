@@ -90,7 +90,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initTitleNumbering()` / `setTitleNumbering()` / `syncTitleNumbering()` | Optional hierarchical outline prefixes (`data-title-numbering`) |
 | `initTab()` / `initTabs()` | Single tabbed section vs every `.tabs` block |
 | `setHidden()` / `parseBooleanAttr()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values |
-| `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); optional `lockWidth` — see [`button-label.js`](app/utils/button-label.js) |
+| `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); `lockWidth` defaults on — see [`button-label.js`](app/utils/button-label.js) |
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |

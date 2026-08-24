@@ -373,7 +373,7 @@ const demoLabelFlashShift = document.getElementById("demo-label-flash-shift");
 const demoLabelFlashFixed = document.getElementById("demo-label-flash-fixed");
 demoLabelFlashShift?.setAttribute("aria-label", "Copy");
 demoLabelFlashFixed?.setAttribute("aria-label", "Copy");
-prepareButtonLabelFlash(demoLabelFlashFixed, { idle: "Copy", lockWidth: true });
+prepareButtonLabelFlash(demoLabelFlashFixed, { idle: "Copy" });
 demoLabelFlashShift?.addEventListener("click", (e) => {
   void demoLabelFlashClick(e.currentTarget);
 });

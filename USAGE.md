@@ -877,7 +877,9 @@ Markup uses `.banner` plus a variant (`banner-success`, `banner-error`, …) and
 
 Auto-hide after a delay — set `data-banner-expire` (milliseconds) and call `showBanner()`. A light overlay drains across the banner for the duration of the timeout, then the banner fades out quickly.
 
-**Rotating variations** — list ids on `data-banner-variations` (space- or comma-separated). The first id matches the visible markup; additional variations live in hidden source nodes. With `data-banner-rotate`, expiry advances to the next variation and restarts the timer instead of hiding (loops when there are two or more).
+**Rotating variations** — list ids on `data-banner-variations` (space- or comma-separated). The first id matches the visible markup; additional variations live in hidden source nodes. With `data-banner-rotate`, expiry advances to the next variation and restarts the timer instead of hiding (loops when there are two or more). **`data-banner-expire` is required for rotation** — without a timeout, expiry never fires and the carousel does not advance.
+
+`hideBanner()` cancels any pending expiry and **resets the variation index to the first** id in `data-banner-variations` (or the markup default when there is only one). The next `showBanner()` therefore starts from the first variation again — not from whichever slide was showing when hidden.
 
 ```html
 <div id="status-banner" class="banner banner-warning hidden" role="status" hidden
@@ -1101,7 +1103,7 @@ prepareButtonLabelFlash(copyBtn, {
   idle: "Copy",
   success: "Copied",
   fail: "Failed",
-  lockWidth: true, // optional — auto-measure idle/success/fail (+ measureLabels)
+  // lockWidth: false, // optional — skip auto-measure when labels are same width
   measureLabels: [], // optional extra states (e.g. "Ctrl+V")
 });
 
@@ -1117,7 +1119,7 @@ copyBtn.addEventListener("click", async () => {
 });
 ```
 
-`lockWidth` defaults to **off**; enable it when a longer flash label would shift layout. Use `setButtonLabelFlash()` for other temporary labels (e.g. paste-arming **Ctrl+V**). See [`DESIGN.md`](DESIGN.md) (Action feedback).
+`lockWidth` defaults to **on** — `prepareButtonLabelFlash()` auto-measures idle / success / fail (plus `measureLabels`) so longer flash text does not shift layout. Pass `lockWidth: false` to skip. Use `setButtonLabelFlash()` for other temporary labels (e.g. paste-arming **Ctrl+V**). See [`DESIGN.md`](DESIGN.md) (Action feedback).
 
 ### Toggle button
 
