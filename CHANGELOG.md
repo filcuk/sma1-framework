@@ -21,6 +21,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
 - Button label flash helpers ([`app/utils/button-label.js`](app/utils/button-label.js)): `.btn-label-flash` + `prepareButtonLabelFlash()` / `flashButtonLabel()` for in-place Copy → Copied feedback; optional `lockWidth` auto-measure (default off). Code block and tabular input labeled clipboard actions use this pattern.
 - Click press feedback for enabled toggle buttons, menu items, combobox options, and chips via `:active` tint (combobox options use `.is-pressed` because option `mousedown` `preventDefault` keeps the input focused and suppresses `:active`).
+- Tutorial scripts accept `when` on steps and nested `{ when, steps }` groups. Ineligible steps are skipped silently; Back / Done and `Step {n} of {N}` follow the currently eligible path.
 
 ## [0.12.3] - 2026-08-19
 

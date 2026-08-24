@@ -4,8 +4,13 @@ import assert from "node:assert/strict";
 import { computePopoverPlacement } from "../app/components/popover.js";
 import {
   clampTutorialIndex,
+  combineTutorialWhen,
+  countEligibleTutorialSteps,
   describeTutorialTarget,
+  eligibleTutorialOrdinal,
+  findEligibleTutorialIndex,
   formatTutorialMissingTargetMessage,
+  isTutorialStepEligible,
   normalizeTutorialSteps,
 } from "../app/components/tutorial.js";
 
@@ -118,6 +123,7 @@ test("normalizeTutorialSteps fills defaults and accepts advanceOn click", () => 
   assert.equal(step.advanceOn, "click");
   assert.equal(step.padding, 16);
   assert.equal(step.scroll, true);
+  assert.equal(step.when, undefined);
 });
 
 test("describeTutorialTarget labels selectors, functions, and elements", () => {
@@ -172,4 +178,113 @@ test("normalizeTutorialSteps ignores unknown position and non-click advanceOn", 
   assert.equal(step.scroll, false);
   assert.equal(step.interactive, false);
   assert.equal(step.padding, null);
+});
+
+test("normalizeTutorialSteps flattens nested groups and ANDs inherited when", () => {
+  let parent = true;
+  let extra = true;
+  const steps = normalizeTutorialSteps([
+    { title: "Intro" },
+    {
+      when: () => parent,
+      steps: [
+        { title: "B1" },
+        { title: "B2", when: () => extra },
+      ],
+    },
+    { when: false, steps: [{ title: "Never" }] },
+    { title: "Outro" },
+  ]);
+
+  assert.equal(steps.length, 5);
+  assert.equal(steps[0].title, "Intro");
+  assert.equal(steps[0].when, undefined);
+  assert.equal(steps[1].title, "B1");
+  assert.equal(typeof steps[1].when, "function");
+  assert.equal(steps[2].title, "B2");
+  assert.equal(steps[3].title, "Never");
+  assert.equal(steps[3].when, false);
+  assert.equal(steps[4].title, "Outro");
+  assert.equal(isTutorialStepEligible(steps[3], { index: 3, step: steps[3] }), false);
+
+  assert.equal(isTutorialStepEligible(steps[1], { index: 1, step: steps[1] }), true);
+  extra = false;
+  assert.equal(isTutorialStepEligible(steps[2], { index: 2, step: steps[2] }), false);
+  parent = false;
+  extra = true;
+  assert.equal(isTutorialStepEligible(steps[1], { index: 1, step: steps[1] }), false);
+  assert.equal(isTutorialStepEligible(steps[2], { index: 2, step: steps[2] }), false);
+});
+
+test("isTutorialStepEligible treats boolean when and thrown when", () => {
+  assert.equal(isTutorialStepEligible({ when: true }), true);
+  assert.equal(isTutorialStepEligible({ when: false }), false);
+  assert.equal(isTutorialStepEligible({ when: () => 0 }), false);
+  assert.equal(isTutorialStepEligible({ when: () => "yes" }), true);
+
+  const warnings = [];
+  const originalWarn = console.warn;
+  console.warn = (...args) => {
+    warnings.push(args);
+  };
+  try {
+    assert.equal(
+      isTutorialStepEligible({
+        when: () => {
+          throw new Error("boom");
+        },
+      }),
+      false,
+    );
+  } finally {
+    console.warn = originalWarn;
+  }
+  assert.equal(warnings.length, 1);
+});
+
+test("findEligibleTutorialIndex skips ineligible steps and does not clamp", () => {
+  const steps = normalizeTutorialSteps([
+    { title: "A" },
+    { title: "B", when: false },
+    { title: "C", when: () => true },
+    { title: "D", when: false },
+  ]);
+
+  assert.equal(findEligibleTutorialIndex(steps, 0, "forward"), 0);
+  assert.equal(findEligibleTutorialIndex(steps, 1, "forward"), 2);
+  assert.equal(findEligibleTutorialIndex(steps, 3, "forward"), -1);
+  assert.equal(findEligibleTutorialIndex(steps, 3, "backward"), 2);
+  assert.equal(findEligibleTutorialIndex(steps, 0, "backward"), 0);
+  assert.equal(findEligibleTutorialIndex(steps, -1, "forward"), -1);
+  assert.equal(findEligibleTutorialIndex(steps, 4, "forward"), -1);
+});
+
+test("eligible step counts and ordinals ignore the skipped branch", () => {
+  const steps = normalizeTutorialSteps([
+    { title: "Intro" },
+    { title: "A", when: () => false },
+    { title: "B", when: () => true },
+    { title: "Outro" },
+  ]);
+
+  assert.equal(countEligibleTutorialSteps(steps), 3);
+  assert.equal(eligibleTutorialOrdinal(steps, 0), 0);
+  assert.equal(eligibleTutorialOrdinal(steps, 1), -1);
+  assert.equal(eligibleTutorialOrdinal(steps, 2), 1);
+  assert.equal(eligibleTutorialOrdinal(steps, 3), 2);
+});
+
+test("combineTutorialWhen ANDs parent and child conditions", () => {
+  const child = () => true;
+  assert.equal(combineTutorialWhen(undefined, child), child);
+  assert.equal(combineTutorialWhen(true, child), child);
+  assert.equal(combineTutorialWhen(false, child), false);
+  assert.equal(combineTutorialWhen(child, undefined), child);
+
+  const combined = combineTutorialWhen(
+    () => true,
+    () => false,
+  );
+  assert.equal(typeof combined, "function");
+  assert.equal(combined({ index: 0, step: {} }), false);
 });

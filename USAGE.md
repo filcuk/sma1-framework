@@ -500,7 +500,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/external-link.js`](app/external-link.js). Opt out with `data-no-external-icon`. |
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
-| **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
+| **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps and `when` / nested `steps` branches. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
 | **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/banner.js`](app/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
 | **Callouts** | `.callout` accent-edged tip cards for standing information (CSS-only). See **Callouts** under Using components. |
 | **Code blocks** | `.code-block` with Prism highlighting, configurable toolbar (top/bottom/none), hover copy/maximise, view/select/edit modes. [`app/code-block.js`](app/code-block.js). |
@@ -821,6 +821,36 @@ tour?.start(); // or rely on startTriggers
 | `padding` | Spotlight padding around the target (px) |
 | `scroll` | Scroll the target into view before opening the step popover (default `true`) |
 | `onEnter` / `onLeave` | Optional callbacks when a step is shown or left — use to reset pagination, tabs, etc. before the next target is resolved |
+| `when` | `boolean` or `(ctx) => boolean` (`ctx`: `{ index, step }`). Re-evaluated on start / next / back / `goTo`. `false` skips the step silently (unlike a missing target, which warns) |
+| `steps` | Nested group (authoring sugar). Flattened at init; the group's `when` is AND-ed with each child's `when`. The group itself is not shown |
+
+```javascript
+let path = "a";
+
+initTutorial({
+  id: "branching",
+  startTriggers: "#start-branching-tour",
+  steps: [
+    {
+      target: "#mode-combo",
+      title: "Pick a path",
+      body: "Choose Option A or Option B, then press Next.",
+      interactive: true,
+    },
+    {
+      when: () => path === "b",
+      steps: [{ target: "#path-b", title: "Option B" }],
+    },
+    {
+      when: () => path !== "b",
+      steps: [{ target: "#path-a", title: "Option A" }],
+    },
+    { title: "Both paths rejoin here" },
+  ],
+});
+```
+
+`when` is not snapshotted when the tour starts, so a choice on an earlier interactive step can change the remaining path. Back / Done and `Step {n} of {N}` count only currently eligible steps. If the **current** step's `when` later becomes false, the tour stays on it until the user moves.
 
 Steps whose `target` cannot be resolved log a **console warning** and are skipped; if no step can be shown the tour logs a **console error** and stops (`onFinish` reason `missing-target`). If the current target leaves the document during the tour (scroll/resize), a warning is logged and the tour advances forward.
 

@@ -22,6 +22,13 @@ let activeTutorial = null;
  * @typedef {"auto" | "top" | "bottom" | "left" | "right"} TutorialPosition
  *
  * @typedef {{
+ *   index: number,
+ *   step: NormalizedTutorialStep,
+ * }} TutorialWhenContext
+ *
+ * @typedef {boolean | ((ctx: TutorialWhenContext) => boolean)} TutorialWhen
+ *
+ * @typedef {{
  *   target?: string | Element | (() => string | Element | null | undefined) | null,
  *   title?: string,
  *   body?: string | Node | null,
@@ -30,6 +37,8 @@ let activeTutorial = null;
  *   advanceOn?: "click" | false | null,
  *   padding?: number,
  *   scroll?: boolean,
+ *   when?: TutorialWhen,
+ *   steps?: TutorialStep[],
  *   onEnter?: (ctx: { index: number, step: NormalizedTutorialStep }) => void,
  *   onLeave?: (ctx: { index: number, step: NormalizedTutorialStep }) => void,
  * }} TutorialStep
@@ -43,6 +52,7 @@ let activeTutorial = null;
  *   advanceOn: "click" | null,
  *   padding: number | null,
  *   scroll: boolean,
+ *   when: TutorialWhen | undefined,
  *   onEnter: TutorialStep["onEnter"],
  *   onLeave: TutorialStep["onLeave"],
  * }} NormalizedTutorialStep
@@ -61,37 +71,182 @@ export function clampTutorialIndex(index, length) {
 }
 
 /**
+ * Accept boolean / function `when`; anything else is treated as always eligible.
+ * @param {unknown} when
+ * @returns {TutorialWhen | undefined}
+ */
+function normalizeWhen(when) {
+  if (typeof when === "boolean") return when;
+  if (typeof when === "function") return when;
+  return undefined;
+}
+
+/**
+ * AND two step conditions. `undefined` / `true` are no-ops; `false` wins.
+ * @param {TutorialWhen | undefined} parentWhen
+ * @param {TutorialWhen | undefined} childWhen
+ * @returns {TutorialWhen | undefined}
+ */
+export function combineTutorialWhen(parentWhen, childWhen) {
+  if (parentWhen === undefined || parentWhen === true) return childWhen;
+  if (childWhen === undefined || childWhen === true) return parentWhen;
+  if (parentWhen === false || childWhen === false) return false;
+  if (typeof parentWhen === "function" && typeof childWhen === "function") {
+    return (ctx) => Boolean(parentWhen(ctx)) && Boolean(childWhen(ctx));
+  }
+  if (typeof parentWhen === "function") {
+    return (ctx) => Boolean(parentWhen(ctx)) && Boolean(childWhen);
+  }
+  if (typeof childWhen === "function") {
+    return (ctx) => Boolean(parentWhen) && Boolean(childWhen(ctx));
+  }
+  return Boolean(parentWhen) && Boolean(childWhen);
+}
+
+/**
+ * @param {object} step
+ * @param {TutorialWhen | undefined} when
+ * @returns {NormalizedTutorialStep}
+ */
+function normalizeTutorialLeaf(step, when) {
+  return {
+    target: step.target ?? null,
+    title: typeof step.title === "string" ? step.title : "",
+    body: step.body ?? null,
+    position:
+      step.position === "top" ||
+      step.position === "bottom" ||
+      step.position === "left" ||
+      step.position === "right" ||
+      step.position === "auto"
+        ? step.position
+        : "auto",
+    interactive: Boolean(step.interactive),
+    advanceOn: step.advanceOn === "click" ? "click" : null,
+    padding:
+      typeof step.padding === "number" && Number.isFinite(step.padding)
+        ? step.padding
+        : null,
+    scroll: step.scroll !== false,
+    when,
+    onEnter: typeof step.onEnter === "function" ? step.onEnter : undefined,
+    onLeave: typeof step.onLeave === "function" ? step.onLeave : undefined,
+  };
+}
+
+/**
+ * Flatten nested `{ when, steps }` groups and normalise leaf steps.
+ * @param {TutorialStep[] | null | undefined} steps
+ * @param {TutorialWhen | undefined} [inheritedWhen]
+ * @returns {NormalizedTutorialStep[]}
+ */
+export function flattenTutorialSteps(steps, inheritedWhen) {
+  if (!Array.isArray(steps)) return [];
+  /** @type {NormalizedTutorialStep[]} */
+  const out = [];
+  for (const raw of steps) {
+    const step = raw && typeof raw === "object" ? raw : {};
+    const when = combineTutorialWhen(inheritedWhen, normalizeWhen(step.when));
+    if (Array.isArray(step.steps)) {
+      out.push(...flattenTutorialSteps(step.steps, when));
+      continue;
+    }
+    out.push(normalizeTutorialLeaf(step, when));
+  }
+  return out;
+}
+
+/**
  * Normalise a raw steps array into a stable shape for the runner.
+ * Nested `{ when, steps }` groups are flattened; child `when` is AND-ed with the parent.
  * @param {TutorialStep[] | null | undefined} steps
  * @returns {NormalizedTutorialStep[]}
  */
 export function normalizeTutorialSteps(steps) {
-  if (!Array.isArray(steps)) return [];
-  return steps.map((raw) => {
-    const step = raw && typeof raw === "object" ? raw : {};
-    return {
-      target: step.target ?? null,
-      title: typeof step.title === "string" ? step.title : "",
-      body: step.body ?? null,
-      position:
-        step.position === "top" ||
-        step.position === "bottom" ||
-        step.position === "left" ||
-        step.position === "right" ||
-        step.position === "auto"
-          ? step.position
-          : "auto",
-      interactive: Boolean(step.interactive),
-      advanceOn: step.advanceOn === "click" ? "click" : null,
-      padding:
-        typeof step.padding === "number" && Number.isFinite(step.padding)
-          ? step.padding
-          : null,
-      scroll: step.scroll !== false,
-      onEnter: typeof step.onEnter === "function" ? step.onEnter : undefined,
-      onLeave: typeof step.onLeave === "function" ? step.onLeave : undefined,
-    };
-  });
+  return flattenTutorialSteps(steps);
+}
+
+/**
+ * Whether a normalised step should be shown for the current app state.
+ * `when` throw → warn and treat as ineligible.
+ * @param {NormalizedTutorialStep | null | undefined} step
+ * @param {TutorialWhenContext} [ctx]
+ * @returns {boolean}
+ */
+export function isTutorialStepEligible(step, ctx) {
+  if (!step) return false;
+  const when = step.when;
+  if (when === undefined || when === true) return true;
+  if (when === false) return false;
+  if (typeof when !== "function") return true;
+  const resolvedCtx = ctx ?? { index: -1, step };
+  try {
+    return Boolean(when(resolvedCtx));
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn("[tutorial] Step condition threw; skipping step.", error);
+    return false;
+  }
+}
+
+/**
+ * Next eligible index at or after `fromIndex` (forward) / at or before (backward).
+ * Out-of-range `fromIndex` → `-1` (does not clamp into the array).
+ * @param {NormalizedTutorialStep[] | null | undefined} steps
+ * @param {number} fromIndex
+ * @param {"forward" | "backward"} [direction]
+ * @returns {number}
+ */
+export function findEligibleTutorialIndex(
+  steps,
+  fromIndex,
+  direction = "forward",
+) {
+  if (!Array.isArray(steps) || steps.length === 0) return -1;
+  if (!Number.isFinite(fromIndex)) return -1;
+  let i = Math.trunc(fromIndex);
+  if (i < 0 || i >= steps.length) return -1;
+  const delta = direction === "backward" ? -1 : 1;
+  while (i >= 0 && i < steps.length) {
+    const step = steps[i];
+    if (isTutorialStepEligible(step, { index: i, step })) return i;
+    i += delta;
+  }
+  return -1;
+}
+
+/**
+ * How many steps currently pass `when`.
+ * @param {NormalizedTutorialStep[] | null | undefined} steps
+ * @returns {number}
+ */
+export function countEligibleTutorialSteps(steps) {
+  if (!Array.isArray(steps)) return 0;
+  let count = 0;
+  for (let i = 0; i < steps.length; i += 1) {
+    const step = steps[i];
+    if (isTutorialStepEligible(step, { index: i, step })) count += 1;
+  }
+  return count;
+}
+
+/**
+ * 0-based ordinal of `index` among currently eligible steps, or `-1`.
+ * @param {NormalizedTutorialStep[] | null | undefined} steps
+ * @param {number} index
+ * @returns {number}
+ */
+export function eligibleTutorialOrdinal(steps, index) {
+  if (!Array.isArray(steps) || !Number.isFinite(index)) return -1;
+  const target = Math.trunc(index);
+  let ordinal = 0;
+  for (let i = 0; i < steps.length; i += 1) {
+    const step = steps[i];
+    if (!isTutorialStepEligible(step, { index: i, step })) continue;
+    if (i === target) return ordinal;
+    ordinal += 1;
+  }
+  return -1;
 }
 
 /**
@@ -557,7 +712,13 @@ export function initTutorial(options) {
 
     const meta = document.createElement("p");
     meta.className = "tutorial-step-meta";
-    meta.textContent = formatStepOf(labels.stepOf, index, steps.length);
+    const total = countEligibleTutorialSteps(steps);
+    const ordinal = eligibleTutorialOrdinal(steps, index);
+    meta.textContent = formatStepOf(
+      labels.stepOf,
+      Math.max(0, ordinal),
+      total,
+    );
     wrap.append(meta);
 
     if (typeof step.body === "string" && step.body) {
@@ -576,8 +737,10 @@ export function initTutorial(options) {
   }
 
   function syncPopover(step, index, target) {
-    const isFirst = index <= 0;
-    const isLast = index >= steps.length - 1;
+    const isFirst =
+      findEligibleTutorialIndex(steps, index - 1, "backward") < 0;
+    const isLast =
+      findEligibleTutorialIndex(steps, index + 1, "forward") < 0;
 
     popover.setAnchor(target);
     popover.update({
@@ -655,17 +818,27 @@ export function initTutorial(options) {
       return;
     }
 
-    /* Skip steps whose target disappeared (bounded scan). */
+    /* Skip ineligible `when` steps silently; skip missing targets with a warning. */
+    let skippedMissingTarget = false;
     for (let attempts = 0; attempts < steps.length; attempts += 1) {
       const step = steps[i];
+      const nextIndex = direction === "backward" ? i - 1 : i + 1;
+      const canAdvance =
+        nextIndex >= 0 && nextIndex < steps.length;
+
+      if (!isTutorialStepEligible(step, { index: i, step })) {
+        if (!canAdvance) break;
+        i = nextIndex;
+        continue;
+      }
+
       const hasTargetRef =
         step.target !== null && step.target !== undefined && step.target !== "";
       const target = resolveTutorialTarget(step.target);
 
       if (hasTargetRef && !target) {
-        const nextIndex = direction === "backward" ? i - 1 : i + 1;
-        const clamped = clampTutorialIndex(nextIndex, steps.length);
-        if (clamped === i || clamped < 0) {
+        skippedMissingTarget = true;
+        if (!canAdvance) {
           reportTutorialMissingTarget({
             id,
             index: i,
@@ -681,7 +854,7 @@ export function initTutorial(options) {
           step,
           outcome: direction === "backward" ? "skip-backward" : "skip-forward",
         });
-        i = clamped;
+        i = nextIndex;
         continue;
       }
 
@@ -723,13 +896,17 @@ export function initTutorial(options) {
       return;
     }
 
-    reportTutorialMissingTarget({
-      id,
-      index: clampTutorialIndex(index, steps.length),
-      step: steps[i] ?? { target: null, title: "" },
-      outcome: "stop",
-    });
-    stop({ reason: "missing-target" });
+    if (skippedMissingTarget) {
+      reportTutorialMissingTarget({
+        id,
+        index: clampTutorialIndex(index, steps.length),
+        step: steps[i] ?? { target: null, title: "" },
+        outcome: "stop",
+      });
+      stop({ reason: "missing-target" });
+      return;
+    }
+    stop({ reason: "empty" });
   }
 
   function onViewportChange() {
@@ -819,7 +996,7 @@ export function initTutorial(options) {
 
   function next() {
     if (!isActive) return;
-    if (stepIndex >= steps.length - 1) {
+    if (findEligibleTutorialIndex(steps, stepIndex + 1, "forward") < 0) {
       stop({ reason: "done" });
       return;
     }
@@ -827,7 +1004,10 @@ export function initTutorial(options) {
   }
 
   function back() {
-    if (!isActive || stepIndex <= 0) return;
+    if (!isActive) return;
+    if (findEligibleTutorialIndex(steps, stepIndex - 1, "backward") < 0) {
+      return;
+    }
     showStep(stepIndex - 1, "backward");
   }
 

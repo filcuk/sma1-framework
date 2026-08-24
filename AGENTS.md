@@ -84,7 +84,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `showBanner()` / `hideBanner()` | Show or hide `.banner` elements; respects `data-banner-expire` |
 | `initTooltips()` / `flashTooltip()` / `showPersistentTooltip()` / `dismissPersistentTooltip()` | Hover tips; timer reaction when in-place is not possible; persistent tips — see [`DESIGN.md`](DESIGN.md) |
 | `initPopover()` | Anchored speech-bubble card with notch, title, body, and actions |
-| `initTutorial()` | Guided spotlight tour over a JS step script (uses popover); multiple scripts per page, one active |
+| `initTutorial()` | Guided spotlight tour over a JS step script (uses popover); optional `when` / nested `steps` branches; multiple scripts per page, one active |
 | `initPageNav()` / `initPageNavPanel()` | Page nav only — requires `PAGE_NAV_MARKUP` from `app/shell/render-shell.js` |
 | `initStickyChrome()` / `setStickyHeader()` / `setStickySectionHeadings()` | Optional sticky site header and section headings (`data-sticky-header`, `data-sticky-section-headings`) |
 | `initTitleNumbering()` / `setTitleNumbering()` / `syncTitleNumbering()` | Optional hierarchical outline prefixes (`data-title-numbering`) |

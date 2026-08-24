@@ -446,7 +446,7 @@ initTutorial({
     {
       target: "#demo-tutorials-panel",
       title: "Tutorials",
-      body: "Or zoom in on a panel. These two buttons start the overview and interactive tours.",
+      body: "Or zoom in on a panel. These buttons start the overview, interactive, and branching tours.",
       position: "left",
     },
     {
@@ -485,6 +485,58 @@ initTutorial({
       title: "Show popover",
       body: "You can open the same bubble from this button. Press Done or Escape to finish.",
       position: "bottom",
+    },
+  ],
+});
+
+let tutorialPath = "a";
+
+initCombo(document.getElementById("demo-tutorial-combo"), {
+  onSelect: ({ value }) => {
+    tutorialPath = value;
+    const main = document.getElementById("demo-tutorial-combo-main");
+    if (main) main.textContent = value === "b" ? "Option B" : "Option A";
+  },
+});
+
+initTutorial({
+  id: "demo-branching",
+  startTriggers: "#demo-tutorial-branching",
+  steps: [
+    {
+      target: "#demo-tutorial-branch",
+      title: "Pick a path",
+      body: "Open the chevron, choose Option A or Option B, then press Next. The following step depends on that choice.",
+      position: "right",
+      interactive: true,
+    },
+    {
+      when: () => tutorialPath === "b",
+      steps: [
+        {
+          target: "#demo-tutorial-path-b",
+          title: "Option B",
+          body: "This step is included only while Option B is selected.",
+          position: "top",
+        },
+      ],
+    },
+    {
+      when: () => tutorialPath !== "b",
+      steps: [
+        {
+          target: "#demo-tutorial-path-a",
+          title: "Option A",
+          body: "This step is included when Option A is selected (the default).",
+          position: "top",
+        },
+      ],
+    },
+    {
+      target: "#demo-tutorials-panel",
+      title: "Paths rejoin",
+      body: "Unconditional steps after a branch run for every path. Press Done or Escape to finish.",
+      position: "left",
     },
   ],
 });
