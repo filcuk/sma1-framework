@@ -464,17 +464,17 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
-| **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/file-dropzone.js`](app/file-dropzone.js). |
+| **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
-| **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/combo.js`](app/combo.js). |
+| **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
 | **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
-| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/slider.js`](app/slider.js). |
-| **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/progress-bar.js`](app/progress-bar.js). |
-| **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/spinner.js`](app/spinner.js). |
-| **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/stepper.js`](app/stepper.js). |
+| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/components/slider.js`](app/components/slider.js). |
+| **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/components/progress-bar.js`](app/components/progress-bar.js). |
+| **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/components/spinner.js`](app/components/spinner.js). |
+| **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/components/stepper.js`](app/components/stepper.js). |
 | **Colour input** | Hex text input with swatch attached on the left; optional alpha (`#RRGGBBAA`); optional `openOnClick` + `openTrigger` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
 | **Colour set** | Named palette gallery (popup or embedded); built-in sets as one module each. [`app/components/color-set/`](app/components/color-set/). |
 | **Colour picker** | Spectrum / channel colour selector (HEX / RGB / HSL / HSV / CMYK); optional alpha and adjacent colour set. [`app/components/color-picker/`](app/components/color-picker/). |
@@ -484,30 +484,30 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) with configurable cycle (`data-toggle-tristate-cycle`). [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
 | **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
-| **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/progress-indicator.js`](app/progress-indicator.js). |
-| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, and auto grid layout (`data-dropdown-grid*`). Behaviour from [`app/dropdown.js`](app/dropdown.js). |
+| **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/components/progress-indicator.js`](app/components/progress-indicator.js). |
+| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, and auto grid layout (`data-dropdown-grid*`). Behaviour from [`app/components/dropdown.js`](app/components/dropdown.js). |
 | **Toggle dropdown** | Multi-select dropdown; items toggle with `aria-checked`, menu stays open; selection count via badge. [`app/components/dropdown-toggle.js`](app/components/dropdown-toggle.js). |
 | **Expand** | `.expand` disclosure with chevron + label trigger and collapsible `.expand-panel`; behaviour from [`app/components/expand.js`](app/components/expand.js). |
 | **Accordion** | `.accordion` vertical stack of collapsible sections; one open at a time by default. [`app/components/accordion.js`](app/components/accordion.js). |
-| **Tabs** | `.tabs` block with `.tabs-list` / `.tabs-tab` and `.tabs-panel` content; behaviour from [`app/tabs.js`](app/tabs.js). |
-| **Pagination** | In-page page navigation with prev/next and numbered pages; no URL change. [`app/pagination.js`](app/pagination.js). |
-| **Table** | Data table with striped layout, sortable columns (Shift+click multi-sort), and optional row selection. [`app/table.js`](app/table.js). |
+| **Tabs** | `.tabs` block with `.tabs-list` / `.tabs-tab` and `.tabs-panel` content; behaviour from [`app/components/tabs.js`](app/components/tabs.js). |
+| **Pagination** | In-page page navigation with prev/next and numbered pages; no URL change. [`app/components/pagination.js`](app/components/pagination.js). |
+| **Table** | Data table with striped layout, sortable columns (Shift+click multi-sort), and optional row selection. [`app/components/table.js`](app/components/table.js). |
 | **Tabular input** | Editable typed grid (text / number / logical); add/remove/reset; Excel/TSV paste (in-place or replace via footer buttons) with type detection; centered canvas breakout when wide. [`app/components/tabular-input.js`](app/components/tabular-input.js). |
-| **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/page-nav.js`](app/page-nav.js). |
+| **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/shell/page-nav.js`](app/shell/page-nav.js). |
 | **Dialogs** | Accessible modal: backdrop, focus trap, Escape, Enter (default action), focus restore. Markup uses `.modal` / `.modal-panel`; behaviour from [`app/components/dialog.js`](app/components/dialog.js). |
 | **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
 | **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
-| **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/external-link.js`](app/external-link.js). Opt out with `data-no-external-icon`. |
+| **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
 | **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps and `when` / nested `steps` branches. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
-| **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/banner.js`](app/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
+| **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/components/banner.js`](app/components/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
 | **Callouts** | `.callout` accent-edged tip cards for standing information (CSS-only). See **Callouts** under Using components. |
-| **Code blocks** | `.code-block` with Prism highlighting, configurable toolbar (top/bottom/none), hover copy/maximise, view/select/edit modes. [`app/code-block.js`](app/code-block.js). |
-| **Expandable surface** | Maximize code blocks or textareas to page width. [`app/expandable-surface.js`](app/expandable-surface.js). |
-| **Icons** | Inline SVGs in [`app/icons.js`](app/icons.js); use `data-icon` in HTML or `createIcon()` in JS. Source from [Icônes — Material Icons (Round)](https://icones.js.org/collection/ic?s=info&variant=Round). Logo files stay in `app/res/`. |
+| **Code blocks** | `.code-block` with Prism highlighting, configurable toolbar (top/bottom/none), hover copy/maximise, view/select/edit modes. [`app/components/code-block.js`](app/components/code-block.js). |
+| **Expandable surface** | Maximize code blocks or textareas to page width. [`app/components/expandable-surface.js`](app/components/expandable-surface.js). |
+| **Icons** | Inline SVGs in [`app/utils/icons.js`](app/utils/icons.js); use `data-icon` in HTML or `createIcon()` in JS. Source from [Icônes — Material Icons (Round)](https://icones.js.org/collection/ic?s=info&variant=Round). Logo files stay in `app/res/`. |
 | **Toolbar helper** | `.toolbar` flex row for button groups. See [`demo.html`](demo.html). |
-| **Code highlighting** | Optional [Prism.js](https://prismjs.com/) via [`app/code-block.js`](app/code-block.js) and [`app/vendor/prism/`](app/vendor/prism/). Load vendor scripts on the page (see Code blocks in **Using components**). |
+| **Code highlighting** | Optional [Prism.js](https://prismjs.com/) via [`app/components/code-block.js`](app/components/code-block.js) and [`app/vendor/prism/`](app/vendor/prism/). Load vendor scripts on the page (see Code blocks in **Using components**). |
 | **Rich text editor** | Markdown + WYSIWYG via [Toast UI Editor](https://github.com/nhn/tui.editor); table merged-cell plugin; base64 image paste. [`app/components/rich-text-editor.js`](app/components/rich-text-editor.js). Large vendor bundle (~500KB+). |
 | **Charts** | Thin SVG host around [TanStack Charts](https://tanstack.com/charts/latest) (`initChart` / `mountChart`). Forks author `defineChart` marks/scales. Vendored ESM + import map for `d3-scale` / `d3-shape`. [`app/components/charts.js`](app/components/charts.js). Pre-alpha upstream. |
 | **Diagrams** | Thin Mermaid host (`initDiagram` / `initDiagrams`) for text → SVG diagrams (flowchart, sequence, …). Vendored ESM + chunks under `app/vendor/mermaid/`. Theme follows light/dark. [`app/components/diagram.js`](app/components/diagram.js). |
@@ -988,8 +988,8 @@ alsoSee: [
 | `appUrl` | Any entry whose `url` matches (trailing slash / case ignored) is excluded; empty topics are dropped |
 | `alsoSee: []` or `false` | Hides the control when there is no successful remote list |
 | `order` (number) | Optional on topic sections and links; ascending sort; missing/`NaN` after numbered; ungrouped flat links always last (link `order` still applies within that group) |
-| `accent` / `accentHover` | Optional per-link hex (`#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`) for both themes; applied as local `--accent` / `--accent-hover`; invalid values are ignored |
-| `accentLight` / `accentDark` | Optional theme pair (same hex rules); wins over `accent`; a missing side clones the other. Hover has `accentHoverLight` / `accentHoverDark` (independent of accent; wins over `accentHover`) |
+| `accent` / `accentHover` | Optional per-link hex (`#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`) for both themes; applied as local `--accent` / `--accent-hover`. **`accent`** drives menu item highlight chrome (border / fill). **`accentHover`** is for the also-see **trigger** text hover (and other `--accent-hover` consumers) — item hover/press still use `--accent` for border/fill and keep label colour `--text`. Invalid values are ignored |
+| `accentLight` / `accentDark` | Optional theme pair (same hex rules); wins over `accent`; a missing side clones the other. Hover has `accentHoverLight` / `accentHoverDark` (independent of accent; wins over `accentHover`; same trigger-vs-item split as above) |
 
 Remote / local JSON is a top-level array of **topic sections** and/or **flat links**:
 
@@ -1031,8 +1031,8 @@ Prefer a `raw.githubusercontent.com` or GitHub Pages URL and a simple `GET` (no 
 
 **Colours** (accent and hover are independent; pair wins over single in each role):
 
-- Accent: `accentLight` + `accentDark` (missing side clones the other), else `accent`
-- Hover: `accentHoverLight` + `accentHoverDark`, else `accentHover`
+- Accent: `accentLight` + `accentDark` (missing side clones the other), else `accent` — scopes **menu item** highlight chrome (`--accent` border / fill)
+- Hover: `accentHoverLight` + `accentHoverDark`, else `accentHover` — scopes the also-see **trigger** text hover (`--accent-hover`); item hover/press still use `--accent`
 
 Omit hover to keep the inherited `--accent-hover` mix (it follows the resolved `--accent`). Hex only (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`); invalid values are ignored.
 
@@ -1045,12 +1045,17 @@ Enabled by `initShell()`. Headings matching `main :is(h2, h3)[id]` show a link i
 Disable the page with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`. Skip one heading with `data-no-heading-link`. An explicit `headingLinks: true` (or `{ enabled: true }`) overrides the HTML opt-out. Pass `{ selector }` through `initShell({ headingLinks: { selector: "…" } })` to narrow which headings get a button.
 
 ```javascript
-import { initHeadingLinks } from "./shell/heading-link.js";
+// Prefer initShell — it installs (or skips) heading links once at boot:
+initShell({ headingLinks: false });
+// or: initShell({ headingLinks: { selector: "main h3[id]" } });
 
+// Standalone (only if you are not using initShell for this page):
+import { initHeadingLinks } from "./shell/heading-link.js";
 initHeadingLinks(document); // default: main :is(h2, h3)[id]
 initHeadingLinks(document, { selector: "main h3[id]" }); // sections only
-initShell({ headingLinks: false }); // no copy-link buttons
 ```
+
+Calling `initShell({ headingLinks: false })` **after** `initHeadingLinks(document)` does not remove buttons already installed — disable before install, or use `data-no-heading-links` on `<html>` before `initShell()` runs.
 
 ```html
 <html lang="en" data-no-heading-links>
@@ -3031,7 +3036,7 @@ editor?.destroy();
 initRichTextEditors(document); // every `.rich-text-editor` with a mount node
 ```
 
-Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/theme.js`](app/theme.js).
+Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/shell/theme.js`](app/shell/theme.js).
 
 Markdown ↔ WYSIWYG uses the framework [segmented control](#segmented-control) (`.segmented-control--slim`) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use framework [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
 

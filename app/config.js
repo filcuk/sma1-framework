@@ -9,12 +9,13 @@ export const APP_CONFIG = {
    * Remote JSON for the footer “also see” menu.
    * Top-level array of `{ topic, items, order? }` sections and/or flat link objects.
    * Optional `order` on topics/links; `accent` / `accentHover` hex colours, or
-   * `accentLight` / `accentDark` (and hover) theme pairs, for per-app menu
-   * highlighting; `iconSvg` / `iconSvgLight` / `iconSvgDark` for
-   * embedded SVG (wins over URL icons). Prefer a raw.githubusercontent.com or
-   * GitHub Pages URL. Empty = skip fetch. On success, shows the remote list
-   * (merged with local when `alsoSeeIncludeLocal` is true). Local is never used
-   * as a fallback.
+   * `accentLight` / `accentDark` (and hover) theme pairs — `accent*` scopes
+   * menu item highlight chrome; `accentHover*` is for the also-see trigger
+   * (item hover/press still use `--accent`); `iconSvg` / `iconSvgLight` /
+   * `iconSvgDark` for embedded SVG (wins over URL icons). Prefer a
+   * raw.githubusercontent.com or GitHub Pages URL. Empty = skip fetch. On
+   * success, shows the remote list (merged with local when
+   * `alsoSeeIncludeLocal` is true). Local is never used as a fallback.
    */
   alsoSeeUrl:
     "https://raw.githubusercontent.com/filcuk/shared/refs/heads/main/apps/links.json",
