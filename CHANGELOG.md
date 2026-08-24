@@ -28,7 +28,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
 - `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
 - Button label flash helpers ([`app/utils/button-label.js`](app/utils/button-label.js)): `.btn-label-flash` + `prepareButtonLabelFlash()` / `flashButtonLabel()` for in-place Copy → Copied feedback; optional `lockWidth` auto-measure (default off). Code block and tabular input labeled clipboard actions use this pattern.
-- Click press feedback for enabled toggle buttons, menu items, combobox options, and chips via `:active` tint (combobox options use `.is-pressed` because option `mousedown` `preventDefault` keeps the input focused and suppresses `:active`).
+- Click press feedback for enabled toggle buttons, menu items, combobox options, and chips via `:active` tint (combobox options use `.is-pressed` because option `mousedown` `preventDefault` keeps the input focused and suppresses `:active`). File dropzone prompt, colour-set swatches, and table sort buttons use the same mix tokens.
 - Tutorial scripts accept `when` on steps and nested `{ when, steps }` groups. Navigation and `Step {n} of {N}` follow currently showable steps (eligible `when` and resolvable target).
 
 ## [0.12.3] - 2026-08-19

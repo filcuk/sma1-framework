@@ -26,7 +26,17 @@
 .file-dropzone-prompt:hover,
 .file-dropzone.is-dragover .file-dropzone-prompt {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  transition-duration: 0s;
+}
+
+.file-dropzone-prompt:active:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
   transition-duration: 0s;
 }
 

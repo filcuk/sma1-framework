@@ -87,6 +87,15 @@
   outline-offset: 1px;
 }
 
+.color-set-swatch:active:not(:disabled) {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--text) 8%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
+  transition-duration: 0s;
+}
+
 .color-set-swatch:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
@@ -98,6 +107,13 @@
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--text) 8%, transparent),
     0 0 0 2px color-mix(in srgb, var(--accent) 18%, var(--surface));
+}
+
+.color-set-swatch.is-selected:active:not(:disabled) {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--text) 8%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--accent) var(--control-press-mix), var(--surface));
+  transition-duration: 0s;
 }
 
 .color-set-swatch:disabled {
