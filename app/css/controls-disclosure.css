@@ -234,7 +234,17 @@
 
 .tabs-tab:hover {
   color: var(--text);
-  background: color-mix(in srgb, var(--accent) 6%, var(--code-bg));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--code-bg));
+  transition-duration: 0s;
+}
+
+.tabs-tab:active:not([aria-selected="true"]) {
+  color: var(--text);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--code-bg)
+  );
   transition-duration: 0s;
 }
 
@@ -252,6 +262,11 @@
 
 .tabs-tab[aria-selected="true"]:hover {
   background: var(--surface);
+  transition-duration: 0s;
+}
+
+.tabs-tab[aria-selected="true"]:active {
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
 }
 

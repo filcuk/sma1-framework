@@ -222,7 +222,18 @@
 .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]) {
   color: var(--text);
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--code-bg));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--code-bg));
+  transition-duration: 0s;
+}
+
+.segmented-control-item:active:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--code-bg)
+  );
   transition-duration: 0s;
 }
 
@@ -242,6 +253,13 @@
 .segmented-control-item[aria-checked="true"]:hover:not(:disabled):not([aria-disabled="true"]) {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
+  color: var(--accent-fg);
+  transition-duration: 0s;
+}
+
+.segmented-control-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--accent-active);
+  border-color: var(--accent-active);
   color: var(--accent-fg);
   transition-duration: 0s;
 }
@@ -351,7 +369,17 @@
 
 .pagination-page:hover:not(:disabled) {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  transition-duration: 0s;
+}
+
+.pagination-page:active:not(:disabled):not(.is-active):not([aria-current="page"]) {
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
   transition-duration: 0s;
 }
 
@@ -373,6 +401,14 @@
   background: var(--accent-hover);
   border-color: var(--accent-hover);
   color: var(--accent-fg);
+}
+
+.pagination-page.is-active:active:not(:disabled),
+.pagination-page[aria-current="page"]:active:not(:disabled) {
+  background: var(--accent-active);
+  border-color: var(--accent-active);
+  color: var(--accent-fg);
+  transition-duration: 0s;
 }
 
 .pagination-page:disabled {

@@ -1145,9 +1145,20 @@ body > footer a {
   background: var(--code-bg);
 }
 
+.theme-toggle-btn:active:not(:disabled) {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text) var(--control-selected-mix), var(--code-bg));
+  transition-duration: 0s;
+}
+
 .theme-toggle-btn[aria-pressed="true"] {
   color: var(--text);
   background: var(--code-bg);
+}
+
+.theme-toggle-btn[aria-pressed="true"]:active:not(:disabled) {
+  background: color-mix(in srgb, var(--text) var(--control-press-mix), var(--code-bg));
+  transition-duration: 0s;
 }
 
 .theme-toggle-btn:focus-visible {
