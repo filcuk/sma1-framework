@@ -94,12 +94,32 @@
 
 /* Multi-column layout when a combobox has many options (`data-combobox-grid*`). */
 .combobox-list.combobox-list--grid {
+  --dropdown-menu-grid-cols: 2;
   display: grid;
   grid-template-columns: repeat(var(--dropdown-menu-grid-cols, 2), minmax(0, 1fr));
   gap: 0;
   width: max-content;
   min-width: 100%;
   max-width: min(100vw - 3rem, 28rem);
+}
+
+.combobox-list.combobox-list--grid[data-grid-cols="1"] {
+  --dropdown-menu-grid-cols: 1;
+}
+.combobox-list.combobox-list--grid[data-grid-cols="2"] {
+  --dropdown-menu-grid-cols: 2;
+}
+.combobox-list.combobox-list--grid[data-grid-cols="3"] {
+  --dropdown-menu-grid-cols: 3;
+}
+.combobox-list.combobox-list--grid[data-grid-cols="4"] {
+  --dropdown-menu-grid-cols: 4;
+}
+.combobox-list.combobox-list--grid[data-grid-cols="5"] {
+  --dropdown-menu-grid-cols: 5;
+}
+.combobox-list.combobox-list--grid[data-grid-cols="6"] {
+  --dropdown-menu-grid-cols: 6;
 }
 
 .combobox-list.combobox-list--grid > li:has(.combobox-empty) {

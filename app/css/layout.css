@@ -1090,7 +1090,8 @@ body > footer {
 }
 
 @media (max-width: 25rem) {
-  .footer-also-see .footer-also-see-menu.dropdown-menu--grid {
+  .footer-also-see .footer-also-see-menu.dropdown-menu--grid[data-grid-cols] {
+    /* Beat `.dropdown-menu--grid[data-grid-cols="N"]` so narrow viewports stay one column. */
     --dropdown-menu-grid-cols: 1;
     width: min(100vw - 2rem, var(--also-see-column-width));
   }

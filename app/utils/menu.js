@@ -155,14 +155,72 @@ function isPopupListGrid(listEl) {
   );
 }
 
+/**
+ * Rows that span every column in grid mode (group headers, separators, empty).
+ * @param {Element} li
+ * @returns {boolean}
+ */
+export function isFullSpanGridRow(li) {
+  if (!li) return false;
+  if (li.classList?.contains?.("footer-also-see-section-break")) return true;
+  return Boolean(
+    li.querySelector?.(
+      ".dropdown-menu-group, .dropdown-menu-separator, .combobox-empty",
+    ),
+  );
+}
+
 function isSelectableGridRow(li, itemSelector) {
   if (li.hidden || li.classList.contains("hidden")) return false;
-  if (li.querySelector(".dropdown-menu-group, .dropdown-menu-separator, .combobox-empty")) {
-    return false;
-  }
+  if (isFullSpanGridRow(li)) return false;
   const item = li.querySelector(itemSelector);
   if (!item || item.disabled) return false;
   return true;
+}
+
+/**
+ * Map selectable items to CSS-grid auto-placement slots, accounting for
+ * full-span rows so a short last topic row does not shift later columns.
+ *
+ * @param {ParentNode | null | undefined} listEl
+ * @param {string} itemSelector
+ * @param {number} cols
+ * @returns {{ item: Element, index: number, col: number, row: number }[]}
+ */
+export function buildListGridSlots(listEl, itemSelector, cols) {
+  /** @type {{ item: Element, index: number, col: number, row: number }[]} */
+  const slots = [];
+  if (!listEl?.children || !itemSelector) return slots;
+  const columnCount =
+    Number.isFinite(cols) && cols >= 1 ? Math.trunc(cols) : DEFAULT_DROPDOWN_GRID_COLS;
+
+  let col = 0;
+  let row = 0;
+  for (const li of listEl.children) {
+    if (li.hidden || li.classList?.contains?.("hidden")) continue;
+
+    if (isFullSpanGridRow(li)) {
+      if (col > 0) {
+        row += 1;
+        col = 0;
+      }
+      row += 1;
+      col = 0;
+      continue;
+    }
+
+    if (!isSelectableGridRow(li, itemSelector)) continue;
+    const item = li.querySelector(itemSelector);
+    if (!item) continue;
+    const index = slots.length;
+    slots.push({ item, index, col, row });
+    col += 1;
+    if (col >= columnCount) {
+      col = 0;
+      row += 1;
+    }
+  }
+  return slots;
 }
 
 function isListItemSelected(item) {
@@ -441,14 +499,7 @@ export function syncListGridSelectionJoins(listEl, itemSelector) {
   }
 
   const cols = getListGridColumns(listEl);
-  const slots = [];
-
-  for (const li of listEl.children) {
-    if (!isSelectableGridRow(li, itemSelector)) continue;
-    const item = li.querySelector(itemSelector);
-    const index = slots.length;
-    slots.push({ item, index, col: index % cols, row: Math.floor(index / cols) });
-  }
+  const slots = buildListGridSlots(listEl, itemSelector, cols);
 
   const selectedIndexes = new Set(
     slots.filter(({ item }) => isListItemSelected(item)).map(({ index }) => index)
@@ -458,16 +509,16 @@ export function syncListGridSelectionJoins(listEl, itemSelector) {
     return;
   }
 
-  const indexAt = (row, col) => {
-    if (col < 0 || col >= cols || row < 0) return -1;
-    const index = row * cols + col;
-    return index < slots.length ? index : -1;
+  const slotAt = (row, col) =>
+    slots.find((slot) => slot.row === row && slot.col === col) ?? null;
+
+  const slotSelected = (row, col) => {
+    const slot = slotAt(row, col);
+    return Boolean(slot && selectedIndexes.has(slot.index));
   };
 
-  const slotSelected = (row, col) => selectedIndexes.has(indexAt(row, col));
-
-  for (const { item, col, row } of slots) {
-    if (!selectedIndexes.has(indexAt(row, col))) continue;
+  for (const { item, col, row, index } of slots) {
+    if (!selectedIndexes.has(index)) continue;
 
     const joinTop = slotSelected(row - 1, col);
     const joinRight = slotSelected(row, col + 1);
@@ -513,8 +564,12 @@ export function syncPopupListGrid(listEl, containerEl, itemSelector, config) {
 
   listEl.classList.toggle(gridClass, useGrid);
   if (useGrid) {
-    listEl.style.setProperty("--dropdown-menu-grid-cols", String(resolved.cols));
+    /* Prefer a data attribute over an inline custom property so CSS media
+       queries (e.g. also-see narrow single-column) can override the count. */
+    listEl.dataset.gridCols = String(resolved.cols);
+    listEl.style.removeProperty("--dropdown-menu-grid-cols");
   } else {
+    delete listEl.dataset.gridCols;
     listEl.style.removeProperty("--dropdown-menu-grid-cols");
   }
 
@@ -536,25 +591,56 @@ export function syncDropdownMenuGrid(menuEl, containerEl, itemSelector, config) 
 export const syncComboboxListGrid = syncPopupListGrid;
 
 export function getListGridColumns(listEl) {
-  const raw =
-    listEl?.style?.getPropertyValue?.("--dropdown-menu-grid-cols") ||
-    (typeof getComputedStyle === "function"
-      ? getComputedStyle(listEl).getPropertyValue("--dropdown-menu-grid-cols")
-      : "");
-  const cols = Number.parseInt(raw, 10);
-  return Number.isFinite(cols) && cols >= 1 ? cols : DEFAULT_DROPDOWN_GRID_COLS;
+  if (typeof getComputedStyle === "function" && listEl) {
+    const computed = Number.parseInt(
+      getComputedStyle(listEl).getPropertyValue("--dropdown-menu-grid-cols"),
+      10,
+    );
+    if (Number.isFinite(computed) && computed >= 1) return computed;
+  }
+  const fromData = Number.parseInt(listEl?.dataset?.gridCols ?? "", 10);
+  if (Number.isFinite(fromData) && fromData >= 1) return fromData;
+  const fromInline = Number.parseInt(
+    listEl?.style?.getPropertyValue?.("--dropdown-menu-grid-cols") ?? "",
+    10,
+  );
+  if (Number.isFinite(fromInline) && fromInline >= 1) return fromInline;
+  return DEFAULT_DROPDOWN_GRID_COLS;
 }
 
 /** @deprecated Alias for {@link getListGridColumns}. */
 export const getDropdownGridColumns = getListGridColumns;
 
-export function gridMenuIndexForKey(items, currentIndex, key, cols) {
+/**
+ * Move within a grid of items. When `positions` is provided (from
+ * {@link buildListGridSlots}), Up/Down stay in the visual column across
+ * full-span group rows; otherwise items are treated as a dense `cols` matrix.
+ *
+ * @param {unknown[]} items
+ * @param {number} currentIndex
+ * @param {string} key
+ * @param {number} cols
+ * @param {{ row: number, col: number }[] | null | undefined} [positions]
+ * @returns {number}
+ */
+export function gridMenuIndexForKey(items, currentIndex, key, cols, positions) {
   const len = items.length;
   if (currentIndex < 0) return 0;
 
-  const col = currentIndex % cols;
-  const row = Math.floor(currentIndex / cols);
-  const rowCount = Math.ceil(len / cols);
+  const columnCount =
+    Number.isFinite(cols) && cols >= 1 ? Math.trunc(cols) : DEFAULT_DROPDOWN_GRID_COLS;
+  const posFor = (index) => {
+    const fromSlots = positions?.[index];
+    if (fromSlots && Number.isFinite(fromSlots.row) && Number.isFinite(fromSlots.col)) {
+      return { row: fromSlots.row, col: fromSlots.col };
+    }
+    return {
+      row: Math.floor(index / columnCount),
+      col: index % columnCount,
+    };
+  };
+
+  const { col, row } = posFor(currentIndex);
 
   switch (key) {
     case "ArrowRight":
@@ -562,15 +648,28 @@ export function gridMenuIndexForKey(items, currentIndex, key, cols) {
     case "ArrowLeft":
       return currentIndex > 0 ? currentIndex - 1 : currentIndex;
     case "ArrowDown": {
-      const nextRow = row + 1;
-      if (nextRow >= rowCount) return currentIndex;
-      const next = nextRow * cols + col;
-      return next < len ? next : currentIndex;
+      let best = -1;
+      let bestRow = Infinity;
+      for (let i = 0; i < len; i += 1) {
+        const next = posFor(i);
+        if (next.col === col && next.row > row && next.row < bestRow) {
+          best = i;
+          bestRow = next.row;
+        }
+      }
+      return best >= 0 ? best : currentIndex;
     }
     case "ArrowUp": {
-      const prevRow = row - 1;
-      if (prevRow < 0) return currentIndex;
-      return prevRow * cols + col;
+      let best = -1;
+      let bestRow = -Infinity;
+      for (let i = 0; i < len; i += 1) {
+        const prev = posFor(i);
+        if (prev.col === col && prev.row < row && prev.row > bestRow) {
+          best = i;
+          bestRow = prev.row;
+        }
+      }
+      return best >= 0 ? best : currentIndex;
     }
     default:
       return currentIndex;
@@ -799,6 +898,11 @@ export function initPopupMenu({
     let nextIndex = currentIndex;
 
     const gridMode = menuEl.classList.contains("dropdown-menu--grid");
+    const gridCols = gridMode ? getDropdownGridColumns(menuEl) : 0;
+    const gridSlots = gridMode
+      ? buildListGridSlots(menuEl, itemSelector, gridCols)
+      : null;
+    const gridPositions = gridSlots?.map(({ row, col }) => ({ row, col }));
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -810,7 +914,8 @@ export function initPopupMenu({
                 items,
                 currentIndex,
                 "ArrowDown",
-                getDropdownGridColumns(menuEl)
+                gridCols,
+                gridPositions,
               );
       } else {
         nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % items.length;
@@ -826,7 +931,8 @@ export function initPopupMenu({
                 items,
                 currentIndex,
                 "ArrowUp",
-                getDropdownGridColumns(menuEl)
+                gridCols,
+                gridPositions,
               );
       } else {
         nextIndex =
@@ -845,7 +951,8 @@ export function initPopupMenu({
               items,
               currentIndex,
               e.key,
-              getDropdownGridColumns(menuEl)
+              gridCols,
+              gridPositions,
             );
       focusItem(items[nextIndex]);
     } else if (e.key === "Home") {

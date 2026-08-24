@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   DROPDOWN_GRID_DEFAULT_MIN,
+  buildListGridSlots,
   gridMenuIndexForKey,
   readListGridConfig,
   resolveListGridConfig,
@@ -97,17 +98,14 @@ test("syncPopupListGrid toggles combobox list class by visible item count", () =
       add: () => {},
       remove: () => {},
     },
+    dataset: {},
     querySelector: () => null,
     children: [],
     querySelectorAll: () => items,
     style: {
-      getPropertyValue: (name) => (name === "--dropdown-menu-grid-cols" ? listEl.cols ?? "" : ""),
-      setProperty: (name, value) => {
-        listEl.cols = value;
-      },
-      removeProperty: (name) => {
-        if (name === "--dropdown-menu-grid-cols") listEl.cols = undefined;
-      },
+      getPropertyValue: () => "",
+      setProperty: () => {},
+      removeProperty: () => {},
     },
     gridOn: false,
   };
@@ -119,12 +117,14 @@ test("syncPopupListGrid toggles combobox list class by visible item count", () =
     true
   );
   assert.equal(listEl.gridOn, true);
+  assert.equal(listEl.dataset.gridCols, "2");
 
   items.pop();
   assert.equal(
     syncPopupListGrid(listEl, null, ".combobox-option", config),
     false
   );
+  assert.equal(listEl.dataset.gridCols, undefined);
 });
 
 test("readListGridConfig reads combobox dataset aliases", () => {
@@ -151,17 +151,14 @@ test("syncDropdownMenuGrid toggles class by item count", () => {
       add: () => {},
       remove: () => {},
     },
+    dataset: {},
     querySelector: () => null,
     children: [],
     querySelectorAll: () => items,
     style: {
-      getPropertyValue: (name) => (name === "--dropdown-menu-grid-cols" ? menuEl.cols ?? "" : ""),
-      setProperty: (name, value) => {
-        menuEl.cols = value;
-      },
-      removeProperty: (name) => {
-        if (name === "--dropdown-menu-grid-cols") menuEl.cols = undefined;
-      },
+      getPropertyValue: () => "",
+      setProperty: () => {},
+      removeProperty: () => {},
     },
     gridOn: false,
   };
@@ -173,7 +170,7 @@ test("syncDropdownMenuGrid toggles class by item count", () => {
     true
   );
   assert.equal(menuEl.gridOn, true);
-  assert.equal(menuEl.cols, "2");
+  assert.equal(menuEl.dataset.gridCols, "2");
 
   items.pop();
   assert.equal(
@@ -181,7 +178,7 @@ test("syncDropdownMenuGrid toggles class by item count", () => {
     false
   );
   assert.equal(menuEl.gridOn, false);
-  assert.equal(menuEl.cols, undefined);
+  assert.equal(menuEl.dataset.gridCols, undefined);
 });
 
 test("gridMenuIndexForKey moves within columns", () => {
@@ -190,6 +187,67 @@ test("gridMenuIndexForKey moves within columns", () => {
   assert.equal(gridMenuIndexForKey(items, 1, "ArrowDown", 2), 3);
   assert.equal(gridMenuIndexForKey(items, 6, "ArrowUp", 2), 4);
   assert.equal(gridMenuIndexForKey(items, 7, "ArrowDown", 2), 7);
+});
+
+test("buildListGridSlots and grid keys keep columns across full-span rows", () => {
+  function makeItem() {
+    return { disabled: false };
+  }
+  function makeItemRow(item) {
+    return {
+      hidden: false,
+      classList: { contains: () => false },
+      querySelector: (sel) => {
+        if (sel === ".dropdown-menu-item") return item;
+        return null;
+      },
+    };
+  }
+  function makeGroupRow() {
+    return {
+      hidden: false,
+      classList: { contains: () => false },
+      querySelector: (sel) =>
+        sel.includes("dropdown-menu-group") ? {} : null,
+    };
+  }
+
+  const a0 = makeItem();
+  const a1 = makeItem();
+  const a2 = makeItem();
+  const b0 = makeItem();
+  const b1 = makeItem();
+
+  const listEl = {
+    children: [
+      makeGroupRow(),
+      makeItemRow(a0),
+      makeItemRow(a1),
+      makeItemRow(a2),
+      makeGroupRow(),
+      makeItemRow(b0),
+      makeItemRow(b1),
+    ],
+  };
+
+  const slots = buildListGridSlots(listEl, ".dropdown-menu-item", 2);
+  assert.deepEqual(
+    slots.map(({ col, row }) => [col, row]),
+    [
+      [0, 1],
+      [1, 1],
+      [0, 2],
+      [0, 4],
+      [1, 4],
+    ],
+  );
+
+  const positions = slots.map(({ row, col }) => ({ row, col }));
+  const items = slots.map(({ item }) => item);
+  /* Dense packing would send ArrowDown from a1 (index 1) to b0 (index 3).
+     Visual column keeps a1 → b1 (index 4). */
+  assert.equal(gridMenuIndexForKey(items, 1, "ArrowDown", 2, positions), 4);
+  assert.equal(gridMenuIndexForKey(items, 4, "ArrowUp", 2, positions), 1);
 });
 
 test("syncListGridSelectionJoins merges adjacent selected grid cells", () => {
