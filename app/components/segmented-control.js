@@ -20,6 +20,9 @@
  *
  * data-segmented-control-default — initial value (matches data-segmented-control-value)
  * data-segmented-control-disabled — disable the whole control
+ *
+ * Default height matches `.btn` (`--control-height`). Add `.segmented-control--slim`
+ * for the compact size.
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";

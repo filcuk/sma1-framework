@@ -348,7 +348,7 @@ test("normalizeAlsoSee places ungrouped section last", () => {
   );
 });
 
-test("renderAlsoSeeMarkup emits nested topic groups with shared columns", () => {
+test("renderAlsoSeeMarkup emits topic groups with shared columns", () => {
   const markup = renderAlsoSeeMarkup([
     {
       topic: "Database",
@@ -370,13 +370,11 @@ test("renderAlsoSeeMarkup emits nested topic groups with shared columns", () => 
     },
   ]);
 
-  assert.match(markup, /footer-also-see-topic/);
-  assert.match(markup, /footer-also-see-topic-label">Database</);
-  assert.match(markup, /aria-label="Database"/);
-  assert.match(markup, /--also-see-columns:\s*1/);
-  assert.match(markup, /footer-also-see-topic-links/);
+  assert.match(markup, /dropdown-menu-group">Database</);
+  assert.match(markup, /data-also-see-columns="1"/);
   assert.match(markup, /href="https:\/\/example\.com\/cs"/);
   assert.match(markup, /CS Builder/);
+  assert.doesNotMatch(markup, /footer-also-see-topic/);
   assert.equal(alsoSeeHasItems([]), false);
   assert.equal(
     alsoSeeHasItems([{ topic: "X", order: null, items: [] }]),
@@ -442,11 +440,11 @@ test("renderAlsoSeeMarkup makes every topic full width", () => {
   ]);
 
   // 4 links + 1 ungrouped link: two columns leave the fewest holes.
-  assert.match(markup, /--also-see-columns:\s*2/);
-  assert.match(markup, /footer-also-see-topic--ungrouped[\s\S]*Profile/);
+  assert.match(markup, /data-also-see-columns="2"/);
+  assert.match(markup, /footer-also-see-section-break[\s\S]*Profile/);
   assert.doesNotMatch(markup, /--also-see-span/);
+  assert.doesNotMatch(markup, /footer-also-see-topic/);
   assert.doesNotMatch(markup, /dropdown-menu-separator/);
-  assert.doesNotMatch(markup, /dropdown-menu-group/);
 });
 
 test("normalizeAlsoSee keeps a single icon without inventing a theme pair", () => {

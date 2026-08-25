@@ -12,33 +12,33 @@ import {
   CSS_INDEX_ORDER,
   DERIVED_FILES,
   validateLifecycleCatalogue,
-} from "../scripts/lib/template-catalogue.mjs";
-import { renderTemplateCssIndex } from "../scripts/lib/template-catalogue.mjs";
+} from "../scripts/lib/framework-catalogue.mjs";
+import { renderFrameworkCssIndex } from "../scripts/lib/framework-catalogue.mjs";
 import {
   buildManifest,
   hashFile,
   isAppOwnedPath,
   listAgentCatalogueFiles,
-  readTemplateVersion,
+  readFrameworkVersion,
   sha256Hex,
-} from "../scripts/generate-template-manifest.mjs";
-import { canonicalizeNewlines } from "../scripts/lib/template-resolve.mjs";
+} from "../scripts/generate-framework-manifest.mjs";
+import { canonicalizeNewlines } from "../scripts/lib/framework-resolve.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const MANIFEST_PATH = path.join(ROOT, "template-manifest.json");
+const MANIFEST_PATH = path.join(ROOT, "framework-manifest.json");
 
-test("readTemplateVersion matches app/version.js", () => {
+test("readFrameworkVersion matches app/version.js", () => {
   const src = fs.readFileSync(path.join(ROOT, "app", "version.js"), "utf8");
-  const match = /export const TEMPLATE_VERSION = "([^"]+)"/.exec(src);
-  assert.ok(match, "app/version.js must export TEMPLATE_VERSION");
-  assert.equal(readTemplateVersion(), match[1]);
+  const match = /export const FRAMEWORK_VERSION = "([^"]+)"/.exec(src);
+  assert.ok(match, "app/version.js must export FRAMEWORK_VERSION");
+  assert.equal(readFrameworkVersion(), match[1]);
 });
 
 test("isAppOwnedPath covers files and directory prefixes", () => {
   assert.equal(isAppOwnedPath("app/main.js"), true);
   assert.equal(isAppOwnedPath("app/res/app.svg"), true);
   assert.equal(isAppOwnedPath("app/components/dialog.js"), false);
-  assert.equal(isAppOwnedPath("app/css/template.css"), false);
+  assert.equal(isAppOwnedPath("app/css/framework.css"), false);
 });
 
 test("buildManifest excludes app-owned and derived from files hashes", () => {
@@ -89,13 +89,13 @@ test("hashFile is stable across CRLF and LF line endings", () => {
   assert.equal(sha256Hex(lf), hashFile(rel));
 });
 
-test("checked-in template-manifest.json matches a fresh build (stable fields)", () => {
-  assert.ok(fs.existsSync(MANIFEST_PATH), "template-manifest.json missing — run npm run manifest:template");
+test("checked-in framework-manifest.json matches a fresh build (stable fields)", () => {
+  assert.ok(fs.existsSync(MANIFEST_PATH), "framework-manifest.json missing — run npm run manifest:framework");
   const onDisk = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
   const fresh = buildManifest();
 
   assert.equal(onDisk.schemaVersion, 2);
-  assert.equal(onDisk.templateVersion, fresh.templateVersion);
+  assert.equal(onDisk.frameworkVersion, fresh.frameworkVersion);
   assert.deepEqual(onDisk.appOwned, fresh.appOwned);
   assert.deepEqual(onDisk.appOwnedFields, fresh.appOwnedFields);
   assert.deepEqual(onDisk.core, fresh.core);
@@ -156,14 +156,14 @@ test("validateLifecycleCatalogue rejects retired path reuse and missing deprecat
   );
 });
 
-test("renderTemplateCssIndex matches checked-in template.css", () => {
-  const body = renderTemplateCssIndex(CSS_INDEX_ORDER);
+test("renderFrameworkCssIndex matches checked-in framework.css", () => {
+  const body = renderFrameworkCssIndex(CSS_INDEX_ORDER);
   for (const name of CSS_INDEX_ORDER) {
     assert.match(body, new RegExp(`@import url\\("${name}"\\);`));
   }
   const diskText = fs
-    .readFileSync(path.join(ROOT, "app/css/template.css"), "utf8")
+    .readFileSync(path.join(ROOT, "app/css/framework.css"), "utf8")
     .replace(/\r\n/g, "\n");
   assert.equal(diskText, body);
-  assert.equal(sha256Hex(body), hashFile("app/css/template.css"));
+  assert.equal(sha256Hex(body), hashFile("app/css/framework.css"));
 });

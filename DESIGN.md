@@ -8,9 +8,11 @@ Aesthetics follow a GitHub-inspired palette (based on [pqm-stepper](https://gith
 
 When a control reacts to a user action (copy succeeded, save failed, and similar):
 
-1. **Default — in-place** on the control when it can show the outcome itself (e.g. labeled **Copy** → **Copied** / **Failed** for a short duration). Prefer this over a reaction tooltip.
+1. **Default — in-place** on the control when it can show the outcome itself (e.g. labeled **Copy** → **Copied** / **Failed** for a short duration). Use [`flashButtonLabel()`](app/utils/button-label.js) with `.btn-label-flash` for labeled buttons; prefer this over a reaction tooltip.
 2. **Fallback — timer tooltip** when in-place is not practical (icon-only controls such as the floating code-block copy button). Use success/error tones with check / × icons.
 3. **When requested — banner** for page-level or persistent status messaging.
+
+Pointer-down press feedback uses `:active` colour-mix tints: hover uses a lighter 6% mix, enabled click previews the selected look at 12%, and selected / on press uses a stronger 18% tint. Filled primaries darken via `--accent-active` / `--danger-active`.
 
 **Also in-place:** clipboard paste-arming (prompting “Press Ctrl+V” / showing `Ctrl+V` on the button for up to ~15s) is a waiting state on the control, not only a one-shot flash.
 
@@ -56,5 +58,7 @@ Two selection highlight styles. Prefer **standard** for selectable items in cont
 **Standard** recipe (menus / list options): selected state uses something like `border-color: var(--accent)` and `background: color-mix(in srgb, var(--accent) 12%, var(--surface))`. When several selected items sit next to each other, CSS collapses the shared borders so the run reads as one outlined block.
 
 **Light** recipe: selected / pressed state uses a softer fill only (today: `background: var(--code-bg)` on the theme toggle), without the accent selection border used by standard.
+
+**Table row hover** is pointer feedback, not selection: body rows use an accent-tinted background and one outer accent border on hover (same border/fill language as standard, but only while the pointer is over the row). Selected rows are indicated by the checkbox column only — do not add a third *selection* look.
 
 Do not invent a third selection look for new catalogue controls — pick **standard** or **light** and match an existing control’s CSS.

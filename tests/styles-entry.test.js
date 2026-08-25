@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const stylesPath = path.join(root, "app", "styles.css");
-const templatePath = path.join(root, "app", "css", "template.css");
+const frameworkPath = path.join(root, "app", "css", "framework.css");
 const appCssPath = path.join(root, "app", "css", "app.css");
 
 const EXPECTED_PARTIALS = [
@@ -28,16 +28,16 @@ const EXPECTED_PARTIALS = [
   "controls-tabular-input.css",
 ];
 
-test("styles.css is a fork entry importing tokens, template, then app", () => {
+test("styles.css is a fork entry importing tokens, framework, then app", () => {
   const css = fs.readFileSync(stylesPath, "utf8");
   assert.match(css, /@import url\("tokens\.css"\);/);
-  assert.match(css, /@import url\("css\/template\.css"\);/);
+  assert.match(css, /@import url\("css\/framework\.css"\);/);
   assert.match(css, /@import url\("css\/app\.css"\);/);
   assert.doesNotMatch(css, /@import url\("css\/layout\.css"\);/);
 });
 
-test("template.css indexes every catalogue partial", () => {
-  const css = fs.readFileSync(templatePath, "utf8");
+test("framework.css indexes every catalogue partial", () => {
+  const css = fs.readFileSync(frameworkPath, "utf8");
   for (const partial of EXPECTED_PARTIALS) {
     assert.match(css, new RegExp(`@import url\\("${partial}"\\);`));
     assert.ok(fs.existsSync(path.join(root, "app", "css", partial)), partial);

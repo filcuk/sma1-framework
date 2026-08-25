@@ -24,6 +24,9 @@
  * data-duration-max-hours — cap for hours (default 99)
  * data-duration-seconds — include a seconds segment
  * data-duration-disabled — disable the control
+ *
+ * Popup quick actions: always **00:00** reset (duration mode — no **Now**). Not exposed as
+ * showZero / showNow options (unlike standalone initTimePicker).
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";

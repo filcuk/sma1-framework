@@ -1,6 +1,14 @@
 import { initPopupMenu } from "../utils/menu.js";
 
-export function initDropdown(dropdownEl, { onSelect } = {}) {
+/**
+ * @param {HTMLElement | null} dropdownEl
+ * @param {{
+ *   onSelect?: (detail: object) => void;
+ *   gridMin?: number | false;
+ *   gridCols?: number;
+ * }} [options]
+ */
+export function initDropdown(dropdownEl, { onSelect, gridMin, gridCols } = {}) {
   if (!dropdownEl) return null;
 
   const trigger = dropdownEl.querySelector(".dropdown-trigger");
@@ -11,6 +19,8 @@ export function initDropdown(dropdownEl, { onSelect } = {}) {
     menuEl: menu,
     toggleEl: trigger,
     itemSelector: ".dropdown-menu-item",
+    gridMin,
+    gridCols,
     onSelect: (detail) => onSelect?.({ dropdownEl, ...detail }),
   });
 }

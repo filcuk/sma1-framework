@@ -5,8 +5,8 @@
  *   app/vendor/toastui-editor/toastui-editor-all.min.js
  *   app/vendor/toastui-editor-plugin-table-merged-cell/toastui-editor-plugin-table-merged-cell.min.js
  *
- * Mode switching uses the template segmented control (Toast UI’s native switch is hidden).
- * Toolbar tips use template `data-tooltip` (Toast UI’s native tooltip is hidden).
+ * Mode switching uses the framework segmented control (Toast UI’s native switch is hidden).
+ * Toolbar tips use framework `data-tooltip` (Toast UI’s native tooltip is hidden).
  *
  * Markup:
  *   <div class="field rich-text-editor" id="my-editor"
@@ -113,7 +113,7 @@ function createModeSwitch(defaultValue) {
   wrap.className = "rich-text-editor-mode";
 
   const control = document.createElement("div");
-  control.className = "segmented-control";
+  control.className = "segmented-control segmented-control--slim";
   control.dataset.segmentedControlDefault = defaultValue;
 
   const list = document.createElement("div");
@@ -168,7 +168,7 @@ function mountModeSwitch(mountEl, editor, defaultValue) {
   };
 }
 
-/** Map Toast UI toolbar `aria-label`s onto template `data-tooltip` (initTooltips). */
+/** Map Toast UI toolbar `aria-label`s onto framework `data-tooltip` (initTooltips). */
 function wireToolbarTooltips(mountEl) {
   const uiRoot = mountEl.querySelector(".toastui-editor-defaultUI");
   if (!uiRoot) return null;

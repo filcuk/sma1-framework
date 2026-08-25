@@ -38,6 +38,13 @@ import { initToggle } from "./toggle.js";
 import { initPopupMenu } from "../utils/menu.js";
 import { onDocumentClickOutside, onDocumentEscape } from "../utils/document-listeners.js";
 import { copyText, readText, armPasteCapture } from "../utils/clipboard.js";
+import {
+  prepareButtonLabelFlash,
+  setButtonLabelFlash,
+  flashButtonLabel,
+  cancelButtonLabelFlash,
+  BUTTON_LABEL_FLASH_LABEL_CLASS,
+} from "../utils/button-label.js";
 import { closeTooltip } from "./tooltip.js";
 
 /** @typedef {"text" | "number" | "logical"} ColumnType */
@@ -424,11 +431,11 @@ export function initTabularInput(
 
   const copyBtn = document.createElement("button");
   copyBtn.type = "button";
-  copyBtn.className = "btn tabular-input-copy";
+  copyBtn.className = "btn btn-label-flash tabular-input-copy";
   copyBtn.setAttribute("aria-label", "Copy table");
   copyBtn.dataset.tooltip = "Copy in tabular format";
   const copyLabelEl = document.createElement("span");
-  copyLabelEl.className = "tabular-input-action-label";
+  copyLabelEl.className = BUTTON_LABEL_FLASH_LABEL_CLASS;
   copyLabelEl.textContent = "Copy";
   copyBtn.append(
     createIcon("copy", { className: "btn-icon-svg" }),
@@ -437,11 +444,11 @@ export function initTabularInput(
 
   const pasteBtn = document.createElement("button");
   pasteBtn.type = "button";
-  pasteBtn.className = "btn tabular-input-paste";
+  pasteBtn.className = "btn btn-label-flash tabular-input-paste";
   pasteBtn.setAttribute("aria-label", "Paste table");
   pasteBtn.dataset.tooltip = "Replace table from clipboard";
   const pasteLabelEl = document.createElement("span");
-  pasteLabelEl.className = "tabular-input-action-label";
+  pasteLabelEl.className = BUTTON_LABEL_FLASH_LABEL_CLASS;
   pasteLabelEl.textContent = "Paste";
   pasteBtn.append(
     createIcon("paste", { className: "btn-icon-svg" }),
@@ -450,17 +457,31 @@ export function initTabularInput(
 
   const pasteHeadersBtn = document.createElement("button");
   pasteHeadersBtn.type = "button";
-  pasteHeadersBtn.className = "btn tabular-input-paste-headers";
+  pasteHeadersBtn.className = "btn btn-label-flash tabular-input-paste-headers";
   pasteHeadersBtn.setAttribute("aria-label", "Paste with headers");
   pasteHeadersBtn.dataset.tooltip =
     "Replace table from clipboard; first row becomes column headers";
   const pasteHeadersLabelEl = document.createElement("span");
-  pasteHeadersLabelEl.className = "tabular-input-action-label";
+  pasteHeadersLabelEl.className = BUTTON_LABEL_FLASH_LABEL_CLASS;
   pasteHeadersLabelEl.textContent = "Paste with Headers";
   pasteHeadersBtn.append(
     createIcon("paste-special", { className: "btn-icon-svg" }),
     pasteHeadersLabelEl
   );
+
+  prepareButtonLabelFlash(copyBtn, {
+    idle: "Copy",
+  });
+  prepareButtonLabelFlash(pasteBtn, {
+    idle: "Paste",
+    success: "Pasted",
+    measureLabels: ["Ctrl+V"],
+  });
+  prepareButtonLabelFlash(pasteHeadersBtn, {
+    idle: "Paste with Headers",
+    success: "Pasted",
+    measureLabels: ["Ctrl+V"],
+  });
 
   const addRowBtn = document.createElement("button");
   addRowBtn.type = "button";
@@ -723,20 +744,12 @@ export function initTabularInput(
     });
   }
 
-  /** @type {ReturnType<typeof setTimeout> | null} */
-  let copyResetTimer = null;
-  /** @type {ReturnType<typeof setTimeout> | null} */
-  let pasteResetTimer = null;
-  /** @type {ReturnType<typeof setTimeout> | null} */
-  let pasteHeadersResetTimer = null;
-
   /**
    * Active “press Ctrl+V” capture when Clipboard API read is unavailable.
    * @type {{
    *   button: HTMLButtonElement,
    *   reset: () => void,
-   *   resolve: (text: string | null) => void,
-   *   cleanup: () => void,
+   *   capture: ReturnType<typeof armPasteCapture>,
    * } | null}
    */
   let pasteCaptureSession = null;
@@ -1907,58 +1920,26 @@ export function initTabularInput(
     syncBreakoutLayout();
   }
 
-  function setActionButtonLabel(button, text) {
-    const labelEl = button.querySelector(".tabular-input-action-label");
-    if (labelEl) labelEl.textContent = text;
-  }
-
   function resetCopyButtonLabel() {
-    setActionButtonLabel(copyBtn, "Copy");
+    setButtonLabelFlash(copyBtn, "Copy");
     copyBtn.setAttribute("aria-label", "Copy table");
     copyBtn.dataset.tooltip = "Copy in tabular format";
     delete copyBtn.dataset.tooltipTone;
   }
 
   function resetPasteButtonLabel() {
-    setActionButtonLabel(pasteBtn, "Paste");
+    setButtonLabelFlash(pasteBtn, "Paste");
     pasteBtn.setAttribute("aria-label", "Paste table");
     pasteBtn.dataset.tooltip = "Replace table from clipboard";
     delete pasteBtn.dataset.tooltipTone;
   }
 
   function resetPasteHeadersButtonLabel() {
-    setActionButtonLabel(pasteHeadersBtn, "Paste with Headers");
+    setButtonLabelFlash(pasteHeadersBtn, "Paste with Headers");
     pasteHeadersBtn.setAttribute("aria-label", "Paste with headers");
     pasteHeadersBtn.dataset.tooltip =
       "Replace table from clipboard; first row becomes column headers";
     delete pasteHeadersBtn.dataset.tooltipTone;
-  }
-
-  /**
-   * Flash a temporary label on a clipboard action button (in-place; labeled controls).
-   * @param {HTMLButtonElement} button
-   * @param {{ success: string, fail: string, reset: () => void, getTimer: () => ReturnType<typeof setTimeout> | null, setTimer: (id: ReturnType<typeof setTimeout> | null) => void }} opts
-   * @param {boolean} ok
-   */
-  function flashActionButton(button, opts, ok) {
-    const prev = opts.getTimer();
-    if (prev !== null) {
-      clearTimeout(prev);
-      opts.setTimer(null);
-    }
-    if (ok) {
-      setActionButtonLabel(button, opts.success);
-      button.setAttribute("aria-label", opts.success);
-    } else {
-      setActionButtonLabel(button, opts.fail);
-      button.setAttribute("aria-label", opts.fail);
-    }
-    opts.setTimer(
-      setTimeout(() => {
-        opts.setTimer(null);
-        opts.reset();
-      }, 1500)
-    );
   }
 
   async function onCopyClick() {
@@ -1966,24 +1947,12 @@ export function initTabularInput(
     closeTooltip();
     const text = formatClipboardTable(columns, rows);
     const ok = await copyText(text);
-    flashActionButton(
-      copyBtn,
-      {
-        success: "Copied",
-        fail: "Failed",
-        reset: resetCopyButtonLabel,
-        getTimer: () => copyResetTimer,
-        setTimer: (id) => {
-          copyResetTimer = id;
-        },
-      },
-      ok
-    );
+    flashButtonLabel(copyBtn, ok, { reset: resetCopyButtonLabel });
     if (ok) announce("Table copied");
   }
 
   /**
-   * @param {{ firstRowIsHeader: boolean, button: HTMLButtonElement, reset: () => void, getTimer: () => ReturnType<typeof setTimeout> | null, setTimer: (id: ReturnType<typeof setTimeout> | null) => void, announceOk: string }} opts
+   * @param {{ firstRowIsHeader: boolean, button: HTMLButtonElement, reset: () => void, announceOk: string }} opts
    */
   async function onPasteReplaceClick(opts) {
     if (isDisabled) return;
@@ -2014,17 +1983,10 @@ export function initTabularInput(
       emit("paste");
       announce(opts.announceOk);
     }
-    flashActionButton(
-      opts.button,
-      {
-        success: "Pasted",
-        fail: "Failed",
-        reset: opts.reset,
-        getTimer: opts.getTimer,
-        setTimer: opts.setTimer,
-      },
-      ok
-    );
+    flashButtonLabel(opts.button, ok, {
+      success: "Pasted",
+      reset: opts.reset,
+    });
   }
 
   /**
@@ -2048,7 +2010,7 @@ export function initTabularInput(
   function waitForPasteViaShortcut(button, reset) {
     endPasteCapture();
 
-    setActionButtonLabel(button, "Ctrl+V");
+    setButtonLabelFlash(button, "Ctrl+V");
     button.setAttribute("aria-label", "Press Control V to paste");
     button.dataset.tooltip = "Press Ctrl+V to paste";
     button.dataset.tooltipTone = "error";
@@ -2071,10 +2033,6 @@ export function initTabularInput(
       firstRowIsHeader: false,
       button: pasteBtn,
       reset: resetPasteButtonLabel,
-      getTimer: () => pasteResetTimer,
-      setTimer: (id) => {
-        pasteResetTimer = id;
-      },
       announceOk: "Table replaced from clipboard",
     });
   }
@@ -2084,10 +2042,6 @@ export function initTabularInput(
       firstRowIsHeader: true,
       button: pasteHeadersBtn,
       reset: resetPasteHeadersButtonLabel,
-      getTimer: () => pasteHeadersResetTimer,
-      setTimer: (id) => {
-        pasteHeadersResetTimer = id;
-      },
       announceOk: "Table replaced from clipboard with headers",
     });
   }
@@ -2191,18 +2145,9 @@ export function initTabularInput(
         cancelAnimationFrame(breakoutSyncFrame);
         breakoutSyncFrame = null;
       }
-      if (copyResetTimer !== null) {
-        clearTimeout(copyResetTimer);
-        copyResetTimer = null;
-      }
-      if (pasteResetTimer !== null) {
-        clearTimeout(pasteResetTimer);
-        pasteResetTimer = null;
-      }
-      if (pasteHeadersResetTimer !== null) {
-        clearTimeout(pasteHeadersResetTimer);
-        pasteHeadersResetTimer = null;
-      }
+      cancelButtonLabelFlash(copyBtn);
+      cancelButtonLabelFlash(pasteBtn);
+      cancelButtonLabelFlash(pasteHeadersBtn);
       endPasteCapture();
       breakoutResizeObserver?.disconnect();
       addRowBtn.removeEventListener("click", onAddRowClick);

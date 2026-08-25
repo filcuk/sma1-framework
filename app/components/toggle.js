@@ -14,13 +14,15 @@
  *     <input type="hidden" class="toggle-value" />
  *   </div>
  *
- * Tri-state (`data-toggle-tristate`): cycles off → on → mixed. Uses
+ * Tri-state (`data-toggle-tristate`): cycles off → mixed → on by default. Uses
  * `role="checkbox"` with `aria-checked="mixed"` (ARIA switch is boolean-only).
  * Include a `remove` (minus) icon with `.toggle-thumb-icon--mixed`, or one is
  * injected automatically.
  *
  * data-toggle-default — "true" / "false" / "mixed" (tristate), or presence for on
  * data-toggle-tristate — enable three-state cycling
+ * data-toggle-tristate-cycle — "default" (off → mixed → on), "on-mixed"
+ *   (off → on → mixed), or "mixed-both" (off → mixed → on → mixed)
  * data-toggle-disabled — disable the switch
  *
  * Add `.toggle--slim` for a thin track with an oversized overhanging thumb
@@ -31,8 +33,62 @@ import { parseBooleanAttr } from "../utils/dom.js";
 import { initIcons } from "../utils/icons.js";
 
 /** @typedef {"true" | "false" | "mixed"} ToggleState */
+/** @typedef {"default" | "on-mixed" | "mixed-both"} TristateCycleId */
 
-const TRI_STATES = /** @type {const} */ (["false", "true", "mixed"]);
+/** @type {Record<TristateCycleId, readonly ToggleState[]>} */
+export const TRISTATE_CYCLES = {
+  default: ["false", "mixed", "true"],
+  "on-mixed": ["false", "true", "mixed"],
+  "mixed-both": ["false", "mixed", "true", "mixed"],
+};
+
+/**
+ * @param {unknown} value
+ * @returns {TristateCycleId}
+ */
+export function normalizeTristateCycleId(value) {
+  // "mixed-on" is accepted as an alias of the default cycle.
+  if (value === "on-mixed" || value === "mixed-both") return value;
+  return "default";
+}
+
+/**
+ * @param {TristateCycleId | undefined} cycleId
+ * @returns {readonly ToggleState[]}
+ */
+export function getTristateCycleSequence(cycleId) {
+  return TRISTATE_CYCLES[normalizeTristateCycleId(cycleId)];
+}
+
+/**
+ * @param {number} step
+ * @param {readonly ToggleState[]} cycle
+ * @returns {ToggleState}
+ */
+export function tristateStateAtStep(step, cycle) {
+  const len = cycle.length;
+  const index = ((step % len) + len) % len;
+  return cycle[index];
+}
+
+/**
+ * @param {ToggleState} state
+ * @param {readonly ToggleState[]} cycle
+ * @returns {number}
+ */
+export function tristateStepForState(state, cycle) {
+  const index = cycle.indexOf(state);
+  return index === -1 ? 0 : index;
+}
+
+/**
+ * @param {number} step
+ * @param {readonly ToggleState[]} cycle
+ * @returns {number}
+ */
+export function nextTristateCycleStep(step, cycle) {
+  return (step + 1) % cycle.length;
+}
 
 /**
  * @param {unknown} value
@@ -49,12 +105,40 @@ function normalizeState(value, allowMixed) {
 }
 
 /**
- * @param {ToggleState} state
+ * @param {HTMLElement} toggleEl
+ * @param {TristateCycleId | undefined} cycleOption
+ * @returns {readonly ToggleState[]}
+ */
+function resolveTristateCycle(toggleEl, cycleOption) {
+  const raw = cycleOption ?? toggleEl?.dataset.toggleTristateCycle;
+  return getTristateCycleSequence(normalizeTristateCycleId(raw));
+}
+
+/**
+ * @param {number} step
+ * @param {readonly ToggleState[]} cycle
  * @returns {ToggleState}
  */
-function nextTriState(state) {
-  const index = TRI_STATES.indexOf(state);
-  return TRI_STATES[(index + 1) % TRI_STATES.length];
+function cycleStateAt(step, cycle) {
+  return tristateStateAtStep(step, cycle);
+}
+
+/**
+ * @param {ToggleState} state
+ * @param {readonly ToggleState[]} cycle
+ * @returns {number}
+ */
+function cycleStepForState(state, cycle) {
+  return tristateStepForState(state, cycle);
+}
+
+/**
+ * @param {number} step
+ * @param {readonly ToggleState[]} cycle
+ * @returns {number}
+ */
+function nextCycleStep(step, cycle) {
+  return nextTristateCycleStep(step, cycle);
 }
 
 function resolveDisabled(toggleEl, disabledOption, toggleBtn) {
@@ -113,7 +197,7 @@ function ensureMixedIcon(toggleBtn) {
 
 export function initToggle(
   toggleEl,
-  { defaultChecked, defaultState, disabled, tristate, onChange } = {}
+  { defaultChecked, defaultState, disabled, tristate, tristateCycle, onChange } = {}
 ) {
   if (!toggleEl) return null;
 
@@ -126,6 +210,12 @@ export function initToggle(
     typeof tristate === "boolean"
       ? tristate
       : Boolean(parseBooleanAttr(toggleEl.dataset.toggleTristate));
+  const tristateCycleId = normalizeTristateCycleId(
+    tristateCycle ?? toggleEl.dataset.toggleTristateCycle
+  );
+  const tristateCycleSequence = isTristate
+    ? resolveTristateCycle(toggleEl, tristateCycleId)
+    : TRISTATE_CYCLES.default;
 
   const role = toggleBtn.getAttribute("role");
   if (isTristate) {
@@ -144,7 +234,13 @@ export function initToggle(
         : undefined;
 
   let state = resolveDefaultState(toggleEl, initialOption, isTristate);
+  let cycleStep = isTristate ? cycleStepForState(state, tristateCycleSequence) : 0;
   let isDisabled = resolveDisabled(toggleEl, disabled, toggleBtn);
+
+  function advanceTristateCycle(source) {
+    cycleStep = nextCycleStep(cycleStep, tristateCycleSequence);
+    setState(cycleStateAt(cycleStep, tristateCycleSequence), { source });
+  }
 
   function syncDom({ emit = true, source = "init" } = {}) {
     toggleBtn.setAttribute("aria-checked", state);
@@ -179,6 +275,9 @@ export function initToggle(
       return;
     }
     state = normalized;
+    if (isTristate) {
+      cycleStep = cycleStepForState(state, tristateCycleSequence);
+    }
     syncDom({ emit, source });
   }
 
@@ -194,7 +293,7 @@ export function initToggle(
   toggleBtn.addEventListener("click", () => {
     if (isDisabled) return;
     if (isTristate) {
-      setState(nextTriState(state), { source: "click" });
+      advanceTristateCycle("click");
       return;
     }
     setChecked(state !== "true", { source: "click" });
@@ -218,7 +317,7 @@ export function initToggle(
     },
     toggle() {
       if (isTristate) {
-        setState(nextTriState(state), { source: "api" });
+        advanceTristateCycle("api");
         return;
       }
       setChecked(state !== "true", { source: "api" });
@@ -228,10 +327,13 @@ export function initToggle(
         setChecked(state !== "true", { source: "api" });
         return;
       }
-      setState(nextTriState(state), { source: "api" });
+      advanceTristateCycle("api");
     },
     isTristate() {
       return isTristate;
+    },
+    getTristateCycle() {
+      return isTristate ? tristateCycleId : null;
     },
     setDisabled(nextDisabled) {
       applyDisabled(nextDisabled);

@@ -1,10 +1,10 @@
 # Usage guide
 
-How to fork this template into your own app, deploy it, and use the design system components.
+How to fork this framework into your own app, deploy it, and use the design system components.
 
-## Creating a new app from this template
+## Creating a new app from this framework
 
-Cursor agents can drive this with skills under [`.cursor/skills/`](.cursor/skills/): **`init-app`** (fork setup), **`handle-assets`** (logos/icons — user supplies files), **`manage-color`** (primary accent + contrast), **`finalize-app`** (trim unused components before ship), plus migrate/sync/restore helpers listed in [`AGENTS.md`](AGENTS.md#lifecycle-skills). How lock, manifest, sync, and deprecate/retire work is documented in [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades). Forks created before template lock/versioning should follow [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades).
+Cursor agents can drive this with skills under [`.cursor/skills/`](.cursor/skills/): **`init-app`** (fork setup), **`handle-assets`** (logos/icons — user supplies files), **`manage-color`** (primary accent + contrast), **`finalize-app`** (trim unused components before ship), plus migrate/sync/restore helpers listed in [`AGENTS.md`](AGENTS.md#lifecycle-skills). How lock, manifest, sync, and deprecate/retire work is documented in [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades). Forks created before framework lock/versioning should follow [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades).
 
 ### 1. Create the repository
 
@@ -36,7 +36,7 @@ initShell(); // footer, theme toggle, page nav, tooltips, icons, links
 // …your app-specific inits…
 ```
 
-Optional shell overrides (repo link, related apps, page nav scan):
+Optional shell overrides (repo link, related apps, page nav scan, heading links):
 
 ```javascript
 initShell({
@@ -47,29 +47,30 @@ initShell({
   alsoSeeTopics: ["*"], // remote filter: ["*"]=all; ["*","-Topic"]=all except; ["A",""]=whitelist
   alsoSeeIncludeLocal: false, // true = include local alsoSee in full (alone or merged with remote)
   pageNav: { headingSelector: "main :is(h2, h3)[id]" },
+  // headingLinks: false, // disable copy-link icons (or data-no-heading-links on <html>)
 });
 ```
 
-### App and template versions
+### App and framework versions
 
 Versions use [Semantic Versioning 2.0.0](https://semver.org/) and live in [`app/version.js`](app/version.js):
 
 ```javascript
-export const TEMPLATE_VERSION = "0.6.0"; // SMA1 Framework release — sync with app/version.js
+export const FRAMEWORK_VERSION = "0.6.0"; // SMA1 Framework release — sync with app/version.js
 export const APP_VERSION = "0.0.0";      // your app — bump when you ship
 ```
 
 | Constant | Who sets it | Shown in UI |
 | -------- | ----------- | ----------- |
 | `APP_VERSION` | You, on your fork | Footer label (`v0.0.0`) |
-| `TEMPLATE_VERSION` | Template maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
+| `FRAMEWORK_VERSION` | Framework maintainers | Footer tooltip on hover/focus (`SMA1 Framework v0.6.0`) |
 
-After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream template, the maintainer may have raised `TEMPLATE_VERSION` — hover the footer version to see which template release you are on.
+After forking, set `APP_VERSION` to your app’s release (e.g. `1.0.0`). Bump it when you publish a new version of **your** app. When you pull updates from the upstream framework, the maintainer may have raised `FRAMEWORK_VERSION` — hover the footer version to see which framework release you are on.
 
 Optional runtime override (rare):
 
 ```javascript
-initShell({ appVersion: "1.2.3", templateVersion: "0.6.0" });
+initShell({ appVersion: "1.2.3", frameworkVersion: "0.6.0" });
 ```
 
 ### Configuration
@@ -194,42 +195,42 @@ For pair-mode header logos, set a meaningful `alt` on the visible theme variant 
 
 ## How to bootstrap pre-v0.9.0 upgrades
 
-Forks created before lock/versioning lack `template.lock.json`, the sync scripts, and `.cursor/skills/`. For a **one-time** bootstrap, copy those from a current [SMA1 Framework](https://github.com/filcuk/sma1-framework) checkout (or tagged release) into the fork. After that, rely on lock + sync — do not keep re-copying the whole `.cursor/skills/` tree by hand (that would overwrite fork-local skills).
+Forks created before lock/versioning lack `framework.lock.json`, the sync scripts, and `.cursor/skills/`. For a **one-time** bootstrap, copy those from a current [SMA1 Framework](https://github.com/filcuk/sma1-framework) checkout (or tagged release) into the fork. After that, rely on lock + sync — do not keep re-copying the whole `.cursor/skills/` tree by hand (that would overwrite fork-local skills).
 
 | Copy | Purpose |
 | ---- | ------- |
-| `.cursor/skills/` and `.cursor/rules/` | Agent playbooks and template rules (later refreshed by sync) |
-| `scripts/sync-template.mjs`, `scripts/verify-template.mjs`, `scripts/lib/` | Sync / verify tooling |
-| `scripts/generate-template-manifest.mjs` (optional on forks) | Only needed if you regenerate manifests locally |
+| `.cursor/skills/` and `.cursor/rules/` | Agent playbooks and framework rules (later refreshed by sync) |
+| `scripts/sync-framework.mjs`, `scripts/verify-framework.mjs`, `scripts/lib/` | Sync / verify tooling |
+| `scripts/generate-framework-manifest.mjs` (optional on forks) | Only needed if you regenerate manifests locally |
 
 Ensure `package.json` has `"type": "module"` and:
 
 ```json
 {
   "scripts": {
-    "sync:template": "node scripts/sync-template.mjs",
-    "verify:template": "node scripts/verify-template.mjs"
+    "sync:framework": "node scripts/sync-framework.mjs",
+    "verify:framework": "node scripts/verify-framework.mjs"
   }
 }
 ```
 
-Add `template.lock.json` (use `"components": ["*"]` for a full catalogue, or list only what the app uses):
+Add `framework.lock.json` (use `"components": ["*"]` for a full catalogue, or list only what the app uses):
 
 ```json
 {
   "schemaVersion": 2,
-  "templateVersion": "0.9.0",
+  "frameworkVersion": "0.9.0",
   "source": "filcuk/sma1-framework",
   "components": ["*"],
   "skills": ["*"]
 }
 ```
 
-Then run the **`migrate-template`** skill (or `npm run sync:template -- --version 0.9.0` + `npm run verify:template`) to pull the tagged template into the fork. See [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades) for ongoing upgrades.
+Then run the **`migrate-framework`** skill (or `npm run sync:framework -- --version 0.9.0` + `npm run verify:framework`) to pull the tagged framework release into the fork. See [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades) for ongoing upgrades.
 
 ---
 
-## Template lock, manifest, and upgrades
+## Framework lock, manifest, and upgrades
 
 How forks stay aligned with a tagged SMA1 Framework release without clobbering app-owned work.
 
@@ -237,30 +238,30 @@ How forks stay aligned with a tagged SMA1 Framework release without clobbering a
 
 | Constant | File | Who bumps |
 | -------- | ---- | --------- |
-| `TEMPLATE_VERSION` | `app/version.js` | Template maintainers; sync updates it on the fork |
+| `FRAMEWORK_VERSION` | `app/version.js` | Framework maintainers; sync updates it on the fork |
 | `APP_VERSION` | `app/version.js` | App authors on the fork (sync preserves it) |
 
-Fetch-based sync requires a git tag `vX.Y.Z` on the upstream template that matches `template.lock.json` → `templateVersion`. Local checkouts can use `npm run sync:template -- --from /path/to/sma1-framework`.
+Fetch-based sync requires a git tag `vX.Y.Z` on the upstream framework that matches `framework.lock.json` → `frameworkVersion`. Local checkouts can use `npm run sync:framework -- --from /path/to/sma1-framework`.
 
-### Manifest (`template-manifest.json`)
+### Manifest (`framework-manifest.json`)
 
-Generated by `npm run manifest:template` from [`scripts/lib/template-catalogue.mjs`](scripts/lib/template-catalogue.mjs) (`schemaVersion` **2**). It records:
+Generated by `npm run manifest:framework` from [`scripts/lib/framework-catalogue.mjs`](scripts/lib/framework-catalogue.mjs) (`schemaVersion` **2**). It records:
 
-- **Hashed files** — SHA-256 (LF-canonical) for template-owned `app/` paths plus listed Cursor agent skills/rules under `.cursor/`
+- **Hashed files** — SHA-256 (LF-canonical) for framework-owned `app/` paths plus listed Cursor agent skills/rules under `.cursor/`
 - **Component graph** — stable ids, `files` / `css` / `vendor` / `icons` / `infra`
 - **Agent catalogue** — `agent.skills` and `agent.rules`
 - **App-owned** paths sync must never overwrite (`appOwned`)
-- **Derived** — e.g. `app/css/template.css` regenerated from the selected CSS index
+- **Derived** — e.g. `app/css/framework.css` regenerated from the selected CSS index
 - **Lifecycle maps** — `deprecated` and `retired` (usually empty)
 
-### Lock (`template.lock.json`)
+### Lock (`framework.lock.json`)
 
 Fork pin for what to install:
 
 ```json
 {
   "schemaVersion": 2,
-  "templateVersion": "0.9.0",
+  "frameworkVersion": "0.9.0",
   "source": "filcuk/sma1-framework",
   "components": ["*"],
   "skills": ["*"]
@@ -270,27 +271,27 @@ Fork pin for what to install:
 | Field | Meaning |
 | ----- | ------- |
 | `components` | Catalogue ids to install, or `["*"]` for the full set. Always-on shell pieces are added automatically. |
-| `skills` | Agent skill ids to install (`["*"]` default when omitted on schema v2). Support `-id` exclusions (e.g. `["*", "-release-template"]`). Rules under `.cursor/rules/` always sync when any skill is selected. |
+| `skills` | Agent skill ids to install (`["*"]` default when omitted on schema v2). Support `-id` exclusions (e.g. `["*", "-release-framework"]`). Rules under `.cursor/rules/` always sync when any skill is selected. |
 | `source` | GitHub `owner/repo` used by `--version` fetch |
-| `templateVersion` | Target template SemVer (without the `v` prefix) |
+| `frameworkVersion` | Target framework SemVer (without the `v` prefix) |
 
 ### Sync
 
 ```bash
-npm run sync:template -- --version X.Y.Z
-npm run sync:template -- --from ../sma1-framework
-npm run sync:template -- --from ../sma1-framework --prune
-npm run sync:template -- --from . --dry-run
+npm run sync:framework -- --version X.Y.Z
+npm run sync:framework -- --from ../sma1-framework
+npm run sync:framework -- --from ../sma1-framework --prune
+npm run sync:framework -- --from . --dry-run
 ```
 
-Sync copies every path in the lock selection from upstream, regenerates `app/css/template.css`, merges `APP_VERSION` into `app/version.js`, and refreshes the lock (preserving `skills` and other fork fields). It does **not** overwrite app-owned paths and does **not** delete fork-local `.cursor/skills/<other-id>/` folders.
+Sync copies every path in the lock selection from upstream, regenerates `app/css/framework.css`, merges `APP_VERSION` into `app/version.js`, and refreshes the lock (preserving `skills` and other fork fields). It does **not** overwrite app-owned paths and does **not** delete fork-local `.cursor/skills/<other-id>/` folders.
 
 `--prune` deletes `previousFiles` from live moves and paths listed on **retired** ids, unless an app-owned file still references the path (then sync warns and skips).
 
 ### Verify
 
 ```bash
-npm run verify:template
+npm run verify:framework
 ```
 
 | Result | Effect on exit / CI |
@@ -311,9 +312,9 @@ Components and skills are selected by **id** (usually matching the file or folde
 
 **Retired / `previousFiles` paths must never be reused** by a new live file. Manifest generation rejects overlaps.
 
-### Customising template skills
+### Customising framework skills
 
-Do not edit a template skill in place (the next sync overwrites it). **Fork** it:
+Do not edit a framework skill in place (the next sync overwrites it). **Fork** it:
 
 1. Copy `.cursor/skills/<id>/` to a new folder id.
 2. Change frontmatter `name` and `description` so agents pick the fork copy.
@@ -321,7 +322,7 @@ Do not edit a template skill in place (the next sync overwrites it). **Fork** it
 
 ### Agent-driven upgrades
 
-Prefer the **`migrate-template`** skill for version bumps (partial or full). **`sync-shell`** is a lighter path for chrome/tokens only and does **not** refresh agent skills/rules.
+Prefer the **`migrate-framework`** skill for version bumps (partial or full). It also asks whether to check new changelog additions against local app workarounds and, if so, offers each match individually to switch onto the framework API. **`sync-shell`** is a lighter path for chrome/tokens only and does **not** refresh agent skills/rules.
 
 ---
 
@@ -338,14 +339,14 @@ Optional quality checks (requires `npm ci` once):
 ```bash
 npm run lint
 npm test
-npm run manifest:template   # regenerate template-manifest.json after catalogue changes
-npm run verify:template     # check tree vs template.lock.json + manifest hashes
-# npm run sync:template -- --from ../sma1-framework
-# npm run sync:template -- --version 0.9.0
-# npm run sync:template -- --from ../sma1-framework --prune
+npm run manifest:framework   # regenerate framework-manifest.json after catalogue changes
+npm run verify:framework     # check tree vs framework.lock.json + manifest hashes
+# npm run sync:framework -- --from ../sma1-framework
+# npm run sync:framework -- --version 0.9.0
+# npm run sync:framework -- --from ../sma1-framework --prune
 ```
 
-Forks that predate lock/sync should bootstrap first — see [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades). Day-to-day upgrades: [Template lock, manifest, and upgrades](#template-lock-manifest-and-upgrades).
+Forks that predate lock/sync should bootstrap first — see [How to bootstrap pre-v0.9.0 upgrades](#how-to-bootstrap-pre-v090-upgrades). Day-to-day upgrades: [Framework lock, manifest, and upgrades](#framework-lock-manifest-and-upgrades).
 
 Then open `http://localhost:3000` and, if kept, `http://localhost:3000/demo.html`.
 
@@ -369,17 +370,17 @@ The workflow copies only publishable files into `_site/` (`index.html`, optional
 index.html          # Your app homepage
 demo.html           # Component showcase (optional)
 .nojekyll           # Skip Jekyll on GitHub Pages
-template-manifest.json  # SHA-256 + component/agent graph (npm run manifest:template)
-template.lock.json      # Fork pin: templateVersion + components + skills
+framework-manifest.json  # SHA-256 + component/agent graph (npm run manifest:framework)
+framework.lock.json      # Fork pin: frameworkVersion + components + skills
 .cursor/
   skills/               # Template agent playbooks (hashed + synced; fork-local ids untouched)
   rules/                # Template Cursor rules (hashed + synced)
 app/
-  styles.css            # Fork entry: tokens.css → css/template.css → css/app.css
+  styles.css            # Fork entry: tokens.css → css/framework.css → css/app.css
   tokens.css            # Design tokens, base typography, reduced motion
   css/
-    template.css        # Template partial index (sync regenerates in forks)
-    app.css             # Fork-owned app styles (empty in the template)
+    framework.css        # Framework partial index (sync regenerates in forks)
+    app.css             # Fork-owned app styles (empty in the framework)
     layout.css          # Page shell, sections, page nav, footer, theme toggle
     code-block.css      # Code blocks and expandable surfaces
     controls-buttons.css  # Toolbar, buttons
@@ -399,7 +400,7 @@ app/
     table.css            # Data tables
     controls-tabular-input.css # Editable typed grid
   config.js             # Fork defaults (repo URL, brand, theme key)
-  version.js            # APP_VERSION + TEMPLATE_VERSION (SemVer 2.0.0)
+  version.js            # APP_VERSION + FRAMEWORK_VERSION (SemVer 2.0.0)
   main.js               # index.html entry
   demo.js               # demo.html entry (optional)
   shell/
@@ -439,7 +440,7 @@ JS modules live under `app/shell/`, `app/utils/`, and `app/components/` — the 
 | **Infrastructure** | `app/utils/` | Keep if any popup menu, icons, or shared helpers remain |
 | **Components** | `app/components/` | Import and init only the features your page uses; delete unused files |
 
-Component CSS lives under `app/css/` (indexed by `css/template.css`, linked via `styles.css`). Match a component to its partial: form controls in `controls-fields.css`, menus in `controls-menus.css`, modals in `overlays.css`, and so on. Put app-only rules in `css/app.css`.
+Component CSS lives under `app/css/` (indexed by `css/framework.css`, linked via `styles.css`). Match a component to its partial: form controls in `controls-fields.css`, menus in `controls-menus.css`, modals in `overlays.css`, and so on. Put app-only rules in `css/app.css`.
 
 #### One popup open at a time
 
@@ -453,59 +454,60 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 
 | Feature | Description |
 | -------- | ----------- |
-| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`template.css`](app/css/template.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
+| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`framework.css`](app/css/framework.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
+| **Press feedback** | Enabled click reactions use `:active` colour-mix (`--control-hover-mix` / `--control-selected-mix` / `--control-press-mix`) and filled button darkening (`--accent-active` / `--danger-active`). |
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
-| **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; template version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
+| **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
-| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
+| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
-| **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/file-dropzone.js`](app/file-dropzone.js). |
+| **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
-| **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/combo.js`](app/combo.js). |
-| **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge. [`app/components/combobox.js`](app/components/combobox.js). |
-| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/slider.js`](app/slider.js). |
-| **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/progress-bar.js`](app/progress-bar.js). |
-| **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/spinner.js`](app/spinner.js). |
-| **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/stepper.js`](app/stepper.js). |
+| **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
+| **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
+| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/components/slider.js`](app/components/slider.js). |
+| **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/components/progress-bar.js`](app/components/progress-bar.js). |
+| **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/components/spinner.js`](app/components/spinner.js). |
+| **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/components/stepper.js`](app/components/stepper.js). |
 | **Colour input** | Hex text input with swatch attached on the left; optional alpha (`#RRGGBBAA`); optional `openOnClick` + `openTrigger` for colour set / picker. [`app/components/color-input.js`](app/components/color-input.js). |
 | **Colour set** | Named palette gallery (popup or embedded); built-in sets as one module each. [`app/components/color-set/`](app/components/color-set/). |
 | **Colour picker** | Spectrum / channel colour selector (HEX / RGB / HSL / HSV / CMYK); optional alpha and adjacent colour set. [`app/components/color-picker/`](app/components/color-picker/). |
 | **Date picker** | Calendar popup with an optional side-by-side time panel and shared Today / Now action bar. [`app/components/date-picker/`](app/components/date-picker/). |
 | **Time picker** | Editable time-of-day field with a segmented popup, optional seconds, and 00:00 / Now actions. [`app/components/time-picker/`](app/components/time-picker/). |
 | **Duration input** | Segmented hours:minutes (optional seconds) field with the shared popup in duration mode. [`app/components/duration-input.js`](app/components/duration-input.js). |
-| **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) cycles off → on → mixed. [`app/components/toggle.js`](app/components/toggle.js). |
+| **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) with configurable cycle (`data-toggle-tristate-cycle`). [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
-| **Segmented control** | Toggle button group for single selection; optional linked panels. [`app/segmented-control.js`](app/segmented-control.js). |
-| **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/progress-indicator.js`](app/progress-indicator.js). |
-| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, and leading `.dropdown-menu-item-icon-wrap` icons. Behaviour from [`app/dropdown.js`](app/dropdown.js). |
+| **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
+| **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/components/progress-indicator.js`](app/components/progress-indicator.js). |
+| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, and auto grid layout (`data-dropdown-grid*`). Behaviour from [`app/components/dropdown.js`](app/components/dropdown.js). |
 | **Toggle dropdown** | Multi-select dropdown; items toggle with `aria-checked`, menu stays open; selection count via badge. [`app/components/dropdown-toggle.js`](app/components/dropdown-toggle.js). |
 | **Expand** | `.expand` disclosure with chevron + label trigger and collapsible `.expand-panel`; behaviour from [`app/components/expand.js`](app/components/expand.js). |
 | **Accordion** | `.accordion` vertical stack of collapsible sections; one open at a time by default. [`app/components/accordion.js`](app/components/accordion.js). |
-| **Tabs** | `.tabs` block with `.tabs-list` / `.tabs-tab` and `.tabs-panel` content; behaviour from [`app/tabs.js`](app/tabs.js). |
-| **Pagination** | In-page page navigation with prev/next and numbered pages; no URL change. [`app/pagination.js`](app/pagination.js). |
-| **Table** | Data table with striped layout, sortable columns (Shift+click multi-sort), and optional row selection. [`app/table.js`](app/table.js). |
+| **Tabs** | `.tabs` block with `.tabs-list` / `.tabs-tab` and `.tabs-panel` content; behaviour from [`app/components/tabs.js`](app/components/tabs.js). |
+| **Pagination** | In-page page navigation with prev/next and numbered pages; no URL change. [`app/components/pagination.js`](app/components/pagination.js). |
+| **Table** | Data table with striped layout, sortable columns (Shift+click multi-sort), and optional row selection. [`app/components/table.js`](app/components/table.js). |
 | **Tabular input** | Editable typed grid (text / number / logical); add/remove/reset; Excel/TSV paste (in-place or replace via footer buttons) with type detection; centered canvas breakout when wide. [`app/components/tabular-input.js`](app/components/tabular-input.js). |
-| **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/page-nav.js`](app/page-nav.js). |
+| **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/shell/page-nav.js`](app/shell/page-nav.js). |
 | **Dialogs** | Accessible modal: backdrop, focus trap, Escape, Enter (default action), focus restore. Markup uses `.modal` / `.modal-panel`; behaviour from [`app/components/dialog.js`](app/components/dialog.js). |
 | **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
-| **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). [`app/shell/heading-link.js`](app/shell/heading-link.js). |
-| **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/external-link.js`](app/external-link.js). Opt out with `data-no-external-icon`. |
+| **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
+| **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
-| **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
-| **Banners** | `.banner.banner-*` variants with `data-icon`. Optional auto-hide via `data-banner-expire` (ms) and [`app/banner.js`](app/banner.js) (`showBanner` / `hideBanner`). Expire overlay + fade-out. |
+| **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps and `when` / nested `steps` branches. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
+| **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/components/banner.js`](app/components/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
 | **Callouts** | `.callout` accent-edged tip cards for standing information (CSS-only). See **Callouts** under Using components. |
-| **Code blocks** | `.code-block` with Prism highlighting, configurable toolbar (top/bottom/none), hover copy/maximise, view/select/edit modes. [`app/code-block.js`](app/code-block.js). |
-| **Expandable surface** | Maximize code blocks or textareas to page width. [`app/expandable-surface.js`](app/expandable-surface.js). |
-| **Icons** | Inline SVGs in [`app/icons.js`](app/icons.js); use `data-icon` in HTML or `createIcon()` in JS. Source from [Icônes — Material Icons (Round)](https://icones.js.org/collection/ic?s=info&variant=Round). Logo files stay in `app/res/`. |
+| **Code blocks** | `.code-block` with Prism highlighting, configurable toolbar (top/bottom/none), hover copy/maximise, view/select/edit modes. [`app/components/code-block.js`](app/components/code-block.js). |
+| **Expandable surface** | Maximize code blocks or textareas to page width. [`app/components/expandable-surface.js`](app/components/expandable-surface.js). |
+| **Icons** | Inline SVGs in [`app/utils/icons.js`](app/utils/icons.js); use `data-icon` in HTML or `createIcon()` in JS. Source from [Icônes — Material Icons (Round)](https://icones.js.org/collection/ic?s=info&variant=Round). Logo files stay in `app/res/`. |
 | **Toolbar helper** | `.toolbar` flex row for button groups. See [`demo.html`](demo.html). |
-| **Code highlighting** | Optional [Prism.js](https://prismjs.com/) via [`app/code-block.js`](app/code-block.js) and [`app/vendor/prism/`](app/vendor/prism/). Load vendor scripts on the page (see Code blocks in **Using components**). |
+| **Code highlighting** | Optional [Prism.js](https://prismjs.com/) via [`app/components/code-block.js`](app/components/code-block.js) and [`app/vendor/prism/`](app/vendor/prism/). Load vendor scripts on the page (see Code blocks in **Using components**). |
 | **Rich text editor** | Markdown + WYSIWYG via [Toast UI Editor](https://github.com/nhn/tui.editor); table merged-cell plugin; base64 image paste. [`app/components/rich-text-editor.js`](app/components/rich-text-editor.js). Large vendor bundle (~500KB+). |
 | **Charts** | Thin SVG host around [TanStack Charts](https://tanstack.com/charts/latest) (`initChart` / `mountChart`). Forks author `defineChart` marks/scales. Vendored ESM + import map for `d3-scale` / `d3-shape`. [`app/components/charts.js`](app/components/charts.js). Pre-alpha upstream. |
 | **Diagrams** | Thin Mermaid host (`initDiagram` / `initDiagrams`) for text → SVG diagrams (flowchart, sequence, …). Vendored ESM + chunks under `app/vendor/mermaid/`. Theme follows light/dark. [`app/components/diagram.js`](app/components/diagram.js). |
@@ -801,7 +803,7 @@ const tour = initTutorial({
     },
   ],
   onFinish: ({ reason }) => {
-    // reason: done | close | escape | stop | …
+    // reason: done | close | escape | stop | missing-target | empty | …
   },
 });
 
@@ -817,7 +819,46 @@ tour?.start(); // or rely on startTriggers
 | `interactive` | When true, the target stays clickable (page is not `inert`) and Tab is not trapped in the step popover |
 | `advanceOn` | `"click"` — advance when the interactive target is clicked |
 | `padding` | Spotlight padding around the target (px) |
-| `scroll` | Scroll the target into view before opening the step popover (default `true`) |
+| `scroll` | Scroll the target into view before opening the step popover when it is clipped (default `true`; already-visible targets are not recentred) |
+| `onEnter` / `onLeave` | Optional callbacks when a step is shown or left — use to reset pagination, tabs, etc. before the next target is resolved |
+| `when` | `boolean` or `(ctx) => boolean` (`ctx`: `{ index, step }`). `index` is the **post-flatten** leaf index (same as `goTo(i)` / `onEnter`). Re-evaluated on start / next / back / `goTo`. `false` skips the step silently (unlike a missing target, which warns). A thrown `when` is treated as ineligible and logged |
+| `steps` | Nested group (authoring sugar). Flattened at init; the group's `when` is AND-ed with each child's `when`. The group itself is not shown — if the same object also has `target` / `title` / `interactive`, those leaf fields are ignored |
+
+```javascript
+let path = "a";
+
+initCombo(document.getElementById("mode-combo"), {
+  onSelect: ({ value }) => {
+    path = value;
+  },
+});
+
+initTutorial({
+  id: "branching",
+  startTriggers: "#start-branching-tour",
+  steps: [
+    {
+      target: "#mode-combo",
+      title: "Pick a path",
+      body: "Choose Option A or Option B, then press Next.",
+      interactive: true,
+    },
+    {
+      when: () => path === "b",
+      steps: [{ target: "#path-b", title: "Option B" }],
+    },
+    {
+      when: () => path !== "b",
+      steps: [{ target: "#path-a", title: "Option A" }],
+    },
+    { title: "Both paths rejoin here" },
+  ],
+});
+```
+
+`when` is not snapshotted when the tour starts, so a choice on an earlier interactive step can change the remaining path. Navigation (`next` / `back` / `goTo` / `start`) and Back / Done / `Step {n} of {N}` follow **showable** steps: currently eligible `when` **and** a resolvable target (or no target). `goTo(i)` jumps to the nearest showable step to `i` (itself first; equal distance prefers forward) and does not end the tour when none exist. If the **current** step's `when` later becomes false, the tour stays on it until the user moves.
+
+Steps whose `target` cannot be resolved log a **console warning** and are skipped; if no step can be shown when starting the tour logs a **console error** and stops (`onFinish` reason `missing-target`). If the current target leaves the document during the tour (scroll/resize), a warning is logged and the tour advances to the next showable step (or stops with `missing-target`).
 
 Escape closes the active tutorial (priority above dialogs). See [`DESIGN.md`](DESIGN.md) for when to prefer a tutorial vs a persistent tooltip. Demo: [`demo.html`](demo.html).
 
@@ -825,7 +866,37 @@ Escape closes the active tutorial (priority above dialogs). See [`DESIGN.md`](DE
 
 Markup uses `.banner` plus a variant (`banner-success`, `banner-error`, …) and a `data-icon` for the left icon.
 
+**Style variations** reuse an existing banner palette with a different semantic class and icon:
+
+| Variation class | Reuses style of | Icon id |
+| --------------- | --------------- | ------- |
+| `banner-question` | `banner-warning` | `help` |
+| `banner-example` | `banner-important` | `experiment` |
+| `banner-quote` | `banner-note` | `format-quote` |
+| `banner-tip` | `banner-success` | `tip` |
+
 Auto-hide after a delay — set `data-banner-expire` (milliseconds) and call `showBanner()`. A light overlay drains across the banner for the duration of the timeout, then the banner fades out quickly.
+
+**Rotating variations** — list ids on `data-banner-variations` (space- or comma-separated). The first id matches the visible markup; additional variations live in hidden source nodes. With `data-banner-rotate`, expiry advances to the next variation and restarts the timer instead of hiding (loops when there are two or more). **`data-banner-expire` is required for rotation** — without a timeout, expiry never fires and the carousel does not advance.
+
+`hideBanner()` cancels any pending expiry and **resets the variation index to the first** id in `data-banner-variations` (or the markup default when there is only one). The next `showBanner()` therefore starts from the first variation again — not from whichever slide was showing when hidden.
+
+```html
+<div id="status-banner" class="banner banner-warning hidden" role="status" hidden
+  data-banner-expire="3000" data-banner-rotate data-banner-variations="warning question">
+  <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg"></span>
+  <span class="banner-body"><strong class="banner-body-label">Warning:</strong> non-blocking notice.</span>
+  <div class="banner-variation-source" data-banner-variation="question"
+    data-banner-class="banner-question" hidden>
+    <span data-banner-variation-icon="help"></span>
+    <span data-banner-variation-body>
+      <strong class="banner-body-label">Question:</strong> something to decide.
+    </span>
+  </div>
+</div>
+```
+
+Single-variation auto-hide:
 
 ```html
 <div id="saved-banner" class="banner banner-success hidden" role="status" hidden
@@ -836,10 +907,11 @@ Auto-hide after a delay — set `data-banner-expire` (milliseconds) and call `sh
 ```
 
 ```javascript
-import { showBanner, hideBanner } from "./components/banner.js";
+import { showBanner, hideBanner, setBannerVariation } from "./components/banner.js";
 
 showBanner(document.getElementById("saved-banner"));
 // or override: showBanner(el, { expire: 3000 });
+setBannerVariation(el, "question");
 hideBanner(el);
 ```
 
@@ -868,7 +940,7 @@ Enabled by `initShell()`. Any `http(s)` link to another origin gets an arrow-out
 
 ### Also see (related apps)
 
-Footer control after the GitHub link. Topics stack full width inside the menu and share one grid of equal-width link cells; the column count (1–3) is chosen from the link counts so the last row of each topic leaves as few empty cells as possible, and the menu sizes itself to that many columns. Narrow viewports fall back to a single column. Configure in [`app/config.js`](app/config.js) (or pass `alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal` to `initShell()` / `renderPageShell()`):
+Footer control after the GitHub link. Topics render as `.dropdown-menu-group` headers; link cells use the shared dropdown **auto grid** (`alsoSeeMenuColumns()` picks 1–3 columns from link counts so each topic’s last row leaves as few empty cells as possible). Narrow viewports fall back to a single column. Configure in [`app/config.js`](app/config.js) (or pass `alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal` to `initShell()` / `renderPageShell()`):
 
 ```javascript
 alsoSeeUrl: "https://raw.githubusercontent.com/you/shared/main/apps/links.json", // optional
@@ -918,8 +990,8 @@ alsoSee: [
 | `appUrl` | Any entry whose `url` matches (trailing slash / case ignored) is excluded; empty topics are dropped |
 | `alsoSee: []` or `false` | Hides the control when there is no successful remote list |
 | `order` (number) | Optional on topic sections and links; ascending sort; missing/`NaN` after numbered; ungrouped flat links always last (link `order` still applies within that group) |
-| `accent` / `accentHover` | Optional per-link hex (`#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`) for both themes; applied as local `--accent` / `--accent-hover`; invalid values are ignored |
-| `accentLight` / `accentDark` | Optional theme pair (same hex rules); wins over `accent`; a missing side clones the other. Hover has `accentHoverLight` / `accentHoverDark` (independent of accent; wins over `accentHover`) |
+| `accent` / `accentHover` | Optional per-link hex (`#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`) for both themes; applied as local `--accent` / `--accent-hover`. **`accent`** drives menu item highlight chrome (border / fill). **`accentHover`** is for the also-see **trigger** text hover (and other `--accent-hover` consumers) — item hover/press still use `--accent` for border/fill and keep label colour `--text`. Invalid values are ignored |
+| `accentLight` / `accentDark` | Optional theme pair (same hex rules); wins over `accent`; a missing side clones the other. Hover has `accentHoverLight` / `accentHoverDark` (independent of accent; wins over `accentHover`; same trigger-vs-item split as above) |
 
 Remote / local JSON is a top-level array of **topic sections** and/or **flat links**:
 
@@ -961,8 +1033,8 @@ Prefer a `raw.githubusercontent.com` or GitHub Pages URL and a simple `GET` (no 
 
 **Colours** (accent and hover are independent; pair wins over single in each role):
 
-- Accent: `accentLight` + `accentDark` (missing side clones the other), else `accent`
-- Hover: `accentHoverLight` + `accentHoverDark`, else `accentHover`
+- Accent: `accentLight` + `accentDark` (missing side clones the other), else `accent` — scopes **menu item** highlight chrome (`--accent` border / fill)
+- Hover: `accentHoverLight` + `accentHoverDark`, else `accentHover` — scopes the also-see **trigger** text hover (`--accent-hover`); item hover/press still use `--accent`
 
 Omit hover to keep the inherited `--accent-hover` mix (it follows the resolved `--accent`). Hex only (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`); invalid values are ignored.
 
@@ -972,11 +1044,27 @@ Embedded SVG should be a full `<svg viewBox="…">…</svg>` (or inner shape mar
 
 Enabled by `initShell()`. Headings matching `main :is(h2, h3)[id]` show a link icon on hover with a “Get link” tooltip; click copies the full section URL and shows a timer success (“Copied!”) or error tip (icon-only control).
 
-```javascript
-import { initHeadingLinks } from "./shell/heading-link.js";
+Disable the page with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`. Skip one heading with `data-no-heading-link`. An explicit `headingLinks: true` (or `{ enabled: true }`) overrides the HTML opt-out. Pass `{ selector }` through `initShell({ headingLinks: { selector: "…" } })` to narrow which headings get a button.
 
+```javascript
+// Prefer initShell — it installs (or skips) heading links once at boot:
+initShell({ headingLinks: false });
+// or: initShell({ headingLinks: { selector: "main h3[id]" } });
+
+// Standalone (only if you are not using initShell for this page):
+import { initHeadingLinks } from "./shell/heading-link.js";
 initHeadingLinks(document); // default: main :is(h2, h3)[id]
 initHeadingLinks(document, { selector: "main h3[id]" }); // sections only
+```
+
+Calling `initShell({ headingLinks: false })` **after** `initHeadingLinks(document)` does not remove buttons already installed — disable before install, or use `data-no-heading-links` on `<html>` before `initShell()` runs.
+
+```html
+<html lang="en" data-no-heading-links>
+```
+
+```html
+<h2 id="overview" data-no-heading-link>Overview</h2>
 ```
 
 ### Buttons
@@ -990,6 +1078,48 @@ Standard height uses `--control-height`. Add `.btn-slim` for the compact `--cont
 <button type="button" class="btn btn-slim btn-icon" aria-label="More options"
   data-icon="lines" data-icon-class="btn-icon-svg"></button>
 ```
+
+### Button label flash
+
+In-place **Copy** → **Copied** / **Failed** feedback on labeled buttons. Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional). Icon-only controls should keep using timer `flashTooltip()` instead.
+
+```html
+<button type="button" class="btn btn-label-flash" aria-label="Copy">
+  <span class="btn-label-flash__label">Copy</span>
+</button>
+```
+
+```javascript
+import { copyText } from "./utils/clipboard.js";
+import {
+  prepareButtonLabelFlash,
+  setButtonLabelFlash,
+  flashButtonLabel,
+} from "./utils/button-label.js";
+
+const copyBtn = document.getElementById("copy-btn");
+
+prepareButtonLabelFlash(copyBtn, {
+  idle: "Copy",
+  success: "Copied",
+  fail: "Failed",
+  // lockWidth: false, // optional — skip auto-measure when labels are same width
+  measureLabels: [], // optional extra states (e.g. "Ctrl+V")
+});
+
+copyBtn.addEventListener("click", async () => {
+  const ok = await copyText("…");
+  flashButtonLabel(copyBtn, ok, {
+    durationMs: 1500,
+    reset: () => {
+      copyBtn.setAttribute("aria-label", "Copy");
+      setButtonLabelFlash(copyBtn, "Copy");
+    },
+  });
+});
+```
+
+`lockWidth` defaults to **on** — `prepareButtonLabelFlash()` auto-measures idle / success / fail (plus `measureLabels`) so longer flash text does not shift layout. Pass `lockWidth: false` to skip. Use `setButtonLabelFlash()` for other temporary labels (e.g. paste-arming **Ctrl+V**). See [`DESIGN.md`](DESIGN.md) (Action feedback).
 
 ### Toggle button
 
@@ -1245,7 +1375,7 @@ partial?.cycle();
 initTriStateCheckboxes(document); // all `[data-checkbox-tristate]` inputs
 ```
 
-`data-checkbox-default` accepts `"true"`, `"false"`, or `"mixed"`. Click cycles **unchecked → checked → mixed**. Native `indeterminate` is set for mixed; `aria-checked` mirrors the state. Use a wrapping `<label>` **or** `for` (not both) so a single click does not activate the control twice. Checked and mixed states use an inset `--surface` face (rounded square when checked, disc when mixed) mounted by `initIcons()` (via `initShell`); for checkboxes created later, call `ensureCheckboxFace(input)` from `app/utils/icons.js`.
+`data-checkbox-default` accepts `"true"`, `"false"`, or `"mixed"`. Click cycles **unchecked → checked → mixed** (fixed order — there is no `data-checkbox-tristate-cycle`; configurable cycle order is a **toggle** feature only). Native `indeterminate` is set for mixed; `aria-checked` mirrors the state. Use a wrapping `<label>` **or** `for` (not both) so a single click does not activate the control twice. Checked and mixed states use an inset `--surface` face (rounded square when checked, disc when mixed) mounted by `initIcons()` (via `initShell`); for checkboxes created later, call `ensureCheckboxFace(input)` from `app/utils/icons.js`.
 
 #### Date picker
 
@@ -1307,6 +1437,8 @@ The calendar grid starts weeks on Monday. Weekday labels in markup are optional 
 
 The day view includes **Today** below a date-only calendar. Combined pickers have one action bar spanning both panels: **Today** selects the current date at `00:00`, while **Now** selects the current date and time.
 
+When `data-date-picker-time` is set, the side time column uses the shared time panel **without** its own **00:00** / **Now** row — those actions would duplicate the combined **Today** / **Now** bar under the calendar (`initDatePicker` mounts the time panel with `showZero: false` and `showNow: false`).
+
 #### Time picker
 
 Time of day without a date. The editable text field opens a popup with independently wrapping hour, minute, and optional second columns. The legacy native `<input type="time">` markup remains supported when no custom popup is present.
@@ -1346,7 +1478,18 @@ timePicker?.setValue("09:15");
 initTimePickers(document);
 ```
 
-`data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-seconds`, `data-time-picker-zero`, `data-time-picker-now`, and `data-time-picker-disabled` mirror the JS options. The popup defaults to **00:00** and **Now** quick actions; either can be disabled with a false option / attribute value. Quick actions commit and close the popup.
+`data-time-picker-default`, `data-time-picker-min`, `data-time-picker-max`, `data-time-picker-seconds`, `data-time-picker-zero`, `data-time-picker-now`, and `data-time-picker-disabled` mirror the JS options.
+
+**Quick actions (`showZero` / `showNow`):** The popup can show **00:00** (`showZero`, default `true`) and **Now** (`showNow`, default `true` in time mode). Pass `showZero: false` / `showNow: false` or set `data-time-picker-zero="false"` / `data-time-picker-now="false"` to hide either button. **Now** is never shown in duration mode — clock “now” is not a meaningful duration preset.
+
+| Host | Popup quick actions | Configurable? |
+| ---- | ------------------- | ------------- |
+| Standalone [`initTimePicker`](#time-picker) | **00:00** + **Now** (defaults above) | Yes — options / `data-time-picker-zero` / `data-time-picker-now` |
+| [`initTimePicker` duration mode](#time-picker) | **00:00** only | `showZero` only (`showNow` ignored) |
+| [`initDurationInput`](#duration-input) | **00:00** (or **00:00:00** with seconds) | Fixed — always reset via popup; no **Now** |
+| [`initDatePicker` + time](#date-picker) | None on the time column | Fixed — use **Today** / **Now** in `.date-picker-actions` instead |
+
+**Duration mode:** `initTimePicker` also accepts `mode: "duration"` (or `data-time-picker-mode="duration"`) to render the hours / minutes / (optional seconds) panel without a clock time-of-day field — useful when embedding the panel elsewhere. For form duration fields, prefer [`initDurationInput`](#duration-input): it adds inline segments, a hidden `.duration-input-value`, and the clock trigger automatically.
 
 Clicking the field selects the hour, minute, or second block under the pointer; keyboard focus selects hours. Arrow Up / Down wraps the selected block independently, Arrow Left / Right or `:` moves between blocks, and Alt+Arrow Down opens the popup.
 
@@ -1354,7 +1497,7 @@ Clicking the field selects the hour, minute, or second block under the pointer; 
 
 Segmented hours and minutes (optional seconds) with a clock-triggered popup using the same panel as the time picker in duration mode. Stores `H:MM` or `H:MM:SS` in `.duration-input-value`. The trigger and popup are created automatically when omitted.
 
-Focusing or clicking an inline segment selects its full value; clicking the control background focuses hours. Inline Arrow Up / Down nudges the focused segment, while popup buttons wrap each column independently (`0` ↔ `maxHours` for hours, `00` ↔ `59` otherwise). `:` or Arrow Right moves to the next inline field. The popup **00:00** action resets the duration and closes.
+Focusing or clicking an inline segment selects its full value; clicking the control background focuses hours. Inline Arrow Up / Down nudges the focused segment, while popup buttons wrap each column independently (`0` ↔ `maxHours` for hours, `00` ↔ `59` otherwise). `:` or Arrow Right moves to the next inline field. The popup **00:00** action (or **00:00:00** with seconds) resets the duration and closes — there is no **Now** action (`initDurationInput` always mounts the panel in duration mode with `showZero: true`, `showNow: false`; not configurable).
 
 ```html
 <div class="duration-input" id="my-duration" data-duration-default="1:30">
@@ -1522,7 +1665,7 @@ Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
 ### Panel layout
 
-Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for compact inline content, and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
+Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for inline groups (layout only — does not change font size), and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
 
 ```html
 <section class="section-panel">
@@ -1666,11 +1809,16 @@ const combobox = initCombobox(document.getElementById("my-combobox"), {
   onSelect: ({ value, label }) => { /* item chosen from list */ },
   onChange: ({ value, label, input }) => { /* value committed or cleared */ },
   onInput: ({ query, matches }) => { /* filter text changed */ },
+  gridMin: 8, // optional; switch to grid when visible option count exceeds 8
+  gridCols: 2,
   // options: [{ value: "nyc", label: "New York" }, …],  // replace markup list
   // filter: (query, option) => option.label.startsWith(query),
   // allowCustom: true,
   // defaultValue: "nyc",
 });
+
+combobox?.setGridMin(10);
+combobox?.syncListGrid(); // after setOptions / filter changes visible count
 
 combobox?.getValue();
 combobox?.setValue("nyc");
@@ -1679,7 +1827,9 @@ combobox?.setOptions([{ value: "nyc", label: "New York" }]);
 initComboboxes(document); // all `.combobox` blocks
 ```
 
-Keyboard: ArrowDown / ArrowUp navigate suggestions, Enter selects, Escape closes and restores the last committed value.
+Keyboard: ArrowDown / ArrowUp navigate suggestions (left/right too in grid mode), Enter selects, Escape closes and restores the last committed value.
+
+Optional **auto grid** — same semantics as [Dropdown](#dropdown): set `data-combobox-grid="8"` (or `data-combobox-grid-min`, `data-combobox-grid-cols`, `data-combobox-grid="false"`) on the `.combobox` host, or pass `gridMin` / `gridCols` to `initCombobox()`. Layout uses the **visible** option count (after filtering). Adjacent selected cells share one rounded outline, including inner corners. The returned object exposes `setGridMin()`, `setGridCols()`, `getGridConfig()`, and `syncListGrid()`.
 
 #### Multi-select
 
@@ -2147,6 +2297,18 @@ initColorPickers(document);
 
 `data-color-picker-embedded`, `data-color-picker-default`, `data-color-picker-alpha`, `data-color-picker-format`, and `data-color-picker-color-set` mirror the JS options. Escape closes the colour-set panel first (when open), then the picker popup.
 
+### Control sizing
+
+Three different “slim” APIs — they are not interchangeable:
+
+| Class | Effect |
+| ----- | ------ |
+| `.btn-slim` | Compact button height via `--control-height-slim` |
+| `.segmented-control--slim` | Reduced padding on the track; does **not** use `--control-height-slim` |
+| `.toggle--slim` | Thin track with an oversized overhanging thumb; not a height token |
+
+Tabular input logical columns always use `.toggle--slim` (no standard-size toggle in that grid).
+
 ### Toggle
 
 On/off switch for boolean settings. Uses `role="switch"` and `aria-checked` on the button; a hidden `.toggle-value` field stores `"true"` or `"false"` for forms.
@@ -2179,7 +2341,15 @@ Add `.toggle--slim` for a thin track with an oversized thumb that overhangs the 
 </div>
 ```
 
-Tri-state variant (`data-toggle-tristate`) cycles **off → on → mixed**. ARIA `switch` is boolean-only, so the button uses `role="checkbox"` with `aria-checked="mixed"`. Include a minus (`remove`) icon for the mixed thumb, or one is injected automatically.
+Tri-state variant (`data-toggle-tristate`) cycles through off, on, and mixed. **`data-toggle-tristate-cycle` / `tristateCycle` apply to toggles only** — tri-state checkboxes use a fixed unchecked → checked → mixed order (see [Inputs](#inputs)). Default toggle order is **off → mixed → on**. Set `data-toggle-tristate-cycle` (or `tristateCycle` in JS) to change direction:
+
+| Cycle | Order |
+| ----- | ----- |
+| `default` (omit) | off → mixed → on → off |
+| `on-mixed` | off → on → mixed → off |
+| `mixed-both` | off → mixed → on → mixed → off |
+
+ARIA `switch` is boolean-only, so tri-state buttons use `role="checkbox"` with `aria-checked="mixed"`. Include a minus (`remove`) icon for the mixed thumb, or one is injected automatically.
 
 ```html
 <div class="toggle" id="my-toggle-tri" data-toggle-tristate data-toggle-default="mixed">
@@ -2217,17 +2387,18 @@ const tri = initToggle(document.getElementById("my-toggle-tri"), {
 tri?.getState(); // "true" | "false" | "mixed"
 tri?.setState("mixed");
 tri?.cycle();
+tri?.getTristateCycle(); // "default" | "on-mixed" | "mixed-both" | null
 
 initToggles(document); // all `.toggle` blocks
 ```
 
-`data-toggle-default`, `data-toggle-tristate`, and `data-toggle-disabled` mirror the JS options. For a group of switches, wrap items in `.toggle-group`.
+`data-toggle-default`, `data-toggle-tristate`, `data-toggle-tristate-cycle`, and `data-toggle-disabled` mirror the JS options. For a group of switches, wrap items in `.toggle-group`.
 
 ### Segmented control
 
 Toggle button group for switching between a small set of options or views — like radio buttons in a joined control. Items use `role="radio"` and `aria-checked`; a hidden `.segmented-control-value` stores the selected value for forms.
 
-Add `.segmented-control--full` on the root to stretch the track to the field width. Optionally pair items with panels via `aria-controls` (same pattern as tabs).
+Default height matches `.btn` (`--control-height`). Add `.segmented-control--slim` for the compact size. Add `.segmented-control--full` on the root to stretch the track to the field width. Optionally pair items with panels via `aria-controls` (same pattern as tabs).
 
 ```html
 <div class="segmented-control segmented-control--full" id="my-segmented" data-segmented-control-default="list">
@@ -2238,6 +2409,21 @@ Add `.segmented-control--full` on the root to stretch the track to the field wid
       data-segmented-control-value="grid">Grid</button>
     <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
       data-segmented-control-value="map">Map</button>
+  </div>
+  <input type="hidden" class="segmented-control-value" name="view" value="list" />
+</div>
+```
+
+Compact (previous default) size:
+
+```html
+<div class="segmented-control segmented-control--slim" id="my-segmented-slim"
+  data-segmented-control-default="list">
+  <div class="segmented-control-list" role="radiogroup" aria-label="View mode">
+    <button type="button" class="segmented-control-item" role="radio" aria-checked="true"
+      data-segmented-control-value="list">List</button>
+    <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
+      data-segmented-control-value="grid">Grid</button>
   </div>
   <input type="hidden" class="segmented-control-value" name="view" value="list" />
 </div>
@@ -2361,9 +2547,15 @@ initProgressIndicators(document); // all `.progress-indicator` blocks
 ```javascript
 import { initDropdown } from "./components/dropdown.js";
 
-initDropdown(document.getElementById("my-dropdown"), {
+const dropdown = initDropdown(document.getElementById("my-dropdown"), {
   onSelect: ({ value, label }) => { /* item chosen */ },
+  gridMin: 8, // switch to grid when item count exceeds 8
+  gridCols: 2, // optional; default 2
 });
+
+dropdown?.setGridMin(10); // change threshold later
+dropdown?.setGridMin(false); // force single-column list
+dropdown?.syncMenuGrid(); // after adding/removing items in script
 ```
 
 Markup: `.dropdown` > `.dropdown-trigger` + `ul.dropdown-menu` with `.dropdown-menu-item` buttons.
@@ -2397,6 +2589,28 @@ Optional **icons** — leading light/dark image pair via `.dropdown-menu-item-ic
 ```
 
 `onSelect` / toggle APIs use `.dropdown-menu-item-label` when present (subtitle is not included in `label`).
+
+Optional **auto grid** — when a dropdown has more than a threshold of selectable items, the menu can switch to a multi-column grid (see Menus & pickers → Multi-select combobox on `demo.html`).
+
+**Markup** — set on the `.dropdown` host:
+
+| Attribute | Meaning |
+| --- | --- |
+| `data-dropdown-grid="8"` | Enable auto grid; switch when item count **exceeds** `8` |
+| `data-dropdown-grid` | Enable with default threshold (`6`) |
+| `data-dropdown-grid="false"` | Force a single-column list |
+| `data-dropdown-grid-min="8"` | Same as numeric `data-dropdown-grid` (explicit name) |
+| `data-dropdown-grid-cols="2"` | Column count in grid mode (default `2`) |
+
+**JavaScript** — `gridMin` / `gridCols` on `initDropdown()` / `initToggleDropdown()` override markup. Pass `gridMin: false` to disable. The returned object also exposes `setGridMin()`, `setGridCols()`, `getGridConfig()`, and `syncMenuGrid()` (call after changing menu items). Default threshold constant: `DROPDOWN_GRID_DEFAULT_MIN` from [`app/utils/menu.js`](app/utils/menu.js).
+
+Layout is rechecked on init and each time the menu opens. In grid mode, arrow keys move within the column layout (left/right as well as up/down). Adjacent selected cells share one rounded outline, including inner corners.
+
+```html
+<div class="dropdown" id="my-dropdown" data-dropdown-grid="8">
+  <!-- trigger + menu -->
+</div>
+```
 
 ```html
 <ul class="dropdown-menu hidden" role="menu">
@@ -2605,7 +2819,7 @@ Styled data tables for lists of records. Wrap a semantic `<table>` in `.table-bl
 
 Optional **sortable** columns: set `data-table-sortable` on `.table-block` and `data-table-sort` on `<th>` cells. Add `data-sort-type="text"`, `"number"`, or `"date"` (default `text`). Put a `.table-sort-button` inside the header or let `initTable()` create one from the header text. Set `data-table-sort-default="ascending"` or `"descending"` on one or more sortable `<th>` cells to sort on load (document order = primary, then secondary, …), or pass `defaultSort: { columnIndex, direction }` / `defaultSort: [{ columnIndex, direction }, …]` to `initTable()`. Header clicks cycle **ascending → descending → unsorted** (restores the row order from init). Hold **Shift** while clicking another header to add or cycle a secondary sort column without clearing the primary; Shift-click through descending removes that column from the sort stack. `onSort` receives the clicked column plus `columns` (ordered active sorts); `getSortColumns()` returns the same list.
 
-Optional **row selection**: set `data-table-selectable` on `.table-block`, a `data-table-select-all` checkbox in the header row, and `data-table-row-select` on each row. Pair rows with `data-table-row-id` for stable ids in callbacks. Body rows highlight lightly on hover; when selectable, clicking anywhere on a row toggles that row (interactive controls inside the row are left alone).
+Optional **row selection**: set `data-table-selectable` on `.table-block`, a `data-table-select-all` checkbox in the header row, and `data-table-row-select` on each row. Pair rows with `data-table-row-id` for stable ids in callbacks. Body rows show accent-tinted hover feedback with one outer accent border per row (pointer feedback — not the same as checkbox selection). When selectable, clicking anywhere on a row toggles that row (interactive controls inside the row are left alone).
 
 ```html
 <div class="table-block" id="issues-table" data-table-sortable data-table-selectable>
@@ -2849,13 +3063,15 @@ editor?.destroy();
 initRichTextEditors(document); // every `.rich-text-editor` with a mount node
 ```
 
-Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/theme.js`](app/theme.js).
+Theme (light/dark) follows the page `data-theme` attribute and updates on `microapp-theme-change` from [`app/shell/theme.js`](app/shell/theme.js).
 
-Markdown ↔ WYSIWYG uses the template [segmented control](#segmented-control) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use template [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
+Markdown ↔ WYSIWYG uses the framework [segmented control](#segmented-control) (`.segmented-control--slim`) in the editor footer (Toast UI’s native mode switch is hidden). Toolbar icon tips use framework [tooltips](#tooltips) (`data-tooltip`); Toast UI’s native tooltip is hidden. Converting between Markdown and HTML is lossy for complex formatting (tables, nested lists, etc.) — treat one format as canonical when persisting content.
 
 ### Charts (TanStack Charts)
 
-Thin host around vendored [TanStack Charts](https://tanstack.com/charts/latest) (`mountChart`). You author the chart definition (`defineChart`, marks, scales); this template only mounts it into a `.charts` host and refreshes on theme change. Upstream is **pre-alpha** — expect API churn.
+Thin host around vendored [TanStack Charts](https://tanstack.com/charts/latest) (`mountChart`). You author the chart definition (`defineChart`, marks, scales); this framework only mounts it into a `.charts` host and refreshes on theme change. Upstream is **pre-alpha** — expect API churn.
+
+The host inherits `--font` / `--text`. Axis titles and tick labels are restyled in [`controls-charts.css`](app/css/controls-charts.css) to `--muted` at theme secondary sizes (`--charts-axis-title-size` / `--charts-tick-size`). Set `axis.tickLabels.fontSize` (CSS pixels) to match `--charts-tick-size` so guide layout matches the painted size — axis title size is CSS-only (upstream has no title `fontSize` option yet).
 
 Prefer **narrow** vendor entry files (e.g. `bar.js`, `scene.js`) over the root barrel so unused marks stay out of the module graph.
 
@@ -2908,13 +3124,19 @@ const definition = defineChart({
   ],
   x: {
     scale: () => scaleBand().padding(0.18),
-    axis: { label: "Fruit" },
+    axis: {
+      label: "Fruit",
+      tickLabels: { fontSize: 13 }, // match --charts-tick-size
+    },
   },
   y: {
     scale: scaleLinear,
     nice: true,
     grid: true,
-    axis: { label: "Sold" },
+    axis: {
+      label: "Sold",
+      tickLabels: { fontSize: 13 },
+    },
   },
   tooltip,
 });
@@ -3049,7 +3271,7 @@ Add other language components under `app/vendor/prism/` as needed from [Prism](h
 
 ### Icons
 
-All inline UI icons are defined in [`app/utils/icons-template.js`](app/utils/icons-template.js) (template catalogue) and [`app/utils/icons-app.js`](app/utils/icons-app.js) (fork / app additions). [`app/utils/icons.js`](app/utils/icons.js) merges them (app wins on key clash) and mounts via `initIcons()`.
+All inline UI icons are defined in [`app/utils/icons-framework.js`](app/utils/icons-framework.js) (framework catalogue) and [`app/utils/icons-app.js`](app/utils/icons-app.js) (fork / app additions). [`app/utils/icons.js`](app/utils/icons.js) merges them (app wins on key clash) and mounts via `initIcons()`.
 
 Browse and copy SVG paths from [Icônes — Google Material Icons (Round variant)](https://icones.js.org/collection/ic?s=info&variant=Round) (`ic` collection, `variant=Round`).
 
@@ -3070,7 +3292,7 @@ const svg = createIcon("lines", { className: "btn-icon-svg" });
 button.append(svg);
 ```
 
-Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Template catalogue changes go in `TEMPLATE_ICONS` in `icons-template.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.
+Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Framework catalogue changes go in `FRAMEWORK_ICONS` in `icons-framework.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.
 
 Licensed icon sets (e.g. Material Icons) can use optional metadata on each entry:
 

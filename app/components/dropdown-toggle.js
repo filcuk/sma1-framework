@@ -1,6 +1,6 @@
 import { initBadge } from "./badge.js";
 import { setHidden } from "../utils/dom.js";
-import { initPopupMenu, menuItemLabel } from "../utils/menu.js";
+import { initPopupMenu, menuItemLabel, syncListGridSelectionJoins } from "../utils/menu.js";
 
 function isItemSelected(item) {
   return item.getAttribute("aria-checked") === "true";
@@ -9,6 +9,10 @@ function isItemSelected(item) {
 function setItemSelected(item, selected) {
   item.setAttribute("aria-checked", selected ? "true" : "false");
   item.classList.toggle("is-selected", selected);
+}
+
+function syncSelectionJoins(menu) {
+  syncListGridSelectionJoins(menu, ".dropdown-menu-item");
 }
 
 function getMenuItems(menu, itemSelector) {
@@ -103,9 +107,13 @@ function ensureSelectionBadgeHost(dropdownEl, trigger, baseLabel) {
  * Base label: `.dropdown-trigger-label` or `data-toggle-dropdown-label`.
  *
  * @param {HTMLElement | null} dropdownEl
- * @param {{ onToggle?: (detail: object) => void }} [options]
+ * @param {{
+ *   onToggle?: (detail: object) => void;
+ *   gridMin?: number | false;
+ *   gridCols?: number;
+ * }} [options]
  */
-export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
+export function initToggleDropdown(dropdownEl, { onToggle, gridMin, gridCols } = {}) {
   if (!dropdownEl) return null;
 
   const trigger = dropdownEl.querySelector(".dropdown-trigger");
@@ -129,6 +137,7 @@ export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
     setItemSelected(item, isItemSelected(item));
   }
   updateSelectionCount();
+  syncSelectionJoins(menu);
 
   const menuControl = initPopupMenu({
     containerEl: dropdownEl,
@@ -136,9 +145,12 @@ export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
     toggleEl: trigger,
     itemSelector,
     closeOnSelect: false,
+    gridMin,
+    gridCols,
     onSelect: ({ item, value, label }) => {
       const selected = !isItemSelected(item);
       setItemSelected(item, selected);
+      syncSelectionJoins(menu);
 
       const selectedItems = getSelectedItems(menu, itemSelector);
       updateSelectionCount();
@@ -173,6 +185,7 @@ export function initToggleDropdown(dropdownEl, { onToggle } = {}) {
         setItemSelected(item, valueSet.has(value));
       }
       updateSelectionCount();
+      syncSelectionJoins(menu);
     },
   };
 }

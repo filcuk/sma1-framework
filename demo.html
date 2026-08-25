@@ -248,6 +248,15 @@
                     data-icon-class="btn-icon-svg"></button>
                   <button type="button" class="btn-link">Link button</button>
                 </div>
+                <p class="panel-hint">Label flash with optional static width.</p>
+                <div class="panel-row">
+                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-shift">
+                    <span class="btn-label-flash__label">Copy</span>
+                  </button>
+                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-fixed">
+                    <span class="btn-label-flash__label">Copy</span>
+                  </button>
+                </div>
               </div>
               <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
               <div class="panel-stack">
@@ -290,16 +299,16 @@
                 <h3 class="panel-title">Radio</h3>
                 <div class="radio-group" id="demo-radio-group" role="radiogroup" aria-label="Radio">
                   <label class="radio" for="demo-radio-a">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-a" value="a" checked />
-                    <span>Option A</span>
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-a" value="a" />
+                    <span>Radio</span>
                   </label>
                   <label class="radio" for="demo-radio-b">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-b" value="b" />
-                    <span>Option B</span>
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-b" value="b" checked />
+                    <span>Selected</span>
                   </label>
                   <label class="radio" for="demo-radio-c">
                     <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-c" value="c" disabled />
-                    <span>Option C (disabled)</span>
+                    <span>Disabled (off)</span>
                   </label>
                 </div>
               </div>
@@ -309,17 +318,6 @@
               <div class="panel-stack">
                 <h3 class="panel-title">Toggle</h3>
                 <div class="toggle-group" id="demo-toggle-group">
-                  <div class="toggle" id="demo-toggle-off" data-toggle-default="false">
-                    <button type="button" class="toggle-btn" role="switch" aria-checked="false">
-                      <span class="toggle-track" aria-hidden="true">
-                        <span class="toggle-thumb">
-                          <span data-icon="check" data-icon-class="toggle-thumb-icon toggle-thumb-icon--on" aria-hidden="true"></span>
-                        </span>
-                      </span>
-                      <span class="toggle-label">Notifications off by default</span>
-                    </button>
-                    <input type="hidden" class="toggle-value" value="false" />
-                  </div>
                   <div class="toggle" id="demo-toggle-on" data-toggle-default="true">
                     <button type="button" class="toggle-btn" role="switch" aria-checked="true">
                       <span class="toggle-track" aria-hidden="true">
@@ -327,7 +325,7 @@
                           <span data-icon="check" data-icon-class="toggle-thumb-icon toggle-thumb-icon--on" aria-hidden="true"></span>
                         </span>
                       </span>
-                      <span class="toggle-label">Dark mode preview on by default</span>
+                      <span class="toggle-label">Toggle</span>
                     </button>
                     <input type="hidden" class="toggle-value" value="true" />
                   </div>
@@ -339,7 +337,7 @@
                           <span data-icon="remove" data-icon-class="toggle-thumb-icon toggle-thumb-icon--mixed" aria-hidden="true"></span>
                         </span>
                       </span>
-                      <span class="toggle-label">Tri-state (click to cycle)</span>
+                      <span class="toggle-label">Tri-state</span>
                     </button>
                     <input type="hidden" class="toggle-value" value="mixed" />
                   </div>
@@ -354,21 +352,12 @@
                     </button>
                     <input type="hidden" class="toggle-value" value="true" />
                   </div>
-                  <div class="toggle toggle--slim" id="demo-toggle-slim-off" data-toggle-default="false">
-                    <button type="button" class="toggle-btn" role="switch" aria-checked="false">
-                      <span class="toggle-track" aria-hidden="true">
-                        <span class="toggle-thumb"></span>
-                      </span>
-                      <span class="toggle-label">Slim (off)</span>
-                    </button>
-                    <input type="hidden" class="toggle-value" value="false" />
-                  </div>
                   <div class="toggle toggle--slim" id="demo-toggle-slim-on" data-toggle-default="true">
                     <button type="button" class="toggle-btn" role="switch" aria-checked="true">
                       <span class="toggle-track" aria-hidden="true">
                         <span class="toggle-thumb"></span>
                       </span>
-                      <span class="toggle-label">Slim (on)</span>
+                      <span class="toggle-label">Slim</span>
                     </button>
                     <input type="hidden" class="toggle-value" value="true" />
                   </div>
@@ -380,20 +369,20 @@
                 <div class="checkbox-group" id="demo-checkbox-group">
                   <label class="checkbox" for="demo-checkbox-default">
                     <input type="checkbox" class="checkbox-input" id="demo-checkbox-default" />
-                    <span>Option one</span>
+                    <span>Toggle</span>
                   </label>
                   <label class="checkbox" for="demo-checkbox-checked">
                     <input type="checkbox" class="checkbox-input" id="demo-checkbox-checked" checked />
-                    <span>Option two (checked)</span>
+                    <span>Checked</span>
                   </label>
                   <label class="checkbox">
                     <input type="checkbox" class="checkbox-input" id="demo-checkbox-tristate"
                       data-checkbox-tristate data-checkbox-default="mixed" />
-                    <span>Tri-state (click to cycle)</span>
+                    <span>Tri-state</span>
                   </label>
                   <label class="checkbox" for="demo-checkbox-disabled">
                     <input type="checkbox" class="checkbox-input" id="demo-checkbox-disabled" disabled />
-                    <span>Option three (disabled)</span>
+                    <span>Disabled (off)</span>
                   </label>
                 </div>
               </div>
@@ -482,8 +471,8 @@
 
               <div class="panel-stack">
                 <h3 class="panel-title">Multi-select combobox</h3>
-                <p class="panel-hint">Selection as a comma-separated list with a count badge; list stays open while picking.</p>
-                <div class="combobox" id="demo-combobox-multi" data-combobox-multi
+                <p class="panel-hint">Also presents automatic grid layout.</p>
+                <div class="combobox" id="demo-combobox-multi" data-combobox-multi data-combobox-grid="6"
                   style="max-width: 14rem">
                   <span class="badge-host" data-badge-label="Cities">
                     <div class="combobox-control">
@@ -903,15 +892,48 @@
               <div class="panel-stack" id="demo-tutorials-panel">
                 <h3 class="panel-title">Tutorials</h3>
                 <p class="panel-hint">
-                  Spotlight a target and walk a script.
+                  Spotlight a target and walk a script. The branching tour follows the combo choice.
                 </p>
                 <div class="panel-row">
                   <button type="button" class="btn btn-primary" id="demo-tutorial-overview">
-                    Start overview tour
+                    Overview
                   </button>
                   <button type="button" class="btn" id="demo-tutorial-interactive">
-                    Start interactive tour
+                    Interactive
                   </button>
+                  <button type="button" class="btn" id="demo-tutorial-branching">
+                    Branching
+                  </button>
+                  <div class="panel-stack" id="demo-tutorial-branch">
+                    <div class="combo-btn" id="demo-tutorial-combo">
+                      <button type="button" class="btn combo-btn-main" id="demo-tutorial-combo-main">
+                        Option A
+                      </button>
+                      <button type="button" class="btn combo-btn-toggle" id="demo-tutorial-combo-toggle"
+                        aria-haspopup="menu" aria-expanded="false" aria-controls="demo-tutorial-combo-menu"
+                        aria-label="Choose tour path">
+                        <span class="combo-btn-chevron" aria-hidden="true"></span>
+                      </button>
+                      <ul id="demo-tutorial-combo-menu" class="combo-menu hidden" role="menu">
+                        <li role="none">
+                          <button type="button" class="combo-menu-item" role="menuitem" data-value="a">
+                            Option A
+                          </button>
+                        </li>
+                        <li role="none">
+                          <button type="button" class="combo-menu-item" role="menuitem" data-value="b">
+                            Option B
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                </div>
+                  <p class="panel-hint" id="demo-tutorial-path-a">
+                    Path A: shown when Option A is selected.
+                  </p>
+                  <p class="panel-hint" id="demo-tutorial-path-b">
+                    Path B: shown when Option B is selected.
+                  </p>
                 </div>
               </div>
             </div>
@@ -943,25 +965,45 @@
               </div>
             </div>
             <div class="demo-banner-stack">
-              <div id="demo-note-banner" class="banner banner-note" role="note">
+              <div id="demo-note-banner" class="banner banner-note" role="note"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="note quote">
                 <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg"></span>
-                <span class="banner-body"><strong class="banner-body-label">Note:</strong> supplementary detail that is easy to skim past.</span>
+                <span class="banner-body"><strong class="banner-body-label">Note:</strong> supplementary detail that is easy to skim past. Use this for asides, footnotes, and context that supports the main message without competing with it.</span>
+                <div class="banner-variation-source" data-banner-variation="quote" data-banner-class="banner-quote" hidden>
+                  <span data-banner-variation-icon="format-quote"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Quote:</strong> cited text or attribution worth highlighting. Longer quotations wrap naturally so readers can still scan the banner while keeping the source clear.</span>
+                </div>
               </div>
               <div id="demo-info-banner" class="banner banner-info" role="status">
                 <span class="banner-icon" data-icon="info" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Info:</strong> neutral guidance or context.</span>
               </div>
-              <div id="demo-success-banner" class="banner banner-success" role="status">
+              <div id="demo-success-banner" class="banner banner-success" role="status"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="success tip">
                 <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Success:</strong> completed actions or positive outcomes.</span>
+                <div class="banner-variation-source" data-banner-variation="tip" data-banner-class="banner-tip" hidden>
+                  <span data-banner-variation-icon="tip"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Tip:</strong> a helpful shortcut or best practice.</span>
+                </div>
               </div>
-              <div id="demo-important-banner" class="banner banner-important" role="status">
+              <div id="demo-important-banner" class="banner banner-important" role="status"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="important example">
                 <span class="banner-icon" data-icon="important" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Important:</strong> high-priority messages.</span>
+                <div class="banner-variation-source" data-banner-variation="example" data-banner-class="banner-example" hidden>
+                  <span data-banner-variation-icon="experiment"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Example:</strong> a sample scenario or walkthrough.</span>
+                </div>
               </div>
-              <div id="demo-warning-banner" class="banner banner-warning" role="status">
+              <div id="demo-warning-banner" class="banner banner-warning" role="status"
+                data-banner-expire="3000" data-banner-rotate data-banner-variations="warning question">
                 <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg"></span>
                 <span class="banner-body"><strong class="banner-body-label">Warning:</strong> non-blocking notices.</span>
+                <div class="banner-variation-source" data-banner-variation="question" data-banner-class="banner-question" hidden>
+                  <span data-banner-variation-icon="help"></span>
+                  <span data-banner-variation-body><strong class="banner-body-label">Question:</strong> something the reader may need to decide.</span>
+                </div>
               </div>
               <div id="demo-error-banner" class="banner banner-error" role="alert">
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg"></span>
@@ -1000,6 +1042,21 @@
                         data-segmented-control-value="map">Map</button>
                     </div>
                     <input type="hidden" class="segmented-control-value" name="demo-view" value="list" />
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="field-label" id="demo-segmented-slim-label">Slim</span>
+                  <div class="segmented-control segmented-control--slim segmented-control--full" id="demo-segmented-slim"
+                    data-segmented-control-default="list" aria-labelledby="demo-segmented-slim-label">
+                    <div class="segmented-control-list" role="radiogroup" aria-label="Slim segment control">
+                      <button type="button" class="segmented-control-item" role="radio" aria-checked="true"
+                        data-segmented-control-value="list">List</button>
+                      <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
+                        data-segmented-control-value="grid">Grid</button>
+                      <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
+                        data-segmented-control-value="map">Map</button>
+                    </div>
+                    <input type="hidden" class="segmented-control-value" name="demo-view-slim" value="list" />
                   </div>
                 </div>
               </div>
@@ -1162,7 +1219,7 @@
                         aria-controls="demo-accordion-panel-1">
                         <span class="accordion-icon" data-icon="chevron-right" data-icon-class="accordion-icon-svg"
                           aria-hidden="true"></span>
-                        <span class="accordion-label">What is this template?</span>
+                        <span class="accordion-label">What is SMA1 Framework?</span>
                       </button>
                     </h3>
                     <div id="demo-accordion-panel-1" class="accordion-panel hidden" role="region"

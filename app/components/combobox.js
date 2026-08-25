@@ -1,6 +1,13 @@
 import { initBadge } from "./badge.js";
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
 import {
+  getListGridColumns,
+  gridMenuIndexForKey,
+  resolveListGridConfig,
+  syncListGridSelectionJoins,
+  syncPopupListGrid,
+} from "../utils/menu.js";
+import {
   onDocumentClickOutside,
   onDocumentEscape,
   registerOpenPopup,
@@ -38,6 +45,7 @@ import {
  *
  * data-combobox-allow-custom — accept free text on blur/commit (default: list values only)
  * data-combobox-multi — multi-select mode
+ * data-combobox-grid / data-combobox-grid-min / data-combobox-grid-cols — auto grid list (same as dropdown)
  */
 
 function readOptionsFromMarkup(listEl) {
@@ -157,6 +165,8 @@ export function initCombobox(
     onToggle,
     onChange,
     onInput,
+    gridMin,
+    gridCols,
   } = {}
 ) {
   if (!comboboxEl) return null;
@@ -167,6 +177,22 @@ export function initCombobox(
   const control = comboboxEl.querySelector(".combobox-control");
 
   if (!input || !list) return null;
+
+  const gridOverrides = {};
+  if (gridMin !== undefined) gridOverrides.gridMin = gridMin;
+  if (gridCols !== undefined) gridOverrides.gridCols = gridCols;
+
+  function getGridConfig() {
+    return resolveListGridConfig(comboboxEl, gridOverrides);
+  }
+
+  function syncListGrid() {
+    return syncPopupListGrid(list, comboboxEl, ".combobox-option", getGridConfig());
+  }
+
+  function isGridListOpen() {
+    return list.classList.contains("combobox-list--grid");
+  }
 
   const listId = list.id || `combobox-list-${Math.random().toString(36).slice(2, 9)}`;
   if (!list.id) list.id = listId;
@@ -388,6 +414,7 @@ export function initCombobox(
     }
 
     onInput?.({ comboboxEl, query, matches: visible.map(({ value, label }) => ({ value, label })) });
+    syncListGrid();
   }
 
   function openList() {
@@ -398,6 +425,7 @@ export function initCombobox(
 
     registerOpenPopup(closeList);
     isOpen = true;
+    comboboxEl.classList.add("is-popup-open");
     setHidden(list, false);
     input.setAttribute("aria-expanded", "true");
     renderList();
@@ -408,6 +436,7 @@ export function initCombobox(
     if (!isOpen && !restoreInput) return;
 
     isOpen = false;
+    comboboxEl.classList.remove("is-popup-open");
     setHidden(list, true);
     input.setAttribute("aria-expanded", "false");
     clearActiveOption();
@@ -440,6 +469,10 @@ export function initCombobox(
     setValueInputFromState();
     updateSelectionBadge();
     syncOptionSelectedState();
+    syncListGridSelectionJoins(list, ".combobox-option");
+    if (!selected) {
+      option?.element.classList.remove("is-active");
+    }
     input.removeAttribute("aria-invalid");
 
     // Keep an in-progress filter while the list stays open for further picks.
@@ -634,16 +667,59 @@ export function initCombobox(
         return;
       }
       if (!visible.length) return;
-      const currentVisibleIndex = visible.findIndex((option) => optionRecords.indexOf(option) === activeIndex);
-      setActiveOption(currentVisibleIndex + 1);
+      const currentVisibleIndex = visible.findIndex(
+        (option) => optionRecords.indexOf(option) === activeIndex
+      );
+      const nextIndex = isGridListOpen()
+        ? gridMenuIndexForKey(
+            visible,
+            currentVisibleIndex,
+            "ArrowDown",
+            getListGridColumns(list)
+          )
+        : currentVisibleIndex < 0
+          ? 0
+          : Math.min(currentVisibleIndex + 1, visible.length - 1);
+      setActiveOption(nextIndex);
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (!isOpen || !visible.length) return;
-      const currentVisibleIndex = visible.findIndex((option) => optionRecords.indexOf(option) === activeIndex);
-      setActiveOption(currentVisibleIndex <= 0 ? visible.length - 1 : currentVisibleIndex - 1);
+      const currentVisibleIndex = visible.findIndex(
+        (option) => optionRecords.indexOf(option) === activeIndex
+      );
+      const nextIndex = isGridListOpen()
+        ? gridMenuIndexForKey(
+            visible,
+            currentVisibleIndex,
+            "ArrowUp",
+            getListGridColumns(list)
+          )
+        : currentVisibleIndex <= 0
+          ? visible.length - 1
+          : currentVisibleIndex - 1;
+      setActiveOption(nextIndex);
+      return;
+    }
+
+    if (
+      isGridListOpen() &&
+      (event.key === "ArrowLeft" || event.key === "ArrowRight")
+    ) {
+      event.preventDefault();
+      if (!isOpen || !visible.length) return;
+      const currentVisibleIndex = visible.findIndex(
+        (option) => optionRecords.indexOf(option) === activeIndex
+      );
+      const nextIndex = gridMenuIndexForKey(
+        visible,
+        currentVisibleIndex,
+        event.key,
+        getListGridColumns(list)
+      );
+      setActiveOption(nextIndex);
       return;
     }
 
@@ -671,17 +747,43 @@ export function initCombobox(
     const record = optionRecords.find((option) => option.element === optionEl);
     selectOption(record);
     if (isMulti && isOpen && record) {
-      const visible = getVisibleOptions();
-      const idx = visible.indexOf(record);
-      if (idx >= 0) setActiveOption(idx, { scroll: false });
+      if (selectedMap.has(record.value)) {
+        const visible = getVisibleOptions();
+        const idx = visible.indexOf(record);
+        if (idx >= 0) setActiveOption(idx, { scroll: false });
+      }
     }
     input.focus();
   }
 
-  function onListPointerDown(event) {
-    if (event.target.closest(".combobox-option")) {
-      event.preventDefault();
+  let pressedOptionEl = null;
+  let removePressedListeners = null;
+
+  function clearPressedOption() {
+    pressedOptionEl?.classList.remove("is-pressed");
+    pressedOptionEl = null;
+    if (removePressedListeners) {
+      removePressedListeners();
+      removePressedListeners = null;
     }
+  }
+
+  function onListPointerDown(event) {
+    const optionEl = event.target.closest(".combobox-option");
+    if (!optionEl) return;
+    // Keep the input focused so blur does not close the list before click.
+    // preventDefault also suppresses :active — `.is-pressed` is the press tint.
+    event.preventDefault();
+    clearPressedOption();
+    pressedOptionEl = optionEl;
+    optionEl.classList.add("is-pressed");
+    const onUp = () => clearPressedOption();
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    removePressedListeners = () => {
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
   }
 
   // Initial selection
@@ -754,6 +856,18 @@ export function initCombobox(
     openList,
     closeList,
     commitInput,
+    syncListGrid,
+    getGridConfig,
+    /** @param {number | false} min */
+    setGridMin(min) {
+      gridOverrides.gridMin = min;
+      return syncListGrid();
+    },
+    /** @param {number} cols */
+    setGridCols(cols) {
+      gridOverrides.gridCols = cols;
+      return syncListGrid();
+    },
     getValue() {
       return isMulti ? selectedValues().join(",") : selectedValue;
     },
@@ -849,6 +963,8 @@ export function initCombobox(
       input.removeEventListener("keydown", onInputKeydown);
       list.removeEventListener("click", onListClick);
       list.removeEventListener("mousedown", onListPointerDown);
+      clearPressedOption();
+      comboboxEl.classList.remove("is-popup-open");
       unregisterOpenPopup(closeList);
       removeClickOutside();
       removeEscape();

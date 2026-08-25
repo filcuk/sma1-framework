@@ -4,9 +4,35 @@ All notable changes to **SMA1 Framework** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
-for `TEMPLATE_VERSION` in `app/version.js`.
+for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ## [Unreleased]
+
+### Fixed
+
+- Tutorial navigation (`next` / `back` / `goTo` / `start`) uses one showable-step resolver (`when` + resolvable target). Back over a missing target no longer ends the tour; `goTo(i)` jumps to the nearest showable step instead of walking a one-way ray that could stop the tour.
+- Dropdown / combobox / also-see auto grid stores column count on `data-grid-cols` (not an inline custom property), so the also-see narrow-viewport single-column rule can apply. Grid keyboard and selection joins follow visual columns across full-span group rows.
+- Corrected **Available features** module paths in `USAGE.md` (pre-move `app/*.js` links). Clarified heading-link disable order and also-see `accent` vs `accentHover` roles.
+- Press feedback hover / selected fills use `--control-hover-mix` / `--control-selected-mix` (no hardcoded 6% / 12%). Selected `.btn-toggle:active` uses `--control-press-mix`. Dropped dead `.combo-menu-item` selectors from grid-only menu rules.
+- Combobox hosts elevate with `.is-popup-open` while the suggestion list is open (same stacking fix as dropdown / combo). Table row hover, time-picker duration mode, slim-size APIs, and tri-state cycle scope documented in `USAGE.md` / `DESIGN.md`.
+- Date / time / duration field CSS shares one trigger, popup shell, icon, and quick-action bar block in `controls-fields.css` (duration popups reuse `.time-picker-popup`).
+- Documented time-panel **00:00** / **Now** defaults per host (standalone time picker, duration mode, duration input, date+time combined picker).
+- Banner rotation requires `data-banner-expire`; `hideBanner()` resets to the first variation. `prepareButtonLabelFlash()` defaults `lockWidth` to on. Section panel inner gaps use `--panel-gap`.
+
+### Changed
+
+- Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).
+- Segmented control default height matches standard buttons (`--control-height`); add `.segmented-control--slim` for the previous compact size.
+
+### Added
+
+- Dropdown auto grid: `data-dropdown-grid-min` (and related `data-dropdown-grid*` attributes) switch long menus to a multi-column layout; `data-dropdown-grid="false"` keeps a single column. Footer **also see** and **combobox** lists use the same grid (`data-combobox-grid*`, `alsoSeeMenuColumns()`).
+- Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
+- Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
+- `migrate-framework` asks whether to check new changelog additions against local app workarounds and offers each match individually to switch onto the framework API.
+- Button label flash helpers ([`app/utils/button-label.js`](app/utils/button-label.js)): `.btn-label-flash` + `prepareButtonLabelFlash()` / `flashButtonLabel()` for in-place Copy → Copied feedback; `lockWidth` auto-measure defaults on (pass `false` to skip). Code block and tabular input labeled clipboard actions use this pattern.
+- Click press feedback for enabled toggle buttons, menu items, combobox options, and chips via `:active` tint (combobox options use `.is-pressed` because option `mousedown` `preventDefault` keeps the input focused and suppresses `:active`). Extended to file dropzone, colour-set swatches, table sort, legend chips, segmented control, pagination, tabs, and theme toggle; hover mixes use `--control-hover-mix` where they were still hardcoded.
+- Tutorial scripts accept `when` on steps and nested `{ when, steps }` groups. Navigation and `Step {n} of {N}` follow currently showable steps (eligible `when` and resolvable target).
 
 ## [0.12.3] - 2026-08-19
 
@@ -42,7 +68,7 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
-- Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; template `clock` icon (`ic:round-schedule`).
+- Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; framework `clock` icon (`ic:round-schedule`).
 - Slim toggle variant (`.toggle--slim`) — thin track with an oversized overhanging thumb and no icon; Forms demo and USAGE docs.
 - Toggle button (`initToggleButton` / `initToggleButtons`) — `.btn-toggle` pressed state with optional next-action label/icon swapping; `data-toggle-button-always-active` keeps the default button appearance for controls where both states are actions; Actions demo shows pressed-state and swapping icon toggles at standard and slim sizes.
 - Legend (`initLegend` / `initLegends`) — coloured category chips for charts and code highlights; eight numbered palette slots; optional toggle and `data-tooltip`; demo under Chips.
@@ -92,24 +118,24 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
 - Colour picker (`initColorPicker`) — HSV/HSL plane + hue slider, RGB/CMYK/alpha via shared `initSlider`, HEX field; format switch changes the visual; optional adjacent colour-set panel (palette icon toggle on the value row).
-- Template icon `palette` (`ic:round-palette`).
+- Framework icon `palette` (`ic:round-palette`).
 - Colour input `openOnClick` / `data-color-input-open` (`none` \| `picker` \| `set` \| `both`) with `openTrigger` / `data-color-input-open-trigger` (`either` default \| `swatch` \| `input`) — opens a nested or passed colour set / picker and keeps values in sync.
 - `--control-height-micro` token (half of `--control-height`) for compact colour swatches and similar micro controls.
 - Image preview (`initImagePreview`) — checkerboard host for SVG / image URLs / Blob; optional maximise icon and click-to-expand via expandable-surface (`data-image-preview-maximize`, `data-image-preview-expand-on-click`); optional floating download and muted dimensions / file-size / SMIL frame + duration meta (`data-image-preview-download`, `data-image-preview-dimensions`, `data-image-preview-file-size`, `data-image-preview-frames`, `data-image-preview-duration`); meta strip visibility via `data-image-preview-meta` (`hover` default, `always`, `never`).
 - Expandable surface: `data-expandable-surface-click` (toggle on surface click) and `data-expandable-surface-control="false"` (omit floating maximise button).
 - Manifest **schema v2**: hashed Cursor agent skills/rules, `agent` catalogue, empty `deprecated` / `retired` lifecycle maps, and lock `skills` selection (`*` / `-id`).
-- `sync:template --prune` to remove `previousFiles` / retired paths when safe (skips if still referenced from app-owned files).
-- USAGE section **Template lock, manifest, and upgrades** documenting versions, lock/manifest, sync/verify, ids, deprecate→retire, and forking skills.
+- `sync:framework --prune` to remove `previousFiles` / retired paths when safe (skips if still referenced from app-owned files).
+- USAGE section **Framework lock, manifest, and upgrades** documenting versions, lock/manifest, sync/verify, ids, deprecate→retire, and forking skills.
 - Popover (`initPopover`) — anchored speech-bubble card with a notch, title, body, and actions; pure `computePopoverPlacement` for flip/clamp positioning.
 - Tutorial (`initTutorial`) — guided spotlight tour over a JS step script (back / next / close); multiple scripts per page with one active at a time; optional interactive steps (`advanceOn: "click"`).
 - About dialog (`initAboutDialog`) — tagline “What?” opener with progressive Huh? / Uhh… simplification stages declared in markup (`data-about-stage`, `data-about-next-label`, `data-about-final`), same pattern as [pqm-stepper](https://github.com/filcuk/pqm-stepper); demo on `demo.html`.
 - Optional automatic title numbering (`data-title-numbering` / `setTitleNumbering`) — hierarchical `1.` / `1.1.` / `1.2.1.` prefixes on outline headings; demo toggle beside sticky chrome.
 - Callout cards (`.callout`) — accent-edged tip panels for standing information (CSS-only; former content-tier header chrome).
-- Agent lifecycle skills under `.cursor/skills/` (init-app, migrate-template, sync-shell, restore-component, finalize-app, author-component, release-template, handle-assets, health-check).
+- Agent lifecycle skills under `.cursor/skills/` (init-app, migrate-framework, sync-shell, restore-component, finalize-app, author-component, release-framework, handle-assets, health-check).
 - Shared `.cursor/skills/_shared/component-map.md` and `invariants.md` for trim/restore/migrate.
-- `template-manifest.json` (SHA-256 per distributable `app/` file, component graph, app-owned paths) generated by `npm run manifest:template` from `scripts/lib/template-catalogue.mjs`.
-- `template.lock.json` plus `npm run sync:template` / `npm run verify:template` for versioned 1:1 component sync (local `--from` or GitHub tag tarball).
-- Lifecycle skills (`migrate-template`, `restore-component`, `health-check`, `release-template`, …) driven by lock + sync/verify; releases require git tag `vX.Y.Z`.
+- `framework-manifest.json` (SHA-256 per distributable `app/` file, component graph, app-owned paths) generated by `npm run manifest:framework` from `scripts/lib/framework-catalogue.mjs`.
+- `framework.lock.json` plus `npm run sync:framework` / `npm run verify:framework` for versioned 1:1 component sync (local `--from` or GitHub tag tarball).
+- Lifecycle skills (`migrate-framework`, `restore-component`, `health-check`, `release-framework`, …) driven by lock + sync/verify; releases require git tag `vX.Y.Z`.
 - Colour input alpha variant (`data-color-input-alpha` / `alpha: true`) for `#RGBA` / `#RRGGBBAA`.
 - Also-see `order` on topics and links; embedded `iconSvg` / `iconSvgLight` / `iconSvgDark` (sanitized inline SVG).
 - Combobox multi-select variant (`data-combobox-multi` / `multi: true`): comma-separated labels in the input and a selection-count badge.
@@ -119,12 +145,12 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 ### Changed
 
 - Soft verify for agent skill/rule drift (`agentModified` / `agentMissing` does not fail CI); hard verify remains for catalogue `app/` hashes.
-- Rich text editor Markdown / WYSIWYG switch uses the template segmented control (Toast UI’s native mode tabs are hidden).
+- Rich text editor Markdown / WYSIWYG switch uses the framework segmented control (Toast UI’s native mode tabs are hidden).
 - Heading outline: site `h1`, tier `h2.segment-title` (was `.content-tier-title`), section `h3.section-title` (was `h2.section-heading`). Page nav and heading links default to `main :is(h2, h3)[id]`.
 - Content tier headers are plain larger titles with an underline instead of accent-edged cards (card chrome moved to `.callout`).
 - Sticky chrome stacks site header, tier header, and section headings; pinned bars fade in gap fill and a single edge hairline/shadow (`data-sticky-stuck` / `data-sticky-stuck-edge`) instead of always-on cover strips.
-- Split inline icons into `icons-template.js` (catalogue), `icons-app.js` (fork-owned, empty here), and merging `icons.js` (public API unchanged).
-- Split styles into fork-owned `styles.css` / `css/app.css` and template partial index `css/template.css`.
+- Split inline icons into `icons-framework.js` (catalogue), `icons-app.js` (fork-owned, empty here), and merging `icons.js` (public API unchanged).
+- Split styles into fork-owned `styles.css` / `css/app.css` and framework partial index `css/framework.css`.
 - Toggle dropdown selection count uses a **badge** on the trigger instead of appending `(n)` to the label text.
 - Renamed the hex colour field component from colour picker to **colour input** (`color-input` / `initColorInput`) so “colour picker” can mean a future spectrum selector.
 - Also-see menu lays topics out full width on a shared grid, choosing the column count that leaves the fewest empty cells.
@@ -204,9 +230,9 @@ for `TEMPLATE_VERSION` in `app/version.js`.
 
 ### Added
 
-- Initial template: theme toggle, layout shell, buttons, banners, tooltips, dialogs.
+- Initial framework: theme toggle, layout shell, buttons, banners, tooltips, dialogs.
 - Code blocks (Prism), expandable surfaces, page navigation, heading links, external-link icons.
-- Section panel, toolbar, USAGE.md, disclaimer, SemVer `TEMPLATE_VERSION` / `APP_VERSION`.
+- Section panel, toolbar, USAGE.md, disclaimer, SemVer `FRAMEWORK_VERSION` / `APP_VERSION`.
 - Checkbox, expand, tabs, combo / dropdown / toggle-dropdown.
 - File dropzone and file download.
 - Accordion, date/time picker, combobox.

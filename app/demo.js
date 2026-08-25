@@ -12,12 +12,18 @@ import { initAccordion } from "./components/accordion.js";
 import { initTabs } from "./components/tabs.js";
 import { initCodeBlocks } from "./components/code-block.js";
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
-import { showBanner } from "./components/banner.js";
+import { showBanner, hideBanner } from "./components/banner.js";
 import {
   flashTooltip,
   showPersistentTooltip,
   dismissPersistentTooltip,
 } from "./components/tooltip.js";
+import { copyText } from "./utils/clipboard.js";
+import {
+  prepareButtonLabelFlash,
+  setButtonLabelFlash,
+  flashButtonLabel,
+} from "./utils/button-label.js";
 import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
 import { initFileDropzone } from "./components/file-dropzone.js";
@@ -101,6 +107,9 @@ const demoFruitSales = [
   { fruit: "Elderberries", sold: 31 },
 ];
 
+/** Match `.charts` `--charts-tick-size` (0.8125rem ≈ 13px) for layout. */
+const DEMO_CHART_TICK_FONT_SIZE = 13;
+
 initChart(document.getElementById("demo-bar-chart"), {
   definition: defineChart({
     marks: [
@@ -113,13 +122,19 @@ initChart(document.getElementById("demo-bar-chart"), {
     ],
     x: {
       scale: () => scaleBand().padding(0.18),
-      axis: { label: "Fruit" },
+      axis: {
+        label: "Fruit",
+        tickLabels: { fontSize: DEMO_CHART_TICK_FONT_SIZE },
+      },
     },
     y: {
       scale: scaleLinear,
       nice: true,
       grid: true,
-      axis: { label: "Sold" },
+      axis: {
+        label: "Sold",
+        tickLabels: { fontSize: DEMO_CHART_TICK_FONT_SIZE },
+      },
     },
     tooltip,
   }),
@@ -188,6 +203,7 @@ initToggle(document.getElementById("demo-toggle-slim-off"));
 initToggle(document.getElementById("demo-toggle-slim-on"));
 
 initSegmentedControl(document.getElementById("demo-segmented-view"));
+initSegmentedControl(document.getElementById("demo-segmented-slim"));
 
 const demoChipFilterResults = document.getElementById("demo-chip-filter-results");
 
@@ -351,6 +367,29 @@ document.getElementById("demo-tooltip-flash-error")?.addEventListener("click", (
   flashTooltip(btn, { text: "Failed to copy", tone: "error" });
 });
 
+async function demoLabelFlashClick(button) {
+  if (!(button instanceof HTMLButtonElement)) return;
+  const ok = await copyText("demo");
+  flashButtonLabel(button, ok, {
+    reset: () => {
+      button.setAttribute("aria-label", "Copy");
+      setButtonLabelFlash(button, "Copy");
+    },
+  });
+}
+
+const demoLabelFlashShift = document.getElementById("demo-label-flash-shift");
+const demoLabelFlashFixed = document.getElementById("demo-label-flash-fixed");
+demoLabelFlashShift?.setAttribute("aria-label", "Copy");
+demoLabelFlashFixed?.setAttribute("aria-label", "Copy");
+prepareButtonLabelFlash(demoLabelFlashFixed, { idle: "Copy" });
+demoLabelFlashShift?.addEventListener("click", (e) => {
+  void demoLabelFlashClick(e.currentTarget);
+});
+demoLabelFlashFixed?.addEventListener("click", (e) => {
+  void demoLabelFlashClick(e.currentTarget);
+});
+
 /** @type {string | null} */
 let demoPersistentTipId = null;
 const demoPersistentTarget = document.getElementById("demo-tooltip-persistent-dismiss");
@@ -416,7 +455,7 @@ initTutorial({
     {
       target: "#demo-tutorials-panel",
       title: "Tutorials",
-      body: "Or zoom in on a panel. These two buttons start the overview and interactive tours.",
+      body: "Or zoom in on a panel. These buttons start the overview, interactive, and branching tours.",
       position: "left",
     },
     {
@@ -455,6 +494,58 @@ initTutorial({
       title: "Show popover",
       body: "You can open the same bubble from this button. Press Done or Escape to finish.",
       position: "bottom",
+    },
+  ],
+});
+
+let tutorialPath = "a";
+
+initCombo(document.getElementById("demo-tutorial-combo"), {
+  onSelect: ({ value }) => {
+    tutorialPath = value;
+    const main = document.getElementById("demo-tutorial-combo-main");
+    if (main) main.textContent = value === "b" ? "Option B" : "Option A";
+  },
+});
+
+initTutorial({
+  id: "demo-branching",
+  startTriggers: "#demo-tutorial-branching",
+  steps: [
+    {
+      target: "#demo-tutorial-branch",
+      title: "Pick a path",
+      body: "Open the chevron, choose Option A or Option B, then press Next. The following step depends on that choice.",
+      position: "right",
+      interactive: true,
+    },
+    {
+      when: () => tutorialPath === "b",
+      steps: [
+        {
+          target: "#demo-tutorial-path-b",
+          title: "Option B",
+          body: "This step is included only while Option B is selected.",
+          position: "top",
+        },
+      ],
+    },
+    {
+      when: () => tutorialPath !== "b",
+      steps: [
+        {
+          target: "#demo-tutorial-path-a",
+          title: "Option A",
+          body: "This step is included when Option A is selected (the default).",
+          position: "top",
+        },
+      ],
+    },
+    {
+      target: "#demo-tutorials-panel",
+      title: "Paths rejoin",
+      body: "Unconditional steps after a branch run for every path. Press Done or Escape to finish.",
+      position: "left",
     },
   ],
 });
@@ -527,6 +618,13 @@ const bannerIds = [
   "demo-error-banner",
 ];
 
+const rotatingBannerIds = new Set([
+  "demo-note-banner",
+  "demo-success-banner",
+  "demo-important-banner",
+  "demo-warning-banner",
+]);
+
 const bannerTriggers = [
   ["trigger-note-banner", "demo-note-banner"],
   ["trigger-info-banner", "demo-info-banner"],
@@ -545,6 +643,9 @@ function getBannerElements() {
 }
 
 function showBannerBriefly(bannerEl) {
+  if (rotatingBannerIds.has(bannerEl.id)) {
+    hideBanner(bannerEl);
+  }
   showBanner(bannerEl, { expire: BANNER_TRIGGER_EXPIRE_MS });
 }
 
@@ -564,6 +665,12 @@ document.getElementById("trigger-all-banners")?.addEventListener("click", () => 
 
 document.getElementById("reset-banners")?.addEventListener("click", () => {
   for (const banner of getBannerElements()) {
+    hideBanner(banner);
     showBanner(banner);
   }
 });
+
+for (const bannerId of rotatingBannerIds) {
+  const bannerEl = document.getElementById(bannerId);
+  if (bannerEl) showBanner(bannerEl);
+}
