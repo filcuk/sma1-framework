@@ -11,12 +11,48 @@ import {
   findEligibleTutorialIndex,
   findShowableTutorialIndex,
   formatTutorialMissingTargetMessage,
+  isRectFullyVisible,
   isTutorialStepEligible,
   isTutorialStepShowable,
   nearestShowableTutorialIndex,
   normalizeTutorialSteps,
   tutorialStepHasTargetRef,
 } from "../app/components/tutorial.js";
+
+test("isRectFullyVisible ignores already-on-screen targets", () => {
+  const viewport = { top: 0, left: 0, bottom: 800, right: 1200 };
+  const mid = { top: 200, left: 300, bottom: 280, right: 500 };
+  assert.equal(isRectFullyVisible(mid, viewport, 8), true);
+});
+
+test("isRectFullyVisible requires padding clearance inside bounds", () => {
+  const viewport = { top: 0, left: 0, bottom: 800, right: 1200 };
+  const nearTop = { top: 4, left: 100, bottom: 40, right: 200 };
+  assert.equal(isRectFullyVisible(nearTop, viewport, 8), false);
+  assert.equal(isRectFullyVisible(nearTop, viewport, 0), true);
+});
+
+test("isRectFullyVisible detects clipping on any edge", () => {
+  const bounds = { top: 50, left: 50, bottom: 250, right: 250 };
+  const rect = { top: 60, left: 60, bottom: 100, right: 100 };
+  assert.equal(isRectFullyVisible(rect, bounds, 0), true);
+  assert.equal(
+    isRectFullyVisible({ ...rect, top: 40 }, bounds, 0),
+    false,
+  );
+  assert.equal(
+    isRectFullyVisible({ ...rect, bottom: 260 }, bounds, 0),
+    false,
+  );
+  assert.equal(
+    isRectFullyVisible({ ...rect, left: 40 }, bounds, 0),
+    false,
+  );
+  assert.equal(
+    isRectFullyVisible({ ...rect, right: 260 }, bounds, 0),
+    false,
+  );
+});
 
 test("computePopoverPlacement centres without an anchor and hides the notch", () => {
   const placed = computePopoverPlacement({

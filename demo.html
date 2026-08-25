@@ -896,38 +896,38 @@
                 </p>
                 <div class="panel-row">
                   <button type="button" class="btn btn-primary" id="demo-tutorial-overview">
-                    Start overview tour
+                    Overview
                   </button>
                   <button type="button" class="btn" id="demo-tutorial-interactive">
-                    Start interactive tour
+                    Interactive
                   </button>
                   <button type="button" class="btn" id="demo-tutorial-branching">
-                    Start branching tour
+                    Branching
                   </button>
+                  <div class="panel-stack" id="demo-tutorial-branch">
+                    <div class="combo-btn" id="demo-tutorial-combo">
+                      <button type="button" class="btn combo-btn-main" id="demo-tutorial-combo-main">
+                        Option A
+                      </button>
+                      <button type="button" class="btn combo-btn-toggle" id="demo-tutorial-combo-toggle"
+                        aria-haspopup="menu" aria-expanded="false" aria-controls="demo-tutorial-combo-menu"
+                        aria-label="Choose tour path">
+                        <span class="combo-btn-chevron" aria-hidden="true"></span>
+                      </button>
+                      <ul id="demo-tutorial-combo-menu" class="combo-menu hidden" role="menu">
+                        <li role="none">
+                          <button type="button" class="combo-menu-item" role="menuitem" data-value="a">
+                            Option A
+                          </button>
+                        </li>
+                        <li role="none">
+                          <button type="button" class="combo-menu-item" role="menuitem" data-value="b">
+                            Option B
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
                 </div>
-                <div class="panel-stack" id="demo-tutorial-branch">
-                  <div class="combo-btn" id="demo-tutorial-combo">
-                    <button type="button" class="btn combo-btn-main" id="demo-tutorial-combo-main">
-                      Option A
-                    </button>
-                    <button type="button" class="btn combo-btn-toggle" id="demo-tutorial-combo-toggle"
-                      aria-haspopup="menu" aria-expanded="false" aria-controls="demo-tutorial-combo-menu"
-                      aria-label="Choose tour path">
-                      <span class="combo-btn-chevron" aria-hidden="true"></span>
-                    </button>
-                    <ul id="demo-tutorial-combo-menu" class="combo-menu hidden" role="menu">
-                      <li role="none">
-                        <button type="button" class="combo-menu-item" role="menuitem" data-value="a">
-                          Option A
-                        </button>
-                      </li>
-                      <li role="none">
-                        <button type="button" class="combo-menu-item" role="menuitem" data-value="b">
-                          Option B
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
                   <p class="panel-hint" id="demo-tutorial-path-a">
                     Path A: shown when Option A is selected.
                   </p>

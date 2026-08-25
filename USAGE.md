@@ -819,7 +819,7 @@ tour?.start(); // or rely on startTriggers
 | `interactive` | When true, the target stays clickable (page is not `inert`) and Tab is not trapped in the step popover |
 | `advanceOn` | `"click"` — advance when the interactive target is clicked |
 | `padding` | Spotlight padding around the target (px) |
-| `scroll` | Scroll the target into view before opening the step popover (default `true`) |
+| `scroll` | Scroll the target into view before opening the step popover when it is clipped (default `true`; already-visible targets are not recentred) |
 | `onEnter` / `onLeave` | Optional callbacks when a step is shown or left — use to reset pagination, tabs, etc. before the next target is resolved |
 | `when` | `boolean` or `(ctx) => boolean` (`ctx`: `{ index, step }`). `index` is the **post-flatten** leaf index (same as `goTo(i)` / `onEnter`). Re-evaluated on start / next / back / `goTo`. `false` skips the step silently (unlike a missing target, which warns). A thrown `when` is treated as ineligible and logged |
 | `steps` | Nested group (authoring sugar). Flattened at init; the group's `when` is AND-ed with each child's `when`. The group itself is not shown — if the same object also has `target` / `title` / `interactive`, those leaf fields are ignored |

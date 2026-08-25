@@ -523,25 +523,61 @@ function centeredScrollY(target) {
 }
 
 /**
- * True when showing `target` requires moving the page or an inner scroller.
- * @param {HTMLElement} target
+ * True when `rect` (plus `padding`) fits entirely inside `bounds`.
+ * @param {{ top: number, left: number, bottom: number, right: number }} rect
+ * @param {{ top: number, left: number, bottom: number, right: number }} bounds
+ * @param {number} [padding]
  * @returns {boolean}
  */
-function needsScrollFor(target) {
-  if (scrollableAncestor(target)) return true;
-  return Math.abs(centeredScrollY(target) - window.scrollY) > 1;
+export function isRectFullyVisible(rect, bounds, padding = 0) {
+  const pad = Math.max(0, Number.isFinite(padding) ? padding : 0);
+  return (
+    rect.top - pad >= bounds.top &&
+    rect.left - pad >= bounds.left &&
+    rect.bottom + pad <= bounds.bottom &&
+    rect.right + pad <= bounds.right
+  );
 }
 
 /**
- * Centre `target` and resolve when the page has stopped moving. Inner scrollers
- * are brought into view first (instantly); the page scroll is then animated
- * here rather than by `scrollIntoView`, so the end of the scroll is exact.
+ * True when the spotlighted target is clipped by the viewport or an inner
+ * scroller. Already-visible targets are left alone — do not recentre them.
  * @param {HTMLElement} target
- * @param {{ signal?: AbortSignal, animate?: boolean }} [options]
+ * @param {number} [padding]
+ * @returns {boolean}
+ */
+function needsScrollFor(target, padding = DEFAULT_PADDING) {
+  const pad =
+    typeof padding === "number" && Number.isFinite(padding)
+      ? padding
+      : DEFAULT_PADDING;
+  const rect = target.getBoundingClientRect();
+  const viewport = {
+    top: 0,
+    left: 0,
+    bottom: window.innerHeight,
+    right: window.innerWidth,
+  };
+  if (!isRectFullyVisible(rect, viewport, pad)) return true;
+
+  const scroller = scrollableAncestor(target);
+  if (!scroller) return false;
+
+  const scrollerRect = scroller.getBoundingClientRect();
+  return !isRectFullyVisible(rect, scrollerRect, pad);
+}
+
+/**
+ * Bring `target` into view and resolve when the page has stopped moving. Inner
+ * scrollers use nearest (instant); the page only scrolls when the target is
+ * still clipped, then centres it. Page motion is animated here rather than by
+ * `scrollIntoView`, so the end of the scroll is exact.
+ * @param {HTMLElement} target
+ * @param {{ signal?: AbortSignal, animate?: boolean, padding?: number }} [options]
  * @returns {Promise<void>}
  */
 function scrollTargetIntoView(target, options = {}) {
-  const { signal, animate = true } = options;
+  const { signal, animate = true, padding = DEFAULT_PADDING } = options;
   if (signal?.aborted) return Promise.resolve();
 
   if (scrollableAncestor(target)) {
@@ -550,6 +586,11 @@ function scrollTargetIntoView(target, options = {}) {
       inline: "nearest",
       behavior: "instant",
     });
+  }
+
+  /* Inner nearest may have been enough; skip recentring a visible target. */
+  if (!needsScrollFor(target, padding)) {
+    return Promise.resolve();
   }
 
   const destination = centeredScrollY(target);
@@ -968,7 +1009,8 @@ export function initTutorial(options) {
 
       const pad = step.padding ?? defaultPadding;
       const animate = !prefersReducedMotion();
-      const willScroll = Boolean(target && step.scroll) && needsScrollFor(target);
+      const willScroll =
+        Boolean(target && step.scroll) && needsScrollFor(target, pad);
 
       setPageInert(!step.interactive);
       placeSpotlight(target, pad, step.interactive);
@@ -980,7 +1022,7 @@ export function initTutorial(options) {
       }
 
       if (!animate) {
-        scrollTargetIntoView(target, { animate: false });
+        scrollTargetIntoView(target, { animate: false, padding: pad });
         presentStep(step, i, target);
         return;
       }
@@ -992,7 +1034,10 @@ export function initTutorial(options) {
       const controller = new AbortController();
       pendingReveal = controller;
       const revealIndex = i;
-      scrollTargetIntoView(target, { signal: controller.signal }).then(() => {
+      scrollTargetIntoView(target, {
+        signal: controller.signal,
+        padding: pad,
+      }).then(() => {
         if (pendingReveal !== controller) return;
         pendingReveal = null;
         if (!isActive || stepIndex !== revealIndex) return;
