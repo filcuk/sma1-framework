@@ -3071,6 +3071,8 @@ Markdown ↔ WYSIWYG uses the framework [segmented control](#segmented-control) 
 
 Thin host around vendored [TanStack Charts](https://tanstack.com/charts/latest) (`mountChart`). You author the chart definition (`defineChart`, marks, scales); this framework only mounts it into a `.charts` host and refreshes on theme change. Upstream is **pre-alpha** — expect API churn.
 
+The host inherits `--font` / `--text`. Axis titles and tick labels are restyled in [`controls-charts.css`](app/css/controls-charts.css) to `--muted` at theme secondary sizes (`--charts-axis-title-size` / `--charts-tick-size`). Set `axis.tickLabels.fontSize` (CSS pixels) to match `--charts-tick-size` so guide layout matches the painted size — axis title size is CSS-only (upstream has no title `fontSize` option yet).
+
 Prefer **narrow** vendor entry files (e.g. `bar.js`, `scene.js`) over the root barrel so unused marks stay out of the module graph.
 
 **Page setup** — add an import map **before** any `type="module"` script when using marks that bare-import D3 (including `barY` / `barX`, which pull `stack-internal` → `d3-shape`):
@@ -3122,13 +3124,19 @@ const definition = defineChart({
   ],
   x: {
     scale: () => scaleBand().padding(0.18),
-    axis: { label: "Fruit" },
+    axis: {
+      label: "Fruit",
+      tickLabels: { fontSize: 13 }, // match --charts-tick-size
+    },
   },
   y: {
     scale: scaleLinear,
     nice: true,
     grid: true,
-    axis: { label: "Sold" },
+    axis: {
+      label: "Sold",
+      tickLabels: { fontSize: 13 },
+    },
   },
   tooltip,
 });

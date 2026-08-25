@@ -107,6 +107,9 @@ const demoFruitSales = [
   { fruit: "Elderberries", sold: 31 },
 ];
 
+/** Match `.charts` `--charts-tick-size` (0.8125rem ≈ 13px) for layout. */
+const DEMO_CHART_TICK_FONT_SIZE = 13;
+
 initChart(document.getElementById("demo-bar-chart"), {
   definition: defineChart({
     marks: [
@@ -119,13 +122,19 @@ initChart(document.getElementById("demo-bar-chart"), {
     ],
     x: {
       scale: () => scaleBand().padding(0.18),
-      axis: { label: "Fruit" },
+      axis: {
+        label: "Fruit",
+        tickLabels: { fontSize: DEMO_CHART_TICK_FONT_SIZE },
+      },
     },
     y: {
       scale: scaleLinear,
       nice: true,
       grid: true,
-      axis: { label: "Sold" },
+      axis: {
+        label: "Sold",
+        tickLabels: { fontSize: DEMO_CHART_TICK_FONT_SIZE },
+      },
     },
     tooltip,
   }),
