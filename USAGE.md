@@ -495,7 +495,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Tabular input** | Editable typed grid (text / number / logical); add/remove/reset; Excel/TSV paste (in-place or replace via footer buttons) with type detection; centered canvas breakout when wide. [`app/components/tabular-input.js`](app/components/tabular-input.js). |
 | **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/shell/page-nav.js`](app/shell/page-nav.js). |
 | **Dialogs** | Accessible modal: backdrop, focus trap, Escape, Enter (default action), focus restore. Markup uses `.modal` / `.modal-panel`; behaviour from [`app/components/dialog.js`](app/components/dialog.js). |
-| **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
+| **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
 | **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
@@ -666,6 +666,7 @@ All copy lives in the markup, so editing the explanation never means touching JS
       <button type="button" class="btn" data-about-confused>Huh?</button>
       <a class="btn hidden" data-about-final href="https://example.com/help" hidden>I don't get it</a>
       <div class="modal-footer-actions">
+        <button type="button" class="btn" id="about-guided-tour">Guided tour</button>
         <button type="button" class="btn btn-primary" data-dialog-close data-dialog-default>Got it</button>
       </div>
     </div>
@@ -693,6 +694,66 @@ const about = initAboutDialog({
 Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely and the confused button hides itself. See the live example on [`demo.html`](demo.html).
 
 Once the first stage is showing, the dialog gains `data-about-dimmed` and the newest stage gains `data-about-current`. The stylesheet uses those to fade earlier copy to `--muted` so the new block reads first — restyle or drop those rules if you want every layer at full contrast.
+
+**First-visit hint:** on a cold load, point a non-dismissible popover at the “What?” button (localStorage flag so it only shows once). Opening the about dialog should dismiss and remember the hint. Optional: a **Guided tour** footer button closes the dialog and starts `initTutorial`. Pattern as in [`demo.js`](app/demo.js) and [pqm-function-creator](https://github.com/filcuk/pqm-function-creator):
+
+```javascript
+const ABOUT_HINT_STORAGE_KEY = "my-app-about-hint-seen";
+const aboutOpenBtn = document.getElementById("about-open-btn");
+let aboutHintPopover = null;
+
+function hasSeenAboutHint() {
+  try {
+    return localStorage.getItem(ABOUT_HINT_STORAGE_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function markAboutHintSeen() {
+  try {
+    localStorage.setItem(ABOUT_HINT_STORAGE_KEY, "1");
+  } catch { /* ignore */ }
+}
+
+function dismissAboutHint() {
+  if (!aboutHintPopover) return;
+  const popover = aboutHintPopover;
+  aboutHintPopover = null;
+  markAboutHintSeen();
+  popover.destroy();
+}
+
+const aboutDialog = initAboutDialog({
+  dialogEl: document.getElementById("about-dialog"),
+  openTriggers: [aboutOpenBtn],
+  onOpen: () => dismissAboutHint(),
+});
+
+if (aboutOpenBtn instanceof HTMLElement && !hasSeenAboutHint()) {
+  aboutHintPopover = initPopover({
+    anchor: aboutOpenBtn,
+    body: "Check here for more info and a guided tour!",
+    position: "right",
+    dismissible: false,
+    trapFocus: false,
+    actions: [{
+      label: "Got it",
+      className: "btn btn-primary",
+      closeOnClick: false,
+      onClick: () => dismissAboutHint(),
+    }],
+    onClose: () => {
+      if (!aboutHintPopover) return;
+      const popover = aboutHintPopover;
+      aboutHintPopover = null;
+      markAboutHintSeen();
+      queueMicrotask(() => popover.destroy());
+    },
+  });
+  window.requestAnimationFrame(() => aboutHintPopover?.open());
+}
+```
 
 ### Tooltip
 
@@ -740,7 +801,7 @@ For multi-step guided tours with a dimmed page and back/next controls, use **Tut
 
 ### Popover
 
-Anchored speech-bubble card (notch points at the target). Use when a tip needs a title, longer copy, or action buttons. Tooltips stay text-only and non-interactive.
+Anchored speech-bubble card (notch points at the target). Use when a tip needs a title, longer copy, or action buttons. Tooltips stay text-only and non-interactive. When the anchor scrolls fully off-screen, the popover hides (still open) and reappears when the anchor returns — it does not stay clamped to a viewport edge.
 
 ```javascript
 import { initPopover } from "./components/popover.js";

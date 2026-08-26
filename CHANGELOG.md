@@ -10,6 +10,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Anchored popovers hide while their target is fully off-screen (instead of clamping to a viewport edge) and show again when the anchor returns.
 - Tutorial navigation (`next` / `back` / `goTo` / `start`) uses one showable-step resolver (`when` + resolvable target). Back over a missing target no longer ends the tour; `goTo(i)` jumps to the nearest showable step instead of walking a one-way ray that could stop the tour.
 - Dropdown / combobox / also-see auto grid stores column count on `data-grid-cols` (not an inline custom property), so the also-see narrow-viewport single-column rule can apply. Grid keyboard and selection joins follow visual columns across full-span group rows.
 - Corrected **Available features** module paths in `USAGE.md` (pre-move `app/*.js` links). Clarified heading-link disable order and also-see `accent` vs `accentHover` roles.

@@ -49,7 +49,7 @@ a.btn:hover {
   transition-duration: 0s;
 }
 
-.btn:not(:disabled):active:not(.btn-primary):not(.btn-danger) {
+.btn:not(:disabled):active:not(.btn-primary):not(.btn-danger):not(.btn-link) {
   border-color: var(--accent);
   background: color-mix(
     in srgb,

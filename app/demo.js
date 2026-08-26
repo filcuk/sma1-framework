@@ -438,7 +438,7 @@ demoPopoverAnchor?.addEventListener("click", () => {
   else demoPopover?.open();
 });
 
-initTutorial({
+const overviewTour = initTutorial({
   id: "demo-overview",
   startTriggers: "#demo-tutorial-overview",
   steps: [
@@ -581,10 +581,77 @@ initToggle(document.getElementById("demo-title-numbering"), {
   },
 });
 
-initAboutDialog({
+const ABOUT_HINT_STORAGE_KEY = "sma1-demo-about-hint-seen";
+const aboutOpenBtn = document.getElementById("about-open-btn");
+
+/** @type {ReturnType<typeof initPopover> | null} */
+let aboutHintPopover = null;
+
+function hasSeenAboutHint() {
+  try {
+    return localStorage.getItem(ABOUT_HINT_STORAGE_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function markAboutHintSeen() {
+  try {
+    localStorage.setItem(ABOUT_HINT_STORAGE_KEY, "1");
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+function dismissAboutHint() {
+  if (!aboutHintPopover) return;
+  const popover = aboutHintPopover;
+  aboutHintPopover = null;
+  markAboutHintSeen();
+  popover.destroy();
+}
+
+const aboutDialog = initAboutDialog({
   dialogEl: document.getElementById("about-dialog"),
-  openTriggers: "#about-open-btn",
+  openTriggers: [aboutOpenBtn],
+  onOpen: () => dismissAboutHint(),
 });
+
+document.getElementById("about-guided-tour")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  dismissAboutHint();
+  aboutDialog?.closeDialog();
+  overviewTour?.start();
+});
+
+if (aboutOpenBtn instanceof HTMLElement && !hasSeenAboutHint()) {
+  aboutHintPopover = initPopover({
+    anchor: aboutOpenBtn,
+    body: "Check here for more info and a guided tour!",
+    position: "right",
+    dismissible: false,
+    trapFocus: false,
+    actions: [
+      {
+        label: "Got it",
+        className: "btn btn-primary",
+        closeOnClick: false,
+        onClick: () => dismissAboutHint(),
+      },
+    ],
+    onClose: () => {
+      if (!aboutHintPopover) return;
+      const popover = aboutHintPopover;
+      aboutHintPopover = null;
+      markAboutHintSeen();
+      queueMicrotask(() => popover.destroy());
+    },
+  });
+  // Let shell / layout settle before measuring the anchor.
+  window.requestAnimationFrame(() => {
+    aboutHintPopover?.open();
+  });
+}
 
 initDialog({
   dialogEl: document.getElementById("info-dialog"),
