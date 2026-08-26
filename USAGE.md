@@ -665,8 +665,8 @@ All copy lives in the markup, so editing the explanation never means touching JS
     <div class="modal-footer">
       <button type="button" class="btn" data-about-confused>Huh?</button>
       <a class="btn hidden" data-about-final href="https://example.com/help" hidden>I don't get it</a>
-      <button type="button" class="btn" id="about-guided-tour">Guided tour</button>
       <div class="modal-footer-actions">
+        <button type="button" class="btn" id="about-guided-tour">Guided tour</button>
         <button type="button" class="btn btn-primary" data-dialog-close data-dialog-default>Got it</button>
       </div>
     </div>
