@@ -801,7 +801,7 @@ For multi-step guided tours with a dimmed page and back/next controls, use **Tut
 
 ### Popover
 
-Anchored speech-bubble card (notch points at the target). Use when a tip needs a title, longer copy, or action buttons. Tooltips stay text-only and non-interactive.
+Anchored speech-bubble card (notch points at the target). Use when a tip needs a title, longer copy, or action buttons. Tooltips stay text-only and non-interactive. When the anchor scrolls fully off-screen, the popover hides (still open) and reappears when the anchor returns — it does not stay clamped to a viewport edge.
 
 ```javascript
 import { initPopover } from "./components/popover.js";

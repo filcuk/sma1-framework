@@ -64,6 +64,7 @@ test("computePopoverPlacement centres without an anchor and hides the notch", ()
   assert.equal(placed.notchOffset, 0);
   assert.equal(placed.left, 400);
   assert.equal(placed.top, 350);
+  assert.equal(placed.visible, true);
 });
 
 test("computePopoverPlacement prefers the requested side when there is room", () => {
@@ -78,6 +79,7 @@ test("computePopoverPlacement prefers the requested side when there is room", ()
   assert.equal(placed.side, "bottom");
   assert.equal(placed.top, 432);
   assert.ok(placed.notchOffset > 0);
+  assert.equal(placed.visible, true);
 });
 
 test("computePopoverPlacement flips when the requested side is too tight", () => {
@@ -105,6 +107,38 @@ test("computePopoverPlacement clamps into the viewport and keeps the notch inset
   assert.equal(placed.left, 8);
   assert.ok(placed.notchOffset >= 12);
   assert.ok(placed.notchOffset <= 300 - 12);
+});
+
+test("computePopoverPlacement hides when the anchor is fully off-screen", () => {
+  const above = computePopoverPlacement({
+    anchorRect: { top: -80, left: 100, width: 40, height: 20 },
+    bubble: { width: 200, height: 80 },
+    viewport: { width: 1000, height: 800 },
+    position: "bottom",
+  });
+  assert.equal(above.visible, false);
+  assert.equal(above.side, null);
+
+  const below = computePopoverPlacement({
+    anchorRect: { top: 900, left: 100, width: 40, height: 20 },
+    bubble: { width: 200, height: 80 },
+    viewport: { width: 1000, height: 800 },
+    position: "top",
+  });
+  assert.equal(below.visible, false);
+});
+
+test("computePopoverPlacement stays visible when the anchor is only partly clipped", () => {
+  const placed = computePopoverPlacement({
+    anchorRect: { top: -10, left: 100, width: 40, height: 30 },
+    bubble: { width: 200, height: 80 },
+    viewport: { width: 1000, height: 800 },
+    position: "bottom",
+    gap: 12,
+    padding: 8,
+  });
+  assert.equal(placed.visible, true);
+  assert.equal(placed.side, "bottom");
 });
 
 test("computePopoverPlacement auto prefers bottom when it fits", () => {
