@@ -6,7 +6,7 @@
  */
 
 /** @type {`${number}.${number}.${number}`} */
-export const FRAMEWORK_VERSION = "0.13.1";
+export const FRAMEWORK_VERSION = "0.13.2";
 
 /** @type {`${number}.${number}.${number}`} */
 export const APP_VERSION = "0.0.0";
