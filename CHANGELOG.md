@@ -10,6 +10,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Code block view/select with line numbers: horizontal scrollbar sits flush with the block (padding moved from `pre` onto `code` / gutter rows so the scrollport fills the block). Edit mode was already correct via the inset textarea.
 - Anchored popovers hide while their target is fully off-screen (instead of clamping to a viewport edge) and show again when the anchor returns.
 - Tutorial navigation (`next` / `back` / `goTo` / `start`) uses one showable-step resolver (`when` + resolvable target). Back over a missing target no longer ends the tour; `goTo(i)` jumps to the nearest showable step instead of walking a one-way ray that could stop the tour.
 - Dropdown / combobox / also-see auto grid stores column count on `data-grid-cols` (not an inline custom property), so the also-see narrow-viewport single-column rule can apply. Grid keyboard and selection joins follow visual columns across full-span group rows.
