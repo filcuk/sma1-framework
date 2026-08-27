@@ -553,3 +553,17 @@ li:not(:first-child) > .dropdown-menu-group {
   gap: 0.5rem;
 }
 
+/* `.btn` centers content; labeled dropdown triggers need start-aligned text
+   with the chevron pinned to the trailing edge (visible when width is locked
+   or stretched beyond the current label). Compact non-`.btn` triggers
+   (e.g. tabular type) keep their own alignment. */
+.btn.dropdown-trigger {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.btn.dropdown-trigger .combo-btn-chevron,
+.btn.dropdown-trigger .color-picker-format-chevron {
+  margin-left: auto;
+}
+
