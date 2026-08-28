@@ -3301,7 +3301,7 @@ initExpandableSurfaces(document);
 
 **Hover surface actions** — set `data-code-surface-actions` to `copy`, `maximize`, or both (`none` / empty / `false` hides the strip). Legacy `data-code-copy="false"` omits surface copy. When `data-expandable-surface` is present and surface actions are omitted, defaults include `copy,maximize`.
 
-Line numbers require highlighting to be on. Copy/paste use [`app/utils/clipboard.js`](app/utils/clipboard.js) (Clipboard API with insecure-context fallbacks).
+Line numbers require highlighting to be on. In `select` and `edit` modes, hovering a code line or its gutter number applies the standard accent-tinted hover background; clicking a gutter number selects that line's text. Triple-clicking code text selects the whole block. Copy/paste use [`app/utils/clipboard.js`](app/utils/clipboard.js) (Clipboard API with insecure-context fallbacks).
 
 **Interaction modes** — set `data-code-mode` on `.code-block`:
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.2",
-  "generatedAt": "2026-08-28T18:00:07.485Z",
+  "generatedAt": "2026-08-28T18:06:31.121Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -48,7 +48,7 @@
       "sha256": "ea5960e31a19da5a29c99a93d8d8659e4d1b6f41dbc1b44159ccdb19b02c56fe"
     },
     "app/components/code-block.js": {
-      "sha256": "a74b4a9fd51e8fc811c2d4a1b8b31abf87bb81d7521bd48901e23a453c952864"
+      "sha256": "466ce21accaa1cb3f91e2c0a6cd6a764e7c8d15281e05a257634404112c2b571"
     },
     "app/components/color-input.js": {
       "sha256": "3ac48a3018c93a7d069967caee75d1fc5186f839e42dd14d22be05c582ca6e92"
@@ -201,7 +201,7 @@
       "sha256": "0ad1c22cc4bf19cc69e66a557f53f4fd2e53f9daaef7903c536f02e38d3e8d2b"
     },
     "app/css/code-block.css": {
-      "sha256": "29a7ff47260c53323d808268f479a629696df3da53ad34bc4d013e83c124e022"
+      "sha256": "99a295b16b17aa16c00866c37381ad38f8303e3279f561558d36b47382a3b889"
     },
     "app/css/controls-badges.css": {
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"

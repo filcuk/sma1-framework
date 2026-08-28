@@ -13,6 +13,11 @@
   --code-pad-inline-end: 1.5rem;
   --code-gutter-width: 3.8em;
   --code-gutter-band: 3em;
+  --code-line-hover-bg: color-mix(
+    in srgb,
+    var(--accent) var(--control-hover-mix),
+    var(--code-bg)
+  );
 
   max-width: 40rem;
   border: 1px solid var(--border);
@@ -145,6 +150,32 @@
 
 .code-block .code-block-body pre[class*="language-"].line-numbers::before {
   width: var(--code-gutter-band);
+}
+
+.code-block .code-block-body pre[data-code-hover-line],
+.code-block .code-block-body pre[data-code-hover-line] > code {
+  background-image: linear-gradient(
+    var(--code-line-hover-bg),
+    var(--code-line-hover-bg)
+  );
+  background-repeat: no-repeat;
+  background-size: 100% var(--code-hover-line-height);
+  background-position: 0 var(--code-hover-line-top);
+}
+
+.code-block .code-block-body pre.line-numbers > .line-numbers-rows,
+.code-block .code-block-body pre.line-numbers > .line-numbers-rows > span {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.code-block .code-block-body pre.line-numbers > .line-numbers-rows > span:hover,
+.code-block
+  .code-block-body
+  pre.line-numbers
+  > .line-numbers-rows
+  > span.is-hovered {
+  background: var(--code-line-hover-bg);
 }
 
 .code-block--view pre,
