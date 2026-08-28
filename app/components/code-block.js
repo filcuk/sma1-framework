@@ -61,6 +61,20 @@ const DEFAULT_TOOLBAR_ALIGN = {
   "line-numbers": "right",
   maximize: "right",
 };
+const CODE_BLOCK_SELECTION_SYNCS = new Set();
+let codeBlockSelectionListenerInstalled = false;
+
+function syncCodeBlockSelections() {
+  CODE_BLOCK_SELECTION_SYNCS.forEach((sync) => sync());
+}
+
+function registerCodeBlockSelectionSync(sync) {
+  if (!codeBlockSelectionListenerInstalled) {
+    document.addEventListener("selectionchange", syncCodeBlockSelections);
+    codeBlockSelectionListenerInstalled = true;
+  }
+  CODE_BLOCK_SELECTION_SYNCS.add(sync);
+}
 
 /**
  * @param {string | undefined} raw
@@ -379,6 +393,9 @@ export function initCodeBlock(container, options = {}) {
   /** @type {{ pointerId: number, startLine: number, moved: boolean } | null} */
   let gutterDrag = null;
   let suppressGutterClick = false;
+  let selectedLineStart = -1;
+  let selectedLineEnd = -1;
+  let selectionSyncFrame = 0;
 
   function currentSource() {
     return mode === "edit" && editorEl ? editorEl.value : source;
@@ -420,6 +437,10 @@ export function initCodeBlock(container, options = {}) {
 
     editorEl.addEventListener("scroll", () => {
       syncScrollPosition();
+    });
+
+    editorEl.addEventListener("select", () => {
+      syncSelectedLinesFromTextSelection();
     });
 
     editorEl.addEventListener("keydown", (event) => {
@@ -505,12 +526,12 @@ export function initCodeBlock(container, options = {}) {
 
   function clearHoveredLine() {
     hoveredLine = -1;
-    pre.removeAttribute("data-code-hover-line");
-    code.removeAttribute("data-code-hover-line");
-    pre.style.removeProperty("--code-hover-line-top");
-    pre.style.removeProperty("--code-hover-line-height");
-    code.style.removeProperty("--code-hover-line-top");
-    code.style.removeProperty("--code-hover-line-height");
+    if (pre.hasAttribute("data-code-hover-line")) {
+      pre.removeAttribute("data-code-hover-line");
+      code.removeAttribute("data-code-hover-line");
+      pre.style.setProperty("--code-line-hover-color", "transparent");
+      code.style.setProperty("--code-line-hover-color", "transparent");
+    }
     pre.querySelectorAll(".line-numbers-rows > .is-hovered").forEach((row) => {
       row.classList.remove("is-hovered");
     });
@@ -523,6 +544,8 @@ export function initCodeBlock(container, options = {}) {
     const lineHeightValue = `${lineHeight}px`;
     pre.dataset.codeHoverLine = String(index);
     code.dataset.codeHoverLine = String(index);
+    pre.style.removeProperty("--code-line-hover-color");
+    code.style.removeProperty("--code-line-hover-color");
     pre.style.setProperty("--code-hover-line-top", lineTop);
     pre.style.setProperty("--code-hover-line-height", lineHeightValue);
     code.style.setProperty("--code-hover-line-top", lineTop);
@@ -533,6 +556,34 @@ export function initCodeBlock(container, options = {}) {
     pre
       .querySelector(`.line-numbers-rows > [data-code-line="${index}"]`)
       ?.classList.add("is-hovered");
+  }
+
+  function clearSelectedLines() {
+    if (selectionSyncFrame) {
+      cancelAnimationFrame(selectionSyncFrame);
+      selectionSyncFrame = 0;
+    }
+    selectedLineStart = -1;
+    selectedLineEnd = -1;
+    const rows = pre.querySelector(".line-numbers-rows");
+    rows?.classList.remove("is-selected");
+    rows?.querySelectorAll(".is-selected").forEach((row) => {
+      row.classList.remove("is-selected");
+    });
+  }
+
+  function setSelectedLines(firstIndex, lastIndex) {
+    selectedLineStart = Math.min(firstIndex, lastIndex);
+    selectedLineEnd = Math.max(firstIndex, lastIndex);
+    const rows = pre.querySelector(".line-numbers-rows");
+    rows?.classList.add("is-selected");
+    rows?.querySelectorAll("[data-code-line]").forEach((row) => {
+      const index = Number(row.dataset.codeLine);
+      row.classList.toggle(
+        "is-selected",
+        index >= selectedLineStart && index <= selectedLineEnd
+      );
+    });
   }
 
   function codeScrollElement() {
@@ -636,6 +687,7 @@ export function initCodeBlock(container, options = {}) {
     if (mode === "edit" && editorEl) {
       editorEl.focus();
       editorEl.setSelectionRange(start, end);
+      setSelectedLines(firstLine, lastLine);
       return;
     }
 
@@ -649,10 +701,78 @@ export function initCodeBlock(container, options = {}) {
     range.setEnd(endPoint[0], endPoint[1]);
     selection.removeAllRanges();
     selection.addRange(range);
+    setSelectedLines(firstLine, lastLine);
   }
 
   function selectCodeLine(index) {
     selectCodeLines(index, index);
+  }
+
+  function lineIndexAtOffset(text, offset) {
+    let line = 0;
+    for (let i = 0; i < offset; i += 1) {
+      if (text[i] === "\n") line += 1;
+    }
+    return line;
+  }
+
+  function textOffsetAtPoint(root, node, offset) {
+    if (node !== root && !root.contains(node)) return null;
+    const range = document.createRange();
+    range.selectNodeContents(root);
+    try {
+      range.setEnd(node, offset);
+    } catch {
+      return null;
+    }
+    return range.toString().length;
+  }
+
+  function syncSelectedLinesFromTextSelection() {
+    if (mode === "view") return;
+    const text = currentSource();
+    let start = null;
+    let end = null;
+
+    if (mode === "edit" && editorEl) {
+      if (document.activeElement !== editorEl) {
+        clearSelectedLines();
+        return;
+      }
+      start = editorEl.selectionStart;
+      end = editorEl.selectionEnd;
+    } else {
+      const selection = window.getSelection();
+      const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+      if (
+        !range ||
+        (!code.contains(range.startContainer) &&
+          range.startContainer !== code) ||
+        (!code.contains(range.endContainer) && range.endContainer !== code)
+      ) {
+        clearSelectedLines();
+        return;
+      }
+      start = textOffsetAtPoint(code, range.startContainer, range.startOffset);
+      end = textOffsetAtPoint(code, range.endContainer, range.endOffset);
+    }
+
+    if (start === null || end === null) {
+      clearSelectedLines();
+      return;
+    }
+    if (start === end) {
+      if (mode === "edit") {
+        const caretLine = lineIndexAtOffset(text, start);
+        setSelectedLines(caretLine, caretLine);
+      } else {
+        clearSelectedLines();
+      }
+      return;
+    }
+    const firstLine = lineIndexAtOffset(text, start);
+    const lastLine = lineIndexAtOffset(text, Math.max(start, end - 1));
+    setSelectedLines(firstLine, lastLine);
   }
 
   function lineNumberTarget(event) {
@@ -663,7 +783,17 @@ export function initCodeBlock(container, options = {}) {
 
   function onGutterPointerDown(event) {
     const row = lineNumberTarget(event);
-    if (!row || mode === "view" || event.button !== 0) return;
+    if (!row) {
+      if (
+        mode !== "view" &&
+        event.target instanceof Node &&
+        (pre.contains(event.target) || editorEl?.contains(event.target))
+      ) {
+        clearSelectedLines();
+      }
+      return;
+    }
+    if (mode === "view" || event.button !== 0) return;
     const line = Number(row.dataset.codeLine);
     if (!Number.isInteger(line)) return;
     gutterDrag = {
@@ -683,6 +813,18 @@ export function initCodeBlock(container, options = {}) {
     if (moved) suppressGutterClick = true;
     if (container.hasPointerCapture?.(event.pointerId)) {
       container.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  function onCodePointerUp(event) {
+    const wasGutterDrag = gutterDrag?.pointerId === event.pointerId;
+    endGutterDrag(event);
+    if (!wasGutterDrag) {
+      if (selectionSyncFrame) cancelAnimationFrame(selectionSyncFrame);
+      selectionSyncFrame = requestAnimationFrame(() => {
+        selectionSyncFrame = 0;
+        syncSelectedLinesFromTextSelection();
+      });
     }
   }
 
@@ -712,6 +854,7 @@ export function initCodeBlock(container, options = {}) {
 
   function refreshDisplay() {
     clearHoveredLine();
+    clearSelectedLines();
     const scrollTop = editorEl?.scrollTop ?? 0;
     const scrollLeft = editorEl?.scrollLeft ?? 0;
 
@@ -765,6 +908,7 @@ export function initCodeBlock(container, options = {}) {
     if (mode === "edit") {
       if (editorEl?.contains(event.target)) {
         editorEl.select();
+        setSelectedLines(0, countDisplayLines(currentSource()) - 1);
       }
       return;
     }
@@ -776,6 +920,7 @@ export function initCodeBlock(container, options = {}) {
     range.selectNodeContents(code);
     selection.removeAllRanges();
     selection.addRange(range);
+    setSelectedLines(0, countDisplayLines(currentSource()) - 1);
   }
 
   /**
@@ -1056,12 +1201,14 @@ export function initCodeBlock(container, options = {}) {
   container.addEventListener("pointerdown", onGutterPointerDown);
   container.addEventListener("click", onCodeClick);
   container.addEventListener("keydown", onCodeKeydown);
+  container.addEventListener("keyup", syncSelectedLinesFromTextSelection);
   container.addEventListener("pointermove", onPointerMove);
-  container.addEventListener("pointerup", endGutterDrag);
+  container.addEventListener("pointerup", onCodePointerUp);
   container.addEventListener("pointercancel", endGutterDrag);
   container.addEventListener("pointerleave", () => {
     if (!gutterDrag) clearHoveredLine();
   });
+  registerCodeBlockSelectionSync(syncSelectedLinesFromTextSelection);
 
   return {
     setLineNumbers(enabled) {
