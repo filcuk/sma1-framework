@@ -699,6 +699,8 @@ export function menuItemLabel(item) {
  *   layout; a number enables auto grid and overrides `data-dropdown-grid*`.
  *   Pass `false` to force a single-column list.
  * @param {number} [options.gridCols] Column count in grid mode (overrides markup).
+ * @param {boolean} [options.registerPopup=true] Register this menu in the
+ *   shared popup registry. Set false for menus nested inside another popup.
  */
 export function initPopupMenu({
   containerEl,
@@ -711,6 +713,7 @@ export function initPopupMenu({
   fixedAlign = "start",
   gridMin,
   gridCols,
+  registerPopup = true,
 }) {
   if (!containerEl || !menuEl) return null;
 
@@ -814,7 +817,7 @@ export function initPopupMenu({
   function closeMenu({ restoreFocus = true } = {}) {
     if (!isOpen) return;
     isOpen = false;
-    unregisterOpenPopup(closeMenu);
+    if (registerPopup) unregisterOpenPopup(closeMenu);
     setContainerOpen(false);
     setHidden(menuEl, true);
     clearFixedPosition();
@@ -832,7 +835,7 @@ export function initPopupMenu({
 
   function openMenu() {
     isOpen = true;
-    registerOpenPopup(closeMenu);
+    if (registerPopup) registerOpenPopup(closeMenu);
     setContainerOpen(true);
     setHidden(menuEl, false);
     syncMenuGrid();
@@ -1010,7 +1013,7 @@ export function initPopupMenu({
       return syncMenuGrid();
     },
     destroy() {
-      unregisterOpenPopup(closeMenu);
+      if (registerPopup) unregisterOpenPopup(closeMenu);
       setContainerOpen(false);
       toggleEl?.removeEventListener("click", onToggleClick);
       menuEl.removeEventListener("click", onMenuClick);

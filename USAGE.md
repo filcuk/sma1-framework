@@ -446,7 +446,7 @@ Component CSS lives under `app/css/` (indexed by `css/framework.css`, linked via
 
 [`app/utils/document-listeners.js`](app/utils/document-listeners.js) owns the single `document` click and Escape listeners (`onDocumentClickOutside`, `onDocumentEscape`) plus a registry that keeps only one anchored popup open. Dropdown and combo menus, combobox lists, and the date, time, colour set, and colour picker popups all take part: opening any of them closes the previous one.
 
-A custom popup joins in by calling `registerOpenPopup(close)` when it opens and `unregisterOpenPopup(close)` when it closes (and in `destroy()`). Peers are closed as `close({ restoreFocus: false })`. Wrap opens in `openPopupGroup(() => …)` when two popups belong to one control and should stay open together — colour input with `data-color-input-open="both"` does this for its set and picker.
+A custom popup joins in by calling `registerOpenPopup(close)` when it opens and `unregisterOpenPopup(close)` when it closes (and in `destroy()`). Peers are closed as `close({ restoreFocus: false })`. Wrap opens in `openPopupGroup(() => …)` when two popups belong to one control and should stay open together — colour input with `data-color-input-open="both"` does this for its set and picker. A menu nested inside another popup can pass `registerPopup: false` to `initPopupMenu()` so it does not close its parent.
 
 ---
 
