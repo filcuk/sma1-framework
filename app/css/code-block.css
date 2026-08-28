@@ -18,6 +18,7 @@
     var(--accent) var(--control-hover-mix),
     var(--code-bg)
   );
+  --code-selection-bg: color-mix(in srgb, var(--accent) 28%, transparent);
 
   max-width: 40rem;
   border: 1px solid var(--border);
@@ -178,6 +179,15 @@
   background: var(--code-line-hover-bg);
 }
 
+/* Apply the same selection treatment to rendered Prism tokens and editor text. */
+.code-block:not(.code-block--view) .code-block-body pre::selection,
+.code-block:not(.code-block--view) .code-block-body pre code::selection,
+.code-block:not(.code-block--view) .code-block-body pre code *::selection {
+  background-color: var(--code-selection-bg);
+  color: inherit;
+  text-shadow: none;
+}
+
 .code-block--view pre,
 .code-block--view pre > code {
   user-select: none;
@@ -225,7 +235,7 @@
 }
 
 .code-block-editor::selection {
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  background-color: var(--code-selection-bg);
   color: transparent;
   -webkit-text-fill-color: transparent;
 }
