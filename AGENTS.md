@@ -1,6 +1,10 @@
 # AGENTS.md
 
-Rules for AI agents working in the SMA1 Framework repository.
+Rules for AI agents working in the SMA1 Framework repository and its app forks.
+
+## Framework ownership boundary
+
+The always-applied [framework ownership rule](.cursor/rules/framework-ownership.mdc) defines which files app agents must treat as read-only. Follow it before editing an app fork.
 
 ## Lifecycle skills
 
