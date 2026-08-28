@@ -440,7 +440,7 @@ export function initCodeBlock(container, options = {}) {
       code.scrollLeft = editorEl.scrollLeft;
       pre.scrollLeft = 0;
     } else {
-      pre.scrollLeft = editorEl.scrollLeft;
+      code.scrollLeft = editorEl.scrollLeft;
     }
   }
 
