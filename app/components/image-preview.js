@@ -10,6 +10,7 @@
  *     data-image-preview-download-name="preview.svg"
  *     data-image-preview-dimensions
  *     data-image-preview-file-size
+ *     data-image-preview-meta-extra="Scale 4×"
  *     data-expandable-surface-label="Preview">
  *     <p class="image-preview__empty">No image</p>
  *   </div>
@@ -24,6 +25,7 @@
  * data-image-preview-frames — for SMIL multi-frame SVG, show `frame K/N` while animating
  * data-image-preview-duration — for SMIL SVG, show total loop duration (e.g. `2.7 s`)
  * data-image-preview-meta — when meta content is enabled: `hover` (default), `always`, or `never`
+ * data-image-preview-meta-extra — append app-specific text to the meta strip
  *
  * Maximise requires `initExpandableSurfaces()` on the page (same as code-block).
  * Content is set via the instance API (`setSvg`, `setSrc`, `setBlob`, `clear`).
@@ -253,6 +255,14 @@ function resolveMetaVisibility(value) {
 }
 
 /**
+ * @param {unknown} value
+ * @returns {string}
+ */
+function resolveMetaExtra(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+/**
  * Map image-preview maximise options onto expandable-surface data attributes.
  * Call `initExpandableSurfaces()` after init (or on the page) to activate.
  *
@@ -353,12 +363,17 @@ export function initImagePreview(el, options = {}) {
     typeof options.duration === "boolean"
       ? options.duration
       : el.hasAttribute("data-image-preview-duration");
-  const hasMetaContent = showDimensions || showFileSize || showFrames || showDuration;
-  const metaVisibility = hasMetaContent
-    ? resolveMetaVisibility(
-        typeof options.meta === "string" ? options.meta : el.dataset.imagePreviewMeta
-      )
-    : "never";
+  const fixedMetaContent = showDimensions || showFileSize || showFrames || showDuration;
+  const configuredMetaVisibility = resolveMetaVisibility(
+    typeof options.meta === "string" ? options.meta : el.dataset.imagePreviewMeta
+  );
+  let metaExtra = resolveMetaExtra(
+    typeof options.metaExtra === "string"
+      ? options.metaExtra
+      : el.dataset.imagePreviewMetaExtra
+  );
+  let hasMetaContent = fixedMetaContent || metaExtra !== "";
+  let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
 
   if (showDownload) el.setAttribute("data-image-preview-download", "");
   else el.removeAttribute("data-image-preview-download");
@@ -370,6 +385,9 @@ export function initImagePreview(el, options = {}) {
   else el.removeAttribute("data-image-preview-frames");
   if (showDuration) el.setAttribute("data-image-preview-duration", "");
   else el.removeAttribute("data-image-preview-duration");
+
+  if (metaExtra) el.dataset.imagePreviewMetaExtra = metaExtra;
+  else delete el.dataset.imagePreviewMetaExtra;
 
   if (hasMetaContent) {
     el.dataset.imagePreviewMeta = metaVisibility;
@@ -441,7 +459,10 @@ export function initImagePreview(el, options = {}) {
   }
 
   function ensureMetaEl() {
-    if (!hasMetaContent || metaVisibility === "never") return null;
+    if (!hasMetaContent || metaVisibility === "never") {
+      if (metaEl) setHidden(metaEl, true);
+      return null;
+    }
     if (metaEl?.isConnected) return metaEl;
     metaEl = el.querySelector(":scope > .image-preview__meta");
     if (!(metaEl instanceof HTMLParagraphElement)) {
@@ -525,6 +546,9 @@ export function initImagePreview(el, options = {}) {
     }
     if (showDuration && animationInfo && typeof animationInfo.durationSec === "number") {
       parts.push(formatDuration(animationInfo.durationSec));
+    }
+    if (metaExtra) {
+      parts.push(metaExtra);
     }
 
     if (parts.length === 0 || contentType === null) {
@@ -791,6 +815,28 @@ export function initImagePreview(el, options = {}) {
 
     clear() {
       clearMedia();
+    },
+
+    /**
+     * Set or clear app-specific text appended to the hover meta strip.
+     * @param {string} text
+     */
+    setMetaExtra(text) {
+      metaExtra = resolveMetaExtra(text);
+      hasMetaContent = fixedMetaContent || metaExtra !== "";
+      metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+      if (metaExtra) {
+        el.dataset.imagePreviewMetaExtra = metaExtra;
+        el.dataset.imagePreviewMeta = metaVisibility;
+      } else {
+        delete el.dataset.imagePreviewMetaExtra;
+        if (fixedMetaContent) {
+          el.dataset.imagePreviewMeta = metaVisibility;
+        } else {
+          delete el.dataset.imagePreviewMeta;
+        }
+      }
+      syncMeta();
     },
 
     destroy() {

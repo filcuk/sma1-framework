@@ -1693,6 +1693,7 @@ Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty plac
   data-image-preview-file-size
   data-image-preview-frames
   data-image-preview-duration
+  data-image-preview-meta-extra="Scale 4×"
   data-image-preview-meta="hover"
   data-expandable-surface
   data-expandable-surface-click
@@ -1706,9 +1707,11 @@ import { initImagePreview, initImagePreviews } from "./components/image-preview.
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
 
 const preview = initImagePreview(document.getElementById("my-preview"));
+preview?.setMetaExtra("Scale 4×");
 preview?.setSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">…</svg>`);
 // preview?.setSrc("app/res/example.png", { alt: "Example" });
 // preview?.setBlob(file, { alt: file.name });
+// preview?.setMetaExtra(`Scale ${scale}×`); // update app-specific text
 // preview?.clear();
 
 initExpandableSurfaces(document); // required when maximise attrs are used
@@ -1721,7 +1724,7 @@ initImagePreviews(document); // wire every `.image-preview`
 
 `setSvg()` sanitizes markup before injection (strips scripts, event handlers, and other active content; keeps SMIL `animate*` / `set` when otherwise clean) and returns `false` when nothing safe remains.
 
-`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`.
+`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` to `initImagePreview()` to append app-specific text, such as a scale; `setMetaExtra(text)` updates or clears it at runtime.
 
 Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
