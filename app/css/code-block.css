@@ -1,3 +1,9 @@
+@property --code-line-hover-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
 .code-block {
   /* Shared metrics: pre + overlay textarea must use these identically */
   --code-font-family: var(--mono);
@@ -13,6 +19,14 @@
   --code-pad-inline-end: 1.5rem;
   --code-gutter-width: 3.8em;
   --code-gutter-band: 3em;
+  --code-line-hover-bg: color-mix(
+    in srgb,
+    var(--accent) var(--control-hover-mix),
+    var(--code-bg)
+  );
+  --code-hover-line-top: 0px;
+  --code-hover-line-height: 0px;
+  --code-selection-bg: color-mix(in srgb, var(--accent) 28%, transparent);
 
   max-width: 40rem;
   border: 1px solid var(--border);
@@ -147,6 +161,59 @@
   width: var(--code-gutter-band);
 }
 
+.code-block .code-block-body pre,
+.code-block .code-block-body pre > code {
+  background-image: linear-gradient(
+    var(--code-line-hover-color),
+    var(--code-line-hover-color)
+  );
+  background-repeat: no-repeat;
+  background-size: 100% var(--code-hover-line-height);
+  background-position: 0 var(--code-hover-line-top);
+  transition: --code-line-hover-color var(--control-hover-ms) ease-out;
+}
+
+.code-block .code-block-body pre[data-code-hover-line],
+.code-block .code-block-body pre[data-code-hover-line] > code {
+  --code-line-hover-color: var(--code-line-hover-bg);
+  transition-duration: 0s;
+}
+
+.code-block .code-block-body pre.line-numbers > .line-numbers-rows,
+.code-block .code-block-body pre.line-numbers > .line-numbers-rows > span {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: background-color var(--control-hover-ms) ease-out,
+    box-shadow var(--control-hover-ms) ease-out;
+}
+
+.code-block .code-block-body pre.line-numbers > .line-numbers-rows > span:hover,
+.code-block
+  .code-block-body
+  pre.line-numbers
+  > .line-numbers-rows
+  > span.is-hovered {
+  background: var(--code-line-hover-bg);
+  transition-duration: 0s;
+}
+
+.code-block
+  .code-block-body
+  pre.line-numbers
+  > .line-numbers-rows
+  > span.is-selected {
+  box-shadow: inset -1px 0 var(--accent);
+}
+
+/* Apply the same selection treatment to rendered Prism tokens and editor text. */
+.code-block:not(.code-block--view) .code-block-body pre::selection,
+.code-block:not(.code-block--view) .code-block-body pre code::selection,
+.code-block:not(.code-block--view) .code-block-body pre code *::selection {
+  background-color: var(--code-selection-bg);
+  color: inherit;
+  text-shadow: none;
+}
+
 .code-block--view pre,
 .code-block--view pre > code {
   user-select: none;
@@ -194,7 +261,7 @@
 }
 
 .code-block-editor::selection {
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  background-color: var(--code-selection-bg);
   color: transparent;
   -webkit-text-fill-color: transparent;
 }

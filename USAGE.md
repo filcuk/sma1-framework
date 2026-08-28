@@ -47,6 +47,7 @@ initShell({
   alsoSeeTopics: ["*"], // remote filter: ["*"]=all; ["*","-Topic"]=all except; ["A",""]=whitelist
   alsoSeeIncludeLocal: false, // true = include local alsoSee in full (alone or merged with remote)
   pageNav: { headingSelector: "main :is(h2, h3)[id]" },
+  // pageNav: false, // disable page navigation
   // headingLinks: false, // disable copy-link icons (or data-no-heading-links on <html>)
 });
 ```
@@ -446,7 +447,7 @@ Component CSS lives under `app/css/` (indexed by `css/framework.css`, linked via
 
 [`app/utils/document-listeners.js`](app/utils/document-listeners.js) owns the single `document` click and Escape listeners (`onDocumentClickOutside`, `onDocumentEscape`) plus a registry that keeps only one anchored popup open. Dropdown and combo menus, combobox lists, and the date, time, colour set, and colour picker popups all take part: opening any of them closes the previous one.
 
-A custom popup joins in by calling `registerOpenPopup(close)` when it opens and `unregisterOpenPopup(close)` when it closes (and in `destroy()`). Peers are closed as `close({ restoreFocus: false })`. Wrap opens in `openPopupGroup(() => …)` when two popups belong to one control and should stay open together — colour input with `data-color-input-open="both"` does this for its set and picker.
+A custom popup joins in by calling `registerOpenPopup(close)` when it opens and `unregisterOpenPopup(close)` when it closes (and in `destroy()`). Peers are closed as `close({ restoreFocus: false })`. Wrap opens in `openPopupGroup(() => …)` when two popups belong to one control and should stay open together — colour input with `data-color-input-open="both"` does this for its set and picker. A menu nested inside another popup can pass `registerPopup: false` to `initPopupMenu()` so it does not close its parent.
 
 ---
 
@@ -1692,6 +1693,7 @@ Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty plac
   data-image-preview-file-size
   data-image-preview-frames
   data-image-preview-duration
+  data-image-preview-meta-extra="Scale 4×"
   data-image-preview-meta="hover"
   data-expandable-surface
   data-expandable-surface-click
@@ -1705,9 +1707,11 @@ import { initImagePreview, initImagePreviews } from "./components/image-preview.
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
 
 const preview = initImagePreview(document.getElementById("my-preview"));
+preview?.setMetaExtra("Scale 4×");
 preview?.setSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">…</svg>`);
 // preview?.setSrc("app/res/example.png", { alt: "Example" });
 // preview?.setBlob(file, { alt: file.name });
+// preview?.setMetaExtra(`Scale ${scale}×`); // update app-specific text
 // preview?.clear();
 
 initExpandableSurfaces(document); // required when maximise attrs are used
@@ -1720,7 +1724,7 @@ initImagePreviews(document); // wire every `.image-preview`
 
 `setSvg()` sanitizes markup before injection (strips scripts, event handlers, and other active content; keeps SMIL `animate*` / `set` when otherwise clean) and returns `false` when nothing safe remains.
 
-`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`.
+`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` to `initImagePreview()` to append app-specific text, such as a scale; `setMetaExtra(text)` updates or clears it at runtime.
 
 Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
@@ -3029,7 +3033,7 @@ Icons used: `plus`, `delete` (reset), `remove` (row/column), `type-text`, `type-
 
 ### Page navigation
 
-Injected by `initShell()` via [`app/shell/render-shell.js`](app/shell/render-shell.js). Collects `main :is(h2, h3)[id]` headings automatically and shows plain title links (tier links match `.segment-title` weight; nested section links match `.section-title`). Give each heading a unique `id` and use `h2.segment-title` / `h3.section-title` (`scroll-margin-top` is included).
+Injected by `initShell()` via [`app/shell/render-shell.js`](app/shell/render-shell.js). Collects `main :is(h2, h3)[id]` headings automatically and shows plain title links (tier links match `.segment-title` weight; nested section links match `.section-title`). Give each heading a unique `id` and use `h2.segment-title` / `h3.section-title` (`scroll-margin-top` is included). Pass `pageNav: false` to `initShell()` to disable page navigation, including its injected markup.
 
 ```javascript
 import { initShell } from "./shell/shell.js";
@@ -3297,7 +3301,7 @@ initExpandableSurfaces(document);
 
 **Hover surface actions** — set `data-code-surface-actions` to `copy`, `maximize`, or both (`none` / empty / `false` hides the strip). Legacy `data-code-copy="false"` omits surface copy. When `data-expandable-surface` is present and surface actions are omitted, defaults include `copy,maximize`.
 
-Line numbers require highlighting to be on. Copy/paste use [`app/utils/clipboard.js`](app/utils/clipboard.js) (Clipboard API with insecure-context fallbacks).
+Line numbers require highlighting to be on. In `select` and `edit` modes, hovering a code line or its gutter number applies the standard accent-tinted hover background; clicking a gutter number selects that line's text. Triple-clicking code text selects the whole block. Copy/paste use [`app/utils/clipboard.js`](app/utils/clipboard.js) (Clipboard API with insecure-context fallbacks).
 
 **Interaction modes** — set `data-code-mode` on `.code-block`:
 

@@ -10,6 +10,7 @@
  *     data-image-preview-download-name="preview.svg"
  *     data-image-preview-dimensions
  *     data-image-preview-file-size
+ *     data-image-preview-meta-extra="Scale 4×"
  *     data-expandable-surface-label="Preview">
  *     <p class="image-preview__empty">No image</p>
  *   </div>
@@ -24,6 +25,7 @@
  * data-image-preview-frames — for SMIL multi-frame SVG, show `frame K/N` while animating
  * data-image-preview-duration — for SMIL SVG, show total loop duration (e.g. `2.7 s`)
  * data-image-preview-meta — when meta content is enabled: `hover` (default), `always`, or `never`
+ * data-image-preview-meta-extra — append app-specific text to the meta strip
  *
  * Maximise requires `initExpandableSurfaces()` on the page (same as code-block).
  * Content is set via the instance API (`setSvg`, `setSrc`, `setBlob`, `clear`).
@@ -36,7 +38,7 @@ import { createIcon } from "../utils/icons.js";
 import { sanitizeSvgMarkup } from "../utils/sanitize-svg.js";
 import { downloadFile } from "./file-download.js";
 
-const SVG_PARSER = new DOMParser();
+const SVG_PARSER = typeof DOMParser === "undefined" ? null : new DOMParser();
 
 /**
  * @param {HTMLElement} el
@@ -82,6 +84,7 @@ function hasMediaChild(el) {
  * @returns {SVGSVGElement | null}
  */
 function parseSvgMarkup(markup) {
+  if (!SVG_PARSER) return null;
   const doc = SVG_PARSER.parseFromString(String(markup ?? ""), "image/svg+xml");
   if (doc.querySelector("parsererror")) return null;
   const svg = doc.documentElement;
@@ -102,18 +105,55 @@ function formatFileSize(bytes) {
 }
 
 /**
+ * @param {string | null} value
+ * @returns {number | null}
+ */
+function parseSvgLength(value) {
+  const match = String(value ?? "")
+    .trim()
+    .match(/^([+]?(?:\d+\.?\d*|\.\d+))\s*(px|pt|pc|in|cm|mm|q)?$/i);
+  if (!match) return null;
+
+  const amount = Number(match[1]);
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  const units = {
+    px: 1,
+    pt: 96 / 72,
+    pc: 16,
+    in: 96,
+    cm: 96 / 2.54,
+    mm: 96 / 25.4,
+    q: 96 / 101.6,
+  };
+  return amount * (units[match[2]?.toLowerCase() ?? "px"] ?? 1);
+}
+
+/**
+ * Read the rendered SVG dimensions, using explicit width/height before the
+ * viewBox coordinate space. A viewBox is only a fallback when dimensions are
+ * omitted; it does not override the SVG's requested pixel size.
+ *
  * @param {SVGSVGElement} svg
  * @returns {{ width: number, height: number } | null}
  */
-function readSvgDimensions(svg) {
+export function readSvgDimensions(svg) {
+  const width = parseSvgLength(svg.getAttribute("width"));
+  const height = parseSvgLength(svg.getAttribute("height"));
   const vb = svg.viewBox?.baseVal;
-  if (vb && vb.width > 0 && vb.height > 0) {
-    return { width: vb.width, height: vb.height };
+  const hasViewBox = vb && vb.width > 0 && vb.height > 0;
+
+  if (width !== null && height !== null) {
+    return { width, height };
   }
-  const w = Number.parseFloat(svg.getAttribute("width") ?? "");
-  const h = Number.parseFloat(svg.getAttribute("height") ?? "");
-  if (Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
-    return { width: w, height: h };
+  if (hasViewBox && width !== null) {
+    return { width, height: (width / vb.width) * vb.height };
+  }
+  if (hasViewBox && height !== null) {
+    return { width: (height / vb.height) * vb.width, height };
+  }
+  if (hasViewBox) {
+    return { width: vb.width, height: vb.height };
   }
   return null;
 }
@@ -212,6 +252,14 @@ function resolveMetaVisibility(value) {
     return trimmed;
   }
   return "hover";
+}
+
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
+function resolveMetaExtra(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
 /**
@@ -315,12 +363,17 @@ export function initImagePreview(el, options = {}) {
     typeof options.duration === "boolean"
       ? options.duration
       : el.hasAttribute("data-image-preview-duration");
-  const hasMetaContent = showDimensions || showFileSize || showFrames || showDuration;
-  const metaVisibility = hasMetaContent
-    ? resolveMetaVisibility(
-        typeof options.meta === "string" ? options.meta : el.dataset.imagePreviewMeta
-      )
-    : "never";
+  const fixedMetaContent = showDimensions || showFileSize || showFrames || showDuration;
+  const configuredMetaVisibility = resolveMetaVisibility(
+    typeof options.meta === "string" ? options.meta : el.dataset.imagePreviewMeta
+  );
+  let metaExtra = resolveMetaExtra(
+    typeof options.metaExtra === "string"
+      ? options.metaExtra
+      : el.dataset.imagePreviewMetaExtra
+  );
+  let hasMetaContent = fixedMetaContent || metaExtra !== "";
+  let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
 
   if (showDownload) el.setAttribute("data-image-preview-download", "");
   else el.removeAttribute("data-image-preview-download");
@@ -332,6 +385,9 @@ export function initImagePreview(el, options = {}) {
   else el.removeAttribute("data-image-preview-frames");
   if (showDuration) el.setAttribute("data-image-preview-duration", "");
   else el.removeAttribute("data-image-preview-duration");
+
+  if (metaExtra) el.dataset.imagePreviewMetaExtra = metaExtra;
+  else delete el.dataset.imagePreviewMetaExtra;
 
   if (hasMetaContent) {
     el.dataset.imagePreviewMeta = metaVisibility;
@@ -403,7 +459,10 @@ export function initImagePreview(el, options = {}) {
   }
 
   function ensureMetaEl() {
-    if (!hasMetaContent || metaVisibility === "never") return null;
+    if (!hasMetaContent || metaVisibility === "never") {
+      if (metaEl) setHidden(metaEl, true);
+      return null;
+    }
     if (metaEl?.isConnected) return metaEl;
     metaEl = el.querySelector(":scope > .image-preview__meta");
     if (!(metaEl instanceof HTMLParagraphElement)) {
@@ -487,6 +546,9 @@ export function initImagePreview(el, options = {}) {
     }
     if (showDuration && animationInfo && typeof animationInfo.durationSec === "number") {
       parts.push(formatDuration(animationInfo.durationSec));
+    }
+    if (metaExtra) {
+      parts.push(metaExtra);
     }
 
     if (parts.length === 0 || contentType === null) {
@@ -753,6 +815,28 @@ export function initImagePreview(el, options = {}) {
 
     clear() {
       clearMedia();
+    },
+
+    /**
+     * Set or clear app-specific text appended to the hover meta strip.
+     * @param {string} text
+     */
+    setMetaExtra(text) {
+      metaExtra = resolveMetaExtra(text);
+      hasMetaContent = fixedMetaContent || metaExtra !== "";
+      metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+      if (metaExtra) {
+        el.dataset.imagePreviewMetaExtra = metaExtra;
+        el.dataset.imagePreviewMeta = metaVisibility;
+      } else {
+        delete el.dataset.imagePreviewMetaExtra;
+        if (fixedMetaContent) {
+          el.dataset.imagePreviewMeta = metaVisibility;
+        } else {
+          delete el.dataset.imagePreviewMeta;
+        }
+      }
+      syncMeta();
     },
 
     destroy() {

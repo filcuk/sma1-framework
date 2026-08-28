@@ -313,6 +313,8 @@ export function mountColorPickerPanel(
     itemSelector: ".dropdown-menu-item",
     fixed: true,
     fixedAlign: "end",
+    // This menu belongs to the picker popup and must not close its parent.
+    registerPopup: false,
     onSelect: ({ value }) => {
       onFormatChange(normalizeFormat(value));
     },
@@ -961,6 +963,9 @@ export function mountColorPickerPanel(
       if (next.setsOpen !== undefined) setsOpen = Boolean(next.setsOpen);
       if (formatChanged) spectrumMode = "";
       paint({ rebuildFields: formatChanged });
+    },
+    closeMenu(options) {
+      formatMenuApi?.closeMenu(options);
     },
     destroy() {
       formatMenuApi?.destroy();

@@ -826,6 +826,9 @@ export function mountAlsoSee(root, sections) {
 
 /**
  * Inject shared page chrome: footer (links + theme toggle) and page navigation.
+ *
+ * @param {{ pageNav?: false | import("./page-nav.js").PageNavOptions }} [options]
+ *   Set `pageNav` to `false` to omit page navigation.
  * Skips if `#app-page-footer` already exists.
  */
 export function renderPageShell(options = {}) {
@@ -848,6 +851,7 @@ export function renderPageShell(options = {}) {
     appUrl,
     appVersion,
     frameworkVersion,
+    pageNav,
   } = {
     ...DEFAULTS,
     ...overrides,
@@ -878,6 +882,6 @@ export function renderPageShell(options = {}) {
         <button type="button" class="theme-toggle-btn" data-theme-mode="auto" data-icon="auto-mode" data-icon-class="theme-icon" aria-label="System theme" aria-pressed="false" title="System"></button>
       </div>
     </footer>
-    ${PAGE_NAV_MARKUP}`
+    ${pageNav === false ? "" : PAGE_NAV_MARKUP}`
   );
 }

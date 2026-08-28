@@ -266,8 +266,9 @@ export function initColorPicker(
     if (focus) panelEl.querySelector("select, input, button")?.focus?.();
   }
 
-  function close() {
+  function close({ restoreFocus = false } = {}) {
     if (isEmbedded) return;
+    panelApi?.closeMenu?.({ restoreFocus });
     unregisterOpenPopup(close);
     if (setsOpen) {
       setsOpen = false;

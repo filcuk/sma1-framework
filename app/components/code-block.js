@@ -61,6 +61,20 @@ const DEFAULT_TOOLBAR_ALIGN = {
   "line-numbers": "right",
   maximize: "right",
 };
+const CODE_BLOCK_SELECTION_SYNCS = new Set();
+let codeBlockSelectionListenerInstalled = false;
+
+function syncCodeBlockSelections() {
+  CODE_BLOCK_SELECTION_SYNCS.forEach((sync) => sync());
+}
+
+function registerCodeBlockSelectionSync(sync) {
+  if (!codeBlockSelectionListenerInstalled) {
+    document.addEventListener("selectionchange", syncCodeBlockSelections);
+    codeBlockSelectionListenerInstalled = true;
+  }
+  CODE_BLOCK_SELECTION_SYNCS.add(sync);
+}
 
 /**
  * @param {string | undefined} raw
@@ -161,9 +175,13 @@ function renderLineNumberRows(preEl, lineCount) {
   preEl.querySelectorAll(":scope > .line-numbers-rows").forEach((el) => el.remove());
   const rows = document.createElement("span");
   rows.className = "line-numbers-rows";
-  rows.setAttribute("aria-hidden", "true");
   for (let i = 0; i < lineCount; i += 1) {
-    rows.appendChild(document.createElement("span"));
+    const row = document.createElement("span");
+    row.dataset.codeLine = String(i);
+    row.setAttribute("role", "button");
+    row.setAttribute("tabindex", "0");
+    row.setAttribute("aria-label", `Select line ${i + 1}`);
+    rows.appendChild(row);
   }
   const codeEl = preEl.querySelector(":scope > code");
   if (codeEl) preEl.insertBefore(rows, codeEl);
@@ -371,6 +389,13 @@ export function initCodeBlock(container, options = {}) {
   let surfaceCopyBtn = null;
   /** @type {ReturnType<typeof armPasteCapture> | null} */
   let pasteCapture = null;
+  let hoveredLine = -1;
+  /** @type {{ pointerId: number, startLine: number, moved: boolean } | null} */
+  let gutterDrag = null;
+  let suppressGutterClick = false;
+  let selectedLineStart = -1;
+  let selectedLineEnd = -1;
+  let selectionSyncFrame = 0;
 
   function currentSource() {
     return mode === "edit" && editorEl ? editorEl.value : source;
@@ -414,6 +439,10 @@ export function initCodeBlock(container, options = {}) {
       syncScrollPosition();
     });
 
+    editorEl.addEventListener("select", () => {
+      syncSelectedLinesFromTextSelection();
+    });
+
     editorEl.addEventListener("keydown", (event) => {
       if (event.key === "Tab") {
         event.preventDefault();
@@ -440,7 +469,7 @@ export function initCodeBlock(container, options = {}) {
       code.scrollLeft = editorEl.scrollLeft;
       pre.scrollLeft = 0;
     } else {
-      pre.scrollLeft = editorEl.scrollLeft;
+      code.scrollLeft = editorEl.scrollLeft;
     }
   }
 
@@ -495,7 +524,337 @@ export function initCodeBlock(container, options = {}) {
     renderLineNumberRows(pre, countDisplayLines(source));
   }
 
+  function clearHoveredLine() {
+    hoveredLine = -1;
+    if (pre.hasAttribute("data-code-hover-line")) {
+      pre.removeAttribute("data-code-hover-line");
+      code.removeAttribute("data-code-hover-line");
+      pre.style.setProperty("--code-line-hover-color", "transparent");
+      code.style.setProperty("--code-line-hover-color", "transparent");
+    }
+    pre.querySelectorAll(".line-numbers-rows > .is-hovered").forEach((row) => {
+      row.classList.remove("is-hovered");
+    });
+  }
+
+  function setHoveredLine(index, lineHeight, paddingTop) {
+    if (index === hoveredLine) return;
+    hoveredLine = index;
+    const lineTop = `${paddingTop + index * lineHeight}px`;
+    const lineHeightValue = `${lineHeight}px`;
+    pre.dataset.codeHoverLine = String(index);
+    code.dataset.codeHoverLine = String(index);
+    pre.style.removeProperty("--code-line-hover-color");
+    code.style.removeProperty("--code-line-hover-color");
+    pre.style.setProperty("--code-hover-line-top", lineTop);
+    pre.style.setProperty("--code-hover-line-height", lineHeightValue);
+    code.style.setProperty("--code-hover-line-top", lineTop);
+    code.style.setProperty("--code-hover-line-height", lineHeightValue);
+    pre.querySelectorAll(".line-numbers-rows > .is-hovered").forEach((row) => {
+      row.classList.remove("is-hovered");
+    });
+    pre
+      .querySelector(`.line-numbers-rows > [data-code-line="${index}"]`)
+      ?.classList.add("is-hovered");
+  }
+
+  function clearSelectedLines() {
+    if (selectionSyncFrame) {
+      cancelAnimationFrame(selectionSyncFrame);
+      selectionSyncFrame = 0;
+    }
+    selectedLineStart = -1;
+    selectedLineEnd = -1;
+    const rows = pre.querySelector(".line-numbers-rows");
+    rows?.classList.remove("is-selected");
+    rows?.querySelectorAll(".is-selected").forEach((row) => {
+      row.classList.remove("is-selected");
+    });
+  }
+
+  function setSelectedLines(firstIndex, lastIndex) {
+    selectedLineStart = Math.min(firstIndex, lastIndex);
+    selectedLineEnd = Math.max(firstIndex, lastIndex);
+    const rows = pre.querySelector(".line-numbers-rows");
+    rows?.classList.add("is-selected");
+    rows?.querySelectorAll("[data-code-line]").forEach((row) => {
+      const index = Number(row.dataset.codeLine);
+      row.classList.toggle(
+        "is-selected",
+        index >= selectedLineStart && index <= selectedLineEnd
+      );
+    });
+  }
+
+  function codeScrollElement() {
+    return mode === "edit" && editorEl
+      ? editorEl
+      : pre.classList.contains("line-numbers")
+        ? code
+        : pre;
+  }
+
+  function linePositionAtClientY(clientY, clamp = false) {
+    const scrollEl = codeScrollElement();
+    const style = getComputedStyle(scrollEl);
+    const lineHeight = parseFloat(style.lineHeight);
+    const paddingTop = parseFloat(style.paddingTop) || 0;
+    if (!Number.isFinite(lineHeight) || lineHeight <= 0) return null;
+    const rect = scrollEl.getBoundingClientRect();
+    const lineCount = countDisplayLines(currentSource());
+    let index = Math.floor(
+      (clientY - rect.top + scrollEl.scrollTop - paddingTop) / lineHeight
+    );
+    if (clamp) {
+      index = Math.max(0, Math.min(index, lineCount - 1));
+    }
+    if (index < 0 || index >= lineCount) return null;
+    return { index, lineHeight, paddingTop };
+  }
+
+  function onPointerMove(event) {
+    if (gutterDrag?.pointerId === event.pointerId) {
+      const position = linePositionAtClientY(event.clientY, true);
+      if (!position) return;
+      gutterDrag.moved ||= position.index !== gutterDrag.startLine;
+      selectCodeLines(gutterDrag.startLine, position.index);
+      setHoveredLine(position.index, position.lineHeight, position.paddingTop);
+      return;
+    }
+    if (event.pointerType === "touch") {
+      clearHoveredLine();
+      return;
+    }
+    if (!(event.target instanceof Node)) {
+      clearHoveredLine();
+      return;
+    }
+    const overCode = pre.contains(event.target) || editorEl?.contains(event.target);
+    if (!overCode) {
+      clearHoveredLine();
+      return;
+    }
+
+    const position = linePositionAtClientY(event.clientY);
+    if (!position) {
+      clearHoveredLine();
+      return;
+    }
+    setHoveredLine(
+      position.index,
+      position.lineHeight,
+      position.paddingTop
+    );
+  }
+
+  function textPointAtOffset(root, offset) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let remaining = offset;
+    let lastTextNode = null;
+    while (walker.nextNode()) {
+      const textNode = walker.currentNode;
+      lastTextNode = textNode;
+      if (remaining <= textNode.nodeValue.length) {
+        return [textNode, remaining];
+      }
+      remaining -= textNode.nodeValue.length;
+    }
+    return lastTextNode ? [lastTextNode, lastTextNode.nodeValue.length] : null;
+  }
+
+  function selectCodeLines(firstIndex, lastIndex) {
+    const text = currentSource();
+    const lines = text.split("\n");
+    if (
+      !Number.isInteger(firstIndex) ||
+      !Number.isInteger(lastIndex) ||
+      firstIndex < 0 ||
+      lastIndex < 0 ||
+      firstIndex >= lines.length ||
+      lastIndex >= lines.length
+    ) {
+      return;
+    }
+    const firstLine = Math.min(firstIndex, lastIndex);
+    const lastLine = Math.max(firstIndex, lastIndex);
+    const start = lines
+      .slice(0, firstLine)
+      .reduce((total, line) => total + line.length + 1, 0);
+    const end = start + lines
+      .slice(firstLine, lastLine + 1)
+      .reduce((total, line) => total + line.length, 0) + (lastLine - firstLine);
+
+    if (mode === "edit" && editorEl) {
+      editorEl.focus();
+      editorEl.setSelectionRange(start, end);
+      setSelectedLines(firstLine, lastLine);
+      return;
+    }
+
+    const startPoint = textPointAtOffset(code, start);
+    const endPoint = textPointAtOffset(code, end);
+    if (!startPoint || !endPoint) return;
+    const selection = window.getSelection();
+    if (!selection) return;
+    const range = document.createRange();
+    range.setStart(startPoint[0], startPoint[1]);
+    range.setEnd(endPoint[0], endPoint[1]);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    setSelectedLines(firstLine, lastLine);
+  }
+
+  function selectCodeLine(index) {
+    selectCodeLines(index, index);
+  }
+
+  function lineIndexAtOffset(text, offset) {
+    let line = 0;
+    for (let i = 0; i < offset; i += 1) {
+      if (text[i] === "\n") line += 1;
+    }
+    return line;
+  }
+
+  function textOffsetAtPoint(root, node, offset) {
+    if (node !== root && !root.contains(node)) return null;
+    const range = document.createRange();
+    range.selectNodeContents(root);
+    try {
+      range.setEnd(node, offset);
+    } catch {
+      return null;
+    }
+    return range.toString().length;
+  }
+
+  function syncSelectedLinesFromTextSelection() {
+    if (mode === "view") return;
+    const text = currentSource();
+    let start = null;
+    let end = null;
+
+    if (mode === "edit" && editorEl) {
+      if (document.activeElement !== editorEl) {
+        clearSelectedLines();
+        return;
+      }
+      start = editorEl.selectionStart;
+      end = editorEl.selectionEnd;
+    } else {
+      const selection = window.getSelection();
+      const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+      if (
+        !range ||
+        (!code.contains(range.startContainer) &&
+          range.startContainer !== code) ||
+        (!code.contains(range.endContainer) && range.endContainer !== code)
+      ) {
+        clearSelectedLines();
+        return;
+      }
+      start = textOffsetAtPoint(code, range.startContainer, range.startOffset);
+      end = textOffsetAtPoint(code, range.endContainer, range.endOffset);
+    }
+
+    if (start === null || end === null) {
+      clearSelectedLines();
+      return;
+    }
+    if (start === end) {
+      if (mode === "edit") {
+        const caretLine = lineIndexAtOffset(text, start);
+        setSelectedLines(caretLine, caretLine);
+      } else {
+        clearSelectedLines();
+      }
+      return;
+    }
+    const firstLine = lineIndexAtOffset(text, start);
+    const lastLine = lineIndexAtOffset(text, Math.max(start, end - 1));
+    setSelectedLines(firstLine, lastLine);
+  }
+
+  function lineNumberTarget(event) {
+    if (!(event.target instanceof Element)) return null;
+    const row = event.target.closest(".line-numbers-rows > [data-code-line]");
+    return row && pre.contains(row) ? row : null;
+  }
+
+  function onGutterPointerDown(event) {
+    const row = lineNumberTarget(event);
+    if (!row) {
+      if (
+        mode !== "view" &&
+        event.target instanceof Node &&
+        (pre.contains(event.target) || editorEl?.contains(event.target))
+      ) {
+        clearSelectedLines();
+      }
+      return;
+    }
+    if (mode === "view" || event.button !== 0) return;
+    const line = Number(row.dataset.codeLine);
+    if (!Number.isInteger(line)) return;
+    gutterDrag = {
+      pointerId: event.pointerId,
+      startLine: line,
+      moved: false,
+    };
+    event.preventDefault();
+    container.setPointerCapture?.(event.pointerId);
+    selectCodeLine(line);
+  }
+
+  function endGutterDrag(event) {
+    if (gutterDrag?.pointerId !== event.pointerId) return;
+    const moved = gutterDrag.moved;
+    gutterDrag = null;
+    if (moved) suppressGutterClick = true;
+    if (container.hasPointerCapture?.(event.pointerId)) {
+      container.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  function onCodePointerUp(event) {
+    const wasGutterDrag = gutterDrag?.pointerId === event.pointerId;
+    endGutterDrag(event);
+    if (!wasGutterDrag) {
+      if (selectionSyncFrame) cancelAnimationFrame(selectionSyncFrame);
+      selectionSyncFrame = requestAnimationFrame(() => {
+        selectionSyncFrame = 0;
+        syncSelectedLinesFromTextSelection();
+      });
+    }
+  }
+
+  function onCodeClick(event) {
+    const row = lineNumberTarget(event);
+    if (row) {
+      if (suppressGutterClick) {
+        suppressGutterClick = false;
+        return;
+      }
+      if (mode !== "view") {
+        selectCodeLine(Number(row.dataset.codeLine));
+      }
+      return;
+    }
+    suppressGutterClick = false;
+    onTripleClick(event);
+  }
+
+  function onCodeKeydown(event) {
+    const row = lineNumberTarget(event);
+    if (!row || mode === "view") return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    selectCodeLine(Number(row.dataset.codeLine));
+  }
+
   function refreshDisplay() {
+    clearHoveredLine();
+    clearSelectedLines();
     const scrollTop = editorEl?.scrollTop ?? 0;
     const scrollLeft = editorEl?.scrollLeft ?? 0;
 
@@ -538,6 +897,30 @@ export function initCodeBlock(container, options = {}) {
       setHidden(surfaceCopyBtn, !surfaceActions.has("copy"));
       surfaceCopyBtn.disabled = !surfaceCopyEnabled;
     }
+  }
+
+  function onTripleClick(event) {
+    if (event.detail !== 3 || mode === "view") return;
+    if (!(event.target instanceof Node)) return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+    if (lineNumberTarget(event)) return;
+
+    if (mode === "edit") {
+      if (editorEl?.contains(event.target)) {
+        editorEl.select();
+        setSelectedLines(0, countDisplayLines(currentSource()) - 1);
+      }
+      return;
+    }
+
+    if (!pre.contains(event.target)) return;
+    const selection = window.getSelection();
+    if (!selection) return;
+    const range = document.createRange();
+    range.selectNodeContents(code);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    setSelectedLines(0, countDisplayLines(currentSource()) - 1);
   }
 
   /**
@@ -815,6 +1198,17 @@ export function initCodeBlock(container, options = {}) {
   rebuildSurfaceActions();
   applyMode();
   writeToolbarAttrs();
+  container.addEventListener("pointerdown", onGutterPointerDown);
+  container.addEventListener("click", onCodeClick);
+  container.addEventListener("keydown", onCodeKeydown);
+  container.addEventListener("keyup", syncSelectedLinesFromTextSelection);
+  container.addEventListener("pointermove", onPointerMove);
+  container.addEventListener("pointerup", onCodePointerUp);
+  container.addEventListener("pointercancel", endGutterDrag);
+  container.addEventListener("pointerleave", () => {
+    if (!gutterDrag) clearHoveredLine();
+  });
+  registerCodeBlockSelectionSync(syncSelectedLinesFromTextSelection);
 
   return {
     setLineNumbers(enabled) {
