@@ -36,7 +36,7 @@ import { createIcon } from "../utils/icons.js";
 import { sanitizeSvgMarkup } from "../utils/sanitize-svg.js";
 import { downloadFile } from "./file-download.js";
 
-const SVG_PARSER = new DOMParser();
+const SVG_PARSER = typeof DOMParser === "undefined" ? null : new DOMParser();
 
 /**
  * @param {HTMLElement} el
@@ -82,6 +82,7 @@ function hasMediaChild(el) {
  * @returns {SVGSVGElement | null}
  */
 function parseSvgMarkup(markup) {
+  if (!SVG_PARSER) return null;
   const doc = SVG_PARSER.parseFromString(String(markup ?? ""), "image/svg+xml");
   if (doc.querySelector("parsererror")) return null;
   const svg = doc.documentElement;
@@ -102,18 +103,55 @@ function formatFileSize(bytes) {
 }
 
 /**
+ * @param {string | null} value
+ * @returns {number | null}
+ */
+function parseSvgLength(value) {
+  const match = String(value ?? "")
+    .trim()
+    .match(/^([+]?(?:\d+\.?\d*|\.\d+))\s*(px|pt|pc|in|cm|mm|q)?$/i);
+  if (!match) return null;
+
+  const amount = Number(match[1]);
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  const units = {
+    px: 1,
+    pt: 96 / 72,
+    pc: 16,
+    in: 96,
+    cm: 96 / 2.54,
+    mm: 96 / 25.4,
+    q: 96 / 101.6,
+  };
+  return amount * (units[match[2]?.toLowerCase() ?? "px"] ?? 1);
+}
+
+/**
+ * Read the rendered SVG dimensions, using explicit width/height before the
+ * viewBox coordinate space. A viewBox is only a fallback when dimensions are
+ * omitted; it does not override the SVG's requested pixel size.
+ *
  * @param {SVGSVGElement} svg
  * @returns {{ width: number, height: number } | null}
  */
-function readSvgDimensions(svg) {
+export function readSvgDimensions(svg) {
+  const width = parseSvgLength(svg.getAttribute("width"));
+  const height = parseSvgLength(svg.getAttribute("height"));
   const vb = svg.viewBox?.baseVal;
-  if (vb && vb.width > 0 && vb.height > 0) {
-    return { width: vb.width, height: vb.height };
+  const hasViewBox = vb && vb.width > 0 && vb.height > 0;
+
+  if (width !== null && height !== null) {
+    return { width, height };
   }
-  const w = Number.parseFloat(svg.getAttribute("width") ?? "");
-  const h = Number.parseFloat(svg.getAttribute("height") ?? "");
-  if (Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
-    return { width: w, height: h };
+  if (hasViewBox && width !== null) {
+    return { width, height: (width / vb.width) * vb.height };
+  }
+  if (hasViewBox && height !== null) {
+    return { width: (height / vb.height) * vb.width, height };
+  }
+  if (hasViewBox) {
+    return { width: vb.width, height: vb.height };
   }
   return null;
 }
