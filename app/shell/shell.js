@@ -51,7 +51,9 @@ function bindGlobalErrorHandlers(onError) {
  *   When false, local is never shown.
  * @param {string} [options.appVersion] Override app SemVer (default from `app/version.js`)
  * @param {string} [options.frameworkVersion] Override framework SemVer (default from `app/version.js`)
- * @param {import("./page-nav.js").PageNavOptions} [options.pageNav] Passed to `initPageNavPanel()`
+ * @param {false | import("./page-nav.js").PageNavOptions} [options.pageNav]
+ *   Page navigation options passed to `initPageNavPanel()`. `false` disables
+ *   page navigation entirely.
  * @param {boolean | { selector?: string, enabled?: boolean }} [options.headingLinks]
  *   Copy-link buttons on outline headings. Default on. `false` disables.
  *   An object is passed through to {@link initHeadingLinks}. Page-level HTML
@@ -84,7 +86,7 @@ export function initShell(options = {}) {
   }
   if ("appUrl" in options) alsoSeeOptions.appUrl = appUrl;
 
-  renderPageShell({ ...shellOptions, ...alsoSeeOptions });
+  renderPageShell({ ...shellOptions, pageNav, ...alsoSeeOptions });
   initIcons();
   initExternalLinks(document);
   const noHeadingLinks = document.documentElement.hasAttribute(
@@ -101,7 +103,9 @@ export function initShell(options = {}) {
   initThemeToggle(document.getElementById("theme-toggle"));
   initStickyChrome();
   initTooltips(document);
-  initPageNavPanel("#page-nav", pageNav);
+  if (pageNav !== false) {
+    initPageNavPanel("#page-nav", pageNav);
+  }
 
   if (showErrors && document.querySelector(".banner[data-app-error]")) {
     bindGlobalErrorHandlers(onError);

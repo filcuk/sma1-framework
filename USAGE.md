@@ -47,6 +47,7 @@ initShell({
   alsoSeeTopics: ["*"], // remote filter: ["*"]=all; ["*","-Topic"]=all except; ["A",""]=whitelist
   alsoSeeIncludeLocal: false, // true = include local alsoSee in full (alone or merged with remote)
   pageNav: { headingSelector: "main :is(h2, h3)[id]" },
+  // pageNav: false, // disable page navigation
   // headingLinks: false, // disable copy-link icons (or data-no-heading-links on <html>)
 });
 ```
@@ -3029,7 +3030,7 @@ Icons used: `plus`, `delete` (reset), `remove` (row/column), `type-text`, `type-
 
 ### Page navigation
 
-Injected by `initShell()` via [`app/shell/render-shell.js`](app/shell/render-shell.js). Collects `main :is(h2, h3)[id]` headings automatically and shows plain title links (tier links match `.segment-title` weight; nested section links match `.section-title`). Give each heading a unique `id` and use `h2.segment-title` / `h3.section-title` (`scroll-margin-top` is included).
+Injected by `initShell()` via [`app/shell/render-shell.js`](app/shell/render-shell.js). Collects `main :is(h2, h3)[id]` headings automatically and shows plain title links (tier links match `.segment-title` weight; nested section links match `.section-title`). Give each heading a unique `id` and use `h2.segment-title` / `h3.section-title` (`scroll-margin-top` is included). Pass `pageNav: false` to `initShell()` to disable page navigation, including its injected markup.
 
 ```javascript
 import { initShell } from "./shell/shell.js";
