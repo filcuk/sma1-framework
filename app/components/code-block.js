@@ -540,6 +540,27 @@ export function initCodeBlock(container, options = {}) {
     }
   }
 
+  function onTripleClick(event) {
+    if (event.detail !== 3 || mode === "view") return;
+    if (!(event.target instanceof Node)) return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+
+    if (mode === "edit") {
+      if (editorEl?.contains(event.target)) {
+        editorEl.select();
+      }
+      return;
+    }
+
+    if (!pre.contains(event.target)) return;
+    const selection = window.getSelection();
+    if (!selection) return;
+    const range = document.createRange();
+    range.selectNodeContents(code);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
   /**
    * @param {HTMLButtonElement} btn
    * @param {boolean} ok
@@ -815,6 +836,7 @@ export function initCodeBlock(container, options = {}) {
   rebuildSurfaceActions();
   applyMode();
   writeToolbarAttrs();
+  container.addEventListener("click", onTripleClick);
 
   return {
     setLineNumbers(enabled) {
