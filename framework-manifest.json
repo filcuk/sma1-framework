@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.2",
-  "generatedAt": "2026-08-28T17:31:33.140Z",
+  "generatedAt": "2026-08-28T17:35:05.297Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -1209,7 +1209,7 @@
       "sha256": "34409554fea51d78574986f87dad28f2dfa530e7d3e9f40c7c56b93d249892e1"
     },
     ".cursor/skills/manage-color/SKILL.md": {
-      "sha256": "f995fff5ddfe92ac6c41d7afbb5d02e9a99e36eb103739fa67afac04931910e4"
+      "sha256": "8afa15dfbb71f6b4b867b1772ac5cdad73de2921f7ca1217a4bacb7d74b79f7a"
     },
     ".cursor/skills/manage-color/scripts/contrast.mjs": {
       "sha256": "348c94a4ca9fda3dbac1f1ed02f631f3d8d0a04bfc78398503830fc805db7098"
