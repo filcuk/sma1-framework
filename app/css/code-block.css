@@ -81,12 +81,6 @@
   overflow-y: auto;
 }
 
-.code-block-scroll > pre,
-.code-block-scroll > .code-block-editor-stack,
-.code-block-editor-stack > pre {
-  min-height: 100%;
-}
-
 /*
  * Beat prism.css (loaded after styles.css): pre[class*="language-"] is (0,1,1),
  * same as `.code-block-body pre`, so unqualified overrides lose to source order.
@@ -156,7 +150,7 @@
   flex: 1 1 auto;
   align-self: stretch;
   min-width: 0;
-  min-height: 100%;
+  min-height: 0;
   box-sizing: border-box;
   padding: var(--code-pad-block) var(--code-pad-inline-end) var(--code-pad-block)
     calc(var(--code-gutter-width) - var(--code-gutter-band));
