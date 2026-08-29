@@ -427,6 +427,7 @@ export function initCodeBlock(container, options = {}) {
 
     editorEl = document.createElement("textarea");
     editorEl.className = "code-block-editor";
+    editorEl.rows = 1;
     editorEl.spellcheck = false;
     editorEl.setAttribute("autocapitalize", "off");
     editorEl.setAttribute("autocomplete", "off");
@@ -487,7 +488,18 @@ export function initCodeBlock(container, options = {}) {
   }
 
   function syncScrollLayerHeight() {
+    let editorDisplay = "";
+    let editorWasVisible = false;
+    if (editorEl) {
+      editorDisplay = editorEl.style.display;
+      editorWasVisible = getComputedStyle(editorEl).display !== "none";
+      if (editorWasVisible) editorEl.style.display = "none";
+    }
+    pre.style.removeProperty("min-height");
     const height = scrollEl.clientHeight;
+    if (editorEl && editorWasVisible) {
+      editorEl.style.display = editorDisplay;
+    }
     if (height <= 0) return;
     pre.style.minHeight = `${height}px`;
     if (editorEl) {

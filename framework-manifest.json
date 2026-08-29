@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "frameworkVersion": "0.13.5",
-  "generatedAt": "2026-08-29T10:29:06.526Z",
+  "frameworkVersion": "0.13.6",
+  "generatedAt": "2026-08-29T10:57:08.960Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -48,7 +48,7 @@
       "sha256": "ea5960e31a19da5a29c99a93d8d8659e4d1b6f41dbc1b44159ccdb19b02c56fe"
     },
     "app/components/code-block.js": {
-      "sha256": "71cfc1fa61c32848f765087c6ddf9e0fbd3ab23cdd37f5aafdffefda9e93cb64"
+      "sha256": "a95932533bce09c71c8cbb2a13eaabf6588e059a43b6e271178d9bce84a67f6a"
     },
     "app/components/color-input.js": {
       "sha256": "3ac48a3018c93a7d069967caee75d1fc5186f839e42dd14d22be05c582ca6e92"
@@ -201,7 +201,7 @@
       "sha256": "0ad1c22cc4bf19cc69e66a557f53f4fd2e53f9daaef7903c536f02e38d3e8d2b"
     },
     "app/css/code-block.css": {
-      "sha256": "fb5f02d81315f30e98854947185e4236f7c58b5defc0be9075e9814f5e41f94e"
+      "sha256": "c137d67e18e0c7ed5da85b70cc8696dfd3ce3024bef159fead800d8c1af3dad3"
     },
     "app/css/controls-badges.css": {
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"
@@ -231,7 +231,7 @@
       "sha256": "f5d134acfc7b0553ccbd9a643768d7623ea5983b56b819d5dd21ac65255bad33"
     },
     "app/css/controls-image.css": {
-      "sha256": "5588c5e7d60b18d21a5350d90f8e6a7e07b76e746ae831e4891b38fe51df48d1"
+      "sha256": "8ff8164bafc01e0021ff09873dbf0f1a0192ea79ab0b4df1f486aaeab78da75c"
     },
     "app/css/controls-menus.css": {
       "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
@@ -1167,7 +1167,7 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "560bb02aa7be1cf8b1209a2b3f70427bf6a2d37ec41f6bd7c787f3858615be24"
+      "sha256": "a11235835593a625c427668810258af664808fd9b9f4fd9f70fbe3e4d728ac37"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c04c50223d9417ac372fa394ffc84e84b602b5414b77f3c99b399e9b44906929"
