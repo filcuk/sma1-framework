@@ -487,6 +487,11 @@ export function initCodeBlock(container, options = {}) {
   }
 
   function syncScrollLayerHeight() {
+    pre.style.removeProperty("min-height");
+    if (editorEl) {
+      editorEl.style.removeProperty("height");
+      editorEl.style.removeProperty("margin-block-end");
+    }
     const height = scrollEl.clientHeight;
     if (height <= 0) return;
     pre.style.minHeight = `${height}px`;
