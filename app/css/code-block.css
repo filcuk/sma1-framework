@@ -72,6 +72,14 @@
   background: var(--input-bg);
 }
 
+.code-block-scroll {
+  max-height: inherit;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 /*
  * Beat prism.css (loaded after styles.css): pre[class*="language-"] is (0,1,1),
  * same as `.code-block-body pre`, so unqualified overrides lose to source order.
@@ -105,7 +113,7 @@
  * Line numbers: horizontal scroll lives on `code` (gutter stays fixed). Zero
  * `pre` padding so that scrollport fills the block — otherwise bottom/side
  * padding on `pre` leaves the scrollbar floating mid-block (edit mode is fine
- * because the textarea is `inset: 0` and carries its own padding).
+ * because the editor overlay is kept in the scrolling text layer).
  */
 .code-block .code-block-body pre[class*="language-"].line-numbers {
   display: flex;
@@ -162,6 +170,8 @@
 }
 
 .code-block .code-block-body pre,
+.code-block .code-block-body pre.line-numbers,
+.code-block .code-block-body pre.line-numbers > code,
 .code-block .code-block-body pre > code {
   background-image: linear-gradient(
     var(--code-line-hover-color),
@@ -222,21 +232,24 @@
 .code-block-editor-stack {
   position: relative;
   min-width: 0;
+  min-height: 0;
 }
 
 .code-block-editor {
   display: none;
   box-sizing: border-box;
-  position: absolute;
-  inset: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
   width: 100%;
-  height: 100%;
   margin: 0;
+  margin-block-end: 0;
   border: none;
   border-radius: 0;
   padding: var(--code-pad-block) var(--code-pad-inline-end) var(--code-pad-block)
     var(--code-pad-inline-start);
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   resize: none;
   background: transparent;
   color: transparent;
@@ -297,10 +310,13 @@
   display: none;
 }
 
-/* Keep the editor scrollport in the text column (not under the gutter). */
-.code-block--edit .code-block-editor-stack pre.line-numbers + .code-block-editor {
+/* Keep the editor overlay in the text column (not under the gutter). */
+.code-block--edit
+  .code-block-editor-stack:has(> pre.line-numbers)
+  > .code-block-editor {
   left: var(--code-gutter-band);
-  width: auto;
+  right: auto;
+  width: calc(100% - var(--code-gutter-band));
   padding-left: calc(var(--code-gutter-width) - var(--code-gutter-band));
 }
 
@@ -452,45 +468,30 @@ body.expandable-surface-open {
 .expandable-surface.is-expanded.code-block .code-block-body {
   flex: 1;
   min-height: 0;
+  max-height: none;
   display: flex;
   flex-direction: column;
-}
-
-.expandable-surface.is-expanded.code-block .code-block-body pre {
-  flex: 1;
-  min-height: 0;
-}
-
-.expandable-surface.is-expanded.code-block .code-block-body pre.line-numbers {
   overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
 }
 
-.expandable-surface.is-expanded.code-block .code-block-body pre.line-numbers > code {
+.expandable-surface.is-expanded.code-block .code-block-body > .code-block-scroll {
   flex: 1 1 auto;
+  min-height: 0;
   min-width: 0;
-  min-height: 0;
-  overflow: auto;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.expandable-surface.is-expanded.code-block .code-block-editor-stack {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+.expandable-surface.is-expanded.code-block .code-block-body > .code-block-scroll > pre {
+  flex: none;
+  min-height: auto;
 }
 
-.expandable-surface.is-expanded.code-block .code-block-editor-stack pre {
-  flex: 1;
+.expandable-surface.is-expanded.code-block .code-block-body > .code-block-scroll > .code-block-editor-stack {
+  flex: none;
   min-height: 0;
-}
-
-.expandable-surface.is-expanded.code-block .code-block-editor-stack pre.line-numbers + .code-block-editor {
-  /* Editor already inset from gutter via left; fill remaining stack height */
-  height: auto;
-  bottom: 0;
+  display: block;
 }
 
 .expandable-surface.is-expanded.field {
