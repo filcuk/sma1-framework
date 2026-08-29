@@ -73,11 +73,18 @@
 }
 
 .code-block-scroll {
+  height: 100%;
   max-height: inherit;
   min-width: 0;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.code-block-scroll > pre,
+.code-block-scroll > .code-block-editor-stack,
+.code-block-editor-stack > pre {
+  min-height: 100%;
 }
 
 /*
@@ -454,6 +461,11 @@ body.expandable-surface-open {
   min-height: 0;
   min-width: 0;
   display: flex;
+}
+
+.expandable-overlay__stage:has(> .expandable-surface.is-expanded.code-block) {
+  width: min(80vw, 2400px);
+  max-width: min(80vw, 2400px);
 }
 
 .expandable-surface.is-expanded {

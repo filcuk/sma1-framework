@@ -470,11 +470,7 @@ export function initCodeBlock(container, options = {}) {
       syncScrollPosition();
     });
 
-    if (window.ResizeObserver) {
-      editorViewportObserver = new ResizeObserver(syncEditorViewport);
-      editorViewportObserver.observe(scrollEl);
-    }
-    syncEditorViewport();
+    syncScrollLayerHeight();
 
     return { stack: editorStackEl, editor: editorEl };
   }
@@ -490,12 +486,14 @@ export function initCodeBlock(container, options = {}) {
     code.scrollLeft = editorEl.scrollLeft;
   }
 
-  function syncEditorViewport() {
-    if (!editorEl) return;
+  function syncScrollLayerHeight() {
     const height = scrollEl.clientHeight;
     if (height <= 0) return;
-    editorEl.style.height = `${height}px`;
-    editorEl.style.marginBlockEnd = `-${height}px`;
+    pre.style.minHeight = `${height}px`;
+    if (editorEl) {
+      editorEl.style.height = `${height}px`;
+      editorEl.style.marginBlockEnd = `-${height}px`;
+    }
   }
 
   function applyLineNumbersClass() {
@@ -896,7 +894,7 @@ export function initCodeBlock(container, options = {}) {
     }
     syncToggleStates();
     syncEditableToolbarActions();
-    syncEditorViewport();
+    syncScrollLayerHeight();
     scrollEl.scrollTop = scrollTop;
     code.scrollLeft = scrollLeft;
 
@@ -1229,6 +1227,12 @@ export function initCodeBlock(container, options = {}) {
     }
     container.dataset.codeSurfaceActions = [...surfaceActions].join(",") || "none";
   }
+
+  if (window.ResizeObserver) {
+    editorViewportObserver = new ResizeObserver(syncScrollLayerHeight);
+    editorViewportObserver.observe(scrollEl);
+  }
+  syncScrollLayerHeight();
 
   rebuildToolbar();
   rebuildSurfaceActions();
