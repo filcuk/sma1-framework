@@ -175,12 +175,10 @@ function renderLineNumberRows(preEl, lineCount) {
   preEl.querySelectorAll(":scope > .line-numbers-rows").forEach((el) => el.remove());
   const rows = document.createElement("span");
   rows.className = "line-numbers-rows";
+  rows.setAttribute("aria-hidden", "true");
   for (let i = 0; i < lineCount; i += 1) {
     const row = document.createElement("span");
     row.dataset.codeLine = String(i);
-    row.setAttribute("role", "button");
-    row.setAttribute("tabindex", "0");
-    row.setAttribute("aria-label", `Select line ${i + 1}`);
     rows.appendChild(row);
   }
   const codeEl = preEl.querySelector(":scope > code");
@@ -296,7 +294,14 @@ export function initCodeBlock(container, options = {}) {
     body = document.createElement("div");
     body.className = "code-block-body";
     pre.parentNode?.insertBefore(body, pre);
-    body.appendChild(pre);
+  }
+
+  let scrollEl = body.querySelector(".code-block-scroll");
+  if (!scrollEl) {
+    scrollEl = document.createElement("div");
+    scrollEl.className = "code-block-scroll";
+    body.insertBefore(scrollEl, pre);
+    scrollEl.appendChild(pre);
   }
 
   const lineNumbersDefault =
@@ -379,6 +384,8 @@ export function initCodeBlock(container, options = {}) {
   let editorEl = null;
   /** @type {HTMLElement | null} */
   let editorStackEl = null;
+  /** @type {ResizeObserver | null} */
+  let editorViewportObserver = null;
   /** @type {HTMLElement | null} */
   let toolbarEl = null;
   /** @type {HTMLButtonElement | null} */
@@ -415,7 +422,7 @@ export function initCodeBlock(container, options = {}) {
 
     editorStackEl = document.createElement("div");
     editorStackEl.className = "code-block-editor-stack";
-    pre.parentNode?.insertBefore(editorStackEl, pre);
+    scrollEl.insertBefore(editorStackEl, pre);
     editorStackEl.appendChild(pre);
 
     editorEl = document.createElement("textarea");
@@ -427,7 +434,7 @@ export function initCodeBlock(container, options = {}) {
       "aria-label",
       container.dataset.codeEditorLabel || "Code editor"
     );
-    editorStackEl.appendChild(editorEl);
+    editorStackEl.insertBefore(editorEl, pre);
 
     editorEl.addEventListener("input", () => {
       source = editorEl.value;
@@ -436,6 +443,9 @@ export function initCodeBlock(container, options = {}) {
     });
 
     editorEl.addEventListener("scroll", () => {
+      if (scrollEl.scrollTop !== editorEl.scrollTop) {
+        scrollEl.scrollTop = editorEl.scrollTop;
+      }
       syncScrollPosition();
     });
 
@@ -453,6 +463,19 @@ export function initCodeBlock(container, options = {}) {
       }
     });
 
+    scrollEl.addEventListener("scroll", () => {
+      if (editorEl.scrollTop !== scrollEl.scrollTop) {
+        editorEl.scrollTop = scrollEl.scrollTop;
+      }
+      syncScrollPosition();
+    });
+
+    if (window.ResizeObserver) {
+      editorViewportObserver = new ResizeObserver(syncEditorViewport);
+      editorViewportObserver.observe(scrollEl);
+    }
+    syncEditorViewport();
+
     return { stack: editorStackEl, editor: editorEl };
   }
 
@@ -464,13 +487,15 @@ export function initCodeBlock(container, options = {}) {
 
   function syncScrollPosition() {
     if (!editorEl) return;
-    pre.scrollTop = editorEl.scrollTop;
-    if (pre.classList.contains("line-numbers")) {
-      code.scrollLeft = editorEl.scrollLeft;
-      pre.scrollLeft = 0;
-    } else {
-      code.scrollLeft = editorEl.scrollLeft;
-    }
+    code.scrollLeft = editorEl.scrollLeft;
+  }
+
+  function syncEditorViewport() {
+    if (!editorEl) return;
+    const height = scrollEl.clientHeight;
+    if (height <= 0) return;
+    editorEl.style.height = `${height}px`;
+    editorEl.style.marginBlockEnd = `-${height}px`;
   }
 
   function applyLineNumbersClass() {
@@ -514,14 +539,6 @@ export function initCodeBlock(container, options = {}) {
       highlightEnabled ? "true" : "false"
     );
     updateLineNumbersToggle(lineNumbersToggle, highlightEnabled);
-  }
-
-  function syncLineNumberRows() {
-    if (!lineNumbersEnabled || !highlightEnabled) return;
-    if (!pre.classList.contains("line-numbers")) return;
-    code.querySelector(".line-numbers-rows")?.remove();
-    code.querySelector(".line-numbers-sizer")?.remove();
-    renderLineNumberRows(pre, countDisplayLines(source));
   }
 
   function clearHoveredLine() {
@@ -587,16 +604,13 @@ export function initCodeBlock(container, options = {}) {
   }
 
   function codeScrollElement() {
-    return mode === "edit" && editorEl
-      ? editorEl
-      : pre.classList.contains("line-numbers")
-        ? code
-        : pre;
+    return scrollEl;
   }
 
   function linePositionAtClientY(clientY, clamp = false) {
     const scrollEl = codeScrollElement();
-    const style = getComputedStyle(scrollEl);
+    const lineMetricsEl = pre.classList.contains("line-numbers") ? code : pre;
+    const style = getComputedStyle(lineMetricsEl);
     const lineHeight = parseFloat(style.lineHeight);
     const paddingTop = parseFloat(style.paddingTop) || 0;
     if (!Number.isFinite(lineHeight) || lineHeight <= 0) return null;
@@ -728,6 +742,28 @@ export function initCodeBlock(container, options = {}) {
     return range.toString().length;
   }
 
+  function ensureEditorSelectionVisible(offset) {
+    if (mode !== "edit" || !editorEl || document.activeElement !== editorEl) {
+      return;
+    }
+    const lineMetricsEl = pre.classList.contains("line-numbers") ? code : pre;
+    const style = getComputedStyle(lineMetricsEl);
+    const lineHeight = parseFloat(style.lineHeight);
+    const paddingTop = parseFloat(style.paddingTop) || 0;
+    if (!Number.isFinite(lineHeight) || lineHeight <= 0) return;
+
+    const line = lineIndexAtOffset(editorEl.value, offset);
+    const lineTop = paddingTop + line * lineHeight;
+    const lineBottom = lineTop + lineHeight;
+    const visibleTop = scrollEl.scrollTop;
+    const visibleBottom = visibleTop + scrollEl.clientHeight;
+    if (lineTop < visibleTop) {
+      scrollEl.scrollTop = lineTop;
+    } else if (lineBottom > visibleBottom) {
+      scrollEl.scrollTop = lineBottom - scrollEl.clientHeight;
+    }
+  }
+
   function syncSelectedLinesFromTextSelection() {
     if (mode === "view") return;
     const text = currentSource();
@@ -741,6 +777,9 @@ export function initCodeBlock(container, options = {}) {
       }
       start = editorEl.selectionStart;
       end = editorEl.selectionEnd;
+      const activeOffset =
+        editorEl.selectionDirection === "backward" ? start : end;
+      ensureEditorSelectionVisible(activeOffset);
     } else {
       const selection = window.getSelection();
       const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
@@ -844,19 +883,11 @@ export function initCodeBlock(container, options = {}) {
     onTripleClick(event);
   }
 
-  function onCodeKeydown(event) {
-    const row = lineNumberTarget(event);
-    if (!row || mode === "view") return;
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    selectCodeLine(Number(row.dataset.codeLine));
-  }
-
   function refreshDisplay() {
     clearHoveredLine();
     clearSelectedLines();
-    const scrollTop = editorEl?.scrollTop ?? 0;
-    const scrollLeft = editorEl?.scrollLeft ?? 0;
+    const scrollTop = scrollEl.scrollTop;
+    const scrollLeft = editorEl?.scrollLeft ?? code.scrollLeft;
 
     if (highlightEnabled) {
       renderHighlighted();
@@ -865,12 +896,17 @@ export function initCodeBlock(container, options = {}) {
     }
     syncToggleStates();
     syncEditableToolbarActions();
-    syncLineNumberRows();
+    syncEditorViewport();
+    scrollEl.scrollTop = scrollTop;
+    code.scrollLeft = scrollLeft;
 
     if (mode === "edit" && editorEl) {
       editorEl.scrollTop = scrollTop;
       editorEl.scrollLeft = scrollLeft;
       syncScrollPosition();
+      if (document.activeElement === editorEl) {
+        syncSelectedLinesFromTextSelection();
+      }
     }
   }
 
@@ -1200,7 +1236,6 @@ export function initCodeBlock(container, options = {}) {
   writeToolbarAttrs();
   container.addEventListener("pointerdown", onGutterPointerDown);
   container.addEventListener("click", onCodeClick);
-  container.addEventListener("keydown", onCodeKeydown);
   container.addEventListener("keyup", syncSelectedLinesFromTextSelection);
   container.addEventListener("pointermove", onPointerMove);
   container.addEventListener("pointerup", onCodePointerUp);
