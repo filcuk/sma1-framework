@@ -102,6 +102,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
 | `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
+| `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes |
 | `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
 | `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
 | `initDurationInput()` / `initDurationInputs()` | Segmented duration field with the shared popup in duration mode |

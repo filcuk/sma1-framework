@@ -470,6 +470,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
+| **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, and theme support. [`app/components/model-preview.js`](app/components/model-preview.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
@@ -1701,6 +1702,40 @@ await downloadStl(mesh, { filename: "box.stl" });
 ```
 
 `createBoxMesh()` requires finite, positive `width`, `length`, and `height` values. The returned mesh has `positions` (`x, y, z` triplets) and `indices` (triangle triplets). `encodeStl()` rejects malformed or degenerate triangles. `downloadStl()` uses the framework file-download helper and reports the file as `model/stl`.
+
+### 3D model preview
+
+The model preview renders an indexed mesh with Three.js. It supports orbit rotation, zoom, pan, automatic camera fitting, responsive resizing, and light/dark theme colours. The mesh is not mutated; STL coordinates remain Z-up while the preview applies a display-only rotation.
+
+Pages using the preview must include an import map before module scripts:
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "three": "./app/vendor/three/three.module.min.js"
+    }
+  }
+</script>
+```
+
+```html
+<div class="model-preview" id="my-model-preview" aria-label="3D model preview">
+  <p class="model-preview__empty">No preview</p>
+</div>
+```
+
+```javascript
+import { createBoxMesh } from "./components/stl.js";
+import { initModelPreview } from "./components/model-preview.js";
+
+const preview = initModelPreview(document.getElementById("my-model-preview"));
+preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
+// preview?.clear();
+// preview?.destroy();
+```
+
+The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.
 
 ### Image preview
 
