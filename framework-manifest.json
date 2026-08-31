@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-08-31T17:30:59.477Z",
+  "generatedAt": "2026-08-31T17:51:00.133Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -134,6 +134,9 @@
     "app/components/file-dropzone.js": {
       "sha256": "d397a2b989468b7bf91f49db3cabaa340ad3c9a2fede9f00cb9ed9aad6ee884d"
     },
+    "app/components/gcode-toolpath.js": {
+      "sha256": "854deafd9d6e0d7bb40ddb31b388d47970fab2aeb33c1624dd0dd5decedb3792"
+    },
     "app/components/gcode.js": {
       "sha256": "17278ae5160b492b084510ee2e0965a7cd72ce3b9f4b11500c46049230d20c8b"
     },
@@ -202,6 +205,9 @@
     },
     "app/components/toggle.js": {
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
+    },
+    "app/components/toolpath-preview.js": {
+      "sha256": "ac1aca4f36ba1c2eb16bba8bff42048ca3095c138fb9ee6080df6565bbcd382a"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -1209,7 +1215,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "3d302ba6a1de01efec73cd570f62f636f41f24063f811da8b096487fd3abbe9f"
+      "sha256": "bc1c467d91d4cc7467e12fdf0a1b02b1ed61290076063d46ad1097f830245593"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -2411,6 +2417,29 @@
       ],
       "notes": "Interactive Three.js host for the shared indexed mesh shape"
     },
+    "toolpath-preview": {
+      "files": [
+        "app/components/toolpath-preview.js"
+      ],
+      "css": [
+        "controls-model.css"
+      ],
+      "vendor": [
+        "app/vendor/three/"
+      ],
+      "vendorFiles": [
+        "app/vendor/three/OrbitControls.js",
+        "app/vendor/three/README.md",
+        "app/vendor/three/three.core.min.js",
+        "app/vendor/three/three.module.min.js"
+      ],
+      "icons": [],
+      "infra": [
+        "config",
+        "dom"
+      ],
+      "notes": "Interactive Three.js LineSegments host for parsed G-code toolpaths"
+    },
     "gcode": {
       "files": [
         "app/components/gcode.js"
@@ -2421,6 +2450,19 @@
       "icons": [],
       "infra": [],
       "notes": "ASCII G-code and binary bgcode metadata parser"
+    },
+    "gcode-toolpath": {
+      "files": [
+        "app/components/gcode-toolpath.js"
+      ],
+      "css": [],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [
+        "gcode"
+      ],
+      "notes": "G-code and bgcode motion parser for extrusion/travel toolpath segments"
     }
   },
   "agent": {
@@ -2634,7 +2676,8 @@
     ],
     "controls-model.css": [
       "stl",
-      "model-preview"
+      "model-preview",
+      "toolpath-preview"
     ],
     "rich-text-editor.css": [
       "rich-text-editor"

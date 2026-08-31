@@ -471,7 +471,8 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, and theme support. [`app/components/model-preview.js`](app/components/model-preview.js). |
-| **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate-compressed metadata. [`app/components/gcode.js`](app/components/gcode.js). |
+| **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js. [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
+| **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate, Heatshrink, and MeatPack payloads. [`app/components/gcode.js`](app/components/gcode.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
@@ -1738,6 +1739,31 @@ preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
 
 The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.
 
+### G-code toolpath preview
+
+`parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, `G90` / `G91`, `M82` / `M83`, and `G92`; arc commands are reported as unsupported. Coordinates use the file's millimetre convention.
+
+```javascript
+import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
+import { initToolpathPreview } from "./components/toolpath-preview.js";
+
+const toolpath = await parseGcodeToolpath(await file.arrayBuffer());
+const preview = initToolpathPreview(
+  document.getElementById("my-toolpath-preview")
+);
+preview?.setToolpath(toolpath);
+preview?.setMaxLayer(3); // null shows every parsed layer
+```
+
+The toolpath preview reuses the `.model-preview` surface and canvas styles, and requires the same `three` import map as the model preview:
+
+```html
+<div class="model-preview toolpath-preview" id="my-toolpath-preview"
+  aria-label="G-code toolpath preview">
+  <p class="model-preview__empty">No toolpath</p>
+</div>
+```
+
 ### G-code metadata
 
 `parseGcodeMeta()` reads slicer metadata from ASCII G-code comments or binary `.bgcode` metadata blocks. It does not simulate toolpaths or estimate duration from feed rates. The asynchronous API accepts a string, `ArrayBuffer`, or `Uint8Array`; unsupported bgcode compression is reported in `warnings`.
@@ -1750,7 +1776,7 @@ console.log(metadata.durationSec, metadata.filamentGrams, metadata.filamentType)
 if (isBgcode(bytes)) console.log("Binary G-code");
 ```
 
-The result includes `timestamp`, `durationSec`, `filamentGrams`, `filamentMm`, `filamentM`, `filamentCm3`, `filamentType`, `nozzleMm`, `nozzleHighFlow`, `bedTemperatureC`, `fillDensityPercent`, `nozzleTemperatureC`, `layerHeightMm`, `perimeters`, `objectCount`, `objects`, `wipeTowerFilamentGrams`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. `perimeters` is the slicer's wall-line count. Missing values are `null`. Uncompressed metadata and Deflate metadata are supported; Heatshrink and MeatPack payloads are skipped.
+The result includes `timestamp`, `durationSec`, `filamentGrams`, `filamentMm`, `filamentM`, `filamentCm3`, `filamentType`, `nozzleMm`, `nozzleHighFlow`, `bedTemperatureC`, `fillDensityPercent`, `nozzleTemperatureC`, `layerHeightMm`, `perimeters`, `objectCount`, `objects`, `wipeTowerFilamentGrams`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. `perimeters` is the slicer's wall-line count. Missing values are `null`. Uncompressed, Deflate, and Heatshrink metadata blocks are supported; MeatPack is additionally supported for G-code blocks. Unsupported or malformed blocks are reported in `warnings`.
 
 ### Image preview
 

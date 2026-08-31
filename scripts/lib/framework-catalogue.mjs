@@ -501,6 +501,14 @@ export const COMPONENTS = {
     infra: ["config", "dom"],
     notes: "Interactive Three.js host for the shared indexed mesh shape",
   },
+  "toolpath-preview": {
+    files: ["app/components/toolpath-preview.js"],
+    css: ["controls-model.css"],
+    vendor: ["app/vendor/three/"],
+    icons: [],
+    infra: ["config", "dom"],
+    notes: "Interactive Three.js LineSegments host for parsed G-code toolpaths",
+  },
   gcode: {
     files: ["app/components/gcode.js"],
     css: [],
@@ -508,6 +516,14 @@ export const COMPONENTS = {
     icons: [],
     infra: [],
     notes: "ASCII G-code and binary bgcode metadata parser",
+  },
+  "gcode-toolpath": {
+    files: ["app/components/gcode-toolpath.js"],
+    css: [],
+    vendor: [],
+    icons: [],
+    infra: ["gcode"],
+    notes: "G-code and bgcode motion parser for extrusion/travel toolpath segments",
   },
 };
 
@@ -562,7 +578,7 @@ export const CSS_PARTIAL_FEATURES = {
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],
   "controls-diagram.css": ["diagram"],
-  "controls-model.css": ["stl", "model-preview"],
+  "controls-model.css": ["stl", "model-preview", "toolpath-preview"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],
