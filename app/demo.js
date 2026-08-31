@@ -54,6 +54,7 @@ import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
 import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
 import { initDiagrams } from "./components/diagram.js";
 import { createBoxMesh, encodeStl } from "./components/stl.js";
+import { initModelPreview } from "./components/model-preview.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
@@ -68,6 +69,9 @@ const codeBlockInstances = initCodeBlocks(document);
 
 const demoImagePreview = initImagePreview(
   document.getElementById("demo-image-preview")
+);
+const demoModelPreview = initModelPreview(
+  document.getElementById("demo-model-preview")
 );
 
 initExpandableSurfaces(document);
@@ -152,6 +156,7 @@ const demoStlDimensions = {
 
 function updateDemoStlDimension(name, value) {
   demoStlDimensions[name] = value;
+  demoModelPreview?.setMesh(createBoxMesh(demoStlDimensions));
 }
 
 initFileDropzone(document.getElementById("demo-file-dropzone-single"));

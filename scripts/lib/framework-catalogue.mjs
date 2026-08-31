@@ -493,6 +493,14 @@ export const COMPONENTS = {
     infra: ["file-download"],
     notes: "Dependency-free indexed mesh and binary/ASCII STL export helpers",
   },
+  "model-preview": {
+    files: ["app/components/model-preview.js"],
+    css: ["controls-model.css"],
+    vendor: ["app/vendor/three/"],
+    icons: [],
+    infra: ["config", "dom"],
+    notes: "Interactive Three.js host for the shared indexed mesh shape",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */

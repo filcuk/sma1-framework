@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-08-31T14:39:15.845Z",
+  "generatedAt": "2026-08-31T14:46:44.758Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -140,6 +140,9 @@
     "app/components/legend.js": {
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
     },
+    "app/components/model-preview.js": {
+      "sha256": "f813d10fc4273b1829dc9db9e51378dc808a2238fa9de2f331c5edbf91d86420"
+    },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
     },
@@ -240,7 +243,7 @@
       "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
     },
     "app/css/controls-model.css": {
-      "sha256": "6a1870eaf8a032df8f66f034d479f07b44001d77a0c84a252520427486df63fb"
+      "sha256": "400390fd7d205b212cd2bdd003373b3c9b1f0992a922426034efda0a3a6588e1"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"
@@ -1157,6 +1160,18 @@
     "app/vendor/tanstack-charts/waffle.js": {
       "sha256": "665932f756a28805175e3fc26beb0d6d81b766b6f5a023216ddda9baa845f8d4"
     },
+    "app/vendor/three/OrbitControls.js": {
+      "sha256": "faabb4e8dfd9235ee4a9fd7c9a3d75f90f1689dbd4944bd6fd32117dacec5f93"
+    },
+    "app/vendor/three/README.md": {
+      "sha256": "7f9b87bcc7b95295bcacefa7b2313b754a6c0450cf27d491127a5fa33ad4dca3"
+    },
+    "app/vendor/three/three.core.min.js": {
+      "sha256": "05b2609338c76cd65daf74f3ac515bc9a5045e1b3b33edc07d8c9bd55250fa90"
+    },
+    "app/vendor/three/three.module.min.js": {
+      "sha256": "86bcee248b64f44bcfc23c331ae74619061957d59cab040171dcb6fb5900beb6"
+    },
     "app/vendor/toastui-editor-plugin-table-merged-cell/toastui-editor-plugin-table-merged-cell.min.css": {
       "sha256": "f9e22de132b84d5547733353be9b7ea8bbc55c1afad1432a5745cccc50c76005"
     },
@@ -1191,7 +1206,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "c80b8436cf7bda0ea195cd9bb8086e2d47cd5daf4e3a36735526da92c491c9d9"
+      "sha256": "ed73759c7e0ba560d728e9688c1551ee55a0ac5cbe44dc13a0864cf39edc5b38"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -2369,6 +2384,29 @@
         "file-download"
       ],
       "notes": "Dependency-free indexed mesh and binary/ASCII STL export helpers"
+    },
+    "model-preview": {
+      "files": [
+        "app/components/model-preview.js"
+      ],
+      "css": [
+        "controls-model.css"
+      ],
+      "vendor": [
+        "app/vendor/three/"
+      ],
+      "vendorFiles": [
+        "app/vendor/three/OrbitControls.js",
+        "app/vendor/three/README.md",
+        "app/vendor/three/three.core.min.js",
+        "app/vendor/three/three.module.min.js"
+      ],
+      "icons": [],
+      "infra": [
+        "config",
+        "dom"
+      ],
+      "notes": "Interactive Three.js host for the shared indexed mesh shape"
     }
   },
   "agent": {

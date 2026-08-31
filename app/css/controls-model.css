@@ -15,6 +15,8 @@
 }
 
 .model-preview__empty {
+  position: absolute;
+  z-index: 1;
   margin: 0;
   color: var(--muted);
   text-align: center;
