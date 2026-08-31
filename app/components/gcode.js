@@ -433,27 +433,169 @@ async function decompressDeflate(bytes) {
 
 /**
  * @param {Uint8Array} bytes
- * @param {ReturnType<typeof createResult>} result
+ * @param {number} windowBits
+ * @param {number} lookaheadBits
+ * @param {number} expectedSize
  */
-async function parseBgcode(bytes, result) {
+function decompressHeatshrink(bytes, windowBits, lookaheadBits, expectedSize) {
+  const output = new Uint8Array(expectedSize);
+  const window = new Uint8Array(1 << windowBits);
+  const mask = window.length - 1;
+  let bitOffset = 0;
+  let head = 0;
+  let outputOffset = 0;
+
+  function readBits(count) {
+    if (bitOffset + count > bytes.length * 8) {
+      throw new Error("Heatshrink payload ended before the expected output");
+    }
+    let value = 0;
+    for (let index = 0; index < count; index += 1) {
+      const byte = bytes[Math.floor(bitOffset / 8)];
+      const bit = 7 - (bitOffset % 8);
+      value = (value << 1) | ((byte >> bit) & 1);
+      bitOffset += 1;
+    }
+    return value;
+  }
+
+  while (outputOffset < expectedSize) {
+    const isLiteral = readBits(1) === 1;
+    if (isLiteral) {
+      const value = readBits(8);
+      output[outputOffset] = value;
+      window[head & mask] = value;
+      head += 1;
+      outputOffset += 1;
+      continue;
+    }
+
+    const offset = readBits(windowBits) + 1;
+    const count = readBits(lookaheadBits) + 1;
+    for (let index = 0; index < count && outputOffset < expectedSize; index += 1) {
+      const value = window[(head - offset) & mask];
+      output[outputOffset] = value;
+      window[head & mask] = value;
+      head += 1;
+      outputOffset += 1;
+    }
+  }
+
+  return output;
+}
+
+const MEATPACK_LOOKUP = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", " ", "\n", "G", "X"];
+const MEATPACK_COMMANDS = {
+  ENABLE_PACKING: 0xfb,
+  DISABLE_PACKING: 0xfa,
+  RESET: 0xf9,
+  QUERY: 0xf8,
+  ENABLE_NO_SPACES: 0xf7,
+  DISABLE_NO_SPACES: 0xf6,
+};
+
+/**
+ * @param {Uint8Array} bytes
+ * @returns {{ bytes: Uint8Array, warnings: string[] }}
+ */
+function decodeMeatPack(bytes) {
+  const output = [];
+  const warnings = [];
+  let packing = false;
+  let noSpaces = false;
+
+  const lookup = (value) => {
+    if (value === 11 && noSpaces) return "E";
+    return MEATPACK_LOOKUP[value];
+  };
+
+  const pushLiteral = (index) => {
+    if (index >= bytes.length) {
+      warnings.push("MeatPack literal is truncated");
+      return false;
+    }
+    output.push(bytes[index]);
+    return true;
+  };
+
+  for (let index = 0; index < bytes.length; index += 1) {
+    const value = bytes[index];
+    if (value === 0xff && bytes[index + 1] === 0xff) {
+      const command = bytes[index + 2];
+      if (command === undefined) {
+        warnings.push("MeatPack command is truncated");
+        break;
+      }
+      if (command === MEATPACK_COMMANDS.ENABLE_PACKING) packing = true;
+      else if (command === MEATPACK_COMMANDS.DISABLE_PACKING) packing = false;
+      else if (command === MEATPACK_COMMANDS.RESET) {
+        packing = false;
+        noSpaces = false;
+      } else if (command === MEATPACK_COMMANDS.ENABLE_NO_SPACES) noSpaces = true;
+      else if (command === MEATPACK_COMMANDS.DISABLE_NO_SPACES) noSpaces = false;
+      else if (command !== MEATPACK_COMMANDS.QUERY) {
+        warnings.push(`Unknown MeatPack command: 0x${command.toString(16)}`);
+      }
+      index += 2;
+      continue;
+    }
+
+    if (!packing) {
+      output.push(value);
+      continue;
+    }
+
+    if (value === 0xff) {
+      if (!pushLiteral(index + 1) || !pushLiteral(index + 2)) break;
+      index += 2;
+      continue;
+    }
+
+    const first = value & 0x0f;
+    const second = (value >> 4) & 0x0f;
+    if (first === 0x0f) {
+      if (second === 0x0f) {
+        if (!pushLiteral(index + 1) || !pushLiteral(index + 2)) break;
+        index += 2;
+      } else {
+        if (!pushLiteral(index + 1)) break;
+        output.push(lookup(second).charCodeAt(0));
+        index += 1;
+      }
+    } else if (second === 0x0f) {
+      output.push(lookup(first).charCodeAt(0));
+      if (!pushLiteral(index + 1)) break;
+      index += 1;
+    } else {
+      output.push(lookup(first).charCodeAt(0), lookup(second).charCodeAt(0));
+    }
+  }
+
+  return { bytes: Uint8Array.from(output), warnings };
+}
+
+/**
+ * @param {Uint8Array} bytes
+ */
+function readBgcodeBlocks(bytes) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const warnings = [];
+  const blocks = [];
   if (view.byteLength < BGCODE_HEADER_BYTES) {
-    result.warnings.push("bgcode header is truncated");
-    return result;
+    return { version: null, checksumType: null, blocks, warnings: ["bgcode header is truncated"] };
   }
 
   const version = view.getUint32(4, true);
   const checksumType = view.getUint16(8, true);
-  if (version !== 1) result.warnings.push(`Unsupported bgcode version: ${version}`);
+  if (version !== 1) warnings.push(`Unsupported bgcode version: ${version}`);
   if (checksumType !== 0 && checksumType !== 1) {
-    result.warnings.push(`Unsupported bgcode checksum type: ${checksumType}`);
+    warnings.push(`Unsupported bgcode checksum type: ${checksumType}`);
   }
 
-  const priorities = {};
   let offset = BGCODE_HEADER_BYTES;
   while (offset < view.byteLength) {
     if (offset + BGCODE_BLOCK_HEADER_BYTES > view.byteLength) {
-      result.warnings.push("bgcode block header is truncated");
+      warnings.push("bgcode block header is truncated");
       break;
     }
 
@@ -463,7 +605,7 @@ async function parseBgcode(bytes, result) {
     const headerBytes =
       compression === 0 ? BGCODE_BLOCK_HEADER_BYTES : BGCODE_COMPRESSED_HEADER_BYTES;
     if (offset + headerBytes > view.byteLength) {
-      result.warnings.push("bgcode compressed block header is truncated");
+      warnings.push("bgcode compressed block header is truncated");
       break;
     }
 
@@ -471,7 +613,7 @@ async function parseBgcode(bytes, result) {
       compression === 0 ? uncompressedSize : view.getUint32(offset + 8, true);
     const parameterBytes = BLOCK_PARAMETER_BYTES[type];
     if (parameterBytes === undefined) {
-      result.warnings.push(`Unsupported bgcode block type: ${type}`);
+      warnings.push(`Unsupported bgcode block type: ${type}`);
       break;
     }
 
@@ -479,24 +621,57 @@ async function parseBgcode(bytes, result) {
     const dataEnd = dataStart + compressedSize;
     const blockEnd = dataEnd + (checksumType === 1 ? BGCODE_CRC32_BYTES : 0);
     if (dataEnd > view.byteLength || blockEnd > view.byteLength) {
-      result.warnings.push("bgcode block payload is truncated");
+      warnings.push("bgcode block payload is truncated");
       break;
     }
 
-    if (METADATA_BLOCK_TYPES.has(type)) {
-      const encoding = view.getUint16(offset + headerBytes, true);
+    blocks.push({
+      type,
+      compression,
+      uncompressedSize,
+      encoding: parameterBytes >= 2 ? view.getUint16(offset + headerBytes, true) : null,
+      payload: bytes.slice(dataStart, dataEnd),
+    });
+    offset = blockEnd;
+  }
+
+  return { version, checksumType, blocks, warnings };
+}
+
+/**
+ * @param {{ compression: number, uncompressedSize: number, payload: Uint8Array }} block
+ */
+async function decodeBgcodeBlockPayload(block) {
+  if (block.compression === 0) return block.payload;
+  if (block.compression === 1) return decompressDeflate(block.payload);
+  if (block.compression === 2) {
+    return decompressHeatshrink(block.payload, 11, 4, block.uncompressedSize);
+  }
+  if (block.compression === 3) {
+    return decompressHeatshrink(block.payload, 12, 4, block.uncompressedSize);
+  }
+  throw new Error(`Unsupported bgcode compression: ${block.compression}`);
+}
+
+/**
+ * @param {Uint8Array} bytes
+ * @param {ReturnType<typeof createResult>} result
+ */
+async function parseBgcode(bytes, result) {
+  const parsed = readBgcodeBlocks(bytes);
+  result.warnings.push(...parsed.warnings);
+  const priorities = {};
+  for (const block of parsed.blocks) {
+    if (METADATA_BLOCK_TYPES.has(block.type)) {
+      const encoding = block.encoding;
       if (encoding !== 0) {
         result.warnings.push(`Unsupported bgcode metadata encoding: ${encoding}`);
-      } else if (compression === 2 || compression === 3) {
-        result.warnings.push("Heatshrink-compressed bgcode metadata is unsupported");
       } else {
         try {
-          const payload = bytes.slice(dataStart, dataEnd);
-          const decoded =
-            compression === 1 ? await decompressDeflate(payload) : payload;
+          const decoded = await decodeBgcodeBlockPayload(block);
           parseTextMetadata(new TextDecoder().decode(decoded), result, {
             priorities,
-            section: BLOCK_SECTION_NAMES[type],
+            section: BLOCK_SECTION_NAMES[block.type],
           });
         } catch (error) {
           result.warnings.push(
@@ -505,11 +680,45 @@ async function parseBgcode(bytes, result) {
         }
       }
     }
-
-    offset = blockEnd;
   }
 
   return result;
+}
+
+/**
+ * Decode all G-code blocks from ASCII G-code or binary bgcode.
+ *
+ * @param {string | ArrayBuffer | Uint8Array} input
+ * @returns {Promise<{ text: string, warnings: string[] }>}
+ */
+export async function decodeBgcodeGcode(input) {
+  if (typeof input === "string") return { text: input, warnings: [] };
+
+  const bytes = toBytes(input);
+  if (!isBgcode(bytes)) return { text: new TextDecoder().decode(bytes), warnings: [] };
+
+  const parsed = readBgcodeBlocks(bytes);
+  const warnings = [...parsed.warnings];
+  const chunks = [];
+  for (const block of parsed.blocks) {
+    if (block.type !== 1) continue;
+    if (block.encoding !== 0 && block.encoding !== 1 && block.encoding !== 2) {
+      warnings.push(`Unsupported bgcode G-code encoding: ${block.encoding}`);
+      continue;
+    }
+    try {
+      const decoded = await decodeBgcodeBlockPayload(block);
+      const unpacked = block.encoding === 0 ? { bytes: decoded, warnings: [] } : decodeMeatPack(decoded);
+      chunks.push(new TextDecoder().decode(unpacked.bytes));
+      warnings.push(...unpacked.warnings);
+    } catch (error) {
+      warnings.push(
+        `Unable to decode bgcode G-code: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  return { text: chunks.join(""), warnings };
 }
 
 /**

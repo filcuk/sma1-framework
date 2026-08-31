@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import { deflateSync } from "node:zlib";
 import test from "node:test";
 
-import { isBgcode, parseGcodeMeta } from "../app/components/gcode.js";
+import {
+  decodeBgcodeGcode,
+  isBgcode,
+  parseGcodeMeta,
+} from "../app/components/gcode.js";
 
 const textEncoder = new TextEncoder();
 
@@ -40,6 +44,79 @@ function buildBgcode(blocks) {
   view.setUint16(8, 0, true); // no block checksums
   return concatBytes(header, ...blocks);
 }
+
+function buildGcodeBlock(payload, { compression = 0, encoding = 0, uncompressedSize } = {}) {
+  const headerBytes = compression === 0 ? 8 : 12;
+  const block = new Uint8Array(headerBytes + 2 + payload.length);
+  const view = new DataView(block.buffer);
+  view.setUint16(0, 1, true); // G-code block
+  view.setUint16(2, compression, true);
+  view.setUint32(4, uncompressedSize ?? payload.length, true);
+  if (compression !== 0) view.setUint32(8, payload.length, true);
+  view.setUint16(headerBytes, encoding, true);
+  block.set(payload, headerBytes + 2);
+  return block;
+}
+
+function heatshrinkLiterals(text) {
+  const bits = [];
+  for (const byte of textEncoder.encode(text)) {
+    bits.push(1);
+    for (let bit = 7; bit >= 0; bit -= 1) bits.push((byte >> bit) & 1);
+  }
+  while (bits.length % 8) bits.push(0);
+  const bytes = new Uint8Array(bits.length / 8);
+  for (let index = 0; index < bits.length; index += 1) {
+    bytes[index >> 3] |= bits[index] << (7 - (index & 7));
+  }
+  return bytes;
+}
+
+test("decodes uncompressed bgcode G-code blocks", async () => {
+  const source = "G1 X10 Y10 E0.2\n";
+  const result = await decodeBgcodeGcode(
+    buildBgcode([buildGcodeBlock(textEncoder.encode(source))])
+  );
+
+  assert.equal(result.text, source);
+  assert.deepEqual(result.warnings, []);
+});
+
+test("decodes Heatshrink-compressed bgcode G-code blocks", async () => {
+  const source = "G1 X10 Y10 E0.2\n";
+  const result = await decodeBgcodeGcode(
+    buildBgcode([
+      buildGcodeBlock(heatshrinkLiterals(source), {
+        compression: 3,
+        uncompressedSize: source.length,
+      }),
+    ])
+  );
+
+  assert.equal(result.text, source);
+  assert.deepEqual(result.warnings, []);
+});
+
+test("decodes MeatPack G-code blocks", async () => {
+  const packed = Uint8Array.from([
+    0xff,
+    0xff,
+    0xfb, // Enable packing
+    0x1d, // G1
+    0xeb, // " X"
+    0x01, // "10"
+    0xff,
+    0xff,
+    0xfa, // Disable packing
+    0x0a, // newline
+  ]);
+  const result = await decodeBgcodeGcode(
+    buildBgcode([buildGcodeBlock(packed, { encoding: 1, uncompressedSize: packed.length })])
+  );
+
+  assert.equal(result.text, "G1 X10\n");
+  assert.deepEqual(result.warnings, []);
+});
 
 test("parses Prusa-style G-code metadata comments", async () => {
   const source = [
