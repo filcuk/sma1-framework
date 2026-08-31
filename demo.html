@@ -2122,89 +2122,113 @@
             </div>
           </div>
           <div class="section-panel">
-            <div class="panel-stack">
-              <h3 class="panel-title">G-code metadata</h3>
-              <p class="panel-hint">Drop a G-code or binary G-code file to read slicer metadata.</p>
-              <p class="panel-hint">A 3D preview requires the original STL or 3MF; bgcode contains toolpaths, not source geometry.</p>
-              <div class="file-dropzone" id="demo-gcode-dropzone" data-file-accept=".gcode,.bgcode">
-                <input type="file" class="file-dropzone-input" hidden />
-                <button type="button" class="file-dropzone-prompt">
-                  <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
-                  <span class="file-dropzone-text">
-                    <span class="file-dropzone-primary">Drop a .gcode or .bgcode file here</span>
-                    <span class="file-dropzone-secondary">select to browse</span>
-                  </span>
-                </button>
-                <ul class="file-dropzone-list hidden" hidden></ul>
+            <div class="panel-split">
+              <div class="panel-stack">
+                <h3 class="panel-title">G-code metadata</h3>
+                <p class="panel-hint">Drop a G-code or binary G-code file to read slicer metadata and toolpaths.</p>
+                <div class="file-dropzone" id="demo-gcode-dropzone" data-file-accept=".gcode,.bgcode">
+                  <input type="file" class="file-dropzone-input" hidden />
+                  <button type="button" class="file-dropzone-prompt">
+                    <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
+                    <span class="file-dropzone-text">
+                      <span class="file-dropzone-primary">Drop a .gcode or .bgcode file here</span>
+                      <span class="file-dropzone-secondary">select to browse</span>
+                    </span>
+                  </button>
+                  <ul class="file-dropzone-list hidden" hidden></ul>
+                </div>
+                <p class="panel-hint" id="demo-gcode-status" role="status">No G-code file selected.</p>
+                <div class="panel-grid panel-grid-2 hidden" id="demo-gcode-readout" hidden>
+                  <div>
+                    <span class="field-label">Timestamp</span>
+                    <output data-gcode-meta="timestamp">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Format</span>
+                    <output data-gcode-meta="format">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Duration</span>
+                    <output data-gcode-meta="duration">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Nozzle</span>
+                    <output data-gcode-meta="nozzle">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Bed temperature</span>
+                    <output data-gcode-meta="bed-temperature">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Nozzle temperature</span>
+                    <output data-gcode-meta="nozzle-temperature">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Fill density</span>
+                    <output data-gcode-meta="fill-density">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Filament type</span>
+                    <output data-gcode-meta="filament-type">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Filament</span>
+                    <output data-gcode-meta="filament">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Perimeters</span>
+                    <output data-gcode-meta="perimeters">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Objects</span>
+                    <output data-gcode-meta="object-count">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Layer height</span>
+                    <output data-gcode-meta="layer-height">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Slicer</span>
+                    <output data-gcode-meta="slicer">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Printer</span>
+                    <output data-gcode-meta="printer">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Wipe tower filament</span>
+                    <output data-gcode-meta="wipe-tower">—</output>
+                  </div>
+                  <div>
+                    <span class="field-label">Object details</span>
+                    <ul data-gcode-meta="objects">
+                      <li>—</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-              <p class="panel-hint" id="demo-gcode-status" role="status">No G-code file selected.</p>
-              <div class="panel-grid panel-grid-2 hidden" id="demo-gcode-readout" hidden>
-                <div>
-                  <span class="field-label">Timestamp</span>
-                  <output data-gcode-meta="timestamp">—</output>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="panel-title">Toolpath preview</h3>
+                <p class="panel-hint">Extrusion lines are accented; travel moves are muted.</p>
+                <div class="stepper" id="demo-gcode-layer" data-stepper-min="0" data-stepper-max="9999"
+                  data-stepper-step="1" data-stepper-default="9999" data-stepper-format="integer">
+                  <label class="field-label" for="demo-gcode-layer-input">Maximum layer</label>
+                  <div class="stepper-control">
+                    <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                      aria-label="Show a lower maximum layer">−</button>
+                    <input type="text" id="demo-gcode-layer-input" class="input stepper-input" inputmode="numeric"
+                      aria-label="Maximum layer to show" />
+                    <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                      aria-label="Show a higher maximum layer">+</button>
+                    <input type="hidden" class="stepper-value" />
+                  </div>
                 </div>
-                <div>
-                  <span class="field-label">Format</span>
-                  <output data-gcode-meta="format">—</output>
+                <div class="model-preview toolpath-preview" id="demo-toolpath-preview" aria-live="polite"
+                  aria-label="G-code toolpath preview">
+                  <p class="model-preview__empty">No toolpath yet</p>
                 </div>
-                <div>
-                  <span class="field-label">Duration</span>
-                  <output data-gcode-meta="duration">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Nozzle</span>
-                  <output data-gcode-meta="nozzle">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Bed temperature</span>
-                  <output data-gcode-meta="bed-temperature">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Nozzle temperature</span>
-                  <output data-gcode-meta="nozzle-temperature">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Fill density</span>
-                  <output data-gcode-meta="fill-density">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Filament type</span>
-                  <output data-gcode-meta="filament-type">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Filament</span>
-                  <output data-gcode-meta="filament">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Perimeters</span>
-                  <output data-gcode-meta="perimeters">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Objects</span>
-                  <output data-gcode-meta="object-count">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Layer height</span>
-                  <output data-gcode-meta="layer-height">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Slicer</span>
-                  <output data-gcode-meta="slicer">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Printer</span>
-                  <output data-gcode-meta="printer">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Wipe tower filament</span>
-                  <output data-gcode-meta="wipe-tower">—</output>
-                </div>
-                <div>
-                  <span class="field-label">Object details</span>
-                  <ul data-gcode-meta="objects">
-                    <li>—</li>
-                  </ul>
-                </div>
+                <p class="panel-hint" id="demo-toolpath-status" role="status">No G-code file selected.</p>
               </div>
             </div>
           </div>

@@ -56,6 +56,8 @@ import { initDiagrams } from "./components/diagram.js";
 import { createBoxMesh, encodeStl } from "./components/stl.js";
 import { initModelPreview } from "./components/model-preview.js";
 import { parseGcodeMeta } from "./components/gcode.js";
+import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
+import { initToolpathPreview } from "./components/toolpath-preview.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
@@ -73,6 +75,9 @@ const demoImagePreview = initImagePreview(
 );
 const demoModelPreview = initModelPreview(
   document.getElementById("demo-model-preview")
+);
+const demoToolpathPreview = initToolpathPreview(
+  document.getElementById("demo-toolpath-preview")
 );
 
 initExpandableSurfaces(document);
@@ -163,6 +168,8 @@ function updateDemoStlDimension(name, value) {
 const demoGcodeDropzone = document.getElementById("demo-gcode-dropzone");
 const demoGcodeStatus = document.getElementById("demo-gcode-status");
 const demoGcodeReadout = document.getElementById("demo-gcode-readout");
+const demoToolpathStatus = document.getElementById("demo-toolpath-status");
+let demoGcodeLayerStepper = null;
 let demoGcodeRequest = 0;
 
 function formatDemoDuration(seconds) {
@@ -255,12 +262,24 @@ async function readDemoGcode({ files }) {
   setHidden(demoGcodeReadout, true);
 
   try {
-    const metadata = await parseGcodeMeta(await file.arrayBuffer());
+    const bytes = await file.arrayBuffer();
+    const [metadata, toolpath] = await Promise.all([
+      parseGcodeMeta(bytes),
+      parseGcodeToolpath(bytes),
+    ]);
     if (request !== demoGcodeRequest) return;
     setDemoGcodeMetadata(metadata);
-    const warning = metadata.warnings.length ? ` ${metadata.warnings.join(" ")}` : "";
+    demoToolpathPreview?.setToolpath(toolpath);
+    demoGcodeLayerStepper?.setValue(Math.max(0, toolpath.layerCount - 1));
+    const warnings = [...metadata.warnings, ...toolpath.warnings];
+    const warning = warnings.length ? ` ${warnings.join(" ")}` : "";
     if (demoGcodeStatus) {
       demoGcodeStatus.textContent = `Read ${file.name}.${warning}`;
+    }
+    if (demoToolpathStatus) {
+      demoToolpathStatus.textContent = `${toolpath.segments.length.toLocaleString()} segments · ${
+        toolpath.layerCount
+      } layers shown.`;
     }
   } catch (error) {
     if (request !== demoGcodeRequest) return;
@@ -268,6 +287,11 @@ async function readDemoGcode({ files }) {
       demoGcodeStatus.textContent = `Could not read ${file.name}: ${
         error instanceof Error ? error.message : String(error)
       }`;
+    }
+    demoToolpathPreview?.clear();
+    demoGcodeLayerStepper?.setValue(9999);
+    if (demoToolpathStatus) {
+      demoToolpathStatus.textContent = "Toolpath preview unavailable.";
     }
   }
 }
@@ -277,7 +301,12 @@ initFileDropzone(demoGcodeDropzone, {
   onClear: () => {
     demoGcodeRequest += 1;
     setHidden(demoGcodeReadout, true);
+    demoToolpathPreview?.clear();
+    demoGcodeLayerStepper?.setValue(9999);
     if (demoGcodeStatus) demoGcodeStatus.textContent = "No G-code file selected.";
+    if (demoToolpathStatus) {
+      demoToolpathStatus.textContent = "No G-code file selected.";
+    }
   },
 });
 
@@ -314,6 +343,9 @@ initStepper(document.getElementById("demo-stl-length"), {
 });
 initStepper(document.getElementById("demo-stl-height"), {
   onChange: ({ value }) => updateDemoStlDimension("height", value),
+});
+demoGcodeLayerStepper = initStepper(document.getElementById("demo-gcode-layer"), {
+  onChange: ({ value }) => demoToolpathPreview?.setMaxLayer(value),
 });
 
 fetch(new URL("./res/demo-image-preview.svg", import.meta.url))
