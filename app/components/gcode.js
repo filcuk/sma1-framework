@@ -114,18 +114,56 @@ function parseMass(value, unit) {
 }
 
 /**
+ * @param {string} value
+ */
+function parseBooleanValue(value) {
+  const normalized = String(value).trim().toLowerCase();
+  if (["1", "true", "yes", "on", "enabled"].includes(normalized)) return true;
+  if (["0", "false", "no", "off", "disabled"].includes(normalized)) return false;
+  return null;
+}
+
+/**
+ * @param {string} key
+ * @param {string} value
+ */
+function parseProducedTimestamp(key, value) {
+  const date = key.match(/^produced_on_(\d{4})_(\d{2})_(\d{2})_at_(\d{1,2})$/);
+  if (!date) return null;
+  const time = String(value).trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(.*)$/);
+  if (!time) return null;
+  const [, year, month, day, hour] = date;
+  const [, first, second, third, zone] = time;
+  const minute = third ? second : first;
+  const seconds = third ?? second;
+  return `${year}-${month}-${day} ${hour.padStart(2, "0")}:${minute}:${seconds}${
+    zone ? ` ${zone.trim()}` : ""
+  }`;
+}
+
+/**
  * @param {"gcode" | "bgcode"} format
  */
 function createResult(format) {
   return {
     format,
+    timestamp: null,
     durationSec: null,
     filamentGrams: null,
     filamentMm: null,
+    filamentM: null,
     filamentCm3: null,
     filamentType: null,
     nozzleMm: null,
+    nozzleHighFlow: null,
+    bedTemperatureC: null,
+    fillDensityPercent: null,
+    nozzleTemperatureC: null,
     layerHeightMm: null,
+    perimeters: null,
+    objectCount: null,
+    objects: [],
+    wipeTowerFilamentGrams: null,
     slicer: null,
     printerModel: null,
     raw: {},
@@ -163,17 +201,40 @@ function applyMetadataValue(result, key, value, section, priorities) {
   result.raw[rawKey] = trimmedValue;
 
   const lower = normalized;
+  setField(
+    result,
+    "timestamp",
+    parseProducedTimestamp(lower, trimmedValue) ??
+      (["timestamp", "generated_on", "produced_on"].includes(lower) ? trimmedValue : null),
+    1,
+    priorities
+  );
+
   if (
-    (lower.includes("time") || lower === "time") &&
-    !lower.includes("silent") &&
-    !lower.includes("first_layer")
+    lower === "time" ||
+    lower === "print_time" ||
+    lower === "estimated_time" ||
+    lower === "total_estimated_time" ||
+    (lower.startsWith("estimated_printing_time") && !lower.includes("silent"))
   ) {
     setField(result, "durationSec", parseDurationSeconds(trimmedValue), 1, priorities);
   }
 
   const isTotal = lower.includes("total");
+  if (lower === "total_filament_used_for_wipe_tower_g") {
+    setField(
+      result,
+      "wipeTowerFilamentGrams",
+      parseMass(trimmedValue, "g"),
+      1,
+      priorities
+    );
+  }
   if (lower.includes("filament") || lower.includes("material")) {
-    if (lower.endsWith("_g") || lower.includes("gram") || lower.includes("weight")) {
+    const isWipeTower = lower.includes("wipe_tower");
+    if (isWipeTower) {
+      // Wipe-tower material is not the requested model filament total.
+    } else if (lower.endsWith("_g") || lower === "filament_weight") {
       setField(
         result,
         "filamentGrams",
@@ -181,7 +242,7 @@ function applyMetadataValue(result, key, value, section, priorities) {
         isTotal ? 2 : 1,
         priorities
       );
-    } else if (lower.endsWith("_mm") || lower.includes("length")) {
+    } else if (lower.endsWith("_mm")) {
       setField(
         result,
         "filamentMm",
@@ -189,7 +250,7 @@ function applyMetadataValue(result, key, value, section, priorities) {
         isTotal ? 2 : 1,
         priorities
       );
-    } else if (lower.endsWith("_cm3") || lower.includes("volume")) {
+    } else if (lower.endsWith("_cm3")) {
       setField(
         result,
         "filamentCm3",
@@ -211,11 +272,38 @@ function applyMetadataValue(result, key, value, section, priorities) {
   if (lower.includes("filament_type") || lower === "material_type") {
     setField(result, "filamentType", trimmedValue, 1, priorities);
   }
-  if (lower.includes("nozzle") && (lower.includes("diameter") || lower === "nozzle")) {
+  if (lower === "nozzle" || lower === "nozzle_diameter" || lower === "nozzle_diameter_mm") {
     setField(result, "nozzleMm", parseNumber(trimmedValue), 1, priorities);
   }
-  if (lower.includes("layer_height")) {
+  if (lower === "nozzle_high_flow") {
+    setField(result, "nozzleHighFlow", parseBooleanValue(trimmedValue), 1, priorities);
+  }
+  if (lower === "bed_temperature" || lower === "bed_temperature_c") {
+    setField(result, "bedTemperatureC", parseNumber(trimmedValue), 1, priorities);
+  }
+  if (lower === "fill_density" || lower === "fill_density_percent") {
+    setField(result, "fillDensityPercent", parseNumber(trimmedValue), 1, priorities);
+  }
+  if (lower === "temperature" || lower === "nozzle_temperature") {
+    setField(result, "nozzleTemperatureC", parseNumber(trimmedValue), 1, priorities);
+  }
+  if (lower === "layer_height" || lower === "layer_height_mm") {
     setField(result, "layerHeightMm", parseNumber(trimmedValue), 1, priorities);
+  }
+  if (lower === "perimeters" || lower === "wall_line_count") {
+    setField(result, "perimeters", parseNumber(trimmedValue), 1, priorities);
+  }
+  if (lower === "objects_info" || lower === "objects_info_objects") {
+    try {
+      const parsed = JSON.parse(trimmedValue);
+      const objects = Array.isArray(parsed) ? parsed : parsed?.objects;
+      if (Array.isArray(objects)) {
+        setField(result, "objects", objects, 1, priorities);
+        setField(result, "objectCount", objects.length, 1, priorities);
+      }
+    } catch {
+      // Keep the raw value when a slicer emits a non-JSON object description.
+    }
   }
   if (
     lower === "slicer" ||
@@ -225,7 +313,7 @@ function applyMetadataValue(result, key, value, section, priorities) {
   ) {
     setField(result, "slicer", trimmedValue, 1, priorities);
   }
-  if (lower === "printer_model" || lower === "printer" || lower === "printer_settings_id") {
+  if (lower === "printer_model" || lower === "printer") {
     setField(result, "printerModel", trimmedValue, 1, priorities);
   }
 }
@@ -261,17 +349,27 @@ function parseTextMetadata(
       continue;
     }
 
-    const colon = entry.match(/^([^:]+):\s*(.+)$/);
-    if (colon) {
-      applyMetadataValue(result, colon[1], colon[2], section, priorities);
-      continue;
-    }
-
     const equals = entry.match(/^([^=]+?)\s*=\s*(.+)$/);
     if (equals) {
       applyMetadataValue(result, equals[1], equals[2], section, priorities);
+      continue;
+    }
+
+    const colon = entry.match(/^([^:]+):\s*(.+)$/);
+    if (colon) {
+      applyMetadataValue(result, colon[1], colon[2], section, priorities);
     }
   }
+}
+
+/**
+ * @param {ReturnType<typeof createResult>} result
+ */
+function finalizeResult(result) {
+  if (Number.isFinite(result.filamentMm)) {
+    result.filamentM = result.filamentMm / 1000;
+  }
+  return result;
 }
 
 /**
@@ -420,13 +518,23 @@ async function parseBgcode(bytes, result) {
  * @param {string | ArrayBuffer | Uint8Array} input
  * @returns {Promise<{
  *   format: "gcode" | "bgcode",
+ *   timestamp: string | null,
  *   durationSec: number | null,
  *   filamentGrams: number | null,
  *   filamentMm: number | null,
+ *   filamentM: number | null,
  *   filamentCm3: number | null,
  *   filamentType: string | null,
  *   nozzleMm: number | null,
+ *   nozzleHighFlow: boolean | null,
+ *   bedTemperatureC: number | null,
+ *   fillDensityPercent: number | null,
+ *   nozzleTemperatureC: number | null,
  *   layerHeightMm: number | null,
+ *   perimeters: number | null,
+ *   objectCount: number | null,
+ *   objects: object[],
+ *   wipeTowerFilamentGrams: number | null,
  *   slicer: string | null,
  *   printerModel: string | null,
  *   raw: Record<string, string>,
@@ -438,16 +546,16 @@ export async function parseGcodeMeta(input) {
     const result = createResult("gcode");
     parseTextMetadata(input, result, { commentsOnly: true });
     if (!input.trim()) result.warnings.push("G-code input is empty");
-    return result;
+    return finalizeResult(result);
   }
 
   const bytes = toBytes(input);
   if (isBgcode(bytes)) {
-    return parseBgcode(bytes, createResult("bgcode"));
+    return parseBgcode(bytes, createResult("bgcode")).then(finalizeResult);
   }
 
   const result = createResult("gcode");
   parseTextMetadata(decodeTextSample(bytes), result, { commentsOnly: true });
   if (bytes.byteLength === 0) result.warnings.push("G-code input is empty");
-  return result;
+  return finalizeResult(result);
 }

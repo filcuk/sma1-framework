@@ -177,30 +177,71 @@ function formatDemoDuration(seconds) {
 }
 
 function formatDemoNumber(value, unit) {
-  return Number.isFinite(value) ? `${value} ${unit}` : "—";
+  return Number.isFinite(value) ? `${value}${unit ? ` ${unit}` : ""}` : "—";
+}
+
+function formatDemoMetres(value) {
+  return Number.isFinite(value) ? `${value.toFixed(2)} m` : "—";
 }
 
 function setDemoGcodeMetadata(metadata) {
   const values = {
+    timestamp: metadata.timestamp || "—",
     format: metadata.format.toUpperCase(),
     duration: formatDemoDuration(metadata.durationSec),
-    nozzle: formatDemoNumber(metadata.nozzleMm, "mm"),
+    nozzle: Number.isFinite(metadata.nozzleMm)
+      ? `${metadata.nozzleMm} mm${metadata.nozzleHighFlow ? " [HF]" : ""}`
+      : "—",
+    "bed-temperature": formatDemoNumber(metadata.bedTemperatureC, "°C"),
+    "nozzle-temperature": formatDemoNumber(metadata.nozzleTemperatureC, "°C"),
+    "fill-density": formatDemoNumber(metadata.fillDensityPercent, "%"),
     "filament-type": metadata.filamentType || "—",
     filament: [
       formatDemoNumber(metadata.filamentGrams, "g"),
-      formatDemoNumber(metadata.filamentMm, "mm"),
+      formatDemoMetres(metadata.filamentM),
       formatDemoNumber(metadata.filamentCm3, "cm³"),
     ]
       .filter((value) => value !== "—")
       .join(" · ") || "—",
+    perimeters: formatDemoNumber(metadata.perimeters, ""),
+    "object-count": formatDemoNumber(metadata.objectCount, ""),
     "layer-height": formatDemoNumber(metadata.layerHeightMm, "mm"),
     slicer: metadata.slicer || "—",
     printer: metadata.printerModel || "—",
+    "wipe-tower": formatDemoNumber(metadata.wipeTowerFilamentGrams, "g"),
   };
 
   for (const [name, value] of Object.entries(values)) {
     const output = demoGcodeReadout?.querySelector(`[data-gcode-meta="${name}"]`);
     if (output) output.textContent = value;
+  }
+
+  const objectList = demoGcodeReadout?.querySelector('[data-gcode-meta="objects"]');
+  if (objectList) {
+    objectList.replaceChildren();
+    if (!metadata.objects.length) {
+      const empty = document.createElement("li");
+      empty.textContent = "—";
+      objectList.append(empty);
+    } else {
+      metadata.objects.forEach((object, index) => {
+        const item = document.createElement("li");
+        const details = Object.entries(object)
+          .filter(([key]) => key !== "name")
+          .map(([key, value]) => {
+            if (key === "polygon" && Array.isArray(value)) {
+              return `${key}: ${value.length} points`;
+            }
+            return `${key}: ${
+              typeof value === "string" ? value : JSON.stringify(value)
+            }`;
+          });
+        item.textContent = `${object.name || `Object ${index + 1}`}${
+          details.length ? ` (${details.join("; ")})` : ""
+        }`;
+        objectList.append(item);
+      });
+    }
   }
   setHidden(demoGcodeReadout, false);
 }

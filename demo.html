@@ -2125,6 +2125,7 @@
             <div class="panel-stack">
               <h3 class="panel-title">G-code metadata</h3>
               <p class="panel-hint">Drop a G-code or binary G-code file to read slicer metadata.</p>
+              <p class="panel-hint">A 3D preview requires the original STL or 3MF; bgcode contains toolpaths, not source geometry.</p>
               <div class="file-dropzone" id="demo-gcode-dropzone" data-file-accept=".gcode,.bgcode">
                 <input type="file" class="file-dropzone-input" hidden />
                 <button type="button" class="file-dropzone-prompt">
@@ -2139,6 +2140,10 @@
               <p class="panel-hint" id="demo-gcode-status" role="status">No G-code file selected.</p>
               <div class="panel-grid panel-grid-2 hidden" id="demo-gcode-readout" hidden>
                 <div>
+                  <span class="field-label">Timestamp</span>
+                  <output data-gcode-meta="timestamp">—</output>
+                </div>
+                <div>
                   <span class="field-label">Format</span>
                   <output data-gcode-meta="format">—</output>
                 </div>
@@ -2151,12 +2156,32 @@
                   <output data-gcode-meta="nozzle">—</output>
                 </div>
                 <div>
+                  <span class="field-label">Bed temperature</span>
+                  <output data-gcode-meta="bed-temperature">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Nozzle temperature</span>
+                  <output data-gcode-meta="nozzle-temperature">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Fill density</span>
+                  <output data-gcode-meta="fill-density">—</output>
+                </div>
+                <div>
                   <span class="field-label">Filament type</span>
                   <output data-gcode-meta="filament-type">—</output>
                 </div>
                 <div>
                   <span class="field-label">Filament</span>
                   <output data-gcode-meta="filament">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Perimeters</span>
+                  <output data-gcode-meta="perimeters">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Objects</span>
+                  <output data-gcode-meta="object-count">—</output>
                 </div>
                 <div>
                   <span class="field-label">Layer height</span>
@@ -2169,6 +2194,16 @@
                 <div>
                   <span class="field-label">Printer</span>
                   <output data-gcode-meta="printer">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Wipe tower filament</span>
+                  <output data-gcode-meta="wipe-tower">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Object details</span>
+                  <ul data-gcode-meta="objects">
+                    <li>—</li>
+                  </ul>
                 </div>
               </div>
             </div>

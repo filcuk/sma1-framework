@@ -10,6 +10,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- G-code metadata now prefers exact slicer fields, so nozzle, layer height, filament quantities, and duration are not overwritten by unrelated settings; the demo also shows filament metres and perimeters.
 - Code block view/select with line numbers: horizontal scrollbar sits flush with the block (padding moved from `pre` onto `code` / gutter rows so the scrollport fills the block). Edit mode was already correct via the inset textarea.
 - Anchored popovers hide while their target is fully off-screen (instead of clamping to a viewport edge) and show again when the anchor returns.
 - Tutorial navigation (`next` / `back` / `goTo` / `start`) uses one showable-step resolver (`when` + resolvable target). Back over a missing target no longer ends the tour; `goTo(i)` jumps to the nearest showable step instead of walking a one-way ray that could stop the tour.

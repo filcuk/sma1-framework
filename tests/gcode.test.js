@@ -61,6 +61,7 @@ test("parses Prusa-style G-code metadata comments", async () => {
   assert.equal(metadata.durationSec, 3723);
   assert.equal(metadata.filamentGrams, 4.74);
   assert.equal(metadata.filamentMm, 1590.68);
+  assert.equal(metadata.filamentM, 1.59068);
   assert.equal(metadata.filamentCm3, 3.83);
   assert.equal(metadata.filamentType, "PETG");
   assert.equal(metadata.nozzleMm, 0.4);
@@ -81,11 +82,25 @@ test("parses Cura-style time and filament comments", async () => {
 
 test("parses uncompressed bgcode metadata blocks", async () => {
   const bgcode = buildBgcode([
-    buildMetadataBlock(0, "producer = PrusaSlicer\n"),
-    buildMetadataBlock(3, "nozzle_diameter = 0.4\nprinter_model = MK4\n"),
+    buildMetadataBlock(
+      0,
+      "producer = PrusaSlicer\nproduced_on_2026_08_31_at_16 = 29:37 UTC\n"
+    ),
+    buildMetadataBlock(
+      3,
+      "nozzle_diameter = 0.4\nnozzle_high_flow = 1\nlayer_height = 0.25\n" +
+        "variable_layer_height = 1\nfilament_retract_length = 0.8\n" +
+        "bed_temperature = 85\nfill_density = 15%\ntemperature = 250\n" +
+        "printer_model = MK4\nobjects_info = " +
+        '{"objects":[{"name":"box.stl","polygon":[[0,0],[1,0],[1,1],[0,1]]}]}\n'
+    ),
     buildMetadataBlock(
       4,
-      "estimated_printing_time = 47m 27s\ntotal_filament_used_g = 12.5\n"
+      "estimated_printing_time = 47m 27s\nslowdown_below_layer_time = 9\n" +
+        "filament_load_time = 10.9\ntotal_filament_used_g = 12.5\n" +
+        "filament_used_mm = 1393.34\nfilament_used_cm3 = 3.35\n" +
+        "filament_ramming_volume = 10\nperimeters = 2\n" +
+        "total_filament_used_for_wipe_tower_g = 0.75\n"
     ),
     buildMetadataBlock(2, "filament_type = PLA\nlayer_height = 0.15\n"),
   ]);
@@ -94,11 +109,23 @@ test("parses uncompressed bgcode metadata blocks", async () => {
   const metadata = await parseGcodeMeta(bgcode);
 
   assert.equal(metadata.format, "bgcode");
+  assert.equal(metadata.timestamp, "2026-08-31 16:29:37 UTC");
   assert.equal(metadata.durationSec, 2847);
   assert.equal(metadata.filamentGrams, 12.5);
+  assert.equal(metadata.filamentMm, 1393.34);
+  assert.equal(metadata.filamentM, 1.39334);
+  assert.equal(metadata.filamentCm3, 3.35);
   assert.equal(metadata.filamentType, "PLA");
   assert.equal(metadata.nozzleMm, 0.4);
+  assert.equal(metadata.nozzleHighFlow, true);
+  assert.equal(metadata.bedTemperatureC, 85);
+  assert.equal(metadata.fillDensityPercent, 15);
+  assert.equal(metadata.nozzleTemperatureC, 250);
   assert.equal(metadata.layerHeightMm, 0.15);
+  assert.equal(metadata.perimeters, 2);
+  assert.equal(metadata.wipeTowerFilamentGrams, 0.75);
+  assert.equal(metadata.objectCount, 1);
+  assert.equal(metadata.objects[0].name, "box.stl");
   assert.equal(metadata.printerModel, "MK4");
   assert.equal(metadata.slicer, "PrusaSlicer");
   assert.equal(metadata.raw["printer.nozzle_diameter"], "0.4");

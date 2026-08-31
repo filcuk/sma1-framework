@@ -1750,7 +1750,7 @@ console.log(metadata.durationSec, metadata.filamentGrams, metadata.filamentType)
 if (isBgcode(bytes)) console.log("Binary G-code");
 ```
 
-The result includes `durationSec`, `filamentGrams`, `filamentMm`, `filamentCm3`, `filamentType`, `nozzleMm`, `layerHeightMm`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. Missing values are `null`. Uncompressed metadata and Deflate metadata are supported; Heatshrink and MeatPack payloads are skipped.
+The result includes `timestamp`, `durationSec`, `filamentGrams`, `filamentMm`, `filamentM`, `filamentCm3`, `filamentType`, `nozzleMm`, `nozzleHighFlow`, `bedTemperatureC`, `fillDensityPercent`, `nozzleTemperatureC`, `layerHeightMm`, `perimeters`, `objectCount`, `objects`, `wipeTowerFilamentGrams`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. `perimeters` is the slicer's wall-line count. Missing values are `null`. Uncompressed metadata and Deflate metadata are supported; Heatshrink and MeatPack payloads are skipped.
 
 ### Image preview
 
