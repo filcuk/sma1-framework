@@ -396,6 +396,7 @@ app/
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
     controls-diagram.css  # Mermaid diagram host
+    controls-model.css    # Model preview surface and 3D model hosts
     overlays.css        # Banners, tooltips, modals
     rich-text-editor.css # Rich text editor layout + Toast UI token overrides
     table.css            # Data tables
@@ -468,6 +469,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
+| **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
@@ -1677,6 +1679,28 @@ initFileDownloads(document); // wire every `.file-download`
 ```
 
 Pass a `files` array with per-file `getContent` callbacks. File size is shown in `.file-download-item-meta` when content can be resolved at init time.
+
+### STL export
+
+The STL helpers generate indexed meshes and encode them as binary or ASCII STL. Coordinates are in millimetres by convention; STL does not store units. Binary STL is the default and is suitable for direct browser download.
+
+```javascript
+import {
+  createBoxMesh,
+  decodeStl,
+  downloadStl,
+  encodeStl,
+} from "./components/stl.js";
+
+const mesh = createBoxMesh({ width: 40, length: 20, height: 10 });
+const binary = encodeStl(mesh); // ArrayBuffer
+const ascii = encodeStl(mesh, { format: "ascii", name: "box" }); // string
+const decoded = decodeStl(binary);
+
+await downloadStl(mesh, { filename: "box.stl" });
+```
+
+`createBoxMesh()` requires finite, positive `width`, `length`, and `height` values. The returned mesh has `positions` (`x, y, z` triplets) and `indices` (triangle triplets). `encodeStl()` rejects malformed or degenerate triangles. `downloadStl()` uses the framework file-download helper and reports the file as `model/stl`.
 
 ### Image preview
 

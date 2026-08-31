@@ -53,6 +53,7 @@ import { tooltip } from "./vendor/tanstack-charts/tooltip.js";
 import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
 import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
 import { initDiagrams } from "./components/diagram.js";
+import { createBoxMesh, encodeStl } from "./components/stl.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
@@ -143,6 +144,16 @@ initChart(document.getElementById("demo-bar-chart"), {
 
 initDiagrams(document);
 
+const demoStlDimensions = {
+  width: 40,
+  length: 20,
+  height: 10,
+};
+
+function updateDemoStlDimension(name, value) {
+  demoStlDimensions[name] = value;
+}
+
 initFileDropzone(document.getElementById("demo-file-dropzone-single"));
 
 initFileDropzone(document.getElementById("demo-file-dropzone-multi"));
@@ -162,6 +173,20 @@ initFileDownload(document.getElementById("demo-file-download"), {
       getContent: () => buildDemoTextFile("Summary"),
     },
   ],
+});
+
+initFileDownload(document.getElementById("demo-stl-download"), {
+  getContent: () => encodeStl(createBoxMesh(demoStlDimensions)),
+});
+
+initStepper(document.getElementById("demo-stl-width"), {
+  onChange: ({ value }) => updateDemoStlDimension("width", value),
+});
+initStepper(document.getElementById("demo-stl-length"), {
+  onChange: ({ value }) => updateDemoStlDimension("length", value),
+});
+initStepper(document.getElementById("demo-stl-height"), {
+  onChange: ({ value }) => updateDemoStlDimension("height", value),
 });
 
 fetch(new URL("./res/demo-image-preview.svg", import.meta.url))

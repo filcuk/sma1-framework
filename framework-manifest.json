@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-08-29T10:57:08.960Z",
+  "generatedAt": "2026-08-31T14:39:15.845Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -22,7 +22,7 @@
   "derived": {
     "app/css/framework.css": {
       "generator": "css-index",
-      "sha256": "c7eae0e7e9b189c73cd4c513af9fafb1bef39745646f4b7dace47c6d9db088e4"
+      "sha256": "1f7854b149a81bdfcb0416ceceb919cce6f17565f9c3e34404058b44a8b8e6ba"
     }
   },
   "files": {
@@ -167,6 +167,9 @@
     "app/components/stepper.js": {
       "sha256": "0d3fcada4160cc4a912607b341d946bc18a02511dfcd9e47d478ac7cb28f22df"
     },
+    "app/components/stl.js": {
+      "sha256": "0a33a2d5ba0b4f8c829dbd236151df1895bf4bfb3dd92b22d91e5658a78f12aa"
+    },
     "app/components/table.js": {
       "sha256": "8ac06a8b91a68bd93b0741bbfa82ce993bdf35765b7c2d0bdbf331577b335194"
     },
@@ -235,6 +238,9 @@
     },
     "app/css/controls-menus.css": {
       "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
+    },
+    "app/css/controls-model.css": {
+      "sha256": "6a1870eaf8a032df8f66f034d479f07b44001d77a0c84a252520427486df63fb"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"
@@ -1185,7 +1191,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "8157bf539a4c304345e81bed36cbbbc5c4f6fd33a48fb38194853c28a88f6a50"
+      "sha256": "c80b8436cf7bda0ea195cd9bb8086e2d47cd5daf4e3a36735526da92c491c9d9"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -2348,6 +2354,21 @@
         "dom"
       ],
       "notes": "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark"
+    },
+    "stl": {
+      "files": [
+        "app/components/stl.js"
+      ],
+      "css": [
+        "controls-model.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [
+        "file-download"
+      ],
+      "notes": "Dependency-free indexed mesh and binary/ASCII STL export helpers"
     }
   },
   "agent": {
@@ -2559,6 +2580,10 @@
     "controls-diagram.css": [
       "diagram"
     ],
+    "controls-model.css": [
+      "stl",
+      "model-preview"
+    ],
     "rich-text-editor.css": [
       "rich-text-editor"
     ],
@@ -2585,6 +2610,7 @@
     "controls-color.css",
     "controls-charts.css",
     "controls-diagram.css",
+    "controls-model.css",
     "overlays.css",
     "tutorial.css",
     "rich-text-editor.css",

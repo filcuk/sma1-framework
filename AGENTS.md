@@ -100,6 +100,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |
 | `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
+| `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
 | `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
 | `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
@@ -188,6 +189,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-color.css` | Color set gallery and color picker |
 | `app/css/controls-charts.css` | TanStack Charts host |
 | `app/css/controls-diagram.css` | Mermaid diagram host |
+| `app/css/controls-model.css` | Model preview surface and 3D model hosts |
 | `app/css/overlays.css` | Banners, tooltips, popovers, modals |
 | `app/css/tutorial.css` | Tutorial spotlight overlay and step chrome |
 | `app/css/rich-text-editor.css` | Rich text editor field layout and Toast UI token overrides |

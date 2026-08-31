@@ -212,7 +212,7 @@
             </div>
           </div>
         </section>
-      </div>
+
     </section>
     
     <section class="content-tier" id="content-tier-basic" aria-labelledby="content-tier-basic-title">
@@ -2042,6 +2042,80 @@
   participant App
   User-&gt;&gt;App: Open demo
   App--&gt;&gt;User: Render diagram</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" aria-labelledby="demo-3d">
+          <h3 id="demo-3d" class="section-title">3D</h3>
+          <div class="section-panel">
+            <div class="panel-split">
+              <div class="panel-stack">
+                <h3 class="panel-title">Parametric STL</h3>
+                <p class="panel-hint">Generate a simple rectangular box. Dimensions are in millimetres.</p>
+                <div class="panel-grid panel-grid-3">
+                  <div class="stepper" id="demo-stl-width" data-stepper-min="0.1" data-stepper-max="200"
+                    data-stepper-step="0.1" data-stepper-default="40" data-stepper-format="decimal">
+                    <label class="field-label" for="demo-stl-width-input">Width</label>
+                    <div class="stepper-control">
+                      <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                        aria-label="Decrease width">−</button>
+                      <input type="text" id="demo-stl-width-input" class="input stepper-input" inputmode="decimal"
+                        aria-label="Width in millimetres" />
+                      <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                        aria-label="Increase width">+</button>
+                      <input type="hidden" class="stepper-value" />
+                    </div>
+                  </div>
+                  <div class="stepper" id="demo-stl-length" data-stepper-min="0.1" data-stepper-max="200"
+                    data-stepper-step="0.1" data-stepper-default="20" data-stepper-format="decimal">
+                    <label class="field-label" for="demo-stl-length-input">Length</label>
+                    <div class="stepper-control">
+                      <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                        aria-label="Decrease length">−</button>
+                      <input type="text" id="demo-stl-length-input" class="input stepper-input" inputmode="decimal"
+                        aria-label="Length in millimetres" />
+                      <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                        aria-label="Increase length">+</button>
+                      <input type="hidden" class="stepper-value" />
+                    </div>
+                  </div>
+                  <div class="stepper" id="demo-stl-height" data-stepper-min="0.1" data-stepper-max="200"
+                    data-stepper-step="0.1" data-stepper-default="10" data-stepper-format="decimal">
+                    <label class="field-label" for="demo-stl-height-input">Height</label>
+                    <div class="stepper-control">
+                      <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                        aria-label="Decrease height">−</button>
+                      <input type="text" id="demo-stl-height-input" class="input stepper-input" inputmode="decimal"
+                        aria-label="Height in millimetres" />
+                      <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                        aria-label="Increase height">+</button>
+                      <input type="hidden" class="stepper-value" />
+                    </div>
+                  </div>
+                </div>
+                <div class="file-download" id="demo-stl-download">
+                  <ul class="file-download-list">
+                    <li>
+                      <button type="button" class="file-download-item btn" data-file-download-name="box.stl"
+                        aria-label="Download box.stl">
+                        <span class="file-download-item-name">box<span class="file-download-item-ext">.stl</span></span>
+                        <span class="file-download-item-meta">Binary STL</span>
+                        <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="panel-title">Preview</h3>
+                <p class="panel-hint">The interactive mesh preview will be added in a later phase.</p>
+                <div class="model-preview" id="demo-model-preview" aria-live="polite"
+                  aria-label="Generated box preview">
+                  <p class="model-preview__empty">No preview yet</p>
                 </div>
               </div>
             </div>

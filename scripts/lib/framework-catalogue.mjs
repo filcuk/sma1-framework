@@ -43,6 +43,7 @@ export const CSS_INDEX_ORDER = [
   "controls-color.css",
   "controls-charts.css",
   "controls-diagram.css",
+  "controls-model.css",
   "overlays.css",
   "tutorial.css",
   "rich-text-editor.css",
@@ -484,6 +485,14 @@ export const COMPONENTS = {
     notes:
       "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark",
   },
+  stl: {
+    files: ["app/components/stl.js"],
+    css: ["controls-model.css"],
+    vendor: [],
+    icons: [],
+    infra: ["file-download"],
+    notes: "Dependency-free indexed mesh and binary/ASCII STL export helpers",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */
@@ -537,6 +546,7 @@ export const CSS_PARTIAL_FEATURES = {
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],
   "controls-diagram.css": ["diagram"],
+  "controls-model.css": ["stl", "model-preview"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],
