@@ -141,10 +141,11 @@ export function initModelPreview(previewEl) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 1000);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
   const hemisphere = new THREE.HemisphereLight(0xffffff, 0x444444, 1.8);
   const keyLight = new THREE.DirectionalLight(0xffffff, 2);
   keyLight.position.set(1, 2, 3);
-  scene.add(hemisphere, keyLight);
+  scene.add(ambient, hemisphere, keyLight);
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
