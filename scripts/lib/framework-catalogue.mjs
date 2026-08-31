@@ -501,6 +501,14 @@ export const COMPONENTS = {
     infra: ["config", "dom"],
     notes: "Interactive Three.js host for the shared indexed mesh shape",
   },
+  gcode: {
+    files: ["app/components/gcode.js"],
+    css: [],
+    vendor: [],
+    icons: [],
+    infra: [],
+    notes: "ASCII G-code and binary bgcode metadata parser",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */

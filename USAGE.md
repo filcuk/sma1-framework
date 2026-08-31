@@ -471,6 +471,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, and theme support. [`app/components/model-preview.js`](app/components/model-preview.js). |
+| **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate-compressed metadata. [`app/components/gcode.js`](app/components/gcode.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
@@ -1736,6 +1737,20 @@ preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
 ```
 
 The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.
+
+### G-code metadata
+
+`parseGcodeMeta()` reads slicer metadata from ASCII G-code comments or binary `.bgcode` metadata blocks. It does not simulate toolpaths or estimate duration from feed rates. The asynchronous API accepts a string, `ArrayBuffer`, or `Uint8Array`; unsupported bgcode compression is reported in `warnings`.
+
+```javascript
+import { isBgcode, parseGcodeMeta } from "./components/gcode.js";
+
+const metadata = await parseGcodeMeta(await file.arrayBuffer());
+console.log(metadata.durationSec, metadata.filamentGrams, metadata.filamentType);
+if (isBgcode(bytes)) console.log("Binary G-code");
+```
+
+The result includes `durationSec`, `filamentGrams`, `filamentMm`, `filamentCm3`, `filamentType`, `nozzleMm`, `layerHeightMm`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. Missing values are `null`. Uncompressed metadata and Deflate metadata are supported; Heatshrink and MeatPack payloads are skipped.
 
 ### Image preview
 

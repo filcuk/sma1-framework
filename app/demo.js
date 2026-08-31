@@ -55,6 +55,7 @@ import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
 import { initDiagrams } from "./components/diagram.js";
 import { createBoxMesh, encodeStl } from "./components/stl.js";
 import { initModelPreview } from "./components/model-preview.js";
+import { parseGcodeMeta } from "./components/gcode.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
@@ -158,6 +159,86 @@ function updateDemoStlDimension(name, value) {
   demoStlDimensions[name] = value;
   demoModelPreview?.setMesh(createBoxMesh(demoStlDimensions));
 }
+
+const demoGcodeDropzone = document.getElementById("demo-gcode-dropzone");
+const demoGcodeStatus = document.getElementById("demo-gcode-status");
+const demoGcodeReadout = document.getElementById("demo-gcode-readout");
+let demoGcodeRequest = 0;
+
+function formatDemoDuration(seconds) {
+  if (!Number.isFinite(seconds)) return "—";
+  const wholeSeconds = Math.max(0, Math.round(seconds));
+  const hours = Math.floor(wholeSeconds / 3600);
+  const minutes = Math.floor((wholeSeconds % 3600) / 60);
+  const remainder = wholeSeconds % 60;
+  if (hours) return `${hours}h ${minutes}m ${remainder}s`;
+  if (minutes) return `${minutes}m ${remainder}s`;
+  return `${remainder}s`;
+}
+
+function formatDemoNumber(value, unit) {
+  return Number.isFinite(value) ? `${value} ${unit}` : "—";
+}
+
+function setDemoGcodeMetadata(metadata) {
+  const values = {
+    format: metadata.format.toUpperCase(),
+    duration: formatDemoDuration(metadata.durationSec),
+    nozzle: formatDemoNumber(metadata.nozzleMm, "mm"),
+    "filament-type": metadata.filamentType || "—",
+    filament: [
+      formatDemoNumber(metadata.filamentGrams, "g"),
+      formatDemoNumber(metadata.filamentMm, "mm"),
+      formatDemoNumber(metadata.filamentCm3, "cm³"),
+    ]
+      .filter((value) => value !== "—")
+      .join(" · ") || "—",
+    "layer-height": formatDemoNumber(metadata.layerHeightMm, "mm"),
+    slicer: metadata.slicer || "—",
+    printer: metadata.printerModel || "—",
+  };
+
+  for (const [name, value] of Object.entries(values)) {
+    const output = demoGcodeReadout?.querySelector(`[data-gcode-meta="${name}"]`);
+    if (output) output.textContent = value;
+  }
+  setHidden(demoGcodeReadout, false);
+}
+
+async function readDemoGcode({ files }) {
+  const file = files[0];
+  const request = ++demoGcodeRequest;
+  if (!file) return;
+
+  if (demoGcodeStatus) demoGcodeStatus.textContent = `Reading ${file.name}…`;
+  setHidden(demoGcodeReadout, true);
+
+  try {
+    const metadata = await parseGcodeMeta(await file.arrayBuffer());
+    if (request !== demoGcodeRequest) return;
+    setDemoGcodeMetadata(metadata);
+    const warning = metadata.warnings.length ? ` ${metadata.warnings.join(" ")}` : "";
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = `Read ${file.name}.${warning}`;
+    }
+  } catch (error) {
+    if (request !== demoGcodeRequest) return;
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = `Could not read ${file.name}: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+    }
+  }
+}
+
+initFileDropzone(demoGcodeDropzone, {
+  onFiles: readDemoGcode,
+  onClear: () => {
+    demoGcodeRequest += 1;
+    setHidden(demoGcodeReadout, true);
+    if (demoGcodeStatus) demoGcodeStatus.textContent = "No G-code file selected.";
+  },
+});
 
 initFileDropzone(document.getElementById("demo-file-dropzone-single"));
 

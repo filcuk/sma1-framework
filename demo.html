@@ -2121,6 +2121,58 @@
               </div>
             </div>
           </div>
+          <div class="section-panel">
+            <div class="panel-stack">
+              <h3 class="panel-title">G-code metadata</h3>
+              <p class="panel-hint">Drop a G-code or binary G-code file to read slicer metadata.</p>
+              <div class="file-dropzone" id="demo-gcode-dropzone" data-file-accept=".gcode,.bgcode">
+                <input type="file" class="file-dropzone-input" hidden />
+                <button type="button" class="file-dropzone-prompt">
+                  <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
+                  <span class="file-dropzone-text">
+                    <span class="file-dropzone-primary">Drop a .gcode or .bgcode file here</span>
+                    <span class="file-dropzone-secondary">select to browse</span>
+                  </span>
+                </button>
+                <ul class="file-dropzone-list hidden" hidden></ul>
+              </div>
+              <p class="panel-hint" id="demo-gcode-status" role="status">No G-code file selected.</p>
+              <div class="panel-grid panel-grid-2 hidden" id="demo-gcode-readout" hidden>
+                <div>
+                  <span class="field-label">Format</span>
+                  <output data-gcode-meta="format">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Duration</span>
+                  <output data-gcode-meta="duration">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Nozzle</span>
+                  <output data-gcode-meta="nozzle">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Filament type</span>
+                  <output data-gcode-meta="filament-type">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Filament</span>
+                  <output data-gcode-meta="filament">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Layer height</span>
+                  <output data-gcode-meta="layer-height">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Slicer</span>
+                  <output data-gcode-meta="slicer">—</output>
+                </div>
+                <div>
+                  <span class="field-label">Printer</span>
+                  <output data-gcode-meta="printer">—</output>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </section>
