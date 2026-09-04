@@ -281,6 +281,10 @@ export function initFileDropzone(
   return {
     openPicker,
     clear: () => commitFiles([]),
+    setFiles: (nextFiles) => {
+      const incoming = Array.isArray(nextFiles) ? nextFiles.filter(Boolean) : [];
+      commitFiles(isMultiple ? trimToMax(incoming) : incoming.slice(0, 1));
+    },
     getFiles: () => [...files],
     destroy: () => {
       prompt.removeEventListener("click", onPromptClick);

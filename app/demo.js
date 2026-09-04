@@ -261,7 +261,10 @@ const DEMO_GCODE_SAMPLE_URL = new URL(
 
 async function loadDemoGcode(bytes, label) {
   const request = ++demoGcodeRequest;
-  if (demoGcodeStatus) demoGcodeStatus.textContent = `Reading ${label}…`;
+  if (demoGcodeStatus) {
+    demoGcodeStatus.textContent = "Reading…";
+    setHidden(demoGcodeStatus, false);
+  }
   setHidden(demoGcodeReadout, true);
 
   try {
@@ -274,9 +277,9 @@ async function loadDemoGcode(bytes, label) {
     demoToolpathPreview?.setToolpath(toolpath);
     demoGcodeLayerStepper?.setValue(Math.max(0, toolpath.layerCount - 1));
     const warnings = [...metadata.warnings, ...toolpath.warnings];
-    const warning = warnings.length ? ` ${warnings.join(" ")}` : "";
     if (demoGcodeStatus) {
-      demoGcodeStatus.textContent = `Read ${label}.${warning}`;
+      demoGcodeStatus.textContent = warnings.join(" ");
+      setHidden(demoGcodeStatus, warnings.length === 0);
     }
     if (demoToolpathStatus) {
       demoToolpathStatus.textContent = `${toolpath.segments.length.toLocaleString()} segments · ${
@@ -286,9 +289,10 @@ async function loadDemoGcode(bytes, label) {
   } catch (error) {
     if (request !== demoGcodeRequest) return;
     if (demoGcodeStatus) {
-      demoGcodeStatus.textContent = `Could not read ${label}: ${
+      demoGcodeStatus.textContent = `Could not read${label ? ` ${label}` : ""}: ${
         error instanceof Error ? error.message : String(error)
       }`;
+      setHidden(demoGcodeStatus, false);
     }
     demoToolpathPreview?.clear();
     demoGcodeLayerStepper?.setValue(9999);
@@ -304,14 +308,17 @@ async function readDemoGcode({ files }) {
   await loadDemoGcode(await file.arrayBuffer(), file.name);
 }
 
-initFileDropzone(demoGcodeDropzone, {
+const demoGcodeDropzoneApi = initFileDropzone(demoGcodeDropzone, {
   onFiles: readDemoGcode,
   onClear: () => {
     demoGcodeRequest += 1;
     setHidden(demoGcodeReadout, true);
     demoToolpathPreview?.clear();
     demoGcodeLayerStepper?.setValue(9999);
-    if (demoGcodeStatus) demoGcodeStatus.textContent = "No G-code file selected.";
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = "No G-code file selected.";
+      setHidden(demoGcodeStatus, false);
+    }
     if (demoToolpathStatus) {
       demoToolpathStatus.textContent = "No G-code file selected.";
     }
@@ -369,7 +376,12 @@ fetch(DEMO_GCODE_SAMPLE_URL)
     }
     return response.arrayBuffer();
   })
-  .then((bytes) => loadDemoGcode(bytes, DEMO_GCODE_SAMPLE_NAME))
+  .then((bytes) => {
+    const file = new File([bytes], DEMO_GCODE_SAMPLE_NAME, {
+      type: "application/octet-stream",
+    });
+    demoGcodeDropzoneApi?.setFiles([file]);
+  })
   .catch((error) => {
     if (demoGcodeStatus) {
       demoGcodeStatus.textContent = `Could not load sample G-code: ${

@@ -1631,6 +1631,7 @@ const dropzone = initFileDropzone(document.getElementById("my-dropzone"), {
 
 dropzone?.openPicker();
 dropzone?.getFiles();
+dropzone?.setFiles([file]); // programmatic selection (triggers onFiles)
 dropzone?.clear();
 
 initFileDropzones(document); // wire every `.file-dropzone`
