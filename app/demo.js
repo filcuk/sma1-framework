@@ -253,16 +253,18 @@ function setDemoGcodeMetadata(metadata) {
   setHidden(demoGcodeReadout, false);
 }
 
-async function readDemoGcode({ files }) {
-  const file = files[0];
-  const request = ++demoGcodeRequest;
-  if (!file) return;
+const DEMO_GCODE_SAMPLE_NAME = "box_0.4n_0.25mm_PETG_COREONEL_9m.bgcode";
+const DEMO_GCODE_SAMPLE_URL = new URL(
+  `./res/demo/${DEMO_GCODE_SAMPLE_NAME}`,
+  import.meta.url
+);
 
-  if (demoGcodeStatus) demoGcodeStatus.textContent = `Reading ${file.name}…`;
+async function loadDemoGcode(bytes, label) {
+  const request = ++demoGcodeRequest;
+  if (demoGcodeStatus) demoGcodeStatus.textContent = `Reading ${label}…`;
   setHidden(demoGcodeReadout, true);
 
   try {
-    const bytes = await file.arrayBuffer();
     const [metadata, toolpath] = await Promise.all([
       parseGcodeMeta(bytes),
       parseGcodeToolpath(bytes),
@@ -274,7 +276,7 @@ async function readDemoGcode({ files }) {
     const warnings = [...metadata.warnings, ...toolpath.warnings];
     const warning = warnings.length ? ` ${warnings.join(" ")}` : "";
     if (demoGcodeStatus) {
-      demoGcodeStatus.textContent = `Read ${file.name}.${warning}`;
+      demoGcodeStatus.textContent = `Read ${label}.${warning}`;
     }
     if (demoToolpathStatus) {
       demoToolpathStatus.textContent = `${toolpath.segments.length.toLocaleString()} segments · ${
@@ -284,7 +286,7 @@ async function readDemoGcode({ files }) {
   } catch (error) {
     if (request !== demoGcodeRequest) return;
     if (demoGcodeStatus) {
-      demoGcodeStatus.textContent = `Could not read ${file.name}: ${
+      demoGcodeStatus.textContent = `Could not read ${label}: ${
         error instanceof Error ? error.message : String(error)
       }`;
     }
@@ -294,6 +296,12 @@ async function readDemoGcode({ files }) {
       demoToolpathStatus.textContent = "Toolpath preview unavailable.";
     }
   }
+}
+
+async function readDemoGcode({ files }) {
+  const file = files[0];
+  if (!file) return;
+  await loadDemoGcode(await file.arrayBuffer(), file.name);
 }
 
 initFileDropzone(demoGcodeDropzone, {
@@ -352,6 +360,22 @@ fetch(new URL("./res/demo-image-preview.svg", import.meta.url))
   .then((response) => response.text())
   .then((markup) => {
     demoImagePreview?.setSvg(markup);
+  });
+
+fetch(DEMO_GCODE_SAMPLE_URL)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.arrayBuffer();
+  })
+  .then((bytes) => loadDemoGcode(bytes, DEMO_GCODE_SAMPLE_NAME))
+  .catch((error) => {
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = `Could not load sample G-code: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+    }
   });
 
 initDatePicker(document.getElementById("demo-date-picker"));
