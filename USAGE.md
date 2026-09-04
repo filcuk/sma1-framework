@@ -1756,7 +1756,7 @@ Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × 
 
 The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.### G-code toolpath preview
 
-`parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, `G90` / `G91`, `M82` / `M83`, and `G92`; arc commands are reported as unsupported. Coordinates use the file's millimetre convention.
+`parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, XY-plane arcs `G2` / `G3` (I/J offsets or R radius, including helical Z), `G17` / `G90` / `G91`, `M82` / `M83`, and `G92`. Non-XY arc planes (`G18` / `G19`) and invalid arc parameters add a single `unsupported geometry` warning (the endpoint is still applied so later moves stay correct). Coordinates use the file's millimetre convention.
 
 ```javascript
 import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
@@ -1788,7 +1788,7 @@ The toolpath preview reuses the `.model-preview` surface and canvas styles, and 
 </div>
 ```
 
-`data-toolpath-preview-segments`, `data-toolpath-preview-layers`, and `data-toolpath-preview-current-layer` add muted counts to a bottom-right strip (`3,089 segments · 40 layers · layer 12/40`). Current layer follows `setMaxLayer()` (1-based display over the total layer count).
+`data-toolpath-preview-segments`, `data-toolpath-preview-layers`, and `data-toolpath-preview-current-layer` add muted counts to a bottom-right strip (`3,089 segments · 40 layers · layer 12/40`). Current layer follows `setMaxLayer()` (1-based display over the total layer count). When `parseGcodeToolpath()` reports `unsupported geometry`, that short warning is appended to the same meta strip automatically.
 
 `data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
 

@@ -48,6 +48,7 @@ import { parseBooleanAttr, setHidden, prefersReducedMotion } from "../utils/dom.
 import { createIcon } from "../utils/icons.js";
 import { createOrbitHomeAnim, tickOrbitHomeAnim } from "../utils/orbit-home.js";
 import { initSlider } from "./slider.js";
+import { UNSUPPORTED_GEOMETRY_WARNING } from "./gcode-toolpath.js";
 
 const DEFAULT_ARIA_LABEL = "G-code toolpath preview";
 const MAX_PIXEL_RATIO = 2;
@@ -378,6 +379,8 @@ export function initToolpathPreview(previewEl, options = {}) {
   );
   let hasMetaContent = fixedMetaContent || metaExtra !== "";
   let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+  /** Short geometry warning shown in the meta strip (e.g. unsupported arcs). */
+  let geometryWarning = "";
 
   const expandState = syncExpandableAttrs(previewEl, options);
   const showHome = expandState.home;
@@ -428,7 +431,8 @@ export function initToolpathPreview(previewEl, options = {}) {
   }
 
   function syncMetaVisibilityAttr() {
-    hasMetaContent = fixedMetaContent || metaExtra !== "";
+    hasMetaContent =
+      fixedMetaContent || metaExtra !== "" || geometryWarning !== "";
     metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
     if (metaExtra) previewEl.dataset.toolpathPreviewMetaExtra = metaExtra;
     else delete previewEl.dataset.toolpathPreviewMetaExtra;
@@ -437,6 +441,16 @@ export function initToolpathPreview(previewEl, options = {}) {
     } else {
       delete previewEl.dataset.toolpathPreviewMeta;
     }
+  }
+
+  /**
+   * @param {unknown} warnings
+   */
+  function resolveGeometryWarning(warnings) {
+    if (!Array.isArray(warnings)) return "";
+    return warnings.includes(UNSUPPORTED_GEOMETRY_WARNING)
+      ? UNSUPPORTED_GEOMETRY_WARNING
+      : "";
   }
 
   function ensureActionsHost() {
@@ -724,6 +738,7 @@ export function initToolpathPreview(previewEl, options = {}) {
         parts.push(`layer ${current}/${layerCount}`);
       }
     }
+    if (geometryWarning) parts.push(geometryWarning);
     if (metaExtra) parts.push(metaExtra);
 
     if (!parts.length) {
@@ -794,6 +809,8 @@ export function initToolpathPreview(previewEl, options = {}) {
         : 0;
     hasToolpath = segmentCount > 0 || layerCount > 0;
     maxLayer = layerCount > 0 ? layerCount - 1 : null;
+    geometryWarning = resolveGeometryWarning(toolpath?.warnings);
+    syncMetaVisibilityAttr();
     renderToolpath({ fitCamera: true });
   }
 
@@ -818,6 +835,8 @@ export function initToolpathPreview(previewEl, options = {}) {
     layerCount = 0;
     maxLayer = null;
     hasToolpath = false;
+    geometryWarning = "";
+    syncMetaVisibilityAttr();
     disposeLines();
     if (emptyEl) setHidden(emptyEl, false);
     syncHomeButton();

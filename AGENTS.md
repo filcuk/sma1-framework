@@ -104,7 +104,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta; meta visibility `hover` / `always` / `not-hover` / `never`; action visibility `hover` / `always` / `never` |
 | `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes; optional meta strip (size / triangles / vertices / volume / surface area / objects / `setMetaExtra`); optional maximise and home/reset via expandable-surface |
 | `parseGcodeMeta()` / `isBgcode()` | Read timestamp, duration, filament, temperatures, density, perimeters, objects, and slicer metadata from ASCII G-code and binary bgcode without simulating toolpaths |
-| `parseGcodeToolpath()` | Parse ASCII G-code or bgcode motion into extrusion/travel segments, layers, bounds, and warnings |
+| `parseGcodeToolpath()` | Parse ASCII G-code or bgcode motion into extrusion/travel segments (G0/G1 and XY G2/G3 arcs), layers, bounds, and warnings |
 | `initToolpathPreview()` / `initToolpathPreviews()` | Interactive Three.js LineSegments preview for parsed G-code toolpaths; maximum-layer filtering (hover `.slider--hover` on by default); optional meta strip (segments / layers / current layer / `setMetaExtra`); optional maximise and home/reset via expandable-surface |
 | `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
 | `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |

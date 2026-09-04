@@ -114,12 +114,47 @@ test("keeps compact E parameters separate from X or Y values", async () => {
   });
 });
 
-test("warns once and skips unsupported arcs", async () => {
-  const result = await parseGcodeToolpath("G2 X10 Y10 I5 J0\nG3 X0 Y0 I-5 J0");
+test("tessellates G2/G3 arcs with I/J offsets", async () => {
+  const result = await parseGcodeToolpath(
+    ["G90", "G1 X10 Y0", "G2 X0 Y10 I-10 J0", "G3 X10 Y0 I0 J-10"].join("\n")
+  );
 
-  assert.deepEqual(result.segments, []);
-  assert.deepEqual(result.warnings, [
-    "Arc command G2 is not supported and was skipped",
-    "Arc command G3 is not supported and was skipped",
-  ]);
+  assert.ok(result.segments.length > 2);
+  const last = result.segments.at(-1);
+  assert.ok(last);
+  assert.ok(Math.abs(last.x2 - 10) < 1e-6);
+  assert.ok(Math.abs(last.y2 - 0) < 1e-6);
+  assert.deepEqual(result.warnings, []);
+  assert.ok(result.bounds);
+  assert.ok(result.bounds.minX < 1);
+  assert.ok(result.bounds.maxY > 9);
+});
+
+test("tessellates R-mode arcs and helical Z", async () => {
+  const result = await parseGcodeToolpath(
+    ["G90", "G1 X10 Y0 Z0", "G3 X0 Y10 Z2 R10"].join("\n")
+  );
+
+  assert.ok(result.segments.length >= 4);
+  const last = result.segments.at(-1);
+  assert.ok(last);
+  assert.ok(Math.abs(last.x2 - 0) < 1e-6);
+  assert.ok(Math.abs(last.y2 - 10) < 1e-6);
+  assert.ok(Math.abs(last.z2 - 2) < 1e-6);
+  assert.deepEqual(result.warnings, []);
+});
+
+test("warns for unsupported arc planes without dropping the endpoint", async () => {
+  const result = await parseGcodeToolpath(
+    ["G18", "G1 X0 Z0", "G2 X10 Z0 I5 K0", "G17", "G1 X20"].join("\n")
+  );
+
+  assert.equal(result.warnings.includes("unsupported geometry"), true);
+  assert.equal(result.segments.some((segment) => segment.x2 === 20), true);
+});
+
+test("warns once for invalid arc parameters", async () => {
+  const result = await parseGcodeToolpath("G2 X10 Y10\nG3 X0 Y0 R1");
+
+  assert.deepEqual(result.warnings, ["unsupported geometry"]);
 });
