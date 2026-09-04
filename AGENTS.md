@@ -101,7 +101,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
 | `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
-| `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
+| `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta; meta visibility `hover` / `always` / `not-hover` / `never`; action visibility `hover` / `always` / `never` |
 | `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes; optional meta strip (size / triangles / vertices / volume / surface area / objects / `setMetaExtra`); optional maximise via expandable-surface |
 | `parseGcodeMeta()` / `isBgcode()` | Read timestamp, duration, filament, temperatures, density, perimeters, objects, and slicer metadata from ASCII G-code and binary bgcode without simulating toolpaths |
 | `parseGcodeToolpath()` | Parse ASCII G-code or bgcode motion into extrusion/travel segments, layers, bounds, and warnings |

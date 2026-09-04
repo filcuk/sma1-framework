@@ -468,7 +468,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
-| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
+| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
 | **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js (optional hover meta strip). [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
@@ -1813,6 +1813,7 @@ Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty plac
   data-image-preview-pixelated
   data-image-preview-maximize
   data-image-preview-expand-on-click
+  data-image-preview-actions="hover"
   data-image-preview-download
   data-image-preview-download-name="preview.svg"
   data-image-preview-dimensions
@@ -1833,7 +1834,7 @@ import { initImagePreview, initImagePreviews } from "./components/image-preview.
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
 
 const preview = initImagePreview(document.getElementById("my-preview"));
-preview?.setMetaExtra("Scale 4×");
+preview?.setMetaExtra(["Scale 4×", "PNG"]);
 preview?.setSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">…</svg>`);
 // preview?.setSrc("app/res/example.png", { alt: "Example" });
 // preview?.setBlob(file, { alt: file.name });
@@ -1844,13 +1845,13 @@ initExpandableSurfaces(document); // required when maximise attrs are used
 initImagePreviews(document); // wire every `.image-preview`
 ```
 
-`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`.
+`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`. `data-image-preview-actions` controls when maximise / download controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons).
 
 `data-image-preview-download` adds a floating download control (same hover strip as maximise). Optional `data-image-preview-download-name` sets the default filename. Pre-existing markup `<img>` children are wired for download via their `src`. `data-image-preview-dimensions` and `data-image-preview-file-size` show muted intrinsic size (`W × H px`) and/or source byte size in the bottom-right corner. For inline SMIL SVG (including multi-frame `g#frame-N` groups), `data-image-preview-frames` shows `frame K/N` while animating and `data-image-preview-duration` shows the loop length (e.g. `1.5 s`). Frame/duration meta does not apply to GIF/APNG/WebP loaded via `<img>`.
 
 `setSvg()` sanitizes markup before injection (strips scripts, event handlers, and other active content; keeps SMIL `animate*` / `set` when otherwise clean) and returns `false` when nothing safe remains.
 
-`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` to `initImagePreview()` to append app-specific text, such as a scale; `setMetaExtra(text)` updates or clears it at runtime.
+`data-image-preview-meta` controls when that muted strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array, joined with ` · `) for app-specific text.
 
 Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
