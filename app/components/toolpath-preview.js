@@ -10,6 +10,7 @@
  *     data-toolpath-preview-meta-extra="PETG"
  *     data-toolpath-preview-maximize
  *     data-toolpath-preview-home
+ *     data-toolpath-preview-layer-slider
  *     data-toolpath-preview-actions="hover"
  *     aria-label="G-code toolpath">
  *     <p class="model-preview__empty">No toolpath</p>
@@ -23,6 +24,8 @@
  * data-toolpath-preview-meta-extra — append app-specific text to the meta strip
  * data-toolpath-preview-maximize — floating fullscreen control via expandable-surface
  * data-toolpath-preview-home — floating reset-view (home) control
+ * data-toolpath-preview-layer-slider — floating maximum-layer slider (default on;
+ *   set `"false"` to disable). Uses the shared `.slider--hover` chrome.
  * data-toolpath-preview-expand-on-click — toggle maximise when clicking the canvas host
  * data-toolpath-preview-actions — hover control visibility: `hover` (default),
  *   `always`, or `never`
@@ -41,9 +44,10 @@
 import * as THREE from "../vendor/three/three.module.min.js";
 import { OrbitControls } from "../vendor/three/OrbitControls.js";
 import { APP_CONFIG } from "../config.js";
-import { setHidden, prefersReducedMotion } from "../utils/dom.js";
+import { parseBooleanAttr, setHidden, prefersReducedMotion } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 import { createOrbitHomeAnim, tickOrbitHomeAnim } from "../utils/orbit-home.js";
+import { initSlider } from "./slider.js";
 
 const DEFAULT_ARIA_LABEL = "G-code toolpath preview";
 const MAX_PIXEL_RATIO = 2;
@@ -97,11 +101,34 @@ function resolveActionsVisibility(value) {
 }
 
 /**
- * Map maximise / home options onto expandable-surface and surface-actions chrome.
+ * Layer slider is on by default; set `data-toolpath-preview-layer-slider="false"`
+ * (or `layerSlider: false`) to disable.
+ *
+ * @param {HTMLElement} el
+ * @param {{ layerSlider?: boolean }} options
+ * @returns {boolean}
+ */
+function resolveLayerSliderEnabled(el, options) {
+  if (typeof options.layerSlider === "boolean") return options.layerSlider;
+  const raw = el.getAttribute("data-toolpath-preview-layer-slider");
+  if (raw === null) return true;
+  if (raw === "false") return false;
+  return parseBooleanAttr(raw) ?? true;
+}
+
+/**
+ * Map maximise / home / layer-slider options onto expandable-surface and
+ * surface-actions chrome.
  * Call `initExpandableSurfaces()` after init (or on the page) to activate maximise.
  *
  * @param {HTMLElement} el
- * @param {{ maximize?: boolean, expandOnClick?: boolean, home?: boolean, actions?: string }} options
+ * @param {{
+ *   maximize?: boolean,
+ *   expandOnClick?: boolean,
+ *   home?: boolean,
+ *   layerSlider?: boolean,
+ *   actions?: string,
+ * }} options
  */
 function syncExpandableAttrs(el, options) {
   const maximize =
@@ -116,6 +143,7 @@ function syncExpandableAttrs(el, options) {
     typeof options.home === "boolean"
       ? options.home
       : el.hasAttribute("data-toolpath-preview-home");
+  const layerSlider = resolveLayerSliderEnabled(el, options);
   const actionsVisibility = resolveActionsVisibility(
     typeof options.actions === "string"
       ? options.actions
@@ -131,11 +159,20 @@ function syncExpandableAttrs(el, options) {
   if (home) el.setAttribute("data-toolpath-preview-home", "");
   else el.removeAttribute("data-toolpath-preview-home");
 
-  if (!maximize && !expandOnClick && !home) {
+  if (layerSlider) el.setAttribute("data-toolpath-preview-layer-slider", "");
+  else el.setAttribute("data-toolpath-preview-layer-slider", "false");
+
+  if (!maximize && !expandOnClick && !home && !layerSlider) {
     el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
     delete el.dataset.toolpathPreviewActions;
-    return { maximize: false, expandOnClick: false, home: false, actionsVisibility };
+    return {
+      maximize: false,
+      expandOnClick: false,
+      home: false,
+      layerSlider: false,
+      actionsVisibility,
+    };
   }
 
   if (maximize || expandOnClick) {
@@ -155,7 +192,7 @@ function syncExpandableAttrs(el, options) {
     el.removeAttribute("data-expandable-surface-control");
   }
 
-  if (maximize || home) {
+  if (maximize || home || layerSlider) {
     let actionsHost = el.querySelector(":scope > .surface-actions");
     if (!actionsHost) {
       actionsHost = document.createElement("div");
@@ -167,7 +204,7 @@ function syncExpandableAttrs(el, options) {
     delete el.dataset.toolpathPreviewActions;
   }
 
-  return { maximize, expandOnClick, home, actionsVisibility };
+  return { maximize, expandOnClick, home, layerSlider, actionsVisibility };
 }
 
 function readCssColor(name, fallback) {
@@ -292,6 +329,7 @@ function fitCameraToObject(camera, controls, object) {
  *   maximize?: boolean,
  *   expandOnClick?: boolean,
  *   home?: boolean,
+ *   layerSlider?: boolean,
  *   actions?: string,
  * }} [options]
  * @returns {{
@@ -343,6 +381,7 @@ export function initToolpathPreview(previewEl, options = {}) {
 
   const expandState = syncExpandableAttrs(previewEl, options);
   const showHome = expandState.home;
+  const showLayerSlider = expandState.layerSlider;
 
   if (showSegments) previewEl.setAttribute("data-toolpath-preview-segments", "");
   else previewEl.removeAttribute("data-toolpath-preview-segments");
@@ -367,6 +406,11 @@ export function initToolpathPreview(previewEl, options = {}) {
   let metaEl = null;
   /** @type {HTMLButtonElement | null} */
   let homeBtn = null;
+  /** @type {HTMLElement | null} */
+  let layerSliderEl = null;
+  /** @type {ReturnType<typeof initSlider> | null} */
+  let layerSlider = null;
+  let syncingLayerSlider = false;
 
   function ensureMetaEl() {
     if (!hasMetaContent || metaVisibility === "never") {
@@ -431,6 +475,86 @@ export function initToolpathPreview(previewEl, options = {}) {
     }
     syncHomeButton();
     return homeBtn;
+  }
+
+  function resolvedMaxLayerValue() {
+    if (layerCount <= 0) return 0;
+    if (maxLayer === null) return layerCount - 1;
+    return Math.min(layerCount - 1, Math.max(0, maxLayer));
+  }
+
+  /** 1-based layer number for the hover slider / meta (API `setMaxLayer` stays 0-based). */
+  function resolvedLayerSliderValue() {
+    return layerCount <= 0 ? 1 : resolvedMaxLayerValue() + 1;
+  }
+
+  function syncLayerSlider() {
+    if (!showLayerSlider || !layerSlider || !layerSliderEl) return;
+    if (!hasToolpath || layerCount <= 0) {
+      setHidden(layerSliderEl, true);
+      layerSlider.setDisabled(true);
+      return;
+    }
+
+    setHidden(layerSliderEl, false);
+    syncingLayerSlider = true;
+    layerSlider.setBounds({
+      min: 1,
+      max: layerCount,
+      value: resolvedLayerSliderValue(),
+      emit: false,
+    });
+    syncingLayerSlider = false;
+    layerSlider.setDisabled(false);
+  }
+
+  function ensureLayerSlider() {
+    if (!showLayerSlider) return null;
+    if (layerSlider && layerSliderEl?.isConnected) return layerSlider;
+
+    const host = ensureActionsHost();
+    layerSliderEl = host.querySelector(".toolpath-preview__layer-slider");
+    if (!(layerSliderEl instanceof HTMLElement)) {
+      layerSliderEl = document.createElement("div");
+      layerSliderEl.className =
+        "slider slider--hover toolpath-preview__layer-slider";
+      layerSliderEl.dataset.sliderMin = "1";
+      layerSliderEl.dataset.sliderMax = "1";
+      layerSliderEl.dataset.sliderFormat = "integer";
+      layerSliderEl.dataset.tooltip = "Maximum layer";
+      layerSliderEl.dataset.tooltipPosition = "top";
+
+      const row = document.createElement("div");
+      row.className = "slider-row";
+
+      const range = document.createElement("input");
+      range.type = "range";
+      range.className = "slider-range";
+      range.setAttribute("aria-label", "Maximum layer");
+
+      const readout = document.createElement("output");
+      readout.className = "slider-readout";
+      readout.setAttribute("aria-hidden", "true");
+      readout.textContent = "1";
+
+      row.append(range, readout);
+      layerSliderEl.append(row);
+      host.append(layerSliderEl);
+    }
+
+    layerSlider = initSlider(layerSliderEl, {
+      chrome: "hover",
+      format: "integer",
+      min: 1,
+      max: 1,
+      defaultValue: 1,
+      onInput: ({ value }) => {
+        if (syncingLayerSlider) return;
+        setMaxLayer(Math.max(0, value - 1));
+      },
+    });
+    syncLayerSlider();
+    return layerSlider;
   }
 
   let renderer;
@@ -545,6 +669,7 @@ export function initToolpathPreview(previewEl, options = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   ensureHomeButton();
+  ensureLayerSlider();
 
   function applyTheme() {
     const background = readCssColor("--surface", "#ffffff");
@@ -653,6 +778,7 @@ export function initToolpathPreview(previewEl, options = {}) {
       setHidden(emptyEl, !hasToolpath);
     }
     syncHomeButton();
+    syncLayerSlider();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -667,6 +793,7 @@ export function initToolpathPreview(previewEl, options = {}) {
         ? Math.max(...segments.map((segment) => segment.layer)) + 1
         : 0;
     hasToolpath = segmentCount > 0 || layerCount > 0;
+    maxLayer = layerCount > 0 ? layerCount - 1 : null;
     renderToolpath({ fitCamera: true });
   }
 
@@ -689,10 +816,12 @@ export function initToolpathPreview(previewEl, options = {}) {
     segments = [];
     segmentCount = 0;
     layerCount = 0;
+    maxLayer = null;
     hasToolpath = false;
     disposeLines();
     if (emptyEl) setHidden(emptyEl, false);
     syncHomeButton();
+    syncLayerSlider();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -760,6 +889,8 @@ export function initToolpathPreview(previewEl, options = {}) {
       renderer.dispose();
       canvas.remove();
       homeBtn?.remove();
+      layerSlider?.destroy();
+      layerSliderEl?.remove();
       metaEl?.remove();
       delete previewEl.dataset.toolpathPreviewInit;
     },

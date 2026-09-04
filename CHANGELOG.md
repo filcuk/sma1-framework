@@ -31,6 +31,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Slider hover chrome (`.slider--hover` / `data-slider-chrome="hover"`) for compact use in display-surface `.surface-actions` strips: optional `.slider-input`, optional `.slider-readout`, `setBounds()`, and `destroy()`. Documented as a reusable form→hover pattern in [`DESIGN.md`](DESIGN.md).
+- Toolpath preview maximum-layer hover slider (shared `.slider--hover`; on by default, `data-toolpath-preview-layer-slider="false"` to disable; left-aligned in the action strip). Demo uses the built-in control instead of a panel stepper.
 - File dropzone enforces `data-file-accept` by default (browse / drop / `setFiles`); set `data-file-accept-filter="soft"` for advise-only. `onError` receives `reason: "accept"` | `"max"`.
 - File dropzone `setFiles()` for programmatic selection (same path as drop / browse; triggers `onFiles`).
 - Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.

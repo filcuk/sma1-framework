@@ -74,7 +74,7 @@ Two ways to expose related actions on a surface:
 | Pattern | Role | Typical hosts |
 | ------- | ---- | ------------- |
 | **Built-in control toolbar** | Persistent bar of related editing / view controls (clear, copy, paste, format, maximise, highlight, and similar) | Code block, rich text editor |
-| **Hover controls** | Minimal floating actions on the surface (primarily **maximise**; **home**/reset on 3D previews; occasionally download or copy) | Image, mesh, and toolpath previews; code block when kept toolbar-light |
+| **Hover controls** | Minimal floating actions on the surface (primarily **maximise**; **home**/reset on 3D previews; optionally shared form-control chrome such as a **slider**; occasionally download or copy) | Image, mesh, and toolpath previews; code block when kept toolbar-light |
 
 A toolbar is the fuller editing experience. When a host uses a built-in toolbar, prefer putting those actions **in the toolbar** and treating hover chrome as optional or off — hover controls are meant for a **minimalist** surface, not a second full control strip. Do not require the user to discover the same primary actions in both places.
 
@@ -84,6 +84,20 @@ A toolbar is the fuller editing experience. When a host uses a built-in toolbar,
 - Optional **expand-on-click** (click empty surface area to maximise) may accompany the floating control; interactive chrome is excluded from that hit target.
 - Hover-control **visibility**: `hover` (default), `always`, or `never`. There is no `not-hover` mode for buttons — controls that are only useful when the pointer is away are not a target pattern.
 - Apps must be able to **turn each built-in hover action on or off** independently, and to **add custom hover controls** in the same floating strip without forking the maximise behaviour.
+
+### Form controls as hover chrome
+
+When a catalogue **form control** is useful on a display surface (layer scrubbing, opacity, scrub timeline, and similar), prefer a **chrome / density variant of that same component** over a host-specific reimplementation or a parallel “hover-only” widget.
+
+| Do | Don’t |
+| -- | ----- |
+| One component, shared behaviour and `initX` API; lighter markup for the strip (e.g. `.slider--hover` omits field label / editable value / form field) | Fork range / value logic into each host (`toolpath-preview`, image, mesh, …) |
+| Hosts **compose** the shared control into `.surface-actions` (left- or right-aligned as needed) | Invent a second catalogue component whose only difference is “lives on hover chrome” |
+| Keep hover chrome **minimal** — readout or icon affordances, not a full form row | Drop the full form layout (stacked label + wide value field) into the floating strip |
+
+Hover-control **visibility** (`hover` / `always` / `never`) still applies to the strip as a whole. Turning a built-in action on or off remains independent of that visibility mode.
+
+Apply the same principle when other form controls later need a surface-chrome variant (stepper, segmented control, toggle, and so on): extend the existing component rather than special-casing per host.
 
 ### Metadata label
 

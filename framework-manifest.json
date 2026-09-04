@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-04T19:20:19.071Z",
+  "generatedAt": "2026-09-04T19:39:26.861Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -168,7 +168,7 @@
       "sha256": "a47c40e4063c9e60ed6b0db6eccb77954bb11557cfbbc0e2a70548edcae41af6"
     },
     "app/components/slider.js": {
-      "sha256": "d33e0abe0f79cd9ccd1498bb17e2a1fd4cf7c361f33c565996beb2bb90a14941"
+      "sha256": "153e05b57eeb96374cb2142ce3a796aea953a2454c1aa2f1837023440472695a"
     },
     "app/components/spinner.js": {
       "sha256": "01171c4add024fb8e3ad2422ec41f4d99bd3130d40fcf188827ee5111697d342"
@@ -207,7 +207,7 @@
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
     "app/components/toolpath-preview.js": {
-      "sha256": "919486e3170e63cfd53bac240ca81b41e2d0abb0dfda79228aca1f0f622a2e36"
+      "sha256": "e94c65ae9737b63e056e7a325e650a7ecd309a94f3335094c334487a34781297"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -252,7 +252,7 @@
       "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
     },
     "app/css/controls-model.css": {
-      "sha256": "885e60cf3ca23b31d3d1ceaefbdf3ed9ba1fb5d475b5f855effd4cb1d2c72816"
+      "sha256": "71406d6888e2e9c48be2d88be954b5844b70a4a11293e0014b97a002b4006a76"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"
@@ -261,7 +261,7 @@
       "sha256": "d4b0ccfdf46e566813bfcd1fa4e2b5a060a3d18e4f8abcc975753bd79dc5b2bd"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "5f2a25c2804af97ec4227bb4bc48ed59cdd63e7f5820a288eec44b3923415488"
+      "sha256": "4a3602e937b6d6487d991607e9697d125ded7dd8b7740ffe926aac6488616c8d"
     },
     "app/css/layout.css": {
       "sha256": "6d1a934ee76f4572ea3dbb62b13ad1c2948205f9ff75658d9855ca76f6869c51"
@@ -1218,7 +1218,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "431eefd72023af284c7a467f2c2be1f6ebe92c2c0ff65e353b560958022e8310"
+      "sha256": "efae9c225753a2fec0de21994ccd0437b60c168c8018abca1502faa3e111087c"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"

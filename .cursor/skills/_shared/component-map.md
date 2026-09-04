@@ -76,7 +76,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
 | progress-bar | `app/components/progress-bar.js` | `controls-widgets.css` | — | — | `dom` | |
 | spinner | `app/components/spinner.js` | `controls-widgets.css` | — | — | `dom` | |
-| slider | `app/components/slider.js` | `controls-widgets.css` | — | — | `dom` | |
+| slider | `app/components/slider.js` | `controls-widgets.css` | — | — | `dom` | Form + `.slider--hover` surface chrome; `setBounds()` |
 | stepper | `app/components/stepper.js` | `controls-widgets.css` | — | — | `dom` | |
 | combo | `app/components/combo.js` | `controls-menus.css` | — | — (CSS chevron) | `menu` | |
 | dropdown | `app/components/dropdown.js` | `controls-menus.css` | — | — (CSS chevron) | `menu` | |
@@ -97,7 +97,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | diagram | `app/components/diagram.js` | `controls-diagram.css` | `app/vendor/mermaid/` | — | `config`, `dom` | Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark |
 | stl | `app/components/stl.js` | `controls-model.css` | — | — | `file-download` | Dependency-free indexed mesh and binary/ASCII STL export helpers |
 | model-preview | `app/components/model-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen` | `config`, `dom`, `orbit-home`, `icons`; maximise: expandable-surface | Interactive Three.js host for the shared indexed mesh shape; pages need a `three` import map; optional meta strip, home/reset, and maximise |
-| toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen` | `config`, `dom`, `orbit-home`, `icons`; maximise: expandable-surface | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface; optional meta strip, home/reset, and maximise |
+| toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen` | `config`, `dom`, `orbit-home`, `icons`, `slider`; maximise: expandable-surface | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface; optional meta strip, home/reset, layer slider, and maximise |
 | gcode | `app/components/gcode.js` | — | — | — | — | ASCII G-code and binary bgcode metadata parser |
 | gcode-toolpath | `app/components/gcode-toolpath.js` | — | — | — | `gcode` | G-code and bgcode motion parser for extrusion/travel toolpath segments |
 

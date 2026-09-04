@@ -124,6 +124,17 @@
   gap: 0.5rem;
 }
 
+/* Full-width action strip so a left-aligned hover slider can sit opposite
+   home / maximise (`.surface-actions` is row-reverse and right-anchored). */
+.toolpath-preview > .surface-actions {
+  left: 0.5rem;
+  right: 0.5rem;
+}
+
+.toolpath-preview > .surface-actions > .slider--hover {
+  margin-right: auto;
+}
+
 .model-preview[data-model-preview-actions="hover"] > .surface-actions,
 .toolpath-preview[data-toolpath-preview-actions="hover"] > .surface-actions {
   opacity: 0;

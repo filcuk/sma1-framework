@@ -169,7 +169,6 @@ const demoGcodeDropzone = document.getElementById("demo-gcode-dropzone");
 const demoGcodeStatus = document.getElementById("demo-gcode-status");
 const demoGcodeReadout = document.getElementById("demo-gcode-readout");
 const demoToolpathStatus = document.getElementById("demo-toolpath-status");
-let demoGcodeLayerStepper = null;
 let demoGcodeRequest = 0;
 
 function formatDemoDuration(seconds) {
@@ -275,7 +274,6 @@ async function loadDemoGcode(bytes, label) {
     if (request !== demoGcodeRequest) return;
     setDemoGcodeMetadata(metadata);
     demoToolpathPreview?.setToolpath(toolpath);
-    demoGcodeLayerStepper?.setValue(Math.max(0, toolpath.layerCount - 1));
     const warnings = [...metadata.warnings, ...toolpath.warnings];
     if (demoGcodeStatus) {
       demoGcodeStatus.textContent = warnings.join(" ");
@@ -294,7 +292,6 @@ async function loadDemoGcode(bytes, label) {
       setHidden(demoGcodeStatus, false);
     }
     demoToolpathPreview?.clear();
-    demoGcodeLayerStepper?.setValue(9999);
     if (demoToolpathStatus) {
       demoToolpathStatus.textContent = "Toolpath preview unavailable.";
       setHidden(demoToolpathStatus, false);
@@ -320,7 +317,6 @@ const demoGcodeDropzoneApi = initFileDropzone(demoGcodeDropzone, {
     demoGcodeRequest += 1;
     setHidden(demoGcodeReadout, true);
     demoToolpathPreview?.clear();
-    demoGcodeLayerStepper?.setValue(9999);
     if (demoGcodeStatus) {
       demoGcodeStatus.textContent = "No G-code file selected.";
       setHidden(demoGcodeStatus, false);
@@ -365,9 +361,6 @@ initStepper(document.getElementById("demo-stl-length"), {
 });
 initStepper(document.getElementById("demo-stl-height"), {
   onChange: ({ value }) => updateDemoStlDimension("height", value),
-});
-demoGcodeLayerStepper = initStepper(document.getElementById("demo-gcode-layer"), {
-  onChange: ({ value }) => demoToolpathPreview?.setMaxLayer(value),
 });
 
 fetch(new URL("./res/demo-image-preview.svg", import.meta.url))

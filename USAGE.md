@@ -477,7 +477,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
 | **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
-| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/components/slider.js`](app/components/slider.js). |
+| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled; `.slider--hover` compact chrome for surface action strips. [`app/components/slider.js`](app/components/slider.js). |
 | **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/components/progress-bar.js`](app/components/progress-bar.js). |
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/components/spinner.js`](app/components/spinner.js). |
 | **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/components/stepper.js`](app/components/stepper.js). |
@@ -1792,7 +1792,7 @@ The toolpath preview reuses the `.model-preview` surface and canvas styles, and 
 
 `data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
 
-`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-home` shows a reset-view (home) control; `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled. Call `preview.resetView()` to reset the camera from script.
+`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-home` shows a reset-view (home) control; `data-toolpath-preview-layer-slider` mounts a left-aligned maximum-layer [`.slider--hover`](#slider) in the same strip (on by default; set `data-toolpath-preview-layer-slider="false"` or `layerSlider: false` to disable). The slider is **1-based** (`1…N`, matching the meta `layer K/N` readout); `setMaxLayer(n)` remains **0-based** and stays in sync with the slider. `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled. Call `preview.resetView()` to reset the camera from script.
 
 ### G-code metadata
 
@@ -2071,7 +2071,7 @@ Start the badge with the initial count (or `hidden` when zero) so it does not fl
 
 ### Slider
 
-Range input with a compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing.
+Range input with an optional compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing.
 
 Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; values are still stored as plain numbers, e.g. `75` for 75%).
 
@@ -2086,6 +2086,18 @@ Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; va
       <span class="slider-suffix hidden" aria-hidden="true">%</span>
     </div>
     <input type="hidden" class="slider-value" name="opacity" />
+  </div>
+</div>
+```
+
+**Hover chrome** — add `.slider--hover` (or `data-slider-chrome="hover"`) for compact use inside a display-surface `.surface-actions` strip. Omit the field label, editable `.slider-input`, and form field; an optional `.slider-readout` shows the committed value. Same `initSlider` API. See [DESIGN.md — Form controls as hover chrome](DESIGN.md#form-controls-as-hover-chrome).
+
+```html
+<div class="slider slider--hover" data-slider-min="0" data-slider-max="40"
+  data-tooltip="Maximum layer" data-tooltip-position="top">
+  <div class="slider-row">
+    <input type="range" class="slider-range" aria-label="Maximum layer" />
+    <output class="slider-readout" aria-hidden="true">40</output>
   </div>
 </div>
 ```
@@ -2106,14 +2118,16 @@ const slider = initSlider(document.getElementById("my-slider"), {
 
 slider?.getValue();
 slider?.setValue(25);
+slider?.setBounds({ min: 0, max: 40, value: 40, emit: false });
 slider?.setDisabled(true);
 slider?.isDisabled();
 slider?.commitInput(); // commit typed text without blur
+slider?.destroy();
 
 initSliders(document); // all `.slider` blocks
 ```
 
-`data-slider-min`, `data-slider-max`, `data-slider-step`, `data-slider-default`, `data-slider-format`, and `data-slider-disabled` mirror the JS options. The hidden `.slider-value` field stores the numeric value for forms.
+`data-slider-min`, `data-slider-max`, `data-slider-step`, `data-slider-default`, `data-slider-format`, `data-slider-disabled`, and `data-slider-chrome` mirror the JS options. The hidden `.slider-value` field stores the numeric value for forms. `.slider-input` is optional when a `.slider-readout` (or range-only) is enough.
 
 ### Progress bar
 
@@ -2495,13 +2509,14 @@ initColorPickers(document);
 
 ### Control sizing
 
-Three different “slim” APIs — they are not interchangeable:
+Compact size / chrome variants — they are not interchangeable:
 
 | Class | Effect |
 | ----- | ------ |
 | `.btn-slim` | Compact button height via `--control-height-slim` |
 | `.segmented-control--slim` | Reduced padding on the track; does **not** use `--control-height-slim` |
 | `.toggle--slim` | Thin track with an oversized overhanging thumb; not a height token |
+| `.slider--hover` | Compact slider chrome for `.surface-actions` (not a form-row height token) |
 
 Tabular input logical columns always use `.toggle--slim` (no standard-size toggle in that grid).
 
