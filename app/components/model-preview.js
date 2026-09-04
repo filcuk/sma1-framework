@@ -12,6 +12,7 @@
  *     data-model-preview-meta="hover"
  *     data-model-preview-meta-extra="PETG"
  *     data-model-preview-maximize
+ *     data-model-preview-home
  *     data-model-preview-actions="hover"
  *     aria-label="3D model preview">
  *     <p class="model-preview__empty">No preview</p>
@@ -28,8 +29,9 @@
  *   `always`, `not-hover`, or `never`
  * data-model-preview-meta-extra — append app-specific text to the meta strip
  * data-model-preview-maximize — floating fullscreen control via expandable-surface
+ * data-model-preview-home — floating reset-view (home) control
  * data-model-preview-expand-on-click — toggle maximise when clicking the canvas host
- * data-model-preview-actions — maximise control visibility: `hover` (default),
+ * data-model-preview-actions — hover control visibility: `hover` (default),
  *   `always`, or `never`
  *
  * Call `initExpandableSurfaces()` after init when maximise attrs are used.
@@ -37,6 +39,7 @@
  * API:
  *   const preview = initModelPreview(element);
  *   preview.setMesh({ positions, indices });
+ *   preview.resetView();
  *   preview.setMetaExtra("PETG");
  *   preview.clear();
  */
@@ -44,7 +47,9 @@
 import * as THREE from "../vendor/three/three.module.min.js";
 import { OrbitControls } from "../vendor/three/OrbitControls.js";
 import { APP_CONFIG } from "../config.js";
-import { setHidden } from "../utils/dom.js";
+import { setHidden, prefersReducedMotion } from "../utils/dom.js";
+import { createIcon } from "../utils/icons.js";
+import { createOrbitHomeAnim, tickOrbitHomeAnim } from "../utils/orbit-home.js";
 
 /** @type {const} */
 export const THREE_VERSION = "0.185.1";
@@ -100,11 +105,11 @@ function resolveActionsVisibility(value) {
 }
 
 /**
- * Map maximise options onto expandable-surface data attributes.
- * Call `initExpandableSurfaces()` after init (or on the page) to activate.
+ * Map maximise / home options onto expandable-surface and surface-actions chrome.
+ * Call `initExpandableSurfaces()` after init (or on the page) to activate maximise.
  *
  * @param {HTMLElement} el
- * @param {{ maximize?: boolean, expandOnClick?: boolean, actions?: string }} options
+ * @param {{ maximize?: boolean, expandOnClick?: boolean, home?: boolean, actions?: string }} options
  */
 function syncExpandableAttrs(el, options) {
   const maximize =
@@ -115,6 +120,10 @@ function syncExpandableAttrs(el, options) {
     typeof options.expandOnClick === "boolean"
       ? options.expandOnClick
       : el.hasAttribute("data-model-preview-expand-on-click");
+  const home =
+    typeof options.home === "boolean"
+      ? options.home
+      : el.hasAttribute("data-model-preview-home");
   const actionsVisibility = resolveActionsVisibility(
     typeof options.actions === "string"
       ? options.actions
@@ -127,24 +136,34 @@ function syncExpandableAttrs(el, options) {
   if (expandOnClick) el.setAttribute("data-model-preview-expand-on-click", "");
   else el.removeAttribute("data-model-preview-expand-on-click");
 
-  if (!maximize && !expandOnClick) {
+  if (home) el.setAttribute("data-model-preview-home", "");
+  else el.removeAttribute("data-model-preview-home");
+
+  if (!maximize && !expandOnClick && !home) {
     el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
     delete el.dataset.modelPreviewActions;
-    return { maximize: false, expandOnClick: false, actionsVisibility };
+    return { maximize: false, expandOnClick: false, home: false, actionsVisibility };
   }
 
-  el.setAttribute("data-expandable-surface", "");
-  if (!el.dataset.expandableSurfaceLabel?.trim()) {
-    el.dataset.expandableSurfaceLabel =
-      el.getAttribute("aria-label") || DEFAULT_ARIA_LABEL;
-  }
+  if (maximize || expandOnClick) {
+    el.setAttribute("data-expandable-surface", "");
+    if (!el.dataset.expandableSurfaceLabel?.trim()) {
+      el.dataset.expandableSurfaceLabel =
+        el.getAttribute("aria-label") || DEFAULT_ARIA_LABEL;
+    }
 
-  if (expandOnClick) el.setAttribute("data-expandable-surface-click", "");
-  else el.removeAttribute("data-expandable-surface-click");
+    if (expandOnClick) el.setAttribute("data-expandable-surface-click", "");
+    else el.removeAttribute("data-expandable-surface-click");
 
-  if (maximize) {
+    if (maximize) el.removeAttribute("data-expandable-surface-control");
+    else el.setAttribute("data-expandable-surface-control", "false");
+  } else {
+    el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
+  }
+
+  if (maximize || home) {
     let actionsHost = el.querySelector(":scope > .surface-actions");
     if (!actionsHost) {
       actionsHost = document.createElement("div");
@@ -153,11 +172,10 @@ function syncExpandableAttrs(el, options) {
     }
     el.dataset.modelPreviewActions = actionsVisibility;
   } else {
-    el.setAttribute("data-expandable-surface-control", "false");
     delete el.dataset.modelPreviewActions;
   }
 
-  return { maximize, expandOnClick, actionsVisibility };
+  return { maximize, expandOnClick, home, actionsVisibility };
 }
 
 /**
@@ -292,35 +310,71 @@ function readMeshArrays(mesh) {
 }
 
 /**
+ * @param {THREE.PerspectiveCamera} camera
+ * @param {THREE.Object3D} model
+ * @returns {{
+ *   position: THREE.Vector3,
+ *   target: THREE.Vector3,
+ *   near: number,
+ *   far: number,
+ *   minDistance: number,
+ *   maxDistance: number,
+ * } | null}
+ */
+function computeFitPose(camera, model) {
+  const bounds = new THREE.Box3().setFromObject(model);
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const maxDimension = Math.max(size.x, size.y, size.z);
+  if (!Number.isFinite(maxDimension) || maxDimension <= 0) return null;
+
+  const distance =
+    (maxDimension / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)))) *
+    1.35;
+  return {
+    position: new THREE.Vector3(
+      center.x + distance * 0.9,
+      center.y + distance * 0.75,
+      center.z + distance * 0.9
+    ),
+    target: center,
+    near: Math.max(maxDimension / 1000, 0.01),
+    far: Math.max(maxDimension * 20, 100),
+    minDistance: Math.max(maxDimension * 0.1, 0.01),
+    maxDistance: Math.max(maxDimension * 20, 100),
+  };
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {THREE.PerspectiveCamera} camera
+ * @param {OrbitControls} controls
+ * @param {ReturnType<typeof computeFitPose>} pose
+ */
+function applyFitPose(el, camera, controls, pose) {
+  if (!pose) return;
+  camera.near = pose.near;
+  camera.far = pose.far;
+  camera.position.copy(pose.position);
+  camera.lookAt(pose.target);
+  controls.target.copy(pose.target);
+  controls.minDistance = pose.minDistance;
+  controls.maxDistance = pose.maxDistance;
+  controls.update();
+
+  // Ensure a first render after a hidden or newly laid-out host becomes visible.
+  if (el.clientWidth === 0 || el.clientHeight === 0) return;
+  camera.updateProjectionMatrix();
+}
+
+/**
  * @param {HTMLElement} el
  * @param {THREE.PerspectiveCamera} camera
  * @param {OrbitControls} controls
  * @param {THREE.Object3D} model
  */
 function fitCameraToModel(el, camera, controls, model) {
-  const bounds = new THREE.Box3().setFromObject(model);
-  const size = bounds.getSize(new THREE.Vector3());
-  const center = bounds.getCenter(new THREE.Vector3());
-  const maxDimension = Math.max(size.x, size.y, size.z);
-  if (!Number.isFinite(maxDimension) || maxDimension <= 0) return;
-
-  const distance = (maxDimension / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.35);
-  camera.near = Math.max(maxDimension / 1000, 0.01);
-  camera.far = Math.max(maxDimension * 20, 100);
-  camera.position.set(
-    center.x + distance * 0.9,
-    center.y + distance * 0.75,
-    center.z + distance * 0.9
-  );
-  camera.lookAt(center);
-  controls.target.copy(center);
-  controls.minDistance = Math.max(maxDimension * 0.1, 0.01);
-  controls.maxDistance = Math.max(maxDimension * 20, 100);
-  controls.update();
-
-  // Ensure a first render after a hidden or newly laid-out host becomes visible.
-  if (el.clientWidth === 0 || el.clientHeight === 0) return;
-  camera.updateProjectionMatrix();
+  applyFitPose(el, camera, controls, computeFitPose(camera, model));
 }
 
 /**
@@ -336,6 +390,7 @@ function fitCameraToModel(el, camera, controls, model) {
  *   metaExtra?: string | string[],
  *   maximize?: boolean,
  *   expandOnClick?: boolean,
+ *   home?: boolean,
  *   actions?: string,
  * }} [options]
  * @returns {{
@@ -345,6 +400,7 @@ function fitCameraToModel(el, camera, controls, model) {
  *     objectCount?: number,
  *     objects?: unknown[],
  *   }) => void,
+ *   resetView: () => void,
  *   setMetaExtra: (text: string | string[] | null | undefined) => void,
  *   clear: () => void,
  *   destroy: () => void,
@@ -405,7 +461,8 @@ export function initModelPreview(previewEl, options = {}) {
   let hasMetaContent = fixedMetaContent || metaExtra !== "";
   let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
 
-  syncExpandableAttrs(previewEl, options);
+  const expandState = syncExpandableAttrs(previewEl, options);
+  const showHome = expandState.home;
 
   if (showSize) previewEl.setAttribute("data-model-preview-size", "");
   else previewEl.removeAttribute("data-model-preview-size");
@@ -431,6 +488,8 @@ export function initModelPreview(previewEl, options = {}) {
 
   /** @type {HTMLParagraphElement | null} */
   let metaEl = null;
+  /** @type {HTMLButtonElement | null} */
+  let homeBtn = null;
   /** @type {ReturnType<typeof computeMeshStats> | null} */
   let meshStats = null;
   /** @type {number | null} */
@@ -505,9 +564,86 @@ export function initModelPreview(previewEl, options = {}) {
     setHidden(meta, false);
   }
 
+  function ensureActionsHost() {
+    let actionsHost = previewEl.querySelector(":scope > .surface-actions");
+    if (!actionsHost) {
+      actionsHost = document.createElement("div");
+      actionsHost.className = "surface-actions";
+      previewEl.append(actionsHost);
+    }
+    return actionsHost;
+  }
+
+  function syncHomeButton() {
+    if (!homeBtn) return;
+    homeBtn.disabled = !model;
+  }
+
+  function ensureHomeButton() {
+    if (!showHome) return null;
+    if (homeBtn?.isConnected) return homeBtn;
+    const host = ensureActionsHost();
+    homeBtn = host.querySelector(".model-preview__home");
+    if (!(homeBtn instanceof HTMLButtonElement)) {
+      homeBtn = document.createElement("button");
+      homeBtn.type = "button";
+      homeBtn.className = "model-preview__home btn btn-slim btn-icon";
+      homeBtn.dataset.tooltip = "Reset view";
+      homeBtn.dataset.tooltipPosition = "top";
+      homeBtn.setAttribute("aria-label", "Reset view");
+      homeBtn.append(createIcon("home", { className: "btn-icon-svg" }));
+      homeBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        resetView();
+      });
+      host.append(homeBtn);
+    }
+    syncHomeButton();
+    return homeBtn;
+  }
+
   let renderer;
   let model = null;
   let destroyed = false;
+  /** @type {ReturnType<typeof createOrbitHomeAnim> | null} */
+  let homeAnim = null;
+
+  function clearOrbitInertia() {
+    // OrbitControls applies the full remaining sphericalDelta when damping is
+    // turned off for one update — restore the pre-clear pose so home does not flash.
+    const frozenPos = camera.position.clone();
+    const frozenTarget = controls.target.clone();
+    const damping = controls.enableDamping;
+    controls.enableDamping = false;
+    controls.update();
+    camera.position.copy(frozenPos);
+    controls.target.copy(frozenTarget);
+    controls.update();
+    controls.enableDamping = damping;
+  }
+
+  function syncControlsAfterHomeStep() {
+    const damping = controls.enableDamping;
+    controls.enableDamping = false;
+    controls.update();
+    controls.enableDamping = damping;
+  }
+
+  function resetView() {
+    if (!model || destroyed) return;
+    const pose = computeFitPose(camera, model);
+    if (!pose) return;
+
+    if (prefersReducedMotion()) {
+      homeAnim = null;
+      applyFitPose(previewEl, camera, controls, pose);
+      renderer.render(scene, camera);
+      return;
+    }
+
+    clearOrbitInertia();
+    homeAnim = createOrbitHomeAnim(pose);
+  }
 
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -518,6 +654,7 @@ export function initModelPreview(previewEl, options = {}) {
     }
     return {
       setMesh() {},
+      resetView() {},
       setMetaExtra(text) {
         metaExtra = resolveMetaExtra(text);
         syncMetaVisibilityAttr();
@@ -547,9 +684,14 @@ export function initModelPreview(previewEl, options = {}) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.screenSpacePanning = true;
+  controls.addEventListener("start", () => {
+    homeAnim = null;
+  });
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  ensureHomeButton();
 
   function applyTheme() {
     const background = readCssColor("--surface", "#ffffff");
@@ -582,9 +724,33 @@ export function initModelPreview(previewEl, options = {}) {
     model = null;
   }
 
+  function tickHomeAnim() {
+    if (!homeAnim) return;
+    const running = tickOrbitHomeAnim(
+      camera,
+      controls.target,
+      homeAnim,
+      controls.dampingFactor
+    );
+    if (running) return;
+
+    camera.near = homeAnim.near;
+    camera.far = homeAnim.far;
+    camera.updateProjectionMatrix();
+    controls.minDistance = homeAnim.minDistance;
+    controls.maxDistance = homeAnim.maxDistance;
+    homeAnim = null;
+  }
+
   function render() {
     if (destroyed) return;
-    controls.update();
+    if (homeAnim) {
+      tickHomeAnim();
+      // Resync OrbitControls internals from the orbit pose without damping motion.
+      syncControlsAfterHomeStep();
+    } else {
+      controls.update();
+    }
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }
@@ -594,6 +760,7 @@ export function initModelPreview(previewEl, options = {}) {
     meshStats = computeMeshStats(positionValues, indexValues);
     objectCount = readObjectCount(mesh);
     disposeModel();
+    homeAnim = null;
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute(
@@ -615,6 +782,7 @@ export function initModelPreview(previewEl, options = {}) {
     scene.add(model);
     fitCameraToModel(previewEl, camera, controls, model);
     if (emptyEl) setHidden(emptyEl, true);
+    syncHomeButton();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -626,10 +794,12 @@ export function initModelPreview(previewEl, options = {}) {
   }
 
   function clear() {
+    homeAnim = null;
     disposeModel();
     meshStats = null;
     objectCount = null;
     if (emptyEl) setHidden(emptyEl, false);
+    syncHomeButton();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -651,6 +821,7 @@ export function initModelPreview(previewEl, options = {}) {
 
   return {
     setMesh,
+    resetView,
     setMetaExtra,
     clear,
     destroy() {
@@ -662,6 +833,7 @@ export function initModelPreview(previewEl, options = {}) {
       controls.dispose();
       renderer.dispose();
       canvas.remove();
+      homeBtn?.remove();
       metaEl?.remove();
       delete previewEl.dataset.modelPreviewInit;
     },

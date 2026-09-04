@@ -106,6 +106,7 @@ export const INFRA = {
   "brand-icon": ["app/utils/brand-icon.js"],
   "also-see-svg": ["app/utils/also-see-svg.js"],
   "sanitize-svg": ["app/utils/sanitize-svg.js"],
+  "orbit-home": ["app/utils/orbit-home.js"],
 };
 
 /**
@@ -497,19 +498,19 @@ export const COMPONENTS = {
     files: ["app/components/model-preview.js"],
     css: ["controls-model.css"],
     vendor: ["app/vendor/three/"],
-    icons: [],
-    infra: ["config", "dom"],
+    icons: ["home", "fullscreen"],
+    infra: ["config", "dom", "orbit-home", "icons"],
     notes:
-      "Interactive Three.js host for the shared indexed mesh shape; optional meta strip and maximise via expandable-surface",
+      "Interactive Three.js host for the shared indexed mesh shape; optional meta strip, home/reset, and maximise via expandable-surface",
   },
   "toolpath-preview": {
     files: ["app/components/toolpath-preview.js"],
     css: ["controls-model.css"],
     vendor: ["app/vendor/three/"],
-    icons: [],
-    infra: ["config", "dom"],
+    icons: ["home", "fullscreen"],
+    infra: ["config", "dom", "orbit-home", "icons"],
     notes:
-      "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip and maximise via expandable-surface",
+      "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip, home/reset, and maximise via expandable-surface",
   },
   gcode: {
     files: ["app/components/gcode.js"],

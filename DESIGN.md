@@ -74,7 +74,7 @@ Two ways to expose related actions on a surface:
 | Pattern | Role | Typical hosts |
 | ------- | ---- | ------------- |
 | **Built-in control toolbar** | Persistent bar of related editing / view controls (clear, copy, paste, format, maximise, highlight, and similar) | Code block, rich text editor |
-| **Hover controls** | Minimal floating actions on the surface (primarily **maximise**; occasionally download or copy) | Image, mesh, and toolpath previews; code block when kept toolbar-light |
+| **Hover controls** | Minimal floating actions on the surface (primarily **maximise**; **home**/reset on 3D previews; occasionally download or copy) | Image, mesh, and toolpath previews; code block when kept toolbar-light |
 
 A toolbar is the fuller editing experience. When a host uses a built-in toolbar, prefer putting those actions **in the toolbar** and treating hover chrome as optional or off — hover controls are meant for a **minimalist** surface, not a second full control strip. Do not require the user to discover the same primary actions in both places.
 

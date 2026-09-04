@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-04T18:58:01.935Z",
+  "generatedAt": "2026-09-04T19:20:19.071Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -147,7 +147,7 @@
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
     },
     "app/components/model-preview.js": {
-      "sha256": "9126701e0dba6a1b95979aa4ae4d7a30876bb9b4dbd3673162384b84b259a126"
+      "sha256": "8588e6ac62e03685cba30471670e52acfa46f370a47ce60d47b19918256a19cc"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
@@ -207,7 +207,7 @@
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
     "app/components/toolpath-preview.js": {
-      "sha256": "f16eb588c3a7ab8bf86c63913ae56c16b844fb51cb84a6d8fe88e08b66a5e39c"
+      "sha256": "919486e3170e63cfd53bac240ca81b41e2d0abb0dfda79228aca1f0f622a2e36"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -339,13 +339,16 @@
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "b5e72f86da466f6436df7d90b3a33aecca97921bd4db87e02193a8962e000be3"
+      "sha256": "37abac9ba3b09df762e1b9f5e64943b92e26f380d304b3529beb439bc873a650"
     },
     "app/utils/icons.js": {
       "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
     },
     "app/utils/menu.js": {
       "sha256": "2f9ccfa57eebf7530d8968705a65fa5a3018cd3f2fd5f92f656862fa51dd4e4a"
+    },
+    "app/utils/orbit-home.js": {
+      "sha256": "9f5d9c8c5a9b97cbc71f6fa1d35832a70895e4e25325ddb3a9bc99e179ecf11e"
     },
     "app/utils/sanitize-svg.js": {
       "sha256": "433ca97df4ed3a0ad45c227448d0606a019a4be70215f3a0648eca0ab2b1f0ce"
@@ -1215,7 +1218,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "079a18b3ec31d8bb6b0b0ba9f24b4b3730343d29837484065521196262e22743"
+      "sha256": "431eefd72023af284c7a467f2c2be1f6ebe92c2c0ff65e353b560958022e8310"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -1335,6 +1338,9 @@
     ],
     "sanitize-svg": [
       "app/utils/sanitize-svg.js"
+    ],
+    "orbit-home": [
+      "app/utils/orbit-home.js"
     ]
   },
   "components": {
@@ -2410,12 +2416,17 @@
         "app/vendor/three/three.core.min.js",
         "app/vendor/three/three.module.min.js"
       ],
-      "icons": [],
+      "icons": [
+        "home",
+        "fullscreen"
+      ],
       "infra": [
         "config",
-        "dom"
+        "dom",
+        "orbit-home",
+        "icons"
       ],
-      "notes": "Interactive Three.js host for the shared indexed mesh shape; optional meta strip and maximise via expandable-surface"
+      "notes": "Interactive Three.js host for the shared indexed mesh shape; optional meta strip, home/reset, and maximise via expandable-surface"
     },
     "toolpath-preview": {
       "files": [
@@ -2433,12 +2444,17 @@
         "app/vendor/three/three.core.min.js",
         "app/vendor/three/three.module.min.js"
       ],
-      "icons": [],
+      "icons": [
+        "home",
+        "fullscreen"
+      ],
       "infra": [
         "config",
-        "dom"
+        "dom",
+        "orbit-home",
+        "icons"
       ],
-      "notes": "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip and maximise via expandable-surface"
+      "notes": "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip, home/reset, and maximise via expandable-surface"
     },
     "gcode": {
       "files": [

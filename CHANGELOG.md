@@ -24,6 +24,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
+- Model and toolpath preview home control eases in spherical orbit space (radius / angles), matching OrbitControls motion and avoiding the mid-flight Cartesian zoom dip; snaps when `prefers-reduced-motion`.
 - Image preview meta visibility gains `not-hover` (parity with mesh / toolpath); hover action strip uses `data-image-preview-actions` (`hover` / `always` / `never`) with `:focus-visible` instead of `:focus-within`; `metaExtra` / `setMetaExtra()` accept a string array.
 - Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).
 - Segmented control default height matches standard buttons (`--control-height`); add `.segmented-control--slim` for the previous compact size.
@@ -35,7 +36,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.
 - Interactive Three.js model preview with orbit controls, automatic camera fitting, responsive resizing, and theme support.
 - Model preview meta strip (size, triangles, vertices, volume, surface area, objects, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility.
-- Model and toolpath preview maximise controls via expandable-surface, with action visibility `hover` / `always` / `never`.
+- Model and toolpath preview maximise controls via expandable-surface, with action visibility `hover` / `always` / `never`. Optional home (reset view) hover control (`data-*-home`, `resetView()`); framework `home` icon from Material Icons Round.
 - G-code and bgcode metadata parser for duration, filament, nozzle, slicer, and printer details.
 - G-code and bgcode toolpath parser and Three.js preview with extrusion/travel lines and layer filtering.
 - Toolpath preview meta strip (segments, layers, current layer, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility, matching mesh and image preview.
