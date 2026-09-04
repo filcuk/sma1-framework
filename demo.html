@@ -2138,72 +2138,88 @@
                   <ul class="file-dropzone-list hidden" hidden></ul>
                 </div>
                 <p class="panel-hint" id="demo-gcode-status" role="status">Loading sample G-code…</p>
-                <div class="panel-grid panel-grid-2 hidden" id="demo-gcode-readout" hidden>
-                  <div>
-                    <span class="field-label">Timestamp</span>
-                    <output data-gcode-meta="timestamp">—</output>
+                <div class="panel-stack hidden" id="demo-gcode-readout" hidden>
+                  <div class="panel-grid panel-grid-2">
+                    <div>
+                      <span class="field-label">Duration</span>
+                      <output data-gcode-meta="duration">—</output>
+                    </div>
+                    <div>
+                      <span class="field-label">Filament</span>
+                      <output data-gcode-meta="filament">—</output>
+                    </div>
                   </div>
-                  <div>
-                    <span class="field-label">Format</span>
-                    <output data-gcode-meta="format">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Duration</span>
-                    <output data-gcode-meta="duration">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Nozzle</span>
-                    <output data-gcode-meta="nozzle">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Bed temperature</span>
-                    <output data-gcode-meta="bed-temperature">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Nozzle temperature</span>
-                    <output data-gcode-meta="nozzle-temperature">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Fill density</span>
-                    <output data-gcode-meta="fill-density">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Filament type</span>
-                    <output data-gcode-meta="filament-type">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Filament</span>
-                    <output data-gcode-meta="filament">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Perimeters</span>
-                    <output data-gcode-meta="perimeters">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Objects</span>
-                    <output data-gcode-meta="object-count">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Layer height</span>
-                    <output data-gcode-meta="layer-height">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Slicer</span>
-                    <output data-gcode-meta="slicer">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Printer</span>
-                    <output data-gcode-meta="printer">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Wipe tower filament</span>
-                    <output data-gcode-meta="wipe-tower">—</output>
-                  </div>
-                  <div>
-                    <span class="field-label">Object details</span>
-                    <ul data-gcode-meta="objects">
-                      <li>—</li>
-                    </ul>
+                  <div class="expand" id="demo-gcode-details">
+                    <button type="button" class="expand-trigger" aria-expanded="false"
+                      aria-controls="demo-gcode-details-panel">
+                      <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg"
+                        aria-hidden="true"></span>
+                      <span class="expand-label">More metadata</span>
+                    </button>
+                    <div id="demo-gcode-details-panel" class="expand-panel hidden" hidden>
+                      <div class="expand-body">
+                        <div class="panel-grid panel-grid-2">
+                          <div>
+                            <span class="field-label">Timestamp</span>
+                            <output data-gcode-meta="timestamp">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Format</span>
+                            <output data-gcode-meta="format">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Nozzle</span>
+                            <output data-gcode-meta="nozzle">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Bed temperature</span>
+                            <output data-gcode-meta="bed-temperature">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Nozzle temperature</span>
+                            <output data-gcode-meta="nozzle-temperature">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Fill density</span>
+                            <output data-gcode-meta="fill-density">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Filament type</span>
+                            <output data-gcode-meta="filament-type">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Perimeters</span>
+                            <output data-gcode-meta="perimeters">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Objects</span>
+                            <output data-gcode-meta="object-count">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Layer height</span>
+                            <output data-gcode-meta="layer-height">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Slicer</span>
+                            <output data-gcode-meta="slicer">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Printer</span>
+                            <output data-gcode-meta="printer">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Wipe tower filament</span>
+                            <output data-gcode-meta="wipe-tower">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Object details</span>
+                            <ul data-gcode-meta="objects">
+                              <li>—</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
