@@ -119,3 +119,69 @@
     opacity: 1;
   }
 }
+
+.model-preview > .surface-actions {
+  gap: 0.5rem;
+}
+
+.model-preview[data-model-preview-actions="hover"] > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="hover"] > .surface-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.model-preview[data-model-preview-actions="hover"]:hover > .surface-actions,
+.model-preview[data-model-preview-actions="hover"] > .surface-actions:has(:focus-visible),
+.model-preview[data-model-preview-actions="hover"].expandable-surface.is-expanded
+  > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="hover"]:hover > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="hover"]
+  > .surface-actions:has(:focus-visible),
+.toolpath-preview[data-toolpath-preview-actions="hover"].expandable-surface.is-expanded
+  > .surface-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.model-preview[data-model-preview-actions="always"] > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="always"] > .surface-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.model-preview[data-model-preview-actions="never"] > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="never"] > .surface-actions {
+  display: none;
+}
+
+@media (hover: none) {
+  .model-preview[data-model-preview-actions="hover"] > .surface-actions,
+  .toolpath-preview[data-toolpath-preview-actions="hover"] > .surface-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.model-preview.expandable-surface.is-expanded {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  min-height: 0;
+  max-height: none;
+  height: auto;
+  align-self: stretch;
+}
+
+.model-preview.expandable-surface.is-expanded > .model-preview__canvas {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+}
+
+.expandable-overlay__stage:has(> .expandable-surface.is-expanded.model-preview) {
+  width: min(80vw, 2400px);
+  max-width: min(80vw, 2400px);
+}

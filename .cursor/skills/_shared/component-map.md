@@ -96,8 +96,8 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | charts | `app/components/charts.js` | `controls-charts.css` | `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` | — | `config` | Thin `mountChart` host; import map for `d3-scale` / `d3-shape` when using `barY` / `barX`; forks author `defineChart` |
 | diagram | `app/components/diagram.js` | `controls-diagram.css` | `app/vendor/mermaid/` | — | `config`, `dom` | Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark |
 | stl | `app/components/stl.js` | `controls-model.css` | — | — | `file-download` | Dependency-free indexed mesh and binary/ASCII STL export helpers |
-| model-preview | `app/components/model-preview.js` | `controls-model.css` | `app/vendor/three/` | — | `config`, `dom` | Interactive Three.js host for the shared indexed mesh shape; pages need a `three` import map |
-| toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | — | `config`, `dom` | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface |
+| model-preview | `app/components/model-preview.js` | `controls-model.css` | `app/vendor/three/` | — | `config`, `dom`; maximise: expandable-surface | Interactive Three.js host for the shared indexed mesh shape; pages need a `three` import map; optional meta strip and maximise |
+| toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | — | `config`, `dom`; maximise: expandable-surface | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface; optional meta strip and maximise |
 | gcode | `app/components/gcode.js` | — | — | — | — | ASCII G-code and binary bgcode metadata parser |
 | gcode-toolpath | `app/components/gcode-toolpath.js` | — | — | — | `gcode` | G-code and bgcode motion parser for extrusion/travel toolpath segments |
 

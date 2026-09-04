@@ -11,6 +11,8 @@
  *     data-model-preview-triangles
  *     data-model-preview-meta="hover"
  *     data-model-preview-meta-extra="PETG"
+ *     data-model-preview-maximize
+ *     data-model-preview-actions="hover"
  *     aria-label="3D model preview">
  *     <p class="model-preview__empty">No preview</p>
  *   </div>
@@ -25,6 +27,12 @@
  * data-model-preview-meta — when meta content is enabled: `hover` (default),
  *   `always`, `not-hover`, or `never`
  * data-model-preview-meta-extra — append app-specific text to the meta strip
+ * data-model-preview-maximize — floating fullscreen control via expandable-surface
+ * data-model-preview-expand-on-click — toggle maximise when clicking the canvas host
+ * data-model-preview-actions — maximise control visibility: `hover` (default),
+ *   `always`, or `never`
+ *
+ * Call `initExpandableSurfaces()` after init when maximise attrs are used.
  *
  * API:
  *   const preview = initModelPreview(element);
@@ -75,6 +83,81 @@ function resolveMetaExtra(value) {
       .join(" · ");
   }
   return typeof value === "string" ? value.trim() : "";
+}
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {"hover" | "always" | "never"}
+ */
+function resolveActionsVisibility(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (trimmed === "always" || trimmed === "never" || trimmed === "hover") {
+    return trimmed;
+  }
+  return "hover";
+}
+
+/**
+ * Map maximise options onto expandable-surface data attributes.
+ * Call `initExpandableSurfaces()` after init (or on the page) to activate.
+ *
+ * @param {HTMLElement} el
+ * @param {{ maximize?: boolean, expandOnClick?: boolean, actions?: string }} options
+ */
+function syncExpandableAttrs(el, options) {
+  const maximize =
+    typeof options.maximize === "boolean"
+      ? options.maximize
+      : el.hasAttribute("data-model-preview-maximize");
+  const expandOnClick =
+    typeof options.expandOnClick === "boolean"
+      ? options.expandOnClick
+      : el.hasAttribute("data-model-preview-expand-on-click");
+  const actionsVisibility = resolveActionsVisibility(
+    typeof options.actions === "string"
+      ? options.actions
+      : el.dataset.modelPreviewActions
+  );
+
+  if (maximize) el.setAttribute("data-model-preview-maximize", "");
+  else el.removeAttribute("data-model-preview-maximize");
+
+  if (expandOnClick) el.setAttribute("data-model-preview-expand-on-click", "");
+  else el.removeAttribute("data-model-preview-expand-on-click");
+
+  if (!maximize && !expandOnClick) {
+    el.removeAttribute("data-expandable-surface-click");
+    el.removeAttribute("data-expandable-surface-control");
+    delete el.dataset.modelPreviewActions;
+    return { maximize: false, expandOnClick: false, actionsVisibility };
+  }
+
+  el.setAttribute("data-expandable-surface", "");
+  if (!el.dataset.expandableSurfaceLabel?.trim()) {
+    el.dataset.expandableSurfaceLabel =
+      el.getAttribute("aria-label") || DEFAULT_ARIA_LABEL;
+  }
+
+  if (expandOnClick) el.setAttribute("data-expandable-surface-click", "");
+  else el.removeAttribute("data-expandable-surface-click");
+
+  if (maximize) {
+    el.removeAttribute("data-expandable-surface-control");
+    let actionsHost = el.querySelector(":scope > .surface-actions");
+    if (!actionsHost) {
+      actionsHost = document.createElement("div");
+      actionsHost.className = "surface-actions";
+      el.append(actionsHost);
+    }
+    el.dataset.modelPreviewActions = actionsVisibility;
+  } else {
+    el.setAttribute("data-expandable-surface-control", "false");
+    delete el.dataset.modelPreviewActions;
+  }
+
+  return { maximize, expandOnClick, actionsVisibility };
 }
 
 /**
@@ -251,6 +334,9 @@ function fitCameraToModel(el, camera, controls, model) {
  *   objects?: boolean,
  *   meta?: string,
  *   metaExtra?: string | string[],
+ *   maximize?: boolean,
+ *   expandOnClick?: boolean,
+ *   actions?: string,
  * }} [options]
  * @returns {{
  *   setMesh: (mesh: {
@@ -318,6 +404,8 @@ export function initModelPreview(previewEl, options = {}) {
   );
   let hasMetaContent = fixedMetaContent || metaExtra !== "";
   let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+
+  syncExpandableAttrs(previewEl, options);
 
   if (showSize) previewEl.setAttribute("data-model-preview-size", "");
   else previewEl.removeAttribute("data-model-preview-size");

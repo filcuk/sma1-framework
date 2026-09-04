@@ -8,6 +8,8 @@
  *     data-toolpath-preview-current-layer
  *     data-toolpath-preview-meta="hover"
  *     data-toolpath-preview-meta-extra="PETG"
+ *     data-toolpath-preview-maximize
+ *     data-toolpath-preview-actions="hover"
  *     aria-label="G-code toolpath">
  *     <p class="model-preview__empty">No toolpath</p>
  *   </div>
@@ -18,6 +20,12 @@
  * data-toolpath-preview-meta — when meta content is enabled: `hover` (default),
  *   `always`, `not-hover`, or `never`
  * data-toolpath-preview-meta-extra — append app-specific text to the meta strip
+ * data-toolpath-preview-maximize — floating fullscreen control via expandable-surface
+ * data-toolpath-preview-expand-on-click — toggle maximise when clicking the canvas host
+ * data-toolpath-preview-actions — maximise control visibility: `hover` (default),
+ *   `always`, or `never`
+ *
+ * Call `initExpandableSurfaces()` after init when maximise attrs are used.
  *
  * API:
  *   const preview = initToolpathPreview(element);
@@ -67,6 +75,81 @@ function resolveMetaExtra(value) {
       .join(" · ");
   }
   return typeof value === "string" ? value.trim() : "";
+}
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {"hover" | "always" | "never"}
+ */
+function resolveActionsVisibility(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (trimmed === "always" || trimmed === "never" || trimmed === "hover") {
+    return trimmed;
+  }
+  return "hover";
+}
+
+/**
+ * Map maximise options onto expandable-surface data attributes.
+ * Call `initExpandableSurfaces()` after init (or on the page) to activate.
+ *
+ * @param {HTMLElement} el
+ * @param {{ maximize?: boolean, expandOnClick?: boolean, actions?: string }} options
+ */
+function syncExpandableAttrs(el, options) {
+  const maximize =
+    typeof options.maximize === "boolean"
+      ? options.maximize
+      : el.hasAttribute("data-toolpath-preview-maximize");
+  const expandOnClick =
+    typeof options.expandOnClick === "boolean"
+      ? options.expandOnClick
+      : el.hasAttribute("data-toolpath-preview-expand-on-click");
+  const actionsVisibility = resolveActionsVisibility(
+    typeof options.actions === "string"
+      ? options.actions
+      : el.dataset.toolpathPreviewActions
+  );
+
+  if (maximize) el.setAttribute("data-toolpath-preview-maximize", "");
+  else el.removeAttribute("data-toolpath-preview-maximize");
+
+  if (expandOnClick) el.setAttribute("data-toolpath-preview-expand-on-click", "");
+  else el.removeAttribute("data-toolpath-preview-expand-on-click");
+
+  if (!maximize && !expandOnClick) {
+    el.removeAttribute("data-expandable-surface-click");
+    el.removeAttribute("data-expandable-surface-control");
+    delete el.dataset.toolpathPreviewActions;
+    return { maximize: false, expandOnClick: false, actionsVisibility };
+  }
+
+  el.setAttribute("data-expandable-surface", "");
+  if (!el.dataset.expandableSurfaceLabel?.trim()) {
+    el.dataset.expandableSurfaceLabel =
+      el.getAttribute("aria-label") || DEFAULT_ARIA_LABEL;
+  }
+
+  if (expandOnClick) el.setAttribute("data-expandable-surface-click", "");
+  else el.removeAttribute("data-expandable-surface-click");
+
+  if (maximize) {
+    el.removeAttribute("data-expandable-surface-control");
+    let actionsHost = el.querySelector(":scope > .surface-actions");
+    if (!actionsHost) {
+      actionsHost = document.createElement("div");
+      actionsHost.className = "surface-actions";
+      el.append(actionsHost);
+    }
+    el.dataset.toolpathPreviewActions = actionsVisibility;
+  } else {
+    el.setAttribute("data-expandable-surface-control", "false");
+    delete el.dataset.toolpathPreviewActions;
+  }
+
+  return { maximize, expandOnClick, actionsVisibility };
 }
 
 function readCssColor(name, fallback) {
@@ -154,6 +237,9 @@ function fitCameraToObject(camera, controls, object) {
  *   currentLayer?: boolean,
  *   meta?: string,
  *   metaExtra?: string | string[],
+ *   maximize?: boolean,
+ *   expandOnClick?: boolean,
+ *   actions?: string,
  * }} [options]
  * @returns {{
  *   setToolpath: (toolpath: { segments: ArrayLike<unknown>, layerCount?: number }) => void,
@@ -200,6 +286,8 @@ export function initToolpathPreview(previewEl, options = {}) {
   );
   let hasMetaContent = fixedMetaContent || metaExtra !== "";
   let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+
+  syncExpandableAttrs(previewEl, options);
 
   if (showSegments) previewEl.setAttribute("data-toolpath-preview-segments", "");
   else previewEl.removeAttribute("data-toolpath-preview-segments");

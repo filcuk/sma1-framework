@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-04T18:39:06.416Z",
+  "generatedAt": "2026-09-04T18:48:55.947Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -147,7 +147,7 @@
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
     },
     "app/components/model-preview.js": {
-      "sha256": "c24a5860e23d8ab85fd687cd1fd72df6bba06527b57983c5c706500b85bc7731"
+      "sha256": "9126701e0dba6a1b95979aa4ae4d7a30876bb9b4dbd3673162384b84b259a126"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
@@ -207,7 +207,7 @@
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
     "app/components/toolpath-preview.js": {
-      "sha256": "e0d18bcad268b558763bedd331bdad29330cf900e667d622ee0c376a8ba73689"
+      "sha256": "f16eb588c3a7ab8bf86c63913ae56c16b844fb51cb84a6d8fe88e08b66a5e39c"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -252,7 +252,7 @@
       "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
     },
     "app/css/controls-model.css": {
-      "sha256": "66dfcb04ac3081470bd1e278c554ae56b937f02f0e91c2bd4d5a86f90293e7c5"
+      "sha256": "885e60cf3ca23b31d3d1ceaefbdf3ed9ba1fb5d475b5f855effd4cb1d2c72816"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"
@@ -1215,7 +1215,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "bc1c467d91d4cc7467e12fdf0a1b02b1ed61290076063d46ad1097f830245593"
+      "sha256": "079a18b3ec31d8bb6b0b0ba9f24b4b3730343d29837484065521196262e22743"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -2415,7 +2415,7 @@
         "config",
         "dom"
       ],
-      "notes": "Interactive Three.js host for the shared indexed mesh shape"
+      "notes": "Interactive Three.js host for the shared indexed mesh shape; optional meta strip and maximise via expandable-surface"
     },
     "toolpath-preview": {
       "files": [
@@ -2438,7 +2438,7 @@
         "config",
         "dom"
       ],
-      "notes": "Interactive Three.js LineSegments host for parsed G-code toolpaths"
+      "notes": "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip and maximise via expandable-surface"
     },
     "gcode": {
       "files": [

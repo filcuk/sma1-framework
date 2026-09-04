@@ -499,7 +499,8 @@ export const COMPONENTS = {
     vendor: ["app/vendor/three/"],
     icons: [],
     infra: ["config", "dom"],
-    notes: "Interactive Three.js host for the shared indexed mesh shape",
+    notes:
+      "Interactive Three.js host for the shared indexed mesh shape; optional meta strip and maximise via expandable-surface",
   },
   "toolpath-preview": {
     files: ["app/components/toolpath-preview.js"],
@@ -507,7 +508,8 @@ export const COMPONENTS = {
     vendor: ["app/vendor/three/"],
     icons: [],
     infra: ["config", "dom"],
-    notes: "Interactive Three.js LineSegments host for parsed G-code toolpaths",
+    notes:
+      "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip and maximise via expandable-surface",
   },
   gcode: {
     files: ["app/components/gcode.js"],

@@ -1727,7 +1727,9 @@ Pages using the preview must include an import map before module scripts:
   data-model-preview-size
   data-model-preview-triangles
   data-model-preview-meta="hover"
-  data-model-preview-meta-extra="PETG">
+  data-model-preview-meta-extra="PETG"
+  data-model-preview-maximize
+  data-model-preview-actions="hover">
   <p class="model-preview__empty">No preview</p>
 </div>
 ```
@@ -1735,10 +1737,12 @@ Pages using the preview must include an import map before module scripts:
 ```javascript
 import { createBoxMesh } from "./components/stl.js";
 import { initModelPreview } from "./components/model-preview.js";
+import { initExpandableSurfaces } from "./components/expandable-surface.js";
 
 const preview = initModelPreview(document.getElementById("my-model-preview"));
 preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
 preview?.setMetaExtra(["PETG", "box.stl"]);
+initExpandableSurfaces(document); // required when maximise attrs are used
 // preview?.clear();
 // preview?.destroy();
 ```
@@ -1747,8 +1751,9 @@ Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × 
 
 `data-model-preview-meta` controls strip visibility: `hover` (default), `always`, `not-hover`, or `never`. On touch devices without hover, `hover` and `not-hover` behave like `always`. Add `data-model-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array) for app-specific text.
 
-The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.
-### G-code toolpath preview
+`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Either option maps onto expandable-surface. `data-model-preview-actions` controls when that maximise control is visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`.
+
+The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.### G-code toolpath preview
 
 `parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, `G90` / `G91`, `M82` / `M83`, and `G92`; arc commands are reported as unsupported. Coordinates use the file's millimetre convention.
 
@@ -1774,7 +1779,9 @@ The toolpath preview reuses the `.model-preview` surface and canvas styles, and 
   data-toolpath-preview-layers
   data-toolpath-preview-current-layer
   data-toolpath-preview-meta="hover"
-  data-toolpath-preview-meta-extra="PETG">
+  data-toolpath-preview-meta-extra="PETG"
+  data-toolpath-preview-maximize
+  data-toolpath-preview-actions="hover">
   <p class="model-preview__empty">No toolpath</p>
 </div>
 ```
@@ -1782,7 +1789,8 @@ The toolpath preview reuses the `.model-preview` surface and canvas styles, and 
 `data-toolpath-preview-segments`, `data-toolpath-preview-layers`, and `data-toolpath-preview-current-layer` add muted counts to a bottom-right strip (`3,089 segments · 40 layers · layer 12/40`). Current layer follows `setMaxLayer()` (1-based display over the total layer count).
 
 `data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
-### G-code metadata
+
+`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when that maximise control is visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled.### G-code metadata
 
 `parseGcodeMeta()` reads slicer metadata from ASCII G-code comments or binary `.bgcode` metadata blocks. It does not simulate toolpaths or estimate duration from feed rates. The asynchronous API accepts a string, `ArrayBuffer`, or `Uint8Array`; unsupported bgcode compression is reported in `warnings`.
 

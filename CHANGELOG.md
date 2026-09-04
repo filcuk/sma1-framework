@@ -33,6 +33,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.
 - Interactive Three.js model preview with orbit controls, automatic camera fitting, responsive resizing, and theme support.
 - Model preview meta strip (size, triangles, vertices, volume, surface area, objects, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility.
+- Model and toolpath preview maximise controls via expandable-surface, with action visibility `hover` / `always` / `never`.
 - G-code and bgcode metadata parser for duration, filament, nozzle, slicer, and printer details.
 - G-code and bgcode toolpath parser and Three.js preview with extrusion/travel lines and layer filtering.
 - Toolpath preview meta strip (segments, layers, current layer, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility, matching the image-preview pattern.
