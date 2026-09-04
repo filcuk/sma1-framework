@@ -310,6 +310,12 @@ async function readDemoGcode({ files }) {
 
 const demoGcodeDropzoneApi = initFileDropzone(demoGcodeDropzone, {
   onFiles: readDemoGcode,
+  onError: ({ message }) => {
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = message;
+      setHidden(demoGcodeStatus, false);
+    }
+  },
   onClear: () => {
     demoGcodeRequest += 1;
     setHidden(demoGcodeReadout, true);

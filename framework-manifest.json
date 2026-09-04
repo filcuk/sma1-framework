@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-04T18:54:29.165Z",
+  "generatedAt": "2026-09-04T18:58:01.935Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -132,7 +132,7 @@
       "sha256": "a059ed3f44f61a53fd7035688f0cac0796050e240645caeca6d65a8232d32b81"
     },
     "app/components/file-dropzone.js": {
-      "sha256": "38668d85f52688135fcf8338a9d4aafd0770f2d3c2e9db593826d8e983aacddc"
+      "sha256": "6e36e23a37cc1a942fff35242df6c6e859fdcbcea35ddd26472df260cd81ab84"
     },
     "app/components/gcode-toolpath.js": {
       "sha256": "854deafd9d6e0d7bb40ddb31b388d47970fab2aeb33c1624dd0dd5decedb3792"

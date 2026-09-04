@@ -1637,7 +1637,7 @@ dropzone?.clear();
 initFileDropzones(document); // wire every `.file-dropzone`
 ```
 
-`data-file-accept` maps to the hidden input's `accept`. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called).
+`data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep the old advise-only behaviour: picker hint + meta label only, no rejection. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
 
 On init, the prompt shows a `.file-dropzone-meta` line when there is something non-default to communicate: allowed types (from `accept`) and/or a multi-file count (`Up to N files` or `Multiple files`). A plain single-file dropzone with no `accept` shows no meta line. The element is created if missing.
 

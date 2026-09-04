@@ -98,7 +98,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |
-| `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
+| `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker; `accept` enforced by default (`acceptFilter: "soft"` for advise-only) |
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
 | `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta; meta visibility `hover` / `always` / `not-hover` / `never`; action visibility `hover` / `always` / `never` |

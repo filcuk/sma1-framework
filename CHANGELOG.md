@@ -30,6 +30,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- File dropzone enforces `data-file-accept` by default (browse / drop / `setFiles`); set `data-file-accept-filter="soft"` for advise-only. `onError` receives `reason: "accept"` | `"max"`.
 - File dropzone `setFiles()` for programmatic selection (same path as drop / browse; triggers `onFiles`).
 - Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.
 - Interactive Three.js model preview with orbit controls, automatic camera fitting, responsive resizing, and theme support.
