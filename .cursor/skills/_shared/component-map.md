@@ -40,6 +40,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-color.css` | color-set, color-picker |
 | `controls-charts.css` | charts |
 | `controls-diagram.css` | diagram |
+| `controls-model.css` | stl, model-preview, toolpath-preview |
 | `rich-text-editor.css` | rich-text-editor (+ `app/toastui-editor.css`) |
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
@@ -75,7 +76,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
 | progress-bar | `app/components/progress-bar.js` | `controls-widgets.css` | — | — | `dom` | |
 | spinner | `app/components/spinner.js` | `controls-widgets.css` | — | — | `dom` | |
-| slider | `app/components/slider.js` | `controls-widgets.css` | — | — | `dom` | |
+| slider | `app/components/slider.js` | `controls-widgets.css` | — | — | `dom` | Form + `.slider--hover` surface chrome; `setBounds()` |
 | stepper | `app/components/stepper.js` | `controls-widgets.css` | — | — | `dom` | |
 | combo | `app/components/combo.js` | `controls-menus.css` | — | — (CSS chevron) | `menu` | |
 | dropdown | `app/components/dropdown.js` | `controls-menus.css` | — | — (CSS chevron) | `menu` | |
@@ -94,6 +95,11 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | rich-text-editor | `app/components/rich-text-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control; owns Toast UI global access (no separate seam file) |
 | charts | `app/components/charts.js` | `controls-charts.css` | `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` | — | `config` | Thin `mountChart` host; import map for `d3-scale` / `d3-shape` when using `barY` / `barX`; forks author `defineChart` |
 | diagram | `app/components/diagram.js` | `controls-diagram.css` | `app/vendor/mermaid/` | — | `config`, `dom` | Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark |
+| stl | `app/components/stl.js` | `controls-model.css` | — | — | `file-download` | Dependency-free indexed mesh and binary/ASCII STL export helpers |
+| model-preview | `app/components/model-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen` | `config`, `dom`, `orbit-home`, `icons`; maximise: expandable-surface | Interactive Three.js host for the shared indexed mesh shape; pages need a `three` import map; optional meta strip, home/reset, and maximise |
+| toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen`, `visibility`, `visibility-off` | `config`, `dom`, `orbit-home`, `icons`, `slider`, `toggle-button`; maximise: expandable-surface | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface; optional meta strip, home/reset, layer slider, travel toggle, and maximise |
+| gcode | `app/components/gcode.js` | — | — | — | — | ASCII G-code and binary bgcode metadata parser |
+| gcode-toolpath | `app/components/gcode-toolpath.js` | — | — | — | `gcode` | G-code and bgcode motion parser for extrusion/travel toolpath segments |
 
 ## CSS-only / shell patterns (no dedicated component module)
 

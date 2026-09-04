@@ -43,6 +43,7 @@ export const CSS_INDEX_ORDER = [
   "controls-color.css",
   "controls-charts.css",
   "controls-diagram.css",
+  "controls-model.css",
   "overlays.css",
   "tutorial.css",
   "rich-text-editor.css",
@@ -105,6 +106,7 @@ export const INFRA = {
   "brand-icon": ["app/utils/brand-icon.js"],
   "also-see-svg": ["app/utils/also-see-svg.js"],
   "sanitize-svg": ["app/utils/sanitize-svg.js"],
+  "orbit-home": ["app/utils/orbit-home.js"],
 };
 
 /**
@@ -484,6 +486,48 @@ export const COMPONENTS = {
     notes:
       "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark",
   },
+  stl: {
+    files: ["app/components/stl.js"],
+    css: ["controls-model.css"],
+    vendor: [],
+    icons: [],
+    infra: ["file-download"],
+    notes: "Dependency-free indexed mesh and binary/ASCII STL export helpers",
+  },
+  "model-preview": {
+    files: ["app/components/model-preview.js"],
+    css: ["controls-model.css"],
+    vendor: ["app/vendor/three/"],
+    icons: ["home", "fullscreen"],
+    infra: ["config", "dom", "orbit-home", "icons"],
+    notes:
+      "Interactive Three.js host for the shared indexed mesh shape; optional meta strip, home/reset, and maximise via expandable-surface",
+  },
+  "toolpath-preview": {
+    files: ["app/components/toolpath-preview.js"],
+    css: ["controls-model.css"],
+    vendor: ["app/vendor/three/"],
+    icons: ["home", "fullscreen"],
+    infra: ["config", "dom", "orbit-home", "icons"],
+    notes:
+      "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip, home/reset, and maximise via expandable-surface",
+  },
+  gcode: {
+    files: ["app/components/gcode.js"],
+    css: [],
+    vendor: [],
+    icons: [],
+    infra: [],
+    notes: "ASCII G-code and binary bgcode metadata parser",
+  },
+  "gcode-toolpath": {
+    files: ["app/components/gcode-toolpath.js"],
+    css: [],
+    vendor: [],
+    icons: [],
+    infra: ["gcode"],
+    notes: "G-code and bgcode motion parser for extrusion/travel toolpath segments",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */
@@ -537,6 +581,7 @@ export const CSS_PARTIAL_FEATURES = {
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],
   "controls-diagram.css": ["diagram"],
+  "controls-model.css": ["stl", "model-preview", "toolpath-preview"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],

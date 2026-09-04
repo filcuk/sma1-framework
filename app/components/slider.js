@@ -1,7 +1,7 @@
 /**
- * Range slider with an editable value field.
+ * Range slider with an optional editable value field.
  *
- * Markup:
+ * Form markup:
  *   <div class="slider" data-slider-min="0" data-slider-max="100" data-slider-format="integer">
  *     <label class="field-label" for="my-slider-range">Volume</label>
  *     <div class="slider-row">
@@ -14,11 +14,24 @@
  *     </div>
  *   </div>
  *
+ * Hover / compact chrome (for `.surface-actions` on display surfaces):
+ *   <div class="slider slider--hover" data-slider-min="0" data-slider-max="40"
+ *     data-tooltip="Maximum layer" data-tooltip-position="top">
+ *     <div class="slider-row">
+ *       <input type="range" class="slider-range" aria-label="Maximum layer" />
+ *       <output class="slider-readout" for="…" aria-hidden="true">40</output>
+ *     </div>
+ *   </div>
+ *
  * data-slider-min / data-slider-max — numeric bounds
  * data-slider-step — increment (default: 1 for integer/percentage, 0.1 for decimal)
  * data-slider-default — initial value (falls back to range `value` or midpoint)
  * data-slider-format — "integer" (default), "decimal", or "percentage"
  * data-slider-disabled — disable slider and value field
+ * data-slider-chrome="hover" — same as `.slider--hover` (compact surface chrome)
+ *
+ * `.slider-input` is optional. When omitted, an optional `.slider-readout` shows the
+ * committed value (typical for hover chrome). A range input is always required.
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
@@ -78,18 +91,58 @@ function resolveDisabled(sliderEl, disabledOption, rangeInput) {
   return rangeInput.disabled;
 }
 
+/**
+ * @param {HTMLElement} sliderEl
+ * @param {string | undefined} chromeOption
+ * @returns {"form" | "hover"}
+ */
+function resolveChrome(sliderEl, chromeOption) {
+  const fromOption = chromeOption ?? sliderEl.dataset.sliderChrome;
+  if (fromOption === "hover" || sliderEl.classList.contains("slider--hover")) {
+    return "hover";
+  }
+  return "form";
+}
+
+function normalizeBounds(minValue, maxValue) {
+  return minValue <= maxValue
+    ? { min: minValue, max: maxValue }
+    : { min: maxValue, max: minValue };
+}
+
 export function initSlider(
   sliderEl,
-  { min, max, step, defaultValue, format, disabled, onChange, onInput } = {}
+  {
+    min,
+    max,
+    step,
+    defaultValue,
+    format,
+    disabled,
+    chrome,
+    onChange,
+    onInput,
+  } = {}
 ) {
-  if (!sliderEl) return null;
+  if (!(sliderEl instanceof HTMLElement)) return null;
+  if (sliderEl.dataset.sliderInit !== undefined) return null;
 
   const rangeInput = sliderEl.querySelector(".slider-range");
+  if (!(rangeInput instanceof HTMLInputElement)) return null;
+
+  sliderEl.dataset.sliderInit = "";
+
   const valueInput = sliderEl.querySelector(".slider-input");
   const hiddenInput = sliderEl.querySelector(".slider-value");
   const suffixEl = sliderEl.querySelector(".slider-suffix");
+  /** @type {HTMLElement | null} */
+  let readoutEl = sliderEl.querySelector(".slider-readout");
 
-  if (!rangeInput || !valueInput) return null;
+  const resolvedChrome = resolveChrome(sliderEl, chrome);
+  if (resolvedChrome === "hover") {
+    sliderEl.classList.add("slider--hover");
+    sliderEl.dataset.sliderChrome = "hover";
+  }
 
   const resolvedFormat = resolveFormat(sliderEl, format);
   const minValue = parseConfigNumber(min ?? sliderEl.dataset.sliderMin, 0);
@@ -99,10 +152,7 @@ export function initSlider(
     defaultStepForFormat(resolvedFormat)
   );
 
-  const bounds =
-    minValue <= maxValue
-      ? { min: minValue, max: maxValue }
-      : { min: maxValue, max: minValue };
+  const bounds = normalizeBounds(minValue, maxValue);
 
   const config = {
     min: bounds.min,
@@ -136,7 +186,9 @@ export function initSlider(
   let currentValue = snapToStep(parsedInitial, config.min, config.max, config.step);
   let isEditing = false;
   let isDisabled = resolveDisabled(sliderEl, disabled, rangeInput);
-  const controls = [rangeInput, valueInput];
+  /** @type {Array<HTMLInputElement>} */
+  const controls = [rangeInput];
+  if (valueInput instanceof HTMLInputElement) controls.push(valueInput);
 
   function applyDisabled(nextDisabled) {
     isDisabled = nextDisabled;
@@ -161,6 +213,15 @@ export function initSlider(
     rangeInput.style.setProperty("--slider-progress", `${clamped}%`);
   }
 
+  function syncReadout(display = formatDisplayValue(currentValue, config)) {
+    if (!(readoutEl instanceof HTMLElement)) {
+      readoutEl = sliderEl.querySelector(".slider-readout");
+    }
+    if (readoutEl instanceof HTMLElement) {
+      readoutEl.textContent = display;
+    }
+  }
+
   function buildPayload(source) {
     return {
       sliderEl,
@@ -173,12 +234,13 @@ export function initSlider(
 
   function syncDom({ emit = true, source = "init" } = {}) {
     rangeInput.value = String(currentValue);
-    if (!isEditing) {
+    if (valueInput instanceof HTMLInputElement && !isEditing) {
       valueInput.value = formatDisplayValue(currentValue, config);
     }
-    if (hiddenInput) {
+    if (hiddenInput instanceof HTMLInputElement) {
       hiddenInput.value = String(currentValue);
     }
+    syncReadout();
     syncAria();
     syncProgress();
 
@@ -199,7 +261,45 @@ export function initSlider(
     syncDom({ emit, source });
   }
 
+  /**
+   * @param {{
+   *   min?: number,
+   *   max?: number,
+   *   value?: number,
+   *   emit?: boolean,
+   * }} [next]
+   */
+  function setBounds(next = {}) {
+    const nextMin = parseConfigNumber(
+      next.min !== undefined ? next.min : config.min,
+      config.min
+    );
+    const nextMax = parseConfigNumber(
+      next.max !== undefined ? next.max : config.max,
+      config.max
+    );
+    const normalized = normalizeBounds(nextMin, nextMax);
+    config.min = normalized.min;
+    config.max = normalized.max;
+    sliderEl.dataset.sliderMin = String(config.min);
+    sliderEl.dataset.sliderMax = String(config.max);
+    rangeInput.min = String(config.min);
+    rangeInput.max = String(config.max);
+
+    const preferred =
+      next.value !== undefined
+        ? next.value
+        : Number.isFinite(currentValue)
+          ? currentValue
+          : config.max;
+    setValue(preferred, {
+      emit: Boolean(next.emit),
+      source: "bounds",
+    });
+  }
+
   function commitTypedValue({ emit = true } = {}) {
+    if (!(valueInput instanceof HTMLInputElement)) return false;
     const parsed = parseInputText(valueInput.value, config.format);
     if (!Number.isFinite(parsed)) {
       valueInput.value = formatDisplayValue(currentValue, config);
@@ -221,61 +321,16 @@ export function initSlider(
     if (!Number.isFinite(parsed)) return;
     currentValue = snapToStep(parsed, config.min, config.max, config.step);
     isEditing = false;
-    valueInput.value = formatDisplayValue(currentValue, config);
-    if (hiddenInput) hiddenInput.value = String(currentValue);
+    const display = formatDisplayValue(currentValue, config);
+    if (valueInput instanceof HTMLInputElement) valueInput.value = display;
+    if (hiddenInput instanceof HTMLInputElement) {
+      hiddenInput.value = String(currentValue);
+    }
+    syncReadout(display);
     syncAria();
     syncProgress();
     onInput?.(buildPayload("range"));
     onChange?.(buildPayload("range"));
-  });
-
-  valueInput.addEventListener("focus", () => {
-    isEditing = true;
-  });
-
-  valueInput.addEventListener("input", () => {
-    isEditing = true;
-    const parsed = parseInputText(valueInput.value, config.format);
-    if (!Number.isFinite(parsed)) {
-      valueInput.setAttribute("aria-invalid", "true");
-      return;
-    }
-    valueInput.removeAttribute("aria-invalid");
-    const preview = snapToStep(parsed, config.min, config.max, config.step);
-    rangeInput.value = String(preview);
-    syncAria();
-    syncProgress(preview);
-    onInput?.({
-      ...buildPayload("input"),
-      value: preview,
-      display: valueInput.value,
-    });
-  });
-
-  valueInput.addEventListener("change", () => {
-    commitTypedValue();
-  });
-
-  valueInput.addEventListener("blur", () => {
-    commitTypedValue();
-  });
-
-  valueInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      commitTypedValue();
-      valueInput.blur();
-    }
-    if (event.key === "Escape") {
-      event.preventDefault();
-      isEditing = false;
-      valueInput.value = formatDisplayValue(currentValue, config);
-      valueInput.removeAttribute("aria-invalid");
-      rangeInput.value = String(currentValue);
-      syncAria();
-      syncProgress();
-      valueInput.blur();
-    }
   });
 
   rangeInput.addEventListener("change", () => {
@@ -288,6 +343,64 @@ export function initSlider(
     }
   });
 
+  if (valueInput instanceof HTMLInputElement) {
+    valueInput.addEventListener("focus", () => {
+      isEditing = true;
+    });
+
+    valueInput.addEventListener("input", () => {
+      isEditing = true;
+      const parsed = parseInputText(valueInput.value, config.format);
+      if (!Number.isFinite(parsed)) {
+        valueInput.setAttribute("aria-invalid", "true");
+        return;
+      }
+      valueInput.removeAttribute("aria-invalid");
+      const preview = snapToStep(parsed, config.min, config.max, config.step);
+      rangeInput.value = String(preview);
+      syncAria();
+      syncProgress(preview);
+      onInput?.({
+        ...buildPayload("input"),
+        value: preview,
+        display: valueInput.value,
+      });
+    });
+
+    valueInput.addEventListener("change", () => {
+      commitTypedValue();
+    });
+
+    valueInput.addEventListener("blur", () => {
+      commitTypedValue();
+    });
+
+    valueInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        commitTypedValue();
+        valueInput.blur();
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        isEditing = false;
+        valueInput.value = formatDisplayValue(currentValue, config);
+        valueInput.removeAttribute("aria-invalid");
+        rangeInput.value = String(currentValue);
+        syncAria();
+        syncProgress();
+        valueInput.blur();
+      }
+    });
+  }
+
+  if (resolvedChrome === "hover") {
+    const stop = (event) => event.stopPropagation();
+    sliderEl.addEventListener("pointerdown", stop);
+    sliderEl.addEventListener("mousedown", stop);
+    sliderEl.addEventListener("click", stop);
+  }
+
   syncDom({ emit: Boolean(onChange) });
 
   return {
@@ -296,6 +409,9 @@ export function initSlider(
     },
     setValue(nextValue, options = {}) {
       setValue(nextValue, options);
+    },
+    setBounds(next = {}) {
+      setBounds(next);
     },
     getConfig() {
       return { ...config };
@@ -309,14 +425,17 @@ export function initSlider(
     isDisabled() {
       return isDisabled;
     },
+    destroy() {
+      delete sliderEl.dataset.sliderInit;
+    },
   };
 }
 
 /** Wire every `.slider` block in `root`. */
 export function initSliders(root = document) {
   const instances = [];
-  root.querySelectorAll(".slider").forEach((sliderEl) => {
-    const instance = initSlider(sliderEl);
+  root.querySelectorAll(".slider").forEach((el) => {
+    const instance = initSlider(el);
     if (instance) instances.push(instance);
   });
   return instances;

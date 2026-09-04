@@ -21,6 +21,7 @@ const EXPECTED_PARTIALS = [
   "controls-menus.css",
   "controls-disclosure.css",
   "controls-file.css",
+  "controls-model.css",
   "overlays.css",
   "tutorial.css",
   "rich-text-editor.css",

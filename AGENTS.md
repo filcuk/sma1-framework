@@ -98,13 +98,18 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |
-| `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
+| `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker; `accept` enforced by default (`acceptFilter: "soft"` for advise-only) |
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
-| `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
+| `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
+| `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta; meta visibility `hover` / `always` / `not-hover` / `never`; action visibility `hover` / `always` / `never` |
+| `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes; optional meta strip (size / triangles / vertices / volume / surface area / objects / `setMetaExtra`); optional maximise and home/reset via expandable-surface |
+| `parseGcodeMeta()` / `isBgcode()` | Read timestamp, duration, filament, temperatures, density, perimeters, objects, and slicer metadata from ASCII G-code and binary bgcode without simulating toolpaths |
+| `parseGcodeToolpath()` | Parse ASCII G-code or bgcode motion into extrusion/travel segments (G0/G1 and XY G2/G3 arcs), layers, bounds, and warnings |
+| `initToolpathPreview()` / `initToolpathPreviews()` | Interactive Three.js LineSegments preview for parsed G-code toolpaths; maximum-layer filtering (hover `.slider--hover` on by default); travel-move toggle; optional meta strip (segments / layers / current layer / `setMetaExtra`); optional maximise and home/reset via expandable-surface |
 | `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
 | `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
 | `initDurationInput()` / `initDurationInputs()` | Segmented duration field with the shared popup in duration mode |
-| `initSlider()` / `initSliders()` | Range slider with editable value (integer, decimal, percentage) |
+| `initSlider()` / `initSliders()` | Range slider with editable value (integer, decimal, percentage); `.slider--hover` for surface strips; `setBounds()` |
 | `initProgressBar()` / `initProgressBars()` | Progress bar with optional percent or fraction label |
 | `initSpinner()` / `initSpinners()` | Loading spinner; optional blocking overlay on a host |
 | `initStepper()` / `initSteppers()` | Numeric nudger with decrement/increment buttons |
@@ -188,6 +193,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-color.css` | Color set gallery and color picker |
 | `app/css/controls-charts.css` | TanStack Charts host |
 | `app/css/controls-diagram.css` | Mermaid diagram host |
+| `app/css/controls-model.css` | Model preview surface and 3D model hosts |
 | `app/css/overlays.css` | Banners, tooltips, popovers, modals |
 | `app/css/tutorial.css` | Tutorial spotlight overlay and step chrome |
 | `app/css/rich-text-editor.css` | Rich text editor field layout and Toast UI token overrides |

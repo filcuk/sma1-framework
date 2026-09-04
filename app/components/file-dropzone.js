@@ -17,7 +17,10 @@ import { createIcon } from "../utils/icons.js";
  *     <ul class="file-dropzone-list hidden" hidden></ul>
  *   </div>
  *
- * data-file-accept — passed to the hidden input's `accept`; also shown in the prompt meta line
+ * data-file-accept — passed to the hidden input's `accept`, shown in the prompt meta
+ *   line, and (by default) enforced in JS for browse, drop, and `setFiles`
+ * data-file-accept-filter — `strict` (default) rejects non-matching files; `soft`
+ *   only advises via the picker `accept` + meta line (previous advise-only behaviour)
  * data-file-multiple — presence or "true" for multiple files
  * data-file-max — optional maximum file count; shown in the prompt meta line
  *
@@ -84,6 +87,65 @@ function formatConstraintsLabel(acceptTypes, isMultiple, max) {
   return parts.join(" · ");
 }
 
+/**
+ * @param {string | null | undefined} accept
+ * @returns {string[]}
+ */
+export function parseAcceptTokens(accept) {
+  return String(accept ?? "")
+    .split(",")
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/**
+ * Whether a file matches an HTML `accept`-style list (extensions and/or MIME types).
+ * Empty accept matches every file. Extension tokens use the final `.ext` (case-insensitive);
+ * multi-dot tokens like `.tar.gz` use a suffix match. MIME tokens match `file.type`
+ * (`image/*` matches any image MIME).
+ *
+ * @param {{ name?: string, type?: string }} file
+ * @param {string | string[] | null | undefined} accept
+ */
+export function fileMatchesAccept(file, accept) {
+  const tokens = Array.isArray(accept) ? accept : parseAcceptTokens(accept);
+  if (!tokens.length) return true;
+
+  const name = String(file?.name ?? "")
+    .trim()
+    .toLowerCase();
+  const type = String(file?.type ?? "")
+    .trim()
+    .toLowerCase();
+
+  return tokens.some((token) => {
+    if (token.startsWith(".")) {
+      if (token.indexOf(".", 1) !== -1) {
+        return name.endsWith(token);
+      }
+      const dot = name.lastIndexOf(".");
+      return dot >= 0 && name.slice(dot) === token;
+    }
+    if (token.endsWith("/*")) {
+      const prefix = token.slice(0, -1);
+      return Boolean(type) && type.startsWith(prefix);
+    }
+    return Boolean(type) && type === token;
+  });
+}
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {"strict" | "soft"}
+ */
+export function resolveAcceptFilter(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (trimmed === "soft") return "soft";
+  return "strict";
+}
+
 function syncInputFiles(input, files) {
   const transfer = new DataTransfer();
   files.forEach((file) => transfer.items.add(file));
@@ -92,7 +154,7 @@ function syncInputFiles(input, files) {
 
 export function initFileDropzone(
   dropzoneEl,
-  { accept, multiple, maxFiles, onFiles, onError, onClear } = {}
+  { accept, acceptFilter, multiple, maxFiles, onFiles, onError, onClear } = {}
 ) {
   if (!dropzoneEl) return null;
 
@@ -102,6 +164,12 @@ export function initFileDropzone(
   if (!input || !prompt) return null;
 
   const acceptTypes = accept ?? dropzoneEl.dataset.fileAccept ?? "";
+  const acceptTokens = parseAcceptTokens(acceptTypes);
+  const acceptFilterMode = resolveAcceptFilter(
+    typeof acceptFilter === "string"
+      ? acceptFilter
+      : dropzoneEl.dataset.fileAcceptFilter
+  );
   const isMultiple =
     multiple ?? parseBooleanAttr(dropzoneEl.dataset.fileMultiple) ?? false;
   const max =
@@ -110,6 +178,11 @@ export function initFileDropzone(
 
   if (acceptTypes) input.accept = acceptTypes;
   input.multiple = isMultiple;
+  if (acceptFilterMode === "soft") {
+    dropzoneEl.dataset.fileAcceptFilter = "soft";
+  } else {
+    delete dropzoneEl.dataset.fileAcceptFilter;
+  }
 
   const constraintsLabel = formatConstraintsLabel(acceptTypes, isMultiple, max);
   const text = prompt.querySelector(".file-dropzone-text") ?? prompt;
@@ -158,14 +231,55 @@ export function initFileDropzone(
       dropzoneEl,
       message: `You can add at most ${max} file${max === 1 ? "" : "s"}.`,
       files: candidateFiles,
+      reason: "max",
     });
     return candidateFiles.slice(0, max);
+  }
+
+  /**
+   * @param {File[]} incoming
+   * @returns {{ accepted: File[], rejected: File[] }}
+   */
+  function partitionByAccept(incoming) {
+    if (!acceptTokens.length || acceptFilterMode === "soft") {
+      return { accepted: incoming, rejected: [] };
+    }
+    /** @type {File[]} */
+    const accepted = [];
+    /** @type {File[]} */
+    const rejected = [];
+    for (const file of incoming) {
+      if (fileMatchesAccept(file, acceptTokens)) accepted.push(file);
+      else rejected.push(file);
+    }
+    return { accepted, rejected };
+  }
+
+  /**
+   * @param {File[]} rejected
+   */
+  function reportRejected(rejected) {
+    if (!rejected.length) return;
+    const message =
+      rejected.length === 1
+        ? `"${rejected[0].name}" is not an accepted file type.`
+        : `${rejected.length} files were not an accepted type.`;
+    onError?.({
+      dropzoneEl,
+      message,
+      files: rejected,
+      reason: "accept",
+    });
   }
 
   function addFiles(incoming) {
     if (!incoming.length) return;
 
-    const next = isMultiple ? [...files, ...incoming] : incoming.slice(0, 1);
+    const { accepted, rejected } = partitionByAccept(incoming);
+    reportRejected(rejected);
+    if (!accepted.length) return;
+
+    const next = isMultiple ? [...files, ...accepted] : accepted.slice(0, 1);
     commitFiles(trimToMax(next));
   }
 
@@ -224,13 +338,7 @@ export function initFileDropzone(
   function onInputChange() {
     const incoming = [...input.files];
     if (!incoming.length) return;
-
-    if (isMultiple) {
-      addFiles(incoming);
-      return;
-    }
-
-    commitFiles(incoming.slice(0, 1));
+    addFiles(incoming);
   }
 
   function onDragEnter(event) {
@@ -260,13 +368,7 @@ export function initFileDropzone(
 
     const incoming = [...(event.dataTransfer?.files ?? [])];
     if (!incoming.length) return;
-
-    if (isMultiple) {
-      addFiles(incoming);
-      return;
-    }
-
-    commitFiles(incoming.slice(0, 1));
+    addFiles(incoming);
   }
 
   prompt.addEventListener("click", onPromptClick);
@@ -281,6 +383,13 @@ export function initFileDropzone(
   return {
     openPicker,
     clear: () => commitFiles([]),
+    setFiles: (nextFiles) => {
+      const incoming = Array.isArray(nextFiles) ? nextFiles.filter(Boolean) : [];
+      const { accepted, rejected } = partitionByAccept(incoming);
+      reportRejected(rejected);
+      if (!accepted.length) return;
+      commitFiles(isMultiple ? trimToMax(accepted) : accepted.slice(0, 1));
+    },
     getFiles: () => [...files],
     destroy: () => {
       prompt.removeEventListener("click", onPromptClick);

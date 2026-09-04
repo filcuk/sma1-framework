@@ -396,6 +396,7 @@ app/
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
     controls-diagram.css  # Mermaid diagram host
+    controls-model.css    # Model preview surface and 3D model hosts
     overlays.css        # Banners, tooltips, modals
     rich-text-editor.css # Rich text editor layout + Toast UI token overrides
     table.css            # Data tables
@@ -467,12 +468,16 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
-| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
+| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
+| **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
+| **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
+| **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js (optional hover meta strip). [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
+| **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate, Heatshrink, and MeatPack payloads. [`app/components/gcode.js`](app/components/gcode.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
 | **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
-| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/components/slider.js`](app/components/slider.js). |
+| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled; `.slider--hover` compact chrome for surface action strips. [`app/components/slider.js`](app/components/slider.js). |
 | **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/components/progress-bar.js`](app/components/progress-bar.js). |
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/components/spinner.js`](app/components/spinner.js). |
 | **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/components/stepper.js`](app/components/stepper.js). |
@@ -1626,12 +1631,13 @@ const dropzone = initFileDropzone(document.getElementById("my-dropzone"), {
 
 dropzone?.openPicker();
 dropzone?.getFiles();
+dropzone?.setFiles([file]); // programmatic selection (triggers onFiles)
 dropzone?.clear();
 
 initFileDropzones(document); // wire every `.file-dropzone`
 ```
 
-`data-file-accept` maps to the hidden input's `accept`. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called).
+`data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep the old advise-only behaviour: picker hint + meta label only, no rejection. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
 
 On init, the prompt shows a `.file-dropzone-meta` line when there is something non-default to communicate: allowed types (from `accept`) and/or a multi-file count (`Up to N files` or `Multiple files`). A plain single-file dropzone with no `accept` shows no meta line. The element is created if missing.
 
@@ -1678,6 +1684,130 @@ initFileDownloads(document); // wire every `.file-download`
 
 Pass a `files` array with per-file `getContent` callbacks. File size is shown in `.file-download-item-meta` when content can be resolved at init time.
 
+### STL export
+
+The STL helpers generate indexed meshes and encode them as binary or ASCII STL. Coordinates are in millimetres by convention; STL does not store units. Binary STL is the default and is suitable for direct browser download.
+
+```javascript
+import {
+  createBoxMesh,
+  decodeStl,
+  downloadStl,
+  encodeStl,
+} from "./components/stl.js";
+
+const mesh = createBoxMesh({ width: 40, length: 20, height: 10 });
+const binary = encodeStl(mesh); // ArrayBuffer
+const ascii = encodeStl(mesh, { format: "ascii", name: "box" }); // string
+const decoded = decodeStl(binary);
+
+await downloadStl(mesh, { filename: "box.stl" });
+```
+
+`createBoxMesh()` requires finite, positive `width`, `length`, and `height` values. The returned mesh has `positions` (`x, y, z` triplets) and `indices` (triangle triplets). `encodeStl()` rejects malformed or degenerate triangles. `downloadStl()` uses the framework file-download helper and reports the file as `model/stl`.
+
+### 3D model preview
+
+The model preview renders an indexed mesh with Three.js. It supports orbit rotation, zoom, pan, automatic camera fitting, responsive resizing, and light/dark theme colours. The mesh is not mutated; STL coordinates remain Z-up while the preview applies a display-only rotation.
+
+Pages using the preview must include an import map before module scripts:
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "three": "./app/vendor/three/three.module.min.js"
+    }
+  }
+</script>
+```
+
+```html
+<div class="model-preview" id="my-model-preview" aria-label="3D model preview"
+  data-model-preview-size
+  data-model-preview-triangles
+  data-model-preview-meta="hover"
+  data-model-preview-meta-extra="PETG"
+  data-model-preview-maximize
+  data-model-preview-home
+  data-model-preview-actions="hover">
+  <p class="model-preview__empty">No preview</p>
+</div>
+```
+
+```javascript
+import { createBoxMesh } from "./components/stl.js";
+import { initModelPreview } from "./components/model-preview.js";
+import { initExpandableSurfaces } from "./components/expandable-surface.js";
+
+const preview = initModelPreview(document.getElementById("my-model-preview"));
+preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
+preview?.setMetaExtra(["PETG", "box.stl"]);
+initExpandableSurfaces(document); // required when maximise attrs are used
+// preview?.clear();
+// preview?.destroy();
+```
+
+Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × L × H mm`), `data-model-preview-triangles`, `data-model-preview-vertices`, `data-model-preview-volume` (`mm³`), `data-model-preview-surface-area` (`mm²`), and `data-model-preview-objects`. Object count uses `mesh.objectCount`, else `mesh.objects.length`, else `1` for a loaded mesh. Volume is a closed-mesh estimate and can be wrong for open shells.
+
+`data-model-preview-meta` controls strip visibility: `hover` (default), `always`, `not-hover`, or `never`. On touch devices without hover, `hover` and `not-hover` behave like `always`. Add `data-model-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array) for app-specific text.
+
+`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-home` shows a reset-view (home) control that restores the default camera fit; `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Maximise maps onto expandable-surface. `data-model-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`. Call `preview.resetView()` to reset the camera from script.
+
+The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.### G-code toolpath preview
+
+`parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, XY-plane arcs `G2` / `G3` (I/J offsets or R radius, including helical Z), `G17` / `G90` / `G91`, `M82` / `M83`, and `G92`. Non-XY arc planes (`G18` / `G19`) and invalid arc parameters add a single `unsupported geometry` warning (the endpoint is still applied so later moves stay correct). Coordinates use the file's millimetre convention.
+
+```javascript
+import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
+import { initToolpathPreview } from "./components/toolpath-preview.js";
+
+const toolpath = await parseGcodeToolpath(await file.arrayBuffer());
+const preview = initToolpathPreview(
+  document.getElementById("my-toolpath-preview")
+);
+preview?.setToolpath(toolpath);
+preview?.setMaxLayer(3); // null shows every parsed layer
+preview?.setMetaExtra(["PETG", "0.4 mm"]); // or a single string
+```
+
+The toolpath preview reuses the `.model-preview` surface and canvas styles, and requires the same `three` import map as the model preview:
+
+```html
+<div class="model-preview toolpath-preview" id="my-toolpath-preview"
+  aria-label="G-code toolpath preview"
+  data-toolpath-preview-segments
+  data-toolpath-preview-layers
+  data-toolpath-preview-current-layer
+  data-toolpath-preview-meta="hover"
+  data-toolpath-preview-meta-extra="PETG"
+  data-toolpath-preview-maximize
+  data-toolpath-preview-home
+  data-toolpath-preview-actions="hover">
+  <p class="model-preview__empty">No toolpath</p>
+</div>
+```
+
+`data-toolpath-preview-segments`, `data-toolpath-preview-layers`, and `data-toolpath-preview-current-layer` add muted counts to a bottom-right strip (`3,089 segments · 40 layers · layer 12/40`). Current layer follows `setMaxLayer()` (1-based display over the total layer count). When `parseGcodeToolpath()` reports `unsupported geometry`, that short warning is appended to the same meta strip automatically.
+
+`data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
+
+`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-home` shows a reset-view (home) control; `data-toolpath-preview-layer-slider` mounts a left-aligned maximum-layer [`.slider--hover`](#slider) in the same strip (on by default; set `data-toolpath-preview-layer-slider="false"` or `layerSlider: false` to disable). The slider is **1-based** (`1…N`, matching the meta `layer K/N` readout); `setMaxLayer(n)` remains **0-based** and stays in sync with the slider. `data-toolpath-preview-travels` controls whether non-extrusion (gray) travel moves are drawn (on by default; set `"false"` or `travels: false` to hide). `data-toolpath-preview-travel-toggle` mounts a hover toggle for that (on by default; set `"false"` to hide the control). Combine `travels="false"` with the toggle left on so users can re-enable travels, or set both to `"false"` for a permanent extrusion-only view. `preview.setTravels(false)` / `getTravels()` update the same state at runtime. `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled. Call `preview.resetView()` to reset the camera from script.
+
+### G-code metadata
+
+`parseGcodeMeta()` reads slicer metadata from ASCII G-code comments or binary `.bgcode` metadata blocks. It does not simulate toolpaths or estimate duration from feed rates. The asynchronous API accepts a string, `ArrayBuffer`, or `Uint8Array`; unsupported bgcode compression is reported in `warnings`.
+
+```javascript
+import { isBgcode, parseGcodeMeta } from "./components/gcode.js";
+
+const metadata = await parseGcodeMeta(await file.arrayBuffer());
+console.log(metadata.durationSec, metadata.filamentGrams, metadata.filamentType);
+if (isBgcode(bytes)) console.log("Binary G-code");
+```
+
+The result includes `timestamp`, `durationSec`, `filamentGrams`, `filamentMm`, `filamentM`, `filamentCm3`, `filamentType`, `nozzleMm`, `nozzleHighFlow`, `bedTemperatureC`, `fillDensityPercent`, `nozzleTemperatureC`, `layerHeightMm`, `perimeters`, `objectCount`, `objects`, `wipeTowerFilamentGrams`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. `perimeters` is the slicer's wall-line count. Missing values are `null`. Uncompressed, Deflate, and Heatshrink metadata blocks are supported; MeatPack is additionally supported for G-code blocks. Unsupported or malformed blocks are reported in `warnings`.
+
 ### Image preview
 
 Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty placeholder until content is set. Fit-to-box with scroll when oversized; optional pixelated rendering for pixel art.
@@ -1687,6 +1817,7 @@ Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty plac
   data-image-preview-pixelated
   data-image-preview-maximize
   data-image-preview-expand-on-click
+  data-image-preview-actions="hover"
   data-image-preview-download
   data-image-preview-download-name="preview.svg"
   data-image-preview-dimensions
@@ -1707,7 +1838,7 @@ import { initImagePreview, initImagePreviews } from "./components/image-preview.
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
 
 const preview = initImagePreview(document.getElementById("my-preview"));
-preview?.setMetaExtra("Scale 4×");
+preview?.setMetaExtra(["Scale 4×", "PNG"]);
 preview?.setSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">…</svg>`);
 // preview?.setSrc("app/res/example.png", { alt: "Example" });
 // preview?.setBlob(file, { alt: file.name });
@@ -1718,13 +1849,13 @@ initExpandableSurfaces(document); // required when maximise attrs are used
 initImagePreviews(document); // wire every `.image-preview`
 ```
 
-`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`.
+`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`. `data-image-preview-actions` controls when maximise / download controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons).
 
 `data-image-preview-download` adds a floating download control (same hover strip as maximise). Optional `data-image-preview-download-name` sets the default filename. Pre-existing markup `<img>` children are wired for download via their `src`. `data-image-preview-dimensions` and `data-image-preview-file-size` show muted intrinsic size (`W × H px`) and/or source byte size in the bottom-right corner. For inline SMIL SVG (including multi-frame `g#frame-N` groups), `data-image-preview-frames` shows `frame K/N` while animating and `data-image-preview-duration` shows the loop length (e.g. `1.5 s`). Frame/duration meta does not apply to GIF/APNG/WebP loaded via `<img>`.
 
 `setSvg()` sanitizes markup before injection (strips scripts, event handlers, and other active content; keeps SMIL `animate*` / `set` when otherwise clean) and returns `false` when nothing safe remains.
 
-`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` to `initImagePreview()` to append app-specific text, such as a scale; `setMetaExtra(text)` updates or clears it at runtime.
+`data-image-preview-meta` controls when that muted strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array, joined with ` · `) for app-specific text.
 
 Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
@@ -1940,7 +2071,7 @@ Start the badge with the initial count (or `hidden` when zero) so it does not fl
 
 ### Slider
 
-Range input with a compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing.
+Range input with an optional compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing.
 
 Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; values are still stored as plain numbers, e.g. `75` for 75%).
 
@@ -1955,6 +2086,18 @@ Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; va
       <span class="slider-suffix hidden" aria-hidden="true">%</span>
     </div>
     <input type="hidden" class="slider-value" name="opacity" />
+  </div>
+</div>
+```
+
+**Hover chrome** — add `.slider--hover` (or `data-slider-chrome="hover"`) for compact use inside a display-surface `.surface-actions` strip. Omit the field label, editable `.slider-input`, and form field; an optional `.slider-readout` shows the committed value. Same `initSlider` API. See [DESIGN.md — Form controls as hover chrome](DESIGN.md#form-controls-as-hover-chrome).
+
+```html
+<div class="slider slider--hover" data-slider-min="0" data-slider-max="40"
+  data-tooltip="Maximum layer" data-tooltip-position="top">
+  <div class="slider-row">
+    <input type="range" class="slider-range" aria-label="Maximum layer" />
+    <output class="slider-readout" aria-hidden="true">40</output>
   </div>
 </div>
 ```
@@ -1975,14 +2118,16 @@ const slider = initSlider(document.getElementById("my-slider"), {
 
 slider?.getValue();
 slider?.setValue(25);
+slider?.setBounds({ min: 0, max: 40, value: 40, emit: false });
 slider?.setDisabled(true);
 slider?.isDisabled();
 slider?.commitInput(); // commit typed text without blur
+slider?.destroy();
 
 initSliders(document); // all `.slider` blocks
 ```
 
-`data-slider-min`, `data-slider-max`, `data-slider-step`, `data-slider-default`, `data-slider-format`, and `data-slider-disabled` mirror the JS options. The hidden `.slider-value` field stores the numeric value for forms.
+`data-slider-min`, `data-slider-max`, `data-slider-step`, `data-slider-default`, `data-slider-format`, `data-slider-disabled`, and `data-slider-chrome` mirror the JS options. The hidden `.slider-value` field stores the numeric value for forms. `.slider-input` is optional when a `.slider-readout` (or range-only) is enough.
 
 ### Progress bar
 
@@ -2364,13 +2509,14 @@ initColorPickers(document);
 
 ### Control sizing
 
-Three different “slim” APIs — they are not interchangeable:
+Compact size / chrome variants — they are not interchangeable:
 
 | Class | Effect |
 | ----- | ------ |
 | `.btn-slim` | Compact button height via `--control-height-slim` |
 | `.segmented-control--slim` | Reduced padding on the track; does **not** use `--control-height-slim` |
 | `.toggle--slim` | Thin track with an oversized overhanging thumb; not a height token |
+| `.slider--hover` | Compact slider chrome for `.surface-actions` (not a form-row height token) |
 
 Tabular input logical columns always use `.toggle--slim` (no standard-size toggle in that grid).
 

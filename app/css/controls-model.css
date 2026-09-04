@@ -1,0 +1,198 @@
+/* Model preview surface — renderer-neutral 3D host */
+
+.model-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 16rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.model-preview__empty {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.model-preview__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 16rem;
+  border-radius: inherit;
+}
+
+.model-preview__meta,
+.toolpath-preview__meta {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  margin: 0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.model-preview[data-model-preview-meta="hover"] > .model-preview__meta {
+  opacity: 0;
+}
+
+/* Use :focus-visible (not :focus-within) so a mouse drag that focuses the
+   canvas does not leave the meta stuck visible after the pointer leaves. */
+.model-preview[data-model-preview-meta="hover"]:hover > .model-preview__meta,
+.model-preview[data-model-preview-meta="hover"]:has(:focus-visible)
+  > .model-preview__meta {
+  opacity: 1;
+}
+
+.model-preview[data-model-preview-meta="always"] > .model-preview__meta {
+  opacity: 1;
+}
+
+.model-preview[data-model-preview-meta="not-hover"] > .model-preview__meta {
+  opacity: 1;
+}
+
+.model-preview[data-model-preview-meta="not-hover"]:hover > .model-preview__meta,
+.model-preview[data-model-preview-meta="not-hover"]:has(:focus-visible)
+  > .model-preview__meta {
+  opacity: 0;
+}
+
+.model-preview[data-model-preview-meta="never"] > .model-preview__meta {
+  display: none;
+}
+
+@media (hover: none) {
+  .model-preview[data-model-preview-meta="hover"] > .model-preview__meta,
+  .model-preview[data-model-preview-meta="not-hover"] > .model-preview__meta {
+    opacity: 1;
+  }
+}
+
+.toolpath-preview[data-toolpath-preview-meta="hover"] > .toolpath-preview__meta {
+  opacity: 0;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="hover"]:hover > .toolpath-preview__meta,
+.toolpath-preview[data-toolpath-preview-meta="hover"]:has(:focus-visible)
+  > .toolpath-preview__meta {
+  opacity: 1;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="always"] > .toolpath-preview__meta {
+  opacity: 1;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="not-hover"] > .toolpath-preview__meta {
+  opacity: 1;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="not-hover"]:hover > .toolpath-preview__meta,
+.toolpath-preview[data-toolpath-preview-meta="not-hover"]:has(:focus-visible)
+  > .toolpath-preview__meta {
+  opacity: 0;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="never"] > .toolpath-preview__meta {
+  display: none;
+}
+
+@media (hover: none) {
+  .toolpath-preview[data-toolpath-preview-meta="hover"] > .toolpath-preview__meta,
+  .toolpath-preview[data-toolpath-preview-meta="not-hover"] > .toolpath-preview__meta {
+    opacity: 1;
+  }
+}
+
+.model-preview > .surface-actions {
+  gap: 0.5rem;
+}
+
+/* Full-width action strip so a left-aligned hover slider can sit opposite
+   home / maximise (`.surface-actions` is row-reverse and right-anchored). */
+.toolpath-preview > .surface-actions {
+  left: 0.5rem;
+  right: 0.5rem;
+}
+
+.toolpath-preview > .surface-actions > .slider--hover {
+  margin-right: auto;
+}
+
+.model-preview[data-model-preview-actions="hover"] > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="hover"] > .surface-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.model-preview[data-model-preview-actions="hover"]:hover > .surface-actions,
+.model-preview[data-model-preview-actions="hover"] > .surface-actions:has(:focus-visible),
+.model-preview[data-model-preview-actions="hover"].expandable-surface.is-expanded
+  > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="hover"]:hover > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="hover"]
+  > .surface-actions:has(:focus-visible),
+.toolpath-preview[data-toolpath-preview-actions="hover"].expandable-surface.is-expanded
+  > .surface-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.model-preview[data-model-preview-actions="always"] > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="always"] > .surface-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.model-preview[data-model-preview-actions="never"] > .surface-actions,
+.toolpath-preview[data-toolpath-preview-actions="never"] > .surface-actions {
+  display: none;
+}
+
+@media (hover: none) {
+  .model-preview[data-model-preview-actions="hover"] > .surface-actions,
+  .toolpath-preview[data-toolpath-preview-actions="hover"] > .surface-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.model-preview.expandable-surface.is-expanded {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  min-height: 0;
+  max-height: none;
+  height: auto;
+  align-self: stretch;
+}
+
+.model-preview.expandable-surface.is-expanded > .model-preview__canvas {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+}
+
+.expandable-overlay__stage:has(> .expandable-surface.is-expanded.model-preview) {
+  width: min(80vw, 2400px);
+  max-width: min(80vw, 2400px);
+}

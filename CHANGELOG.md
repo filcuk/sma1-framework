@@ -10,6 +10,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- G-code metadata now prefers exact slicer fields, so nozzle, layer height, filament quantities, and duration are not overwritten by unrelated settings; the demo also shows filament metres and perimeters.
 - Code block view/select with line numbers: horizontal scrollbar sits flush with the block (padding moved from `pre` onto `code` / gutter rows so the scrollport fills the block). Edit mode was already correct via the inset textarea.
 - Anchored popovers hide while their target is fully off-screen (instead of clamping to a viewport edge) and show again when the anchor returns.
 - Tutorial navigation (`next` / `back` / `goTo` / `start`) uses one showable-step resolver (`when` + resolvable target). Back over a missing target no longer ends the tour; `goTo(i)` jumps to the nearest showable step instead of walking a one-way ray that could stop the tour.
@@ -23,11 +24,26 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
+- Model and toolpath preview home control eases in spherical orbit space (radius / angles), matching OrbitControls motion and avoiding the mid-flight Cartesian zoom dip; snaps when `prefers-reduced-motion`.
+- Image preview meta visibility gains `not-hover` (parity with mesh / toolpath); hover action strip uses `data-image-preview-actions` (`hover` / `always` / `never`) with `:focus-visible` instead of `:focus-within`; `metaExtra` / `setMetaExtra()` accept a string array.
 - Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).
 - Segmented control default height matches standard buttons (`--control-height`); add `.segmented-control--slim` for the previous compact size.
 
 ### Added
 
+- Toolpath preview travel-move hover toggle (on by default; `data-toolpath-preview-travels="false"` hides gray paths; `data-toolpath-preview-travel-toggle="false"` removes the control). Framework `visibility` / `visibility-off` icons from Material Icons Round.
+- G-code toolpath parser tessellates XY-plane `G2` / `G3` arcs (I/J or R, including helical Z). Unsupported arc planes or invalid arc parameters emit a single `unsupported geometry` warning, which the toolpath preview appends to the meta strip.
+- Toolpath preview maximum-layer hover slider (shared `.slider--hover`; on by default, `data-toolpath-preview-layer-slider="false"` to disable; left-aligned in the action strip). Demo uses the built-in control instead of a panel stepper.
+- File dropzone enforces `data-file-accept` by default (browse / drop / `setFiles`); set `data-file-accept-filter="soft"` for advise-only. `onError` receives `reason: "accept"` | `"max"`.
+- File dropzone `setFiles()` for programmatic selection (same path as drop / browse; triggers `onFiles`).
+- Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.
+- Interactive Three.js model preview with orbit controls, automatic camera fitting, responsive resizing, and theme support.
+- Model preview meta strip (size, triangles, vertices, volume, surface area, objects, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility.
+- Model and toolpath preview maximise controls via expandable-surface, with action visibility `hover` / `always` / `never`. Optional home (reset view) hover control (`data-*-home`, `resetView()`); framework `home` icon from Material Icons Round.
+- G-code and bgcode metadata parser for duration, filament, nozzle, slicer, and printer details.
+- G-code and bgcode toolpath parser and Three.js preview with extrusion/travel lines and layer filtering.
+- Toolpath preview meta strip (segments, layers, current layer, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility, matching mesh and image preview.
+- Image and toolpath preview hover meta use `:focus-visible` instead of `:focus-within`, so mouse focus no longer leaves the strip stuck visible after the pointer leaves.
 - Dropdown auto grid: `data-dropdown-grid-min` (and related `data-dropdown-grid*` attributes) switch long menus to a multi-column layout; `data-dropdown-grid="false"` keeps a single column. Footer **also see** and **combobox** lists use the same grid (`data-combobox-grid*`, `alsoSeeMenuColumns()`).
 - Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).

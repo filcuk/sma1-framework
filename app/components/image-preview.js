@@ -6,10 +6,12 @@
  *     data-image-preview-pixelated
  *     data-image-preview-maximize
  *     data-image-preview-expand-on-click
+ *     data-image-preview-actions="hover"
  *     data-image-preview-download
  *     data-image-preview-download-name="preview.svg"
  *     data-image-preview-dimensions
  *     data-image-preview-file-size
+ *     data-image-preview-meta="hover"
  *     data-image-preview-meta-extra="Scale 4×"
  *     data-expandable-surface-label="Preview">
  *     <p class="image-preview__empty">No image</p>
@@ -18,13 +20,16 @@
  * data-image-preview-pixelated — crisp nearest-neighbour scaling for media
  * data-image-preview-maximize — floating fullscreen control via expandable-surface
  * data-image-preview-expand-on-click — click the viewport to maximise
+ * data-image-preview-actions — maximise / download strip visibility: `hover` (default),
+ *   `always`, or `never`
  * data-image-preview-download — floating download control
  * data-image-preview-download-name — default download filename
  * data-image-preview-dimensions — show intrinsic width×height (px) bottom-right
  * data-image-preview-file-size — show source byte size bottom-right
  * data-image-preview-frames — for SMIL multi-frame SVG, show `frame K/N` while animating
  * data-image-preview-duration — for SMIL SVG, show total loop duration (e.g. `2.7 s`)
- * data-image-preview-meta — when meta content is enabled: `hover` (default), `always`, or `never`
+ * data-image-preview-meta — when meta content is enabled: `hover` (default),
+ *   `always`, `not-hover`, or `never`
  * data-image-preview-meta-extra — append app-specific text to the meta strip
  *
  * Maximise requires `initExpandableSurfaces()` on the page (same as code-block).
@@ -241,14 +246,19 @@ function ensureFilename(name, fallbackExt) {
 }
 
 /**
- * @param {string | undefined} value
- * @returns {"hover" | "always" | "never"}
+ * @param {string | null | undefined} value
+ * @returns {"hover" | "always" | "not-hover" | "never"}
  */
 function resolveMetaVisibility(value) {
   const trimmed = String(value ?? "")
     .trim()
     .toLowerCase();
-  if (trimmed === "always" || trimmed === "never" || trimmed === "hover") {
+  if (
+    trimmed === "always" ||
+    trimmed === "never" ||
+    trimmed === "hover" ||
+    trimmed === "not-hover"
+  ) {
     return trimmed;
   }
   return "hover";
@@ -259,7 +269,27 @@ function resolveMetaVisibility(value) {
  * @returns {string}
  */
 function resolveMetaExtra(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((part) => (typeof part === "string" ? part.trim() : ""))
+      .filter(Boolean)
+      .join(" · ");
+  }
   return typeof value === "string" ? value.trim() : "";
+}
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {"hover" | "always" | "never"}
+ */
+function resolveActionsVisibility(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (trimmed === "always" || trimmed === "never" || trimmed === "hover") {
+    return trimmed;
+  }
+  return "hover";
 }
 
 /**
@@ -267,7 +297,7 @@ function resolveMetaExtra(value) {
  * Call `initExpandableSurfaces()` after init (or on the page) to activate.
  *
  * @param {HTMLElement} el
- * @param {{ maximize?: boolean, expandOnClick?: boolean }} options
+ * @param {{ maximize?: boolean, expandOnClick?: boolean, actions?: string }} options
  */
 function syncExpandableAttrs(el, options) {
   const maximize =
@@ -278,6 +308,11 @@ function syncExpandableAttrs(el, options) {
     typeof options.expandOnClick === "boolean"
       ? options.expandOnClick
       : el.hasAttribute("data-image-preview-expand-on-click");
+  const actionsVisibility = resolveActionsVisibility(
+    typeof options.actions === "string"
+      ? options.actions
+      : el.dataset.imagePreviewActions
+  );
 
   if (maximize) {
     el.setAttribute("data-image-preview-maximize", "");
@@ -294,7 +329,7 @@ function syncExpandableAttrs(el, options) {
   if (!maximize && !expandOnClick) {
     el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
-    return { maximize: false, expandOnClick: false };
+    return { maximize: false, expandOnClick: false, actionsVisibility };
   }
 
   el.setAttribute("data-expandable-surface", "");
@@ -307,11 +342,17 @@ function syncExpandableAttrs(el, options) {
 
   if (maximize) {
     el.removeAttribute("data-expandable-surface-control");
+    let actionsHost = el.querySelector(":scope > .surface-actions");
+    if (!actionsHost) {
+      actionsHost = document.createElement("div");
+      actionsHost.className = "surface-actions";
+      el.append(actionsHost);
+    }
   } else {
     el.setAttribute("data-expandable-surface-control", "false");
   }
 
-  return { maximize, expandOnClick };
+  return { maximize, expandOnClick, actionsVisibility };
 }
 
 /**
@@ -368,7 +409,7 @@ export function initImagePreview(el, options = {}) {
     typeof options.meta === "string" ? options.meta : el.dataset.imagePreviewMeta
   );
   let metaExtra = resolveMetaExtra(
-    typeof options.metaExtra === "string"
+    options.metaExtra !== undefined
       ? options.metaExtra
       : el.dataset.imagePreviewMetaExtra
   );
@@ -712,7 +753,12 @@ export function initImagePreview(el, options = {}) {
     delete el.dataset.imagePreviewPixelated;
   }
 
-  syncExpandableAttrs(el, options);
+  const expandState = syncExpandableAttrs(el, options);
+  if (expandState.maximize || showDownload) {
+    el.dataset.imagePreviewActions = expandState.actionsVisibility;
+  } else {
+    delete el.dataset.imagePreviewActions;
+  }
   ensureDownloadButton();
   ensureMetaEl();
   syncChromeVisibility();
@@ -819,7 +865,7 @@ export function initImagePreview(el, options = {}) {
 
     /**
      * Set or clear app-specific text appended to the hover meta strip.
-     * @param {string} text
+     * @param {string | string[]} text
      */
     setMetaExtra(text) {
       metaExtra = resolveMetaExtra(text);
