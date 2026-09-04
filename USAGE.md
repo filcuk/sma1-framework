@@ -470,8 +470,8 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
-| **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, and theme support. [`app/components/model-preview.js`](app/components/model-preview.js). |
-| **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js. [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
+| **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
+| **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js (optional hover meta strip). [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
 | **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate, Heatshrink, and MeatPack payloads. [`app/components/gcode.js`](app/components/gcode.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
 | **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
@@ -1723,7 +1723,11 @@ Pages using the preview must include an import map before module scripts:
 ```
 
 ```html
-<div class="model-preview" id="my-model-preview" aria-label="3D model preview">
+<div class="model-preview" id="my-model-preview" aria-label="3D model preview"
+  data-model-preview-size
+  data-model-preview-triangles
+  data-model-preview-meta="hover"
+  data-model-preview-meta-extra="PETG">
   <p class="model-preview__empty">No preview</p>
 </div>
 ```
@@ -1734,12 +1738,16 @@ import { initModelPreview } from "./components/model-preview.js";
 
 const preview = initModelPreview(document.getElementById("my-model-preview"));
 preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
+preview?.setMetaExtra(["PETG", "box.stl"]);
 // preview?.clear();
 // preview?.destroy();
 ```
 
-The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.
+Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × L × H mm`), `data-model-preview-triangles`, `data-model-preview-vertices`, `data-model-preview-volume` (`mm³`), `data-model-preview-surface-area` (`mm²`), and `data-model-preview-objects`. Object count uses `mesh.objectCount`, else `mesh.objects.length`, else `1` for a loaded mesh. Volume is a closed-mesh estimate and can be wrong for open shells.
 
+`data-model-preview-meta` controls strip visibility: `hover` (default), `always`, `not-hover`, or `never`. On touch devices without hover, `hover` and `not-hover` behave like `always`. Add `data-model-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array) for app-specific text.
+
+The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.
 ### G-code toolpath preview
 
 `parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, `G90` / `G91`, `M82` / `M83`, and `G92`; arc commands are reported as unsupported. Coordinates use the file's millimetre convention.
@@ -1754,17 +1762,26 @@ const preview = initToolpathPreview(
 );
 preview?.setToolpath(toolpath);
 preview?.setMaxLayer(3); // null shows every parsed layer
+preview?.setMetaExtra(["PETG", "0.4 mm"]); // or a single string
 ```
 
 The toolpath preview reuses the `.model-preview` surface and canvas styles, and requires the same `three` import map as the model preview:
 
 ```html
 <div class="model-preview toolpath-preview" id="my-toolpath-preview"
-  aria-label="G-code toolpath preview">
+  aria-label="G-code toolpath preview"
+  data-toolpath-preview-segments
+  data-toolpath-preview-layers
+  data-toolpath-preview-current-layer
+  data-toolpath-preview-meta="hover"
+  data-toolpath-preview-meta-extra="PETG">
   <p class="model-preview__empty">No toolpath</p>
 </div>
 ```
 
+`data-toolpath-preview-segments`, `data-toolpath-preview-layers`, and `data-toolpath-preview-current-layer` add muted counts to a bottom-right strip (`3,089 segments · 40 layers · layer 12/40`). Current layer follows `setMaxLayer()` (1-based display over the total layer count).
+
+`data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
 ### G-code metadata
 
 `parseGcodeMeta()` reads slicer metadata from ASCII G-code comments or binary `.bgcode` metadata blocks. It does not simulate toolpaths or estimate duration from feed rates. The asynchronous API accepts a string, `ArrayBuffer`, or `Uint8Array`; unsupported bgcode compression is reported in `warnings`.

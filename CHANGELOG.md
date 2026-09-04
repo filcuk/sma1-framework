@@ -32,8 +32,11 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - File dropzone `setFiles()` for programmatic selection (same path as drop / browse; triggers `onFiles`).
 - Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.
 - Interactive Three.js model preview with orbit controls, automatic camera fitting, responsive resizing, and theme support.
+- Model preview meta strip (size, triangles, vertices, volume, surface area, objects, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility.
 - G-code and bgcode metadata parser for duration, filament, nozzle, slicer, and printer details.
 - G-code and bgcode toolpath parser and Three.js preview with extrusion/travel lines and layer filtering.
+- Toolpath preview meta strip (segments, layers, current layer, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility, matching the image-preview pattern.
+- Image and toolpath preview hover meta use `:focus-visible` instead of `:focus-within`, so mouse focus no longer leaves the strip stuck visible after the pointer leaves.
 - Dropdown auto grid: `data-dropdown-grid-min` (and related `data-dropdown-grid*` attributes) switch long menus to a multi-column layout; `data-dropdown-grid="false"` keeps a single column. Footer **also see** and **combobox** lists use the same grid (`data-combobox-grid*`, `alsoSeeMenuColumns()`).
 - Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).

@@ -282,9 +282,8 @@ async function loadDemoGcode(bytes, label) {
       setHidden(demoGcodeStatus, warnings.length === 0);
     }
     if (demoToolpathStatus) {
-      demoToolpathStatus.textContent = `${toolpath.segments.length.toLocaleString()} segments · ${
-        toolpath.layerCount
-      } layers shown.`;
+      demoToolpathStatus.textContent = "";
+      setHidden(demoToolpathStatus, true);
     }
   } catch (error) {
     if (request !== demoGcodeRequest) return;
@@ -298,6 +297,7 @@ async function loadDemoGcode(bytes, label) {
     demoGcodeLayerStepper?.setValue(9999);
     if (demoToolpathStatus) {
       demoToolpathStatus.textContent = "Toolpath preview unavailable.";
+      setHidden(demoToolpathStatus, false);
     }
   }
 }
@@ -321,6 +321,7 @@ const demoGcodeDropzoneApi = initFileDropzone(demoGcodeDropzone, {
     }
     if (demoToolpathStatus) {
       demoToolpathStatus.textContent = "No G-code file selected.";
+      setHidden(demoToolpathStatus, false);
     }
   },
 });

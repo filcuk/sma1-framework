@@ -6,13 +6,30 @@
  *   "three": "./app/vendor/three/three.module.min.js"
  *
  * Markup:
- *   <div class="model-preview" id="my-preview" aria-label="3D model preview">
+ *   <div class="model-preview" id="my-preview"
+ *     data-model-preview-size
+ *     data-model-preview-triangles
+ *     data-model-preview-meta="hover"
+ *     data-model-preview-meta-extra="PETG"
+ *     aria-label="3D model preview">
  *     <p class="model-preview__empty">No preview</p>
  *   </div>
+ *
+ * data-model-preview-size — show axis-aligned size (`W × L × H mm`)
+ * data-model-preview-triangles — show triangle count
+ * data-model-preview-vertices — show vertex count
+ * data-model-preview-volume — show closed-mesh volume estimate (`mm³`)
+ * data-model-preview-surface-area — show surface area (`mm²`)
+ * data-model-preview-objects — show object count (`mesh.objectCount`,
+ *   `mesh.objects.length`, or `1` for a loaded mesh)
+ * data-model-preview-meta — when meta content is enabled: `hover` (default),
+ *   `always`, `not-hover`, or `never`
+ * data-model-preview-meta-extra — append app-specific text to the meta strip
  *
  * API:
  *   const preview = initModelPreview(element);
  *   preview.setMesh({ positions, indices });
+ *   preview.setMetaExtra("PETG");
  *   preview.clear();
  */
 
@@ -28,12 +45,135 @@ const DEFAULT_ARIA_LABEL = "3D model preview";
 const MAX_PIXEL_RATIO = 2;
 
 /**
+ * @param {string | null | undefined} value
+ * @returns {"hover" | "always" | "not-hover" | "never"}
+ */
+function resolveMetaVisibility(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (
+    trimmed === "always" ||
+    trimmed === "never" ||
+    trimmed === "hover" ||
+    trimmed === "not-hover"
+  ) {
+    return trimmed;
+  }
+  return "hover";
+}
+
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
+function resolveMetaExtra(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((part) => (typeof part === "string" ? part.trim() : ""))
+      .filter(Boolean)
+      .join(" · ");
+  }
+  return typeof value === "string" ? value.trim() : "";
+}
+
+/**
  * @param {string} name
  * @param {string} fallback
  */
 function readCssColor(name, fallback) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
+}
+
+/**
+ * @param {number} value
+ */
+function formatMeshNumber(value) {
+  if (!Number.isFinite(value)) return "";
+  const absolute = Math.abs(value);
+  const digits = absolute >= 100 ? 0 : absolute >= 10 ? 1 : 2;
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: 0,
+  });
+}
+
+/**
+ * @param {unknown} mesh
+ */
+function readObjectCount(mesh) {
+  if (!mesh || typeof mesh !== "object") return null;
+  const counted = /** @type {{ objectCount?: unknown, objects?: unknown }} */ (mesh);
+  if (Number.isFinite(Number(counted.objectCount))) {
+    return Math.max(0, Math.floor(Number(counted.objectCount)));
+  }
+  if (Array.isArray(counted.objects)) return counted.objects.length;
+  return 1;
+}
+
+/**
+ * @param {number[]} positions
+ * @param {number[]} indices
+ */
+function computeMeshStats(positions, indices) {
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let minZ = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let maxY = Number.NEGATIVE_INFINITY;
+  let maxZ = Number.NEGATIVE_INFINITY;
+  let volume = 0;
+  let surfaceArea = 0;
+
+  for (let offset = 0; offset < positions.length; offset += 3) {
+    const x = positions[offset];
+    const y = positions[offset + 1];
+    const z = positions[offset + 2];
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    minZ = Math.min(minZ, z);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+    maxZ = Math.max(maxZ, z);
+  }
+
+  for (let offset = 0; offset < indices.length; offset += 3) {
+    const a = indices[offset] * 3;
+    const b = indices[offset + 1] * 3;
+    const c = indices[offset + 2] * 3;
+    const ax = positions[a];
+    const ay = positions[a + 1];
+    const az = positions[a + 2];
+    const bx = positions[b];
+    const by = positions[b + 1];
+    const bz = positions[b + 2];
+    const cx = positions[c];
+    const cy = positions[c + 1];
+    const cz = positions[c + 2];
+
+    const abx = bx - ax;
+    const aby = by - ay;
+    const abz = bz - az;
+    const acx = cx - ax;
+    const acy = cy - ay;
+    const acz = cz - az;
+    const crossX = aby * acz - abz * acy;
+    const crossY = abz * acx - abx * acz;
+    const crossZ = abx * acy - aby * acx;
+    surfaceArea += Math.hypot(crossX, crossY, crossZ) * 0.5;
+    volume += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
+  }
+
+  return {
+    vertices: positions.length / 3,
+    triangles: indices.length / 3,
+    width: maxX - minX,
+    length: maxY - minY,
+    height: maxZ - minZ,
+    volume: Math.abs(volume) / 6,
+    surfaceArea,
+  };
 }
 
 /**
@@ -102,16 +242,180 @@ function fitCameraToModel(el, camera, controls, model) {
 
 /**
  * @param {HTMLElement} previewEl
- * @returns {{ setMesh: (mesh: { positions: ArrayLike<number>, indices: ArrayLike<number> }) => void, clear: () => void, destroy: () => void } | null}
+ * @param {{
+ *   size?: boolean,
+ *   triangles?: boolean,
+ *   vertices?: boolean,
+ *   volume?: boolean,
+ *   surfaceArea?: boolean,
+ *   objects?: boolean,
+ *   meta?: string,
+ *   metaExtra?: string | string[],
+ * }} [options]
+ * @returns {{
+ *   setMesh: (mesh: {
+ *     positions: ArrayLike<number>,
+ *     indices: ArrayLike<number>,
+ *     objectCount?: number,
+ *     objects?: unknown[],
+ *   }) => void,
+ *   setMetaExtra: (text: string | string[] | null | undefined) => void,
+ *   clear: () => void,
+ *   destroy: () => void,
+ * } | null}
  */
-export function initModelPreview(previewEl) {
+export function initModelPreview(previewEl, options = {}) {
   if (!(previewEl instanceof HTMLElement)) return null;
   if (!previewEl.classList.contains("model-preview")) return null;
+  // Toolpath previews reuse the surface class but have their own init.
+  if (previewEl.classList.contains("toolpath-preview")) return null;
   if (previewEl.dataset.modelPreviewInit !== undefined) return null;
 
   previewEl.dataset.modelPreviewInit = "";
   const emptyEl = previewEl.querySelector(".model-preview__empty");
   const ariaLabel = previewEl.getAttribute("aria-label") || DEFAULT_ARIA_LABEL;
+
+  const showSize =
+    typeof options.size === "boolean"
+      ? options.size
+      : previewEl.hasAttribute("data-model-preview-size");
+  const showTriangles =
+    typeof options.triangles === "boolean"
+      ? options.triangles
+      : previewEl.hasAttribute("data-model-preview-triangles");
+  const showVertices =
+    typeof options.vertices === "boolean"
+      ? options.vertices
+      : previewEl.hasAttribute("data-model-preview-vertices");
+  const showVolume =
+    typeof options.volume === "boolean"
+      ? options.volume
+      : previewEl.hasAttribute("data-model-preview-volume");
+  const showSurfaceArea =
+    typeof options.surfaceArea === "boolean"
+      ? options.surfaceArea
+      : previewEl.hasAttribute("data-model-preview-surface-area");
+  const showObjects =
+    typeof options.objects === "boolean"
+      ? options.objects
+      : previewEl.hasAttribute("data-model-preview-objects");
+  const fixedMetaContent =
+    showSize ||
+    showTriangles ||
+    showVertices ||
+    showVolume ||
+    showSurfaceArea ||
+    showObjects;
+  const configuredMetaVisibility = resolveMetaVisibility(
+    typeof options.meta === "string"
+      ? options.meta
+      : previewEl.dataset.modelPreviewMeta
+  );
+  let metaExtra = resolveMetaExtra(
+    options.metaExtra !== undefined
+      ? options.metaExtra
+      : previewEl.dataset.modelPreviewMetaExtra
+  );
+  let hasMetaContent = fixedMetaContent || metaExtra !== "";
+  let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+
+  if (showSize) previewEl.setAttribute("data-model-preview-size", "");
+  else previewEl.removeAttribute("data-model-preview-size");
+  if (showTriangles) previewEl.setAttribute("data-model-preview-triangles", "");
+  else previewEl.removeAttribute("data-model-preview-triangles");
+  if (showVertices) previewEl.setAttribute("data-model-preview-vertices", "");
+  else previewEl.removeAttribute("data-model-preview-vertices");
+  if (showVolume) previewEl.setAttribute("data-model-preview-volume", "");
+  else previewEl.removeAttribute("data-model-preview-volume");
+  if (showSurfaceArea) previewEl.setAttribute("data-model-preview-surface-area", "");
+  else previewEl.removeAttribute("data-model-preview-surface-area");
+  if (showObjects) previewEl.setAttribute("data-model-preview-objects", "");
+  else previewEl.removeAttribute("data-model-preview-objects");
+
+  if (metaExtra) previewEl.dataset.modelPreviewMetaExtra = metaExtra;
+  else delete previewEl.dataset.modelPreviewMetaExtra;
+
+  if (hasMetaContent) {
+    previewEl.dataset.modelPreviewMeta = metaVisibility;
+  } else {
+    delete previewEl.dataset.modelPreviewMeta;
+  }
+
+  /** @type {HTMLParagraphElement | null} */
+  let metaEl = null;
+  /** @type {ReturnType<typeof computeMeshStats> | null} */
+  let meshStats = null;
+  /** @type {number | null} */
+  let objectCount = null;
+
+  function syncMetaVisibilityAttr() {
+    hasMetaContent = fixedMetaContent || metaExtra !== "";
+    metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+    if (metaExtra) previewEl.dataset.modelPreviewMetaExtra = metaExtra;
+    else delete previewEl.dataset.modelPreviewMetaExtra;
+    if (hasMetaContent) {
+      previewEl.dataset.modelPreviewMeta = metaVisibility;
+    } else {
+      delete previewEl.dataset.modelPreviewMeta;
+    }
+  }
+
+  function ensureMetaEl() {
+    if (!hasMetaContent || metaVisibility === "never") {
+      if (metaEl) setHidden(metaEl, true);
+      return null;
+    }
+    if (metaEl?.isConnected) return metaEl;
+    metaEl = previewEl.querySelector(":scope > .model-preview__meta");
+    if (!(metaEl instanceof HTMLParagraphElement)) {
+      metaEl = document.createElement("p");
+      metaEl.className = "model-preview__meta";
+      previewEl.append(metaEl);
+    }
+    return metaEl;
+  }
+
+  function syncMeta() {
+    const meta = ensureMetaEl();
+    if (!meta) return;
+
+    /** @type {string[]} */
+    const parts = [];
+    if (meshStats) {
+      if (showSize) {
+        parts.push(
+          `${formatMeshNumber(meshStats.width)} × ${formatMeshNumber(
+            meshStats.length
+          )} × ${formatMeshNumber(meshStats.height)} mm`
+        );
+      }
+      if (showTriangles) {
+        parts.push(`${meshStats.triangles.toLocaleString()} triangles`);
+      }
+      if (showVertices) {
+        parts.push(`${meshStats.vertices.toLocaleString()} vertices`);
+      }
+      if (showVolume) {
+        parts.push(`${formatMeshNumber(meshStats.volume)} mm³`);
+      }
+      if (showSurfaceArea) {
+        parts.push(`${formatMeshNumber(meshStats.surfaceArea)} mm²`);
+      }
+      if (showObjects && objectCount !== null) {
+        parts.push(`${objectCount.toLocaleString()} object${objectCount === 1 ? "" : "s"}`);
+      }
+    }
+    if (metaExtra) parts.push(metaExtra);
+
+    if (!parts.length) {
+      meta.textContent = "";
+      setHidden(meta, true);
+      return;
+    }
+
+    meta.textContent = parts.join(" · ");
+    setHidden(meta, false);
+  }
 
   let renderer;
   let model = null;
@@ -126,6 +430,10 @@ export function initModelPreview(previewEl) {
     }
     return {
       setMesh() {},
+      setMetaExtra(text) {
+        metaExtra = resolveMetaExtra(text);
+        syncMetaVisibilityAttr();
+      },
       clear() {},
       destroy() {
         delete previewEl.dataset.modelPreviewInit;
@@ -195,6 +503,8 @@ export function initModelPreview(previewEl) {
 
   function setMesh(mesh) {
     const { positionValues, indexValues } = readMeshArrays(mesh);
+    meshStats = computeMeshStats(positionValues, indexValues);
+    objectCount = readObjectCount(mesh);
     disposeModel();
 
     const geometry = new THREE.BufferGeometry();
@@ -217,12 +527,22 @@ export function initModelPreview(previewEl) {
     scene.add(model);
     fitCameraToModel(previewEl, camera, controls, model);
     if (emptyEl) setHidden(emptyEl, true);
+    syncMeta();
     renderer.render(scene, camera);
+  }
+
+  function setMetaExtra(text) {
+    metaExtra = resolveMetaExtra(text);
+    syncMetaVisibilityAttr();
+    syncMeta();
   }
 
   function clear() {
     disposeModel();
+    meshStats = null;
+    objectCount = null;
     if (emptyEl) setHidden(emptyEl, false);
+    syncMeta();
     renderer.render(scene, camera);
   }
 
@@ -237,11 +557,13 @@ export function initModelPreview(previewEl) {
 
   applyTheme();
   resize();
+  syncMeta();
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 
   return {
     setMesh,
+    setMetaExtra,
     clear,
     destroy() {
       destroyed = true;
@@ -252,15 +574,16 @@ export function initModelPreview(previewEl) {
       controls.dispose();
       renderer.dispose();
       canvas.remove();
+      metaEl?.remove();
       delete previewEl.dataset.modelPreviewInit;
     },
   };
 }
 
-/** Wire every `.model-preview` block in `root`. */
+/** Wire every mesh `.model-preview` block in `root` (skips toolpath hosts). */
 export function initModelPreviews(root = document) {
   const instances = [];
-  root.querySelectorAll(".model-preview").forEach((previewEl) => {
+  root.querySelectorAll(".model-preview:not(.toolpath-preview)").forEach((previewEl) => {
     const instance = initModelPreview(previewEl);
     if (instance) instances.push(instance);
   });

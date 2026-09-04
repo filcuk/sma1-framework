@@ -29,3 +29,93 @@
   min-height: 16rem;
   border-radius: inherit;
 }
+
+.model-preview__meta,
+.toolpath-preview__meta {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  margin: 0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.model-preview[data-model-preview-meta="hover"] > .model-preview__meta {
+  opacity: 0;
+}
+
+/* Use :focus-visible (not :focus-within) so a mouse drag that focuses the
+   canvas does not leave the meta stuck visible after the pointer leaves. */
+.model-preview[data-model-preview-meta="hover"]:hover > .model-preview__meta,
+.model-preview[data-model-preview-meta="hover"]:has(:focus-visible)
+  > .model-preview__meta {
+  opacity: 1;
+}
+
+.model-preview[data-model-preview-meta="always"] > .model-preview__meta {
+  opacity: 1;
+}
+
+.model-preview[data-model-preview-meta="not-hover"] > .model-preview__meta {
+  opacity: 1;
+}
+
+.model-preview[data-model-preview-meta="not-hover"]:hover > .model-preview__meta,
+.model-preview[data-model-preview-meta="not-hover"]:has(:focus-visible)
+  > .model-preview__meta {
+  opacity: 0;
+}
+
+.model-preview[data-model-preview-meta="never"] > .model-preview__meta {
+  display: none;
+}
+
+@media (hover: none) {
+  .model-preview[data-model-preview-meta="hover"] > .model-preview__meta,
+  .model-preview[data-model-preview-meta="not-hover"] > .model-preview__meta {
+    opacity: 1;
+  }
+}
+
+.toolpath-preview[data-toolpath-preview-meta="hover"] > .toolpath-preview__meta {
+  opacity: 0;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="hover"]:hover > .toolpath-preview__meta,
+.toolpath-preview[data-toolpath-preview-meta="hover"]:has(:focus-visible)
+  > .toolpath-preview__meta {
+  opacity: 1;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="always"] > .toolpath-preview__meta {
+  opacity: 1;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="not-hover"] > .toolpath-preview__meta {
+  opacity: 1;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="not-hover"]:hover > .toolpath-preview__meta,
+.toolpath-preview[data-toolpath-preview-meta="not-hover"]:has(:focus-visible)
+  > .toolpath-preview__meta {
+  opacity: 0;
+}
+
+.toolpath-preview[data-toolpath-preview-meta="never"] > .toolpath-preview__meta {
+  display: none;
+}
+
+@media (hover: none) {
+  .toolpath-preview[data-toolpath-preview-meta="hover"] > .toolpath-preview__meta,
+  .toolpath-preview[data-toolpath-preview-meta="not-hover"] > .toolpath-preview__meta {
+    opacity: 1;
+  }
+}

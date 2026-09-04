@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-04T17:54:09.530Z",
+  "generatedAt": "2026-09-04T18:39:06.416Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -147,7 +147,7 @@
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
     },
     "app/components/model-preview.js": {
-      "sha256": "f1d95152ce3a423f51dd2c6373fbb835afa7d277c38eb7c7d8b6babf2d4dc746"
+      "sha256": "c24a5860e23d8ab85fd687cd1fd72df6bba06527b57983c5c706500b85bc7731"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
@@ -207,7 +207,7 @@
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
     "app/components/toolpath-preview.js": {
-      "sha256": "ac1aca4f36ba1c2eb16bba8bff42048ca3095c138fb9ee6080df6565bbcd382a"
+      "sha256": "e0d18bcad268b558763bedd331bdad29330cf900e667d622ee0c376a8ba73689"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -246,13 +246,13 @@
       "sha256": "f5d134acfc7b0553ccbd9a643768d7623ea5983b56b819d5dd21ac65255bad33"
     },
     "app/css/controls-image.css": {
-      "sha256": "8ff8164bafc01e0021ff09873dbf0f1a0192ea79ab0b4df1f486aaeab78da75c"
+      "sha256": "bd70215c180afae6be5fa98e1b69bc0ec0f0986a9571a4dd1bec159f636d13f8"
     },
     "app/css/controls-menus.css": {
       "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
     },
     "app/css/controls-model.css": {
-      "sha256": "45548a4dc06103e4e1dd47a1617db570b1f8f92406349ff31c3284b340b5efce"
+      "sha256": "66dfcb04ac3081470bd1e278c554ae56b937f02f0e91c2bd4d5a86f90293e7c5"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"

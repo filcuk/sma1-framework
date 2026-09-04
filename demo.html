@@ -2115,7 +2115,10 @@
                 <h3 class="panel-title">Preview</h3>
                 <p class="panel-hint">Interactive mesh preview.</p>
                 <div class="model-preview" id="demo-model-preview" aria-live="polite"
-                  aria-label="Generated box preview">
+                  aria-label="Generated box preview"
+                  data-model-preview-size
+                  data-model-preview-triangles
+                  data-model-preview-meta="hover">
                   <p class="model-preview__empty">No preview yet</p>
                 </div>
               </div>
@@ -2240,7 +2243,11 @@
                   </div>
                 </div>
                 <div class="model-preview toolpath-preview" id="demo-toolpath-preview" aria-live="polite"
-                  aria-label="G-code toolpath preview">
+                  aria-label="G-code toolpath preview"
+                  data-toolpath-preview-segments
+                  data-toolpath-preview-layers
+                  data-toolpath-preview-current-layer
+                  data-toolpath-preview-meta="hover">
                   <p class="model-preview__empty">No toolpath yet</p>
                 </div>
                 <p class="panel-hint" id="demo-toolpath-status" role="status">Loading sample toolpath…</p>

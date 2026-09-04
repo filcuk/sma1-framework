@@ -102,10 +102,10 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
 | `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
-| `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes |
+| `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes; optional meta strip (size / triangles / vertices / volume / surface area / objects / `setMetaExtra`) |
 | `parseGcodeMeta()` / `isBgcode()` | Read timestamp, duration, filament, temperatures, density, perimeters, objects, and slicer metadata from ASCII G-code and binary bgcode without simulating toolpaths |
 | `parseGcodeToolpath()` | Parse ASCII G-code or bgcode motion into extrusion/travel segments, layers, bounds, and warnings |
-| `initToolpathPreview()` / `initToolpathPreviews()` | Interactive Three.js LineSegments preview for parsed G-code toolpaths; supports maximum-layer filtering |
+| `initToolpathPreview()` / `initToolpathPreviews()` | Interactive Three.js LineSegments preview for parsed G-code toolpaths; maximum-layer filtering; optional meta strip (segments / layers / current layer / `setMetaExtra`) |
 | `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
 | `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
 | `initDurationInput()` / `initDurationInputs()` | Segmented duration field with the shared popup in duration mode |

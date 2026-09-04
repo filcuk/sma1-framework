@@ -84,8 +84,11 @@
   opacity: 0;
 }
 
+/* Use :focus-visible (not :focus-within) so a mouse click that focuses a child
+   control does not leave the meta stuck visible after the pointer leaves. */
 .image-preview[data-image-preview-meta="hover"]:hover > .image-preview__meta,
-.image-preview[data-image-preview-meta="hover"]:focus-within > .image-preview__meta,
+.image-preview[data-image-preview-meta="hover"]:has(:focus-visible)
+  > .image-preview__meta,
 .image-preview[data-image-preview-meta="hover"].expandable-surface.is-expanded
   > .image-preview__meta {
   opacity: 1;

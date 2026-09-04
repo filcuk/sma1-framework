@@ -2,14 +2,28 @@
  * Interactive Three.js G-code toolpath preview.
  *
  * The host intentionally reuses the `.model-preview` surface styles:
- *   <div class="model-preview toolpath-preview" aria-label="G-code toolpath">
+ *   <div class="model-preview toolpath-preview"
+ *     data-toolpath-preview-segments
+ *     data-toolpath-preview-layers
+ *     data-toolpath-preview-current-layer
+ *     data-toolpath-preview-meta="hover"
+ *     data-toolpath-preview-meta-extra="PETG"
+ *     aria-label="G-code toolpath">
  *     <p class="model-preview__empty">No toolpath</p>
  *   </div>
+ *
+ * data-toolpath-preview-segments — show total segment count
+ * data-toolpath-preview-layers — show total layer count
+ * data-toolpath-preview-current-layer — show filtered layer as `layer K/N`
+ * data-toolpath-preview-meta — when meta content is enabled: `hover` (default),
+ *   `always`, `not-hover`, or `never`
+ * data-toolpath-preview-meta-extra — append app-specific text to the meta strip
  *
  * API:
  *   const preview = initToolpathPreview(element);
  *   preview.setToolpath({ segments, layerCount, bounds, warnings });
  *   preview.setMaxLayer(3);
+ *   preview.setMetaExtra("PETG · 0.4 mm");
  *   preview.clear();
  */
 
@@ -21,6 +35,39 @@ import { setHidden } from "../utils/dom.js";
 const DEFAULT_ARIA_LABEL = "G-code toolpath preview";
 const MAX_PIXEL_RATIO = 2;
 const EPSILON = 1e-5;
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {"hover" | "always" | "not-hover" | "never"}
+ */
+function resolveMetaVisibility(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (
+    trimmed === "always" ||
+    trimmed === "never" ||
+    trimmed === "hover" ||
+    trimmed === "not-hover"
+  ) {
+    return trimmed;
+  }
+  return "hover";
+}
+
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
+function resolveMetaExtra(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((part) => (typeof part === "string" ? part.trim() : ""))
+      .filter(Boolean)
+      .join(" · ");
+  }
+  return typeof value === "string" ? value.trim() : "";
+}
 
 function readCssColor(name, fallback) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -101,14 +148,22 @@ function fitCameraToObject(camera, controls, object) {
 
 /**
  * @param {HTMLElement} previewEl
+ * @param {{
+ *   segments?: boolean,
+ *   layers?: boolean,
+ *   currentLayer?: boolean,
+ *   meta?: string,
+ *   metaExtra?: string | string[],
+ * }} [options]
  * @returns {{
  *   setToolpath: (toolpath: { segments: ArrayLike<unknown>, layerCount?: number }) => void,
  *   setMaxLayer: (layer: number | null) => void,
+ *   setMetaExtra: (text: string | string[] | null | undefined) => void,
  *   clear: () => void,
  *   destroy: () => void,
  * } | null}
  */
-export function initToolpathPreview(previewEl) {
+export function initToolpathPreview(previewEl, options = {}) {
   if (!(previewEl instanceof HTMLElement)) return null;
   if (!previewEl.classList.contains("toolpath-preview")) return null;
   if (previewEl.dataset.toolpathPreviewInit !== undefined) return null;
@@ -119,6 +174,81 @@ export function initToolpathPreview(previewEl) {
   );
   const ariaLabel =
     previewEl.getAttribute("aria-label") || DEFAULT_ARIA_LABEL;
+
+  const showSegments =
+    typeof options.segments === "boolean"
+      ? options.segments
+      : previewEl.hasAttribute("data-toolpath-preview-segments");
+  const showLayers =
+    typeof options.layers === "boolean"
+      ? options.layers
+      : previewEl.hasAttribute("data-toolpath-preview-layers");
+  const showCurrentLayer =
+    typeof options.currentLayer === "boolean"
+      ? options.currentLayer
+      : previewEl.hasAttribute("data-toolpath-preview-current-layer");
+  const fixedMetaContent = showSegments || showLayers || showCurrentLayer;
+  const configuredMetaVisibility = resolveMetaVisibility(
+    typeof options.meta === "string"
+      ? options.meta
+      : previewEl.dataset.toolpathPreviewMeta
+  );
+  let metaExtra = resolveMetaExtra(
+    options.metaExtra !== undefined
+      ? options.metaExtra
+      : previewEl.dataset.toolpathPreviewMetaExtra
+  );
+  let hasMetaContent = fixedMetaContent || metaExtra !== "";
+  let metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+
+  if (showSegments) previewEl.setAttribute("data-toolpath-preview-segments", "");
+  else previewEl.removeAttribute("data-toolpath-preview-segments");
+  if (showLayers) previewEl.setAttribute("data-toolpath-preview-layers", "");
+  else previewEl.removeAttribute("data-toolpath-preview-layers");
+  if (showCurrentLayer) {
+    previewEl.setAttribute("data-toolpath-preview-current-layer", "");
+  } else {
+    previewEl.removeAttribute("data-toolpath-preview-current-layer");
+  }
+
+  if (metaExtra) previewEl.dataset.toolpathPreviewMetaExtra = metaExtra;
+  else delete previewEl.dataset.toolpathPreviewMetaExtra;
+
+  if (hasMetaContent) {
+    previewEl.dataset.toolpathPreviewMeta = metaVisibility;
+  } else {
+    delete previewEl.dataset.toolpathPreviewMeta;
+  }
+
+  /** @type {HTMLParagraphElement | null} */
+  let metaEl = null;
+
+  function ensureMetaEl() {
+    if (!hasMetaContent || metaVisibility === "never") {
+      if (metaEl) setHidden(metaEl, true);
+      return null;
+    }
+    if (metaEl?.isConnected) return metaEl;
+    metaEl = previewEl.querySelector(":scope > .toolpath-preview__meta");
+    if (!(metaEl instanceof HTMLParagraphElement)) {
+      metaEl = document.createElement("p");
+      metaEl.className = "toolpath-preview__meta";
+      previewEl.append(metaEl);
+    }
+    return metaEl;
+  }
+
+  function syncMetaVisibilityAttr() {
+    hasMetaContent = fixedMetaContent || metaExtra !== "";
+    metaVisibility = hasMetaContent ? configuredMetaVisibility : "never";
+    if (metaExtra) previewEl.dataset.toolpathPreviewMetaExtra = metaExtra;
+    else delete previewEl.dataset.toolpathPreviewMetaExtra;
+    if (hasMetaContent) {
+      previewEl.dataset.toolpathPreviewMeta = metaVisibility;
+    } else {
+      delete previewEl.dataset.toolpathPreviewMeta;
+    }
+  }
 
   let renderer;
   try {
@@ -131,6 +261,10 @@ export function initToolpathPreview(previewEl) {
     return {
       setToolpath() {},
       setMaxLayer() {},
+      setMetaExtra(text) {
+        metaExtra = resolveMetaExtra(text);
+        syncMetaVisibilityAttr();
+      },
       clear() {},
       destroy() {
         delete previewEl.dataset.toolpathPreviewInit;
@@ -176,8 +310,11 @@ export function initToolpathPreview(previewEl) {
   let extrusionLines = null;
   let travelLines = null;
   let segments = [];
+  let segmentCount = 0;
+  let layerCount = 0;
   let maxLayer = null;
   let destroyed = false;
+  let hasToolpath = false;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -214,7 +351,40 @@ export function initToolpathPreview(previewEl) {
     travelLines = null;
   }
 
-  function renderToolpath() {
+  function syncMeta() {
+    const meta = ensureMetaEl();
+    if (!meta) return;
+
+    /** @type {string[]} */
+    const parts = [];
+    if (hasToolpath) {
+      if (showSegments) {
+        parts.push(`${segmentCount.toLocaleString()} segments`);
+      }
+      if (showLayers) {
+        parts.push(`${layerCount.toLocaleString()} layers`);
+      }
+      if (showCurrentLayer && layerCount > 0) {
+        const current =
+          maxLayer === null
+            ? layerCount
+            : Math.min(layerCount, Math.max(0, maxLayer) + 1);
+        parts.push(`layer ${current}/${layerCount}`);
+      }
+    }
+    if (metaExtra) parts.push(metaExtra);
+
+    if (!parts.length) {
+      meta.textContent = "";
+      setHidden(meta, true);
+      return;
+    }
+
+    meta.textContent = parts.join(" · ");
+    setHidden(meta, false);
+  }
+
+  function renderToolpath({ fitCamera = true } = {}) {
     disposeLines();
     const extrusionPositions = [];
     const travelPositions = [];
@@ -247,17 +417,26 @@ export function initToolpathPreview(previewEl) {
 
     const hasVisibleLines = Boolean(extrusionLines || travelLines);
     if (hasVisibleLines) {
-      fitCameraToObject(camera, controls, group);
+      if (fitCamera) fitCameraToObject(camera, controls, group);
       if (emptyEl) setHidden(emptyEl, true);
     } else if (emptyEl) {
-      setHidden(emptyEl, false);
+      setHidden(emptyEl, !hasToolpath);
     }
+    syncMeta();
     renderer.render(scene, camera);
   }
 
   function setToolpath(toolpath) {
     segments = readSegments(toolpath);
-    renderToolpath();
+    segmentCount = segments.length;
+    const reportedLayers = Number(toolpath?.layerCount);
+    layerCount = Number.isFinite(reportedLayers)
+      ? Math.max(0, Math.floor(reportedLayers))
+      : segments.length
+        ? Math.max(...segments.map((segment) => segment.layer)) + 1
+        : 0;
+    hasToolpath = segmentCount > 0 || layerCount > 0;
+    renderToolpath({ fitCamera: true });
   }
 
   function setMaxLayer(layer) {
@@ -265,13 +444,23 @@ export function initToolpathPreview(previewEl) {
       layer === null || layer === undefined
         ? null
         : Math.max(0, Math.floor(Number.isFinite(Number(layer)) ? Number(layer) : 0));
-    renderToolpath();
+    renderToolpath({ fitCamera: false });
+  }
+
+  function setMetaExtra(text) {
+    metaExtra = resolveMetaExtra(text);
+    syncMetaVisibilityAttr();
+    syncMeta();
   }
 
   function clear() {
     segments = [];
+    segmentCount = 0;
+    layerCount = 0;
+    hasToolpath = false;
     disposeLines();
     if (emptyEl) setHidden(emptyEl, false);
+    syncMeta();
     renderer.render(scene, camera);
   }
 
@@ -293,12 +482,14 @@ export function initToolpathPreview(previewEl) {
 
   applyTheme();
   resize();
+  syncMeta();
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 
   return {
     setToolpath,
     setMaxLayer,
+    setMetaExtra,
     clear,
     destroy() {
       destroyed = true;
@@ -311,6 +502,7 @@ export function initToolpathPreview(previewEl) {
       controls.dispose();
       renderer.dispose();
       canvas.remove();
+      metaEl?.remove();
       delete previewEl.dataset.toolpathPreviewInit;
     },
   };
