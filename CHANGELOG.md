@@ -31,6 +31,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Toolpath preview travel-move hover toggle (on by default; `data-toolpath-preview-travels="false"` hides gray paths; `data-toolpath-preview-travel-toggle="false"` removes the control). Framework `visibility` / `visibility-off` icons from Material Icons Round.
 - G-code toolpath parser tessellates XY-plane `G2` / `G3` arcs (I/J or R, including helical Z). Unsupported arc planes or invalid arc parameters emit a single `unsupported geometry` warning, which the toolpath preview appends to the meta strip.
 - Toolpath preview maximum-layer hover slider (shared `.slider--hover`; on by default, `data-toolpath-preview-layer-slider="false"` to disable; left-aligned in the action strip). Demo uses the built-in control instead of a panel stepper.
 - File dropzone enforces `data-file-accept` by default (browse / drop / `setFiles`); set `data-file-accept-filter="soft"` for advise-only. `onError` receives `reason: "accept"` | `"max"`.
