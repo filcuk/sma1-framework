@@ -83,7 +83,7 @@ function readJson(key, fallback) {
   if (!store) return fallback;
   try {
     const raw = store.getItem(key);
-    if (raw == null || raw === "") return fallback;
+    if (raw === null || raw === "") return fallback;
     return JSON.parse(raw);
   } catch {
     return fallback;
@@ -229,8 +229,8 @@ export function initAppStorage(options = {}) {
   const keys = currentKeys();
   const store = getLocalStorage();
   if (keys && store) {
-    const hasMeta = store.getItem(keys.meta) != null;
-    const hasData = store.getItem(keys.data) != null;
+    const hasMeta = store.getItem(keys.meta) !== null;
+    const hasData = store.getItem(keys.data) !== null;
     if (!hasMeta && hasData) {
       clearDataBag();
     }

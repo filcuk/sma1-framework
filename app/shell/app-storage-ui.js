@@ -173,7 +173,7 @@ function bindPrivacyHover(trigger, privacyPopover, onBeforeShow, shouldSkipShow)
   const privacyEl = privacyPopover.getElement();
 
   function clearHideTimer() {
-    if (hideTimer == null) return;
+    if (hideTimer === null) return;
     clearTimeout(hideTimer);
     hideTimer = null;
   }
