@@ -6,7 +6,7 @@
  * For third-party icons, set `name` to the collection id (e.g. `round-info`).
  * To reuse an existing framework icon under another id, set `ref` to the target key.
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, play, pause, stop, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette, cube
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, play, pause, stop, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette, cube, shield
  */
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
@@ -313,5 +313,11 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.99.99 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88zM12 4.15L6.04 7.5L12 10.85l5.96-3.35zM5 15.91l6 3.38v-6.71L5 9.21zm14 0v-6.7l-6 3.37v6.71z"/>`,
     attribution: ICON_ATTRIBUTIONS.materialDesignIcons,
     name: "cube-outline",
+  },
+  shield: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="m11.3 2.26l-6 2.25C4.52 4.81 4 5.55 4 6.39v4.7c0 4.83 3.13 9.37 7.43 10.75c.37.12.77.12 1.14 0c4.3-1.38 7.43-5.91 7.43-10.75v-4.7a2 2 0 0 0-1.3-1.87l-6-2.25c-.45-.18-.95-.18-1.4-.01"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-shield",
   },
 };
