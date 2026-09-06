@@ -283,11 +283,20 @@
 }
 
 .segmented-control--muted .segmented-control-item {
+  /* No layout border — inset shadows draw dividers / hover rings flush to the fill */
+  border: 0;
   border-radius: 0;
   min-width: var(--control-height);
+  padding: 0 0.875rem;
+  transition: box-shadow var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out,
+    color var(--control-hover-ms) ease-out;
 }
 
-/* Match track inner radius (6px outer − 1px border) so hover borders are not clipped */
+.segmented-control--muted.segmented-control--slim .segmented-control-item {
+  padding: 0.35rem 0.875rem;
+}
+
+/* Match track inner radius (6px outer − 1px border) so hover rings follow the curve */
 .segmented-control--muted .segmented-control-item:first-child {
   border-start-start-radius: 5px;
   border-end-start-radius: 5px;
@@ -304,22 +313,19 @@
 
 .segmented-control--muted .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]),
 .segmented-control--muted .segmented-control-item:active:not(:disabled):not([aria-disabled="true"]),
-.segmented-control--muted .segmented-control-item[aria-checked="true"],
 .segmented-control--muted .segmented-control-item:focus-visible {
-  box-shadow: none;
+  box-shadow: inset 0 0 0 1px var(--accent);
   z-index: 1;
 }
 
 .segmented-control--muted .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]) {
   color: var(--text);
-  border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
 }
 
 .segmented-control--muted .segmented-control-item:active:not(:disabled):not([aria-disabled="true"]) {
   color: var(--text);
-  border-color: var(--accent);
   background: color-mix(
     in srgb,
     var(--accent) var(--control-selected-mix),
@@ -330,21 +336,33 @@
 
 .segmented-control--muted .segmented-control-item[aria-checked="true"] {
   background: var(--code-bg);
-  border-color: transparent;
   color: var(--text);
   font-weight: 600;
+  z-index: 1;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:not(:last-child) {
+  box-shadow: inset -1px 0 0 var(--border);
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:last-child {
+  box-shadow: none;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:hover:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .segmented-control--muted .segmented-control-item[aria-checked="true"]:hover:not(:disabled):not([aria-disabled="true"]) {
   background: var(--code-bg);
-  border-color: var(--accent);
   color: var(--text);
   transition-duration: 0s;
 }
 
 .segmented-control--muted .segmented-control-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]) {
   background: color-mix(in srgb, var(--text) var(--control-press-mix), var(--code-bg));
-  border-color: var(--accent);
   color: var(--text);
   transition-duration: 0s;
 }
