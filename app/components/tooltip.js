@@ -560,6 +560,48 @@ function handlePointerOver(e) {
   showHover(target);
 }
 
+/**
+ * True when the pointer is over the active tip’s content source, its placement
+ * anchor, or another `[data-tooltip]` that shares that anchor.
+ * @param {number} clientX
+ * @param {number} clientY
+ */
+function isPointerOverActiveTipSource(clientX, clientY) {
+  if (!activeTarget) return false;
+  const under = document.elementFromPoint(clientX, clientY);
+  if (!under) return false;
+  if (activeTarget === under || activeTarget.contains(under)) return true;
+  if (activeAnchor && (activeAnchor === under || activeAnchor.contains(under))) {
+    return true;
+  }
+  const tipSource = under.closest("[data-tooltip]");
+  if (
+    tipSource &&
+    activeAnchor &&
+    resolveTooltipAnchor(tipSource) === activeAnchor
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Dragging off a tip source (e.g. menu item → outside) can skip a clean
+ * mouseout; menu close may also focus the trigger. Clear the hover tip when
+ * the pointer is no longer over a valid source.
+ * @param {PointerEvent | MouseEvent} e
+ */
+function handlePointerUp(e) {
+  if (slotMode !== "hover" || !activeTarget) return;
+  if (typeof e.clientX !== "number" || typeof e.clientY !== "number") {
+    hideSharedSlot();
+    return;
+  }
+  if (!isPointerOverActiveTipSource(e.clientX, e.clientY)) {
+    hideSharedSlot();
+  }
+}
+
 function handlePointerOut(e) {
   if (slotMode !== "hover") return;
 
@@ -582,6 +624,11 @@ function handlePointerOut(e) {
 function handleFocusIn(e) {
   const target = e.target.closest?.("[data-tooltip]");
   if (!target || !e.currentTarget.contains(target)) return;
+  /* Mouse / programmatic focus (e.g. menu close restoring the trigger) must
+     not stick a tip; keyboard :focus-visible still gets one. */
+  if (typeof target.matches === "function" && !target.matches(":focus-visible")) {
+    return;
+  }
   showHover(target);
 }
 
@@ -884,6 +931,8 @@ export function initTooltips(root = document) {
   if (!globalListenersBound) {
     window.addEventListener("scroll", repositionAll, true);
     window.addEventListener("resize", repositionAll);
+    window.addEventListener("pointerup", handlePointerUp, true);
+    window.addEventListener("pointercancel", handlePointerUp, true);
     globalListenersBound = true;
   }
 

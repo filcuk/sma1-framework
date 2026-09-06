@@ -40,7 +40,7 @@ Success and error **tooltips** (when used) use bold green / red styling (banner 
 
 | Mode | Role | Lifetime |
 | ---- | ---- | -------- |
-| **Hover** (default) | Describe a control on pointer over or focus | Until pointer/focus leaves (skipped on disabled controls unless opted in). Optional `data-tooltip-anchor` keeps placement on another element while this one supplies the copy (e.g. menu items → icon trigger). |
+| **Hover** (default) | Describe a control on pointer over or keyboard `:focus-visible` | Until pointer leaves (or pointer-up away from the source/anchor); focus tips follow `:focus-visible` only so mouse / programmatic focus (e.g. menu close) does not stick a tip. Optional `data-tooltip-anchor` keeps placement on another element while this one supplies the copy (e.g. menu items → icon trigger). |
 | **Timer** | Reaction feedback when in-place is not an option (e.g. icon-only copy → “Copied”) | Fixed duration; stays visible without hover |
 | **Persistent** | Single anchored tip that stays until dismissed (e.g. highlight one control) | Until explicitly dismissed (e.g. user activates the highlighted control) |
 

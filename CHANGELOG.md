@@ -10,6 +10,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Button icons align consistently: labeled buttons use a child `data-icon` host (or `createIcon` + `.btn-icon-svg`); icon-only stays on `.btn-icon`. Shared gap, `display` / `flex-shrink`, and size rules live in `controls-buttons.css` (labeled glyphs 1rem; icon-only 1.25rem / slim 1rem). Hover alternate icons via `data-icon-hover` / `createIconSwap()` (`.btn-icon-swap`); click / pressed alternate icons via existing `initToggleButton` `data-toggle-button-icon-off` / `-on`.
 - G-code metadata now prefers exact slicer fields, so nozzle, layer height, filament quantities, and duration are not overwritten by unrelated settings; the demo also shows filament metres and perimeters.
 - Code block view/select with line numbers: horizontal scrollbar sits flush with the block (padding moved from `pre` onto `code` / gutter rows so the scrollport fills the block). Edit mode was already correct via the inset textarea.
@@ -76,6 +78,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Dropdown and combo menus elevate their host while open so lists paint above neighbouring code-block gutter chrome (replaces the fixed-position approach in 0.12.2).
 - Fixed popup menus no longer stretch to full viewport width (`min-width: 100%` on `position: fixed`).
 
@@ -95,6 +99,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Dropdown, combo, and toggle-dropdown menus use fixed positioning so lists escape stacking and overflow clipping (e.g. above code-block gutter chrome).
 - Tabular input top-row selection spacing — header gap row replaces padding on the first body row.
 
@@ -127,6 +133,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Time field block selection occurs on pointer press without briefly showing a text caret; quick actions close standalone popups and duration popups anchor to their fields.
 - Duration input: clicking the control background (padding or separators) focuses and selects hours, matching native `type="time"`.
 - Selected radio dots and toggle thumb glyphs no longer rest inside a transform (radio uses `transform: none` when checked; thumb icons centre with insets and `margin: auto`), so they rasterize on whole device pixels instead of drifting about a pixel off centre at some scroll positions and display scalings.
@@ -152,6 +160,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Popover initial focus prefers primary / footer actions over Close; `trapFocus` option and `setTrapFocus()` so interactive tutorial steps can Tab to the spotlight target.
 - Colour picker `rgbaFromHex` / `setValue` reject invalid hex instead of falling back to brand blue; SV/SL plane supports arrow keys / Home / End and `aria-value*`.
 - Image preview sanitizes `setSvg` markup before injection; pre-existing markup `<img>` children get `sourceUrl` so download works.
@@ -207,6 +217,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Rich text editor toolbar icon bleed — match Toast UI’s 1px border to the toolbar/`--code-bg` hover fill and clip the sprite to the padding box.
 - Rich text editor content panes use `--input-bg` (same as `.input` / `.textarea`); toolbar stays on `--surface`.
 - Sticky site-header border disappearing under the sticky cover strip once pinned.
@@ -233,6 +245,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Also-see menu opening under the page body.
 - Tooltip appearing when removing tabular-input columns.
 - Missing icon placeholders for new actions.
@@ -259,6 +273,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Sticky header blocking content and sticky interaction issues.
 - Dropdowns remaining open incorrectly.
 
@@ -279,6 +295,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Progress indicator buttons, table checkbox alignment, page jumps on reload.
 - Date picker calendar week start (Monday) and assorted demo polish.
 
