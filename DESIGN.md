@@ -4,6 +4,14 @@ Visual and interaction principles for SMA1 Framework. Implementation details liv
 
 Aesthetics follow a GitHub-inspired palette (based on [pqm-stepper](https://github.com/filcuk/pqm-stepper)): 6px radii, system UI font, light / dark / auto theme.
 
+## Accent fills
+
+Filled accent surfaces — **primary buttons** (`.btn-primary`), and other controls that use an accent fill — paint text and icons with `--accent-fg`, not `--text`. Destructive filled controls use the same pattern with `--danger` / `--danger-fg`.
+
+`--accent-fg` is a **theme-inverse polarity** token: light foreground on accent in the light theme, dark foreground on accent in the dark theme. It is not a literal RGB inversion of `--text`. The primary style (and peers) already apply it; authors should not override label colour back to `--text` on filled accent controls.
+
+Fork brand colour and contrast checks live in the **`manage-color`** skill and [`USAGE.md`](USAGE.md); keep `--accent-fg` at WCAG AA (≥ 4.5:1) against `--accent`.
+
 ## Action feedback
 
 When a control reacts to a user action (copy succeeded, save failed, and similar):
