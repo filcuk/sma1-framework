@@ -1,0 +1,91 @@
+/**
+ * Control glow — opt-in attention cue for any control chrome.
+ *
+ * Markup: class `control-glow` (accent by default).
+ * Tones: `control-glow--danger`, `control-glow--success`, `control-glow--accent`.
+ * Custom colour: set `--control-glow-color` on the element.
+ * Static (no breathe / shine): `control-glow--static`.
+ */
+
+.control-glow {
+  --control-glow-color: var(--accent);
+  position: relative;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--control-glow-color) 42%, transparent),
+    0 0 0.45rem color-mix(in srgb, var(--control-glow-color) 30%, transparent);
+  animation: control-glow-breathe 2.6s ease-in-out infinite;
+}
+
+.control-glow--accent {
+  --control-glow-color: var(--accent);
+}
+
+.control-glow--danger {
+  --control-glow-color: var(--danger);
+}
+
+.control-glow--success {
+  --control-glow-color: var(--banner-success-border);
+}
+
+/* Soft shine band sweeping the control surface */
+.control-glow:not(.control-glow--static)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 28%,
+    color-mix(in srgb, #fff 38%, transparent) 50%,
+    transparent 72%
+  );
+  transform: translateX(-100%);
+  animation: control-glow-shine 2.6s ease-in-out infinite;
+}
+
+.control-glow--static {
+  animation: none;
+}
+
+.control-glow--static::after {
+  content: none;
+  animation: none;
+}
+
+@keyframes control-glow-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--control-glow-color) 36%, transparent),
+      0 0 0.35rem color-mix(in srgb, var(--control-glow-color) 24%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--control-glow-color) 55%, transparent),
+      0 0 0.75rem color-mix(in srgb, var(--control-glow-color) 40%, transparent);
+  }
+}
+
+@keyframes control-glow-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control-glow {
+    animation: none;
+  }
+
+  .control-glow:not(.control-glow--static)::after {
+    content: none;
+    animation: none;
+  }
+}
