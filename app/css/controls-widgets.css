@@ -274,6 +274,71 @@
   cursor: not-allowed;
 }
 
+/* Muted — light selection (theme-like flush track); standard accent hover + exit animation */
+
+.segmented-control--muted .segmented-control-list {
+  gap: 0;
+  padding: 0;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.segmented-control--muted .segmented-control-item {
+  border-radius: 0;
+  min-width: var(--control-height);
+}
+
+.segmented-control--muted .segmented-control-item:not(:last-child) {
+  box-shadow: inset -1px 0 0 var(--border);
+}
+
+.segmented-control--muted .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item:active:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item[aria-checked="true"],
+.segmented-control--muted .segmented-control-item:focus-visible {
+  box-shadow: none;
+  z-index: 1;
+}
+
+.segmented-control--muted .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  transition-duration: 0s;
+}
+
+.segmented-control--muted .segmented-control-item:active:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  transition-duration: 0s;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"] {
+  background: var(--code-bg);
+  border-color: transparent;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--code-bg);
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]) {
+  background: color-mix(in srgb, var(--text) var(--control-press-mix), var(--code-bg));
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
 .segmented-control-panels {
   border: 1px solid var(--border);
   border-radius: 6px;

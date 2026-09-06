@@ -72,11 +72,11 @@ Two selection highlight styles. Prefer **standard** for selectable items in cont
 | Style | Appearance | Contiguous neighbours | Typical use |
 | ----- | ---------- | --------------------- | ----------- |
 | **Standard** | Accent (blue) border **and** accent-tinted background | Join under one outer border (drop shared edges; round only the run’s outer corners) | Most controls and lists — dropdown / combo menu items, combobox options, chips, similar selectable rows |
-| **Light** | Lighter background only (no accent selection border) | Not joined as a selection run | Theme switch (`.theme-toggle-btn[aria-pressed="true"]`) |
+| **Light** | Lighter background only (no accent selection border) | Not joined as a selection run | Muted segmented (`.segmented-control--muted`); theme switch (`.theme-toggle-btn[aria-pressed="true"]`) |
 
 **Standard** recipe (menus / list options): selected state uses something like `border-color: var(--accent)` and `background: color-mix(in srgb, var(--accent) 12%, var(--surface))`. When several selected items sit next to each other, CSS collapses the shared borders so the run reads as one outlined block.
 
-**Light** recipe: selected / pressed state uses a softer fill only (today: `background: var(--code-bg)` on the theme toggle), without the accent selection border used by standard.
+**Light** recipe: selected / pressed state uses a softer fill only (today: `background: var(--code-bg)` on `.segmented-control--muted` and the theme toggle), without the accent selection border used by standard. Muted segments still use the standard accent hover border and exit animation.
 
 **Table row hover** is pointer feedback, not selection: body rows use an accent-tinted background and one outer accent border on hover (same border/fill language as standard, but only while the pointer is over the row). Selected rows are indicated by the checkbox column only — do not add a third *selection* look.
 
