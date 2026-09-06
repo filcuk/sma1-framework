@@ -19,7 +19,17 @@
  * data-chip-input-disabled — disable the input chip field
  */
 
-import { parseBooleanAttr } from "../utils/dom.js";
+import { parseBooleanAttr, prefersReducedMotion } from "../utils/dom.js";
+
+function readChipFadeMs() {
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--chip-fade-ms")
+    .trim();
+  const ms = Number.parseFloat(raw);
+  return Number.isFinite(ms) && ms > 0 ? ms : 150;
+}
+
+const CHIP_FADE_MS = readChipFadeMs();
 
 function readChipValue(chipEl) {
   return chipEl.dataset.chipValue ?? chipEl.textContent.trim();
@@ -205,13 +215,56 @@ export function initChipInput(inputEl, { values, disabled, onChange } = {}) {
     if (emitEvent) emit(source);
   }
 
+  function findChipEl(value) {
+    const key = String(value).toLowerCase();
+    return [...listEl.querySelectorAll(":scope > .chip")].find(
+      (chip) => String(chip.dataset.chipValue ?? "").toLowerCase() === key
+    );
+  }
+
+  function fadeOutChip(chipEl, onDone) {
+    if (!chipEl) {
+      onDone?.();
+      return;
+    }
+
+    if (prefersReducedMotion()) {
+      chipEl.remove();
+      onDone?.();
+      return;
+    }
+
+    chipEl.classList.add("chip-is-leaving");
+    chipEl.disabled = true;
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      chipEl.removeEventListener("animationend", onAnimationEnd);
+      chipEl.remove();
+      onDone?.();
+    };
+
+    const onAnimationEnd = (event) => {
+      if (event.target !== chipEl) return;
+      finish();
+    };
+
+    chipEl.addEventListener("animationend", onAnimationEnd);
+    window.setTimeout(finish, CHIP_FADE_MS + 50);
+  }
+
   function removeValue(value, { emitEvent = true, source = "remove" } = {}) {
     const key = String(value).toLowerCase();
     const next = items.filter((item) => item.value.toLowerCase() !== key);
     if (next.length === items.length) return;
+
+    const chipEl = findChipEl(value);
     items = next;
-    render();
+    syncHidden();
     if (emitEvent) emit(source);
+    fadeOutChip(chipEl);
   }
 
   function commitField({ emitEvent = true } = {}) {

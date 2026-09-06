@@ -115,6 +115,21 @@ button.chip.chip--removable:hover:not(:disabled) {
   display: none;
 }
 
+.chip-is-leaving {
+  animation: chip-fade-out var(--chip-fade-ms) ease forwards;
+  pointer-events: none;
+}
+
+@keyframes chip-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 .chip-filter-results {
   margin: 0;
   padding-left: 1.25rem;

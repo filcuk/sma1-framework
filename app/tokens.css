@@ -76,7 +76,8 @@
   /* Segment ↔ crumb and crumb-label crossfade while scrolling subsections. */
   --sticky-crumb-ms: 180ms;
   --sticky-shadow: rgb(0 0 0 / 0.2);
-  --banner-fade-ms: 200ms;
+  --banner-fade-ms: 80ms;
+  --chip-fade-ms: 80ms;
   --control-hover-ms: 80ms;
   /* Expand / accordion panel open-close height. */
   --disclosure-ms: 80ms;
@@ -231,6 +232,10 @@ a:hover {
   }
 
   .banner-is-hiding {
+    animation: none;
+  }
+
+  .chip-is-leaving {
     animation: none;
   }
 }

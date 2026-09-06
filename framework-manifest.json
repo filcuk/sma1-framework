@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T09:52:01.811Z",
+  "generatedAt": "2026-09-06T15:20:35.030Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -30,7 +30,7 @@
       "sha256": "d3f2bfe947f8083a890459b1b5edda62790e6650af6c7e34f645b0b635211193"
     },
     "app/components/accordion.js": {
-      "sha256": "e65229543af29d705e262cabc0a595350d62fec0c2f50e67d158d0c3a540059d"
+      "sha256": "a9c66331f8087966c07c49101b99c7702414870e4eab35e5453f24b3a528aff8"
     },
     "app/components/badge.js": {
       "sha256": "ddbde42721c3f3f439c0e80493eb2857211c918249dd971149d8d10d3aea01d7"
@@ -45,7 +45,7 @@
       "sha256": "9b982c2ac7f694df706189460ab2f780abfe7563d880e64c21d78622edfa24e3"
     },
     "app/components/chip.js": {
-      "sha256": "ea5960e31a19da5a29c99a93d8d8659e4d1b6f41dbc1b44159ccdb19b02c56fe"
+      "sha256": "56fffd2343d35d92708af948453ec963f99db507b61f924bc0d62d5ecb5b5863"
     },
     "app/components/code-block.js": {
       "sha256": "a95932533bce09c71c8cbb2a13eaabf6588e059a43b6e271178d9bce84a67f6a"
@@ -123,7 +123,7 @@
       "sha256": "82aa6b6f9ece892a21cfbce0bceacf7bb7c0528b0cd01dbd24c8769f0eb93653"
     },
     "app/components/expand.js": {
-      "sha256": "9b3f0ac0631f11ea21fd3b998de9bd1d33115e437860f3456171a3a070bde437"
+      "sha256": "e010a3bcfc77fcfac99935b925b49f1d5f10554163e153119bede3bde8f1b13b"
     },
     "app/components/expandable-surface.js": {
       "sha256": "568a84db76db965ffbd092f6ee6706969302d140e8a82f939cf14977e07182f2"
@@ -207,7 +207,7 @@
       "sha256": "214d7e4e6c0ae2f7a21fcf792761f7d613db382861293b0ec3c35f0c8f820eb6"
     },
     "app/components/tooltip.js": {
-      "sha256": "167ad80ebb154119038d57225397b4e2a1b7373cdd4ca32466582bc1e4e70462"
+      "sha256": "4068633fcde2d3bef6491c20774ec5373caabf4bd58d1a44fdca7499486495ce"
     },
     "app/components/tutorial.js": {
       "sha256": "0ad1c22cc4bf19cc69e66a557f53f4fd2e53f9daaef7903c536f02e38d3e8d2b"
@@ -225,7 +225,7 @@
       "sha256": "a4d28adb3794666a0cf34928c5adc1809cd780ff102a5245ed5813faf70e2189"
     },
     "app/css/controls-chips.css": {
-      "sha256": "7aaef2f7a07832520dd88c98476c8e732aa8a21f530defba1942806e8545f15d"
+      "sha256": "69f8742585e2d9a7e5390883fc07794d1a4955d2f85e4792890ba3d0a29d1230"
     },
     "app/css/controls-color.css": {
       "sha256": "4ae99fbe7af7bece1d242f5193c8ea5188a23b1e678a6bd6d27e2b975ec8bcb3"
@@ -234,7 +234,7 @@
       "sha256": "fab5be1880d5ec4004035474183a4b461ae72232819d67f9aaa7c14f504efa1d"
     },
     "app/css/controls-disclosure.css": {
-      "sha256": "5ffe088437760b57023b2ddbfe2a7b91eb5d0b8de13849992e6a9bef26ccdfbf"
+      "sha256": "f274cc22ce369b36df2c40557ece42711be7f3087d6f504d8b4f482105320609"
     },
     "app/css/controls-fields.css": {
       "sha256": "1725535e1449dc43faa7921ad3ec26b083f6803315a770cf306bbceee2cf207b"
@@ -312,7 +312,7 @@
       "sha256": "3f9f55c503dec155b391c71c7a3ab3ed5c659de5df5695084831155e51e95f0b"
     },
     "app/tokens.css": {
-      "sha256": "37a8e35b27aaaa9d6be550df5e0b01c7d24e503ad23595fa70e77e336976465c"
+      "sha256": "6e0e4700831b9828246fb5021eddd2e26e05496bf89d0d69027979156bd1a499"
     },
     "app/utils/also-see-svg.js": {
       "sha256": "af1ff194fde0ba9ffe09edf885fde4562bac5f14592fd2f348c366296447e854"
@@ -333,7 +333,7 @@
       "sha256": "af0b66fc6147906c9049c7425cec5b735dea048ce182ca28a55e34598c173c57"
     },
     "app/utils/dom.js": {
-      "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
+      "sha256": "62aa90ef1934a6219173aff4a662591fbd7d2b5db4396505009139946efed0d1"
     },
     "app/utils/icons-framework.js": {
       "sha256": "5eee64aa3678bcd94acab95a2d10b0937645c7335a594da3d28bd759f47e47e7"
