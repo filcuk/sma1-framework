@@ -221,7 +221,7 @@ export function initInputAffix(host, options = {}) {
       const start = control.selectionStart;
       const end = control.selectionEnd;
       control.value = next;
-      if (start != null && end != null && control.type !== "number") {
+      if (start !== null && end !== null && control.type !== "number") {
         try {
           control.setSelectionRange(start, end);
         } catch {
@@ -241,7 +241,7 @@ export function initInputAffix(host, options = {}) {
   const commitDecimals = () => {
     if (decimals === null) return;
     const formatted = formatFixedDecimals(control.value, decimals);
-    if (formatted != null) control.value = formatted;
+    if (formatted !== null) control.value = formatted;
   };
 
   const onInput = () => {

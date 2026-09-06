@@ -81,7 +81,7 @@ export function getValidator(name) {
  * @returns {string[]}
  */
 export function parseValidateList(attr) {
-  if (attr == null || attr === "") return [];
+  if (attr === null || attr === undefined || attr === "") return [];
   return String(attr)
     .split("|")
     .map((part) => part.trim())
@@ -248,11 +248,11 @@ function readBounds(field, control) {
     field.getAttribute("data-validate-max");
   /** @type {{ min?: number, max?: number }} */
   const bounds = {};
-  if (minRaw != null && minRaw !== "") {
+  if (minRaw !== null && minRaw !== undefined && minRaw !== "") {
     const min = Number(minRaw);
     if (Number.isFinite(min)) bounds.min = min;
   }
-  if (maxRaw != null && maxRaw !== "") {
+  if (maxRaw !== null && maxRaw !== undefined && maxRaw !== "") {
     const max = Number(maxRaw);
     if (Number.isFinite(max)) bounds.max = max;
   }
