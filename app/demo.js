@@ -554,7 +554,6 @@ initToggle(document.getElementById("demo-toggle-tristate"));
 initToggle(document.getElementById("demo-toggle-disabled"));
 initToggle(document.getElementById("demo-toggle-slim-off"));
 initToggle(document.getElementById("demo-toggle-slim-on"));
-initToggle(document.getElementById("demo-toggle-row-lock"));
 
 initSegmentedControl(document.getElementById("demo-segmented-view"));
 initSegmentedControl(document.getElementById("demo-segmented-slim"));
