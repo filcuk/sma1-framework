@@ -398,12 +398,12 @@ export const COMPONENTS = {
     icons: ["upload", "error"],
     infra: ["dom", "icons"],
   },
-  "file-download": {
-    files: ["app/components/file-download.js"],
+  file: {
+    files: ["app/components/file.js"],
     css: ["controls-file.css"],
     vendor: [],
-    icons: ["upload"],
-    infra: ["icons"],
+    icons: ["download", "upload", "remove-circle"],
+    infra: ["dom", "icons"],
   },
   "image-preview": {
     files: ["app/components/image-preview.js"],
@@ -491,7 +491,7 @@ export const COMPONENTS = {
     css: ["controls-model.css"],
     vendor: [],
     icons: [],
-    infra: ["file-download"],
+    infra: ["file"],
     notes: "Dependency-free indexed mesh and binary/ASCII STL export helpers",
   },
   "model-preview": {
@@ -576,7 +576,7 @@ export const CSS_PARTIAL_FEATURES = {
     "tabs",
     "progress-indicator",
   ],
-  "controls-file.css": ["file-dropzone", "file-download"],
+  "controls-file.css": ["file-dropzone", "file"],
   "controls-image.css": ["image-preview"],
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],

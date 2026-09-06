@@ -259,7 +259,7 @@ function ensureSegment(itemEl, kind, filename, enabled) {
   let segment = itemEl.querySelector(`.${className}`);
 
   if (!enabled) {
-    if (segment) setHidden(segment, true);
+    segment?.remove();
     return null;
   }
 
@@ -268,8 +268,6 @@ function ensureSegment(itemEl, kind, filename, enabled) {
     segment.type = "button";
     segment.className = `btn ${className}`;
     itemEl.append(segment);
-  } else {
-    setHidden(segment, false);
   }
 
   segment.type = "button";

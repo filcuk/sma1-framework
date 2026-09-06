@@ -349,6 +349,15 @@ initFile(document.getElementById("demo-file-download"), {
   ],
 });
 
+initFile(document.getElementById("demo-file-manage"), {
+  files: [
+    {
+      filename: "editable.txt",
+      getContent: () => buildDemoTextFile("Editable"),
+    },
+  ],
+});
+
 initFile(document.getElementById("demo-stl-download"), {
   getContent: () => encodeStl(createBoxMesh(demoStlDimensions)),
 });

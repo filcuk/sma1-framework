@@ -392,7 +392,7 @@ app/
     controls-section-panel.css # Section panel grid
     controls-menus.css    # Combo, dropdown
     controls-disclosure.css # Expand, accordion, tabs, progress indicator
-    controls-file.css     # File dropzone, file download
+    controls-file.css     # File dropzone, segmented file rows
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
     controls-diagram.css  # Mermaid diagram host
@@ -467,7 +467,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
 | **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
-| **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
+| **File** | `.file` segmented rows (download / upload / remove) with on-demand content and hover meta. [`app/components/file.js`](app/components/file.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
@@ -1641,36 +1641,48 @@ initFileDropzones(document); // wire every `.file-dropzone`
 
 On init, the prompt shows a `.file-dropzone-meta` line when there is something non-default to communicate: allowed types (from `accept`) and/or a multi-file count (`Up to N files` or `Multiple files`). A plain single-file dropzone with no `accept` shows no meta line. The element is created if missing.
 
-### File download
+### File
 
-Full-width `.btn` rows (standard control height) with an inline download icon. Content is generated on demand when the user clicks the row.
+Segmented combo-style rows (standard control height). Optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand.
 
 ```html
-<div class="file-download" id="my-download">
-  <ul class="file-download-list">
+<div class="file" id="my-file" data-file-download data-file-ext-visibility="hover"
+  data-file-size-visibility="hover" data-file-name-action="none">
+  <ul class="file-list">
     <li>
-      <button type="button" class="file-download-item btn" data-file-download-name="export.txt"
-        aria-label="Download export.txt">
-        <span class="file-download-item-name">export<span class="file-download-item-ext">.txt</span></span>
-        <span class="file-download-item-meta">Plain text</span>
-        <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-      </button>
+      <div class="file-item">
+        <div class="btn file-item-main" data-file-name="export.txt">
+          <span class="file-item-name">export</span>
+          <span class="file-item-ext">.txt</span>
+          <span class="file-item-meta"></span>
+        </div>
+        <button type="button" class="btn file-item-download" aria-label="Download export.txt">
+          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+        </button>
+      </div>
     </li>
   </ul>
 </div>
 ```
 
 ```javascript
-import { downloadFile, initFileDownload, initFileDownloads } from "./components/file-download.js";
+import { downloadFile, initFile, initFiles } from "./components/file.js";
 
-initFileDownload(document.getElementById("my-download"), {
+initFile(document.getElementById("my-file"), {
   files: [
     {
       filename: "export.txt",
       getContent: () => `Generated at ${new Date().toISOString()}\n`,
     },
   ],
+  // download: true (default), remove: false, upload: false
+  // nameAction: "none" | "download" | "upload" | "remove" | "custom"
+  // extVisibility / sizeVisibility: "hover" | "always" | "never"
+  // dropActive: true — when upload is on, the row accepts file drops
   onDownload: ({ filename, size }) => console.log(filename, size),
+  onUpload: ({ file }) => console.log("replaced", file.name),
+  onRemove: ({ filename }) => console.log("removed", filename),
+  onNameAction: ({ filename }) => console.log("custom", filename),
 });
 
 // Or trigger directly:
@@ -1679,10 +1691,10 @@ await downloadFile({
   content: "Plain text body",
 });
 
-initFileDownloads(document); // wire every `.file-download`
+initFiles(document); // wire every `.file`
 ```
 
-Pass a `files` array with per-file `getContent` callbacks. File size is shown in `.file-download-item-meta` when content can be resolved at init time.
+Defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. Enable upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target. `data-file-accept` / `data-file-accept-filter` (`strict` | `soft`) apply to upload browse and drop. Pass a `files` array with per-file `getContent` callbacks; size fills `.file-item-meta` when content resolves at init.
 
 ### STL export
 
@@ -1704,7 +1716,7 @@ const decoded = decodeStl(binary);
 await downloadStl(mesh, { filename: "box.stl" });
 ```
 
-`createBoxMesh()` requires finite, positive `width`, `length`, and `height` values. The returned mesh has `positions` (`x, y, z` triplets) and `indices` (triangle triplets). `encodeStl()` rejects malformed or degenerate triangles. `downloadStl()` uses the framework file-download helper and reports the file as `model/stl`.
+`createBoxMesh()` requires finite, positive `width`, `length`, and `height` values. The returned mesh has `positions` (`x, y, z` triplets) and `indices` (triangle triplets). `encodeStl()` rejects malformed or degenerate triangles. `downloadStl()` uses the framework `downloadFile` helper and reports the file as `model/stl`.
 
 ### 3D model preview
 

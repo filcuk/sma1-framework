@@ -117,14 +117,16 @@
   height: 1rem;
 }
 
-.file-download {
+/* Segmented file rows (combo-style join) */
+
+.file {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
 }
 
-.file-download-list {
+.file-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -133,39 +135,120 @@
   gap: 0.35rem;
 }
 
-.file-download-list > li {
+.file-list > li {
   display: block;
   width: 100%;
 }
 
-.file-download-item.btn {
+.file-item {
+  display: flex;
+  align-items: stretch;
   width: 100%;
+}
+
+.file-item.is-dragover > .btn {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+}
+
+.file-item > .btn {
+  border-radius: 0;
+}
+
+.file-item > .btn:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.file-item > .btn:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.file-item > .btn:not(:last-child) {
+  border-right: none;
+}
+
+.file-item > .btn:not(:first-child) {
+  border-left: 1px solid var(--border);
+}
+
+.file-item > .btn:not(:first-child):hover:not(:disabled),
+.file-item > .btn:hover:not(:disabled) + .btn:not(:disabled) {
+  border-left-color: var(--accent);
+}
+
+.file-item-main {
+  flex: 1;
+  min-width: 0;
   justify-content: flex-start;
-  gap: 0.5rem;
+  gap: 0.35rem;
   padding: 0 0.75rem 0 1rem;
   font-size: 0.875rem;
   text-align: left;
+  cursor: default;
 }
 
-.file-download-item-name {
-  flex: 1;
+button.file-item-main:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+.file-item-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.file-download-item-ext,
-.file-download-item-meta {
+.file-item-ext,
+.file-item-meta {
+  flex-shrink: 0;
   color: var(--muted);
 }
 
-.file-download-item-meta {
-  flex-shrink: 0;
+.file-item-meta {
   font-size: 0.8125rem;
+  margin-left: auto;
 }
 
-.file-download-item [data-icon] {
+.file-item--ext-never .file-item-ext,
+.file-item--size-never .file-item-meta {
+  display: none;
+}
+
+.file-item--ext-hover .file-item-ext,
+.file-item--size-hover .file-item-meta {
+  opacity: 0;
+  max-width: 0;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity var(--control-hover-ms) ease-out, max-width var(--control-hover-ms) ease-out;
+}
+
+.file-item--ext-hover .file-item-main:hover .file-item-ext,
+.file-item--ext-hover .file-item-main:focus-visible .file-item-ext,
+.file-item--size-hover .file-item-main:hover .file-item-meta,
+.file-item--size-hover .file-item-main:focus-visible .file-item-meta {
+  opacity: 1;
+  max-width: 8rem;
+  pointer-events: auto;
+  transition-duration: 0s;
+}
+
+.file-item--size-hover .file-item-main:hover .file-item-meta,
+.file-item--size-hover .file-item-main:focus-visible .file-item-meta {
+  margin-left: auto;
+}
+
+.file-item-download,
+.file-item-upload,
+.file-item-remove {
+  flex-shrink: 0;
+  padding: 0 0.625rem;
+}
+
+.file-item [data-icon] {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -175,10 +258,18 @@
   line-height: 0;
 }
 
-.file-download-item .btn-icon-svg {
+.file-item .btn-icon-svg {
   display: block;
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
+}
+
+.file-item-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 

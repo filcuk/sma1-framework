@@ -35,7 +35,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
 | `controls-menus.css` | combo, dropdown, dropdown-toggle, color-picker (format menu) |
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
-| `controls-file.css` | file-dropzone, file-download |
+| `controls-file.css` | file-dropzone, file |
 | `controls-image.css` | image-preview |
 | `controls-color.css` | color-set, color-picker |
 | `controls-charts.css` | charts |
@@ -86,8 +86,8 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | tabs | `app/components/tabs.js` | `controls-disclosure.css` | — | — | `dom` | |
 | progress-indicator | `app/components/progress-indicator.js` | `controls-disclosure.css` | — | — | `dom` | |
 | file-dropzone | `app/components/file-dropzone.js` | `controls-file.css` | — | Markup: `upload`; JS: `error` | `dom`, `icons` | |
-| file-download | `app/components/file-download.js` | `controls-file.css` | — | `download` | `icons` | |
-| image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`, `sanitize-svg`; download uses `file-download`; maximise: expandable-surface | Checkerboard host; `setSvg` (sanitized) / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
+| file | `app/components/file.js` | `controls-file.css` | — | `download`, `upload`, `remove-circle` | `dom`, `icons` | Segmented combo-style rows; optional upload/remove; hover/always/never ext+size |
+| image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`, `sanitize-svg`; download uses `file`; maximise: expandable-surface | Checkerboard host; `setSvg` (sanitized) / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
 | code-block | `app/components/code-block.js` | `code-block.css` | `app/vendor/prism/`, `app/prism.css` | `clear`, `copy`, `paste`, `lines`, `highlight`, `fullscreen` | `dom`, `clipboard`, `button-label`, `icons` | Load Prism scripts on the page |
 | expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
 | table | `app/components/table.js` | `table.css` | — | `chevron-up` (sort) | `dom`, `icons` | |
@@ -95,7 +95,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | rich-text-editor | `app/components/rich-text-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control; owns Toast UI global access (no separate seam file) |
 | charts | `app/components/charts.js` | `controls-charts.css` | `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` | — | `config` | Thin `mountChart` host; import map for `d3-scale` / `d3-shape` when using `barY` / `barX`; forks author `defineChart` |
 | diagram | `app/components/diagram.js` | `controls-diagram.css` | `app/vendor/mermaid/` | — | `config`, `dom` | Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark |
-| stl | `app/components/stl.js` | `controls-model.css` | — | — | `file-download` | Dependency-free indexed mesh and binary/ASCII STL export helpers |
+| stl | `app/components/stl.js` | `controls-model.css` | — | — | `file` | Dependency-free indexed mesh and binary/ASCII STL export helpers |
 | model-preview | `app/components/model-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen` | `config`, `dom`, `orbit-home`, `icons`; maximise: expandable-surface | Interactive Three.js host for the shared indexed mesh shape; pages need a `three` import map; optional meta strip, home/reset, and maximise |
 | toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen`, `visibility`, `visibility-off` | `config`, `dom`, `orbit-home`, `icons`, `slider`, `toggle-button`; maximise: expandable-surface | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface; optional meta strip, home/reset, layer slider, travel toggle, and maximise |
 | gcode | `app/components/gcode.js` | — | — | — | — | ASCII G-code and binary bgcode metadata parser |
@@ -144,7 +144,7 @@ Do not remove these from `ICONS` while using `initShell`:
 ## Trim decision algorithm
 
 1. Collect entry HTML files → their `type=module` scripts → transitive imports.
-2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file-dropzone`, etc.).
+2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file`, `.file-dropzone`, etc.).
 3. Mark a catalogue `id` **used** if imported or markup-matched.
 4. Unused ids → candidates to delete (JS + exclusive vendor).
 5. For each CSS partial, if no remaining used feature maps to it → drop `@import` from `app/css/framework.css` and delete the file.

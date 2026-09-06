@@ -1878,34 +1878,72 @@
             <hr class="panel-divider" />
             <div class="panel-split">
               <div class="panel-stack">
-                <h3 class="panel-title">File downloads</h3>
-                <p class="panel-hint">Sample files are generated in the browser.</p>
+                <h3 class="panel-title">File rows</h3>
+                <p class="panel-hint">Segmented download; extension and size appear on filename hover.</p>
                 <div class="field">
-                  <div class="file-download" id="demo-file-download">
-                    <ul class="file-download-list">
+                  <div class="file" id="demo-file-download">
+                    <ul class="file-list">
                       <li>
-                        <button type="button" class="file-download-item btn" data-file-download-name="hello.txt"
-                          aria-label="Download hello.txt">
-                          <span class="file-download-item-name">hello<span class="file-download-item-ext">.txt</span></span>
-                          <span class="file-download-item-meta">Plain text</span>
-                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                        </button>
+                        <div class="file-item">
+                          <div class="btn file-item-main" data-file-name="hello.txt">
+                            <span class="file-item-name">hello</span>
+                            <span class="file-item-ext">.txt</span>
+                            <span class="file-item-meta"></span>
+                          </div>
+                          <button type="button" class="btn file-item-download" aria-label="Download hello.txt">
+                            <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
                       </li>
                       <li>
-                        <button type="button" class="file-download-item btn" data-file-download-name="notes.txt"
-                          aria-label="Download notes.txt">
-                          <span class="file-download-item-name">notes<span class="file-download-item-ext">.txt</span></span>
-                          <span class="file-download-item-meta">Plain text</span>
-                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                        </button>
+                        <div class="file-item">
+                          <div class="btn file-item-main" data-file-name="notes.txt">
+                            <span class="file-item-name">notes</span>
+                            <span class="file-item-ext">.txt</span>
+                            <span class="file-item-meta"></span>
+                          </div>
+                          <button type="button" class="btn file-item-download" aria-label="Download notes.txt">
+                            <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
                       </li>
                       <li>
-                        <button type="button" class="file-download-item btn" data-file-download-name="summary.txt"
-                          aria-label="Download summary.txt">
-                          <span class="file-download-item-name">summary<span class="file-download-item-ext">.txt</span></span>
-                          <span class="file-download-item-meta">Plain text</span>
-                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                        </button>
+                        <div class="file-item">
+                          <div class="btn file-item-main" data-file-name="summary.txt">
+                            <span class="file-item-name">summary</span>
+                            <span class="file-item-ext">.txt</span>
+                            <span class="file-item-meta"></span>
+                          </div>
+                          <button type="button" class="btn file-item-download" aria-label="Download summary.txt">
+                            <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="field-label">Download, replace, and remove</span>
+                  <div class="file" id="demo-file-manage" data-file-upload data-file-remove data-file-drop-active
+                    data-file-accept=".txt,text/plain">
+                    <ul class="file-list">
+                      <li>
+                        <div class="file-item">
+                          <div class="btn file-item-main" data-file-name="editable.txt">
+                            <span class="file-item-name">editable</span>
+                            <span class="file-item-ext">.txt</span>
+                            <span class="file-item-meta"></span>
+                          </div>
+                          <button type="button" class="btn file-item-download" aria-label="Download editable.txt">
+                            <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                          <button type="button" class="btn file-item-upload" aria-label="Replace editable.txt">
+                            <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                          <button type="button" class="btn file-item-remove" aria-label="Remove editable.txt">
+                            <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
                       </li>
                     </ul>
                   </div>
@@ -2099,15 +2137,19 @@
                     </div>
                   </div>
                 </div>
-                <div class="file-download" id="demo-stl-download">
-                  <ul class="file-download-list">
+                <div class="file" id="demo-stl-download">
+                  <ul class="file-list">
                     <li>
-                      <button type="button" class="file-download-item btn" data-file-download-name="box.stl"
-                        aria-label="Download box.stl">
-                        <span class="file-download-item-name">box<span class="file-download-item-ext">.stl</span></span>
-                        <span class="file-download-item-meta">Binary STL</span>
-                        <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                      </button>
+                      <div class="file-item">
+                        <div class="btn file-item-main" data-file-name="box.stl">
+                          <span class="file-item-name">box</span>
+                          <span class="file-item-ext">.stl</span>
+                          <span class="file-item-meta"></span>
+                        </div>
+                        <button type="button" class="btn file-item-download" aria-label="Download box.stl">
+                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                      </div>
                     </li>
                   </ul>
                 </div>
