@@ -25,7 +25,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
-- File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`. Cleared slots hide download / remove segments, promote the main segment to upload, and set main-segment tooltips for download / upload / remove actions.
+- File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`. Cleared slots hide download / remove segments, promote the main segment to upload, and set main-segment tooltips for download / upload / remove actions. Action segments tip **Download** / **Upload** / **Replace** / **Remove**.
 - Large `.file--large` hosts hide the drop prompt when the selection is full by default for single-file mode (`hidePromptWhenFull`; multi-file keeps the prompt). Set `data-file-hide-prompt-when-full` / `hidePromptWhenFull` to override.
 - **Breaking (pre-release):** `file-download` and `file-dropzone` are replaced by unified `.file` / `initFile()` — segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. `downloadFile()` and accept helpers live in [`app/components/file.js`](app/components/file.js). Old `.file-download*` / `.file-dropzone*` markup and APIs are removed.
 - Model and toolpath preview home control eases in spherical orbit space (radius / angles), matching OrbitControls motion and avoiding the mid-flight Cartesian zoom dip; snaps when `prefers-reduced-motion`.

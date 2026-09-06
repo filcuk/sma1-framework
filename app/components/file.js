@@ -385,12 +385,43 @@ function ensureIcon(buttonEl, iconId) {
 }
 
 /**
+ * @param {"download" | "upload" | "remove"} kind
+ * @param {boolean} hasFile
+ */
+function segmentTooltip(kind, hasFile) {
+  if (kind === "upload") return hasFile ? "Replace" : "Upload";
+  if (kind === "download") return "Download";
+  return "Remove";
+}
+
+/**
+ * @param {HTMLElement} segment
+ * @param {"download" | "upload" | "remove"} kind
+ * @param {{ filename?: string, hasFile?: boolean }} [options]
+ */
+function applySegmentChrome(segment, kind, { filename = "", hasFile } = {}) {
+  const filled = hasFile ?? Boolean(filename);
+  const labels = {
+    download: filename ? `Download ${filename}` : "Download",
+    upload: filled
+      ? filename
+        ? `Replace ${filename}`
+        : "Replace file"
+      : "Upload file",
+    remove: filename ? `Remove ${filename}` : "Remove file",
+  };
+  segment.setAttribute("aria-label", labels[kind]);
+  segment.setAttribute("data-tooltip", segmentTooltip(kind, filled));
+}
+
+/**
  * @param {HTMLElement} itemEl
  * @param {"download" | "upload" | "remove"} kind
  * @param {string} filename
  * @param {boolean} enabled
+ * @param {{ hasFile?: boolean }} [options]
  */
-function ensureSegment(itemEl, kind, filename, enabled) {
+function ensureSegment(itemEl, kind, filename, enabled, { hasFile } = {}) {
   const className = `file-item-${kind}`;
   let segment = itemEl.querySelector(`.${className}`);
 
@@ -408,13 +439,7 @@ function ensureSegment(itemEl, kind, filename, enabled) {
 
   segment.type = "button";
   segment.classList.add("btn", className);
-
-  const labels = {
-    download: `Download ${filename}`,
-    upload: `Replace ${filename}`,
-    remove: `Remove ${filename}`,
-  };
-  segment.setAttribute("aria-label", labels[kind]);
+  applySegmentChrome(segment, kind, { filename, hasFile });
 
   const icons = {
     download: "download",
@@ -703,8 +728,8 @@ function initFileRows(fileEl, options = {}) {
       if (removeBtn instanceof HTMLElement) setHidden(removeBtn, true);
       if (uploadBtn instanceof HTMLElement) {
         setHidden(uploadBtn, false);
-        uploadBtn.disabled = false;
-        uploadBtn.setAttribute("aria-label", "Upload file");
+        if (uploadBtn instanceof HTMLButtonElement) uploadBtn.disabled = false;
+        applySegmentChrome(uploadBtn, "upload", { hasFile: false });
       }
 
       ensureMain(state.itemEl, {
@@ -733,24 +758,27 @@ function initFileRows(fileEl, options = {}) {
 
     if (downloadBtn instanceof HTMLElement) {
       setHidden(downloadBtn, false);
-      if (downloadBtn instanceof HTMLButtonElement) {
-        downloadBtn.disabled = false;
-        downloadBtn.setAttribute("aria-label", `Download ${state.filename}`);
-      }
+      if (downloadBtn instanceof HTMLButtonElement) downloadBtn.disabled = false;
+      applySegmentChrome(downloadBtn, "download", {
+        filename: state.filename,
+        hasFile: true,
+      });
     }
     if (uploadBtn instanceof HTMLElement) {
       setHidden(uploadBtn, false);
-      if (uploadBtn instanceof HTMLButtonElement) {
-        uploadBtn.disabled = false;
-        uploadBtn.setAttribute("aria-label", `Replace ${state.filename}`);
-      }
+      if (uploadBtn instanceof HTMLButtonElement) uploadBtn.disabled = false;
+      applySegmentChrome(uploadBtn, "upload", {
+        filename: state.filename,
+        hasFile: true,
+      });
     }
     if (removeBtn instanceof HTMLElement) {
       setHidden(removeBtn, false);
-      if (removeBtn instanceof HTMLButtonElement) {
-        removeBtn.disabled = false;
-        removeBtn.setAttribute("aria-label", `Remove ${state.filename}`);
-      }
+      if (removeBtn instanceof HTMLButtonElement) removeBtn.disabled = false;
+      applySegmentChrome(removeBtn, "remove", {
+        filename: state.filename,
+        hasFile: true,
+      });
     }
 
     ensureMain(state.itemEl, {
@@ -1005,9 +1033,15 @@ function initFileRows(fileEl, options = {}) {
     main.dataset.fileName = filename;
     applyVisibilityClasses(itemEl, { extVisibility, sizeVisibility });
 
-    const downloadBtn = ensureSegment(itemEl, "download", filename, download);
-    const uploadBtn = ensureSegment(itemEl, "upload", filename, upload);
-    const removeBtn = ensureSegment(itemEl, "remove", filename, remove);
+    const downloadBtn = ensureSegment(itemEl, "download", filename, download, {
+      hasFile,
+    });
+    const uploadBtn = ensureSegment(itemEl, "upload", filename, upload, {
+      hasFile,
+    });
+    const removeBtn = ensureSegment(itemEl, "remove", filename, remove, {
+      hasFile,
+    });
 
     /** @type {HTMLInputElement | null} */
     let input = null;
