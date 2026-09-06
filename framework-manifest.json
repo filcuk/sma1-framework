@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T17:21:30.225Z",
+  "generatedAt": "2026-09-06T17:27:34.079Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -150,7 +150,7 @@
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
     },
     "app/components/popover.js": {
-      "sha256": "35e28fa9435d2631414a66a35ff14fdb277ea6ff333675f4daff01f9fb4d6d10"
+      "sha256": "396512d54ce8d9e2db93cabfe0b80471a1d8df880074493b9a3a0a12aefc33f5"
     },
     "app/components/progress-bar.js": {
       "sha256": "59666e299ef56baa1a1e51eeea7e430b32b514e46717cee2bc422837600233fb"
@@ -264,7 +264,7 @@
       "sha256": "a2daf18ad06a9b395d8497230a3833d0f5d99495b64c4d02bcca76b7ec42cb23"
     },
     "app/css/overlays.css": {
-      "sha256": "fbd8a211dc8c2f835e7b20885b9f953a164db9b0aa841bb833b0018717dee6d4"
+      "sha256": "df98ff71d550f407395ded8b1d0a2ce9182df773e1f32536c042df6c4def704f"
     },
     "app/css/rich-text-editor.css": {
       "sha256": "d111287589509fc59852cbf4f7d4d249a39a49b03424bc6e40d1813adbfeaabc"

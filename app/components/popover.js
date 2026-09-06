@@ -343,10 +343,10 @@ export function initPopover(options = {}) {
   if (dismissible) {
     closeBtn = document.createElement("button");
     closeBtn.type = "button";
-    closeBtn.className = "popover__close btn btn-slim btn-icon";
+    closeBtn.className = "popover__close";
     closeBtn.setAttribute("aria-label", "Close");
     closeBtn.append(
-      createIcon("clear", { className: "btn-icon-svg popover__close-icon" }),
+      createIcon("clear", { className: "popover__close-icon" }),
     );
   }
 
