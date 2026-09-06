@@ -182,6 +182,40 @@ button.file-item-main:not([aria-disabled="true"]) {
   cursor: pointer;
 }
 
+/* Single active action: icon lives on the main; segment buttons stay hidden. */
+.file-item--solo > .file-item-main {
+  gap: 0.35rem;
+  padding-right: 0.75rem;
+}
+
+/* Keep size on the trailing edge; solo icon follows it. */
+.file-item--solo .file-item-meta {
+  margin-left: auto;
+}
+
+.file-item-solo-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted);
+  line-height: 0;
+}
+
+/* No visible size meta — icon takes the trailing slot alone. */
+.file-item--solo.file-item--size-never .file-item-solo-icon,
+.file-item--solo:not(:has(.file-item-meta:not([hidden]))) .file-item-solo-icon {
+  margin-left: auto;
+}
+
+.file-item--solo > .file-item-main:hover .file-item-solo-icon,
+.file-item--solo > .file-item-main:focus-visible .file-item-solo-icon {
+  color: var(--text);
+}
+
 .file-item-name {
   min-width: 0;
   overflow: hidden;

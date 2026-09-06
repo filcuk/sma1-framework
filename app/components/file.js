@@ -26,6 +26,8 @@ import { createIcon } from "../utils/icons.js";
  * Row defaults: download on, remove off, upload off.
  * Row remove with upload on clears to an empty upload placeholder by default
  * (`removeMode: "clear"`); set `detach` to remove the row from the DOM.
+ * When only one of download / upload / remove is active, the row collapses to a
+ * single control (action icon on the main; no separate segment).
  * Large defaults: remove on, download off, upload off; size meta always visible.
  * Large single-file hosts hide the prompt once a file is present (override with
  * `hidePromptWhenFull` / `data-file-hide-prompt-when-full`); multi hosts keep it.
@@ -384,6 +386,83 @@ function ensureIcon(buttonEl, iconId) {
   }
 }
 
+const SOLO_ACTION_ICONS = {
+  download: "download",
+  upload: "upload",
+  remove: "remove-circle",
+};
+
+/**
+ * When exactly one of download / upload / remove is active for the current
+ * filled state, the row collapses to a single control (icon on the main).
+ *
+ * @param {{ download: boolean, upload: boolean, remove: boolean, hasFile: boolean }} state
+ * @returns {"download" | "upload" | "remove" | null}
+ */
+function resolveSoloAction(state) {
+  /** @type {Array<"download" | "upload" | "remove">} */
+  const actions = [];
+  if (state.hasFile) {
+    if (state.download) actions.push("download");
+    if (state.upload) actions.push("upload");
+    if (state.remove) actions.push("remove");
+  } else if (state.upload) {
+    // Cleared upload slot — only upload remains available.
+    actions.push("upload");
+  }
+  return actions.length === 1 ? actions[0] : null;
+}
+
+/**
+ * @param {HTMLElement | null} main
+ * @param {"download" | "upload" | "remove" | null} action
+ */
+function syncSoloIcon(main, action) {
+  if (!(main instanceof HTMLElement)) return;
+  let host = main.querySelector(".file-item-solo-icon");
+  if (!action) {
+    host?.remove();
+    return;
+  }
+  if (!(host instanceof HTMLElement)) {
+    host = document.createElement("span");
+    host.className = "file-item-solo-icon";
+    host.setAttribute("aria-hidden", "true");
+    main.append(host);
+  }
+  if (host.dataset.soloAction === action && host.querySelector(".btn-icon-svg")) {
+    return;
+  }
+  host.dataset.soloAction = action;
+  host.replaceChildren(
+    createIcon(SOLO_ACTION_ICONS[action], { className: "btn-icon-svg" })
+  );
+}
+
+/**
+ * @param {HTMLElement} itemEl
+ * @param {{ download: boolean, upload: boolean, remove: boolean, hasFile: boolean, nameAction?: string, filename?: string }} state
+ * @returns {"download" | "upload" | "remove" | null}
+ */
+function applySoloPresentation(itemEl, state) {
+  const solo = resolveSoloAction(state);
+  itemEl.classList.toggle("file-item--solo", Boolean(solo));
+
+  const downloadBtn = itemEl.querySelector(".file-item-download");
+  const uploadBtn = itemEl.querySelector(".file-item-upload");
+  const removeBtn = itemEl.querySelector(".file-item-remove");
+
+  if (solo) {
+    if (downloadBtn instanceof HTMLElement) setHidden(downloadBtn, true);
+    if (uploadBtn instanceof HTMLElement) setHidden(uploadBtn, true);
+    if (removeBtn instanceof HTMLElement) setHidden(removeBtn, true);
+  }
+
+  const main = itemEl.querySelector(".file-item-main");
+  syncSoloIcon(main instanceof HTMLElement ? main : null, solo);
+  return solo;
+}
+
 /**
  * @param {"download" | "upload" | "remove"} kind
  * @param {boolean} hasFile
@@ -700,10 +779,13 @@ function initFileRows(fileEl, options = {}) {
   const itemStates = [];
 
   /**
-   * Empty upload slots use the main segment as upload even when configured `nameAction` is `none`.
+   * Solo rows promote the only action onto the main control; empty upload slots
+   * also default the main to upload.
    * @param {(typeof itemStates)[number]} state
    */
   function getEffectiveNameAction(state) {
+    const solo = resolveSoloAction(state);
+    if (solo) return solo;
     if (!state.hasFile && state.upload) return "upload";
     return state.nameAction;
   }
@@ -720,14 +802,15 @@ function initFileRows(fileEl, options = {}) {
     const downloadBtn = state.itemEl.querySelector(".file-item-download");
     const uploadBtn = state.itemEl.querySelector(".file-item-upload");
     const removeBtn = state.itemEl.querySelector(".file-item-remove");
+    const solo = resolveSoloAction(state);
     const effectiveAction = getEffectiveNameAction(state);
 
     if (!hasFile) {
-      // Static/required slot: hide download/remove; keep upload (and main → upload).
+      // Static/required slot: hide download/remove; keep upload unless solo merges it.
       if (downloadBtn instanceof HTMLElement) setHidden(downloadBtn, true);
       if (removeBtn instanceof HTMLElement) setHidden(removeBtn, true);
       if (uploadBtn instanceof HTMLElement) {
-        setHidden(uploadBtn, false);
+        setHidden(uploadBtn, Boolean(solo));
         if (uploadBtn instanceof HTMLButtonElement) uploadBtn.disabled = false;
         applySegmentChrome(uploadBtn, "upload", { hasFile: false });
       }
@@ -753,11 +836,12 @@ function initFileRows(fileEl, options = {}) {
         metaEl.textContent = "";
         setHidden(metaEl, true);
       }
+      applySoloPresentation(state.itemEl, state);
       return;
     }
 
     if (downloadBtn instanceof HTMLElement) {
-      setHidden(downloadBtn, false);
+      setHidden(downloadBtn, Boolean(solo));
       if (downloadBtn instanceof HTMLButtonElement) downloadBtn.disabled = false;
       applySegmentChrome(downloadBtn, "download", {
         filename: state.filename,
@@ -765,7 +849,7 @@ function initFileRows(fileEl, options = {}) {
       });
     }
     if (uploadBtn instanceof HTMLElement) {
-      setHidden(uploadBtn, false);
+      setHidden(uploadBtn, Boolean(solo));
       if (uploadBtn instanceof HTMLButtonElement) uploadBtn.disabled = false;
       applySegmentChrome(uploadBtn, "upload", {
         filename: state.filename,
@@ -773,7 +857,7 @@ function initFileRows(fileEl, options = {}) {
       });
     }
     if (removeBtn instanceof HTMLElement) {
-      setHidden(removeBtn, false);
+      setHidden(removeBtn, Boolean(solo));
       if (removeBtn instanceof HTMLButtonElement) removeBtn.disabled = false;
       applySegmentChrome(removeBtn, "remove", {
         filename: state.filename,
@@ -789,6 +873,7 @@ function initFileRows(fileEl, options = {}) {
       filename: state.filename,
       byteLength: meta.byteLength ?? 0,
     });
+    applySoloPresentation(state.itemEl, state);
   }
 
   /**
@@ -1094,10 +1179,8 @@ function initFileRows(fileEl, options = {}) {
     } else {
       syncRowFilledState(state, false);
     }
-    // Empty upload slots promote the main segment to upload even when nameAction is none.
-    if (nameAction !== "none" || upload) {
-      cleanups.push(bindClick(main, () => runNameAction(index)));
-    }
+    // Solo / empty-upload promote the main segment to an action even when nameAction is none.
+    cleanups.push(bindClick(main, () => runNameAction(index)));
 
     if (downloadBtn) {
       cleanups.push(bindClick(downloadBtn, () => {
@@ -1468,14 +1551,25 @@ function initFileLarge(fileEl, options = {}) {
         byteLength: file.size,
       });
 
-      const downloadBtn = ensureSegment(
-        itemEl,
-        "download",
-        file.name,
-        hostDownload
-      );
-      const uploadBtn = ensureSegment(itemEl, "upload", file.name, hostUpload);
-      const removeBtn = ensureSegment(itemEl, "remove", file.name, hostRemove);
+      ensureSegment(itemEl, "download", file.name, hostDownload);
+      ensureSegment(itemEl, "upload", file.name, hostUpload);
+      ensureSegment(itemEl, "remove", file.name, hostRemove);
+
+      const solo = applySoloPresentation(itemEl, {
+        download: hostDownload,
+        upload: hostUpload,
+        remove: hostRemove,
+        hasFile: true,
+      });
+      const effectiveName = solo || hostNameAction;
+      ensureMain(itemEl, {
+        nameAction: effectiveName,
+        filename: file.name,
+      });
+      updateItemMeta(itemEl, {
+        filename: file.name,
+        byteLength: file.size,
+      });
 
       /** @type {HTMLInputElement | null} */
       let rowInput = null;
@@ -1512,20 +1606,20 @@ function initFileLarge(fileEl, options = {}) {
         );
       }
 
-      if (hostNameAction === "download") {
+      if (effectiveName === "download") {
         listCleanups.push(bindClick(main, () => {
           void runDownload(index);
         }));
-      } else if (hostNameAction === "upload" && rowInput) {
+      } else if (effectiveName === "upload" && rowInput) {
         listCleanups.push(
           bindClick(main, () => {
             rowInput.value = "";
             rowInput.click();
           })
         );
-      } else if (hostNameAction === "remove") {
+      } else if (effectiveName === "remove") {
         listCleanups.push(bindClick(main, () => removeFile(index)));
-      } else if (hostNameAction === "custom") {
+      } else if (effectiveName === "custom") {
         listCleanups.push(
           bindClick(main, () => {
             onNameAction?.({
