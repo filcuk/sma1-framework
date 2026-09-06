@@ -211,6 +211,7 @@ export function initSlider(
     const pct = span <= 0 ? 100 : ((value - config.min) / span) * 100;
     const clamped = Math.min(100, Math.max(0, pct));
     rangeInput.style.setProperty("--slider-progress", `${clamped}%`);
+    rangeInput.style.setProperty("--slider-progress-ratio", String(clamped / 100));
   }
 
   function syncReadout(display = formatDisplayValue(currentValue, config)) {

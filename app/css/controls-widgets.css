@@ -697,6 +697,7 @@
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+  overflow: visible;
 }
 
 .slider-range {
@@ -704,12 +705,18 @@
   min-width: 0;
   height: 1.25rem;
   margin: 0;
-  padding: 0;
+  /* Half-thumb inset so the thumb centre sits on the track value (overhangs at 0% / 100%). */
+  --slider-thumb-size: 1.25rem;
+  --slider-progress: 0%;
+  --slider-progress-ratio: 0;
+  box-sizing: border-box;
+  /* Chromium/WebKit: padding shrinks the track; thumb still travels the outer box. */
+  padding: 0 calc(var(--slider-thumb-size) / 2);
   appearance: none;
   -webkit-appearance: none;
   background: transparent;
   cursor: pointer;
-  --slider-progress: 0%;
+  overflow: visible;
 }
 
 .slider-range:disabled {
@@ -743,12 +750,42 @@
   background: var(--accent);
 }
 
+/*
+ * Firefox: thumb travels the input content-box (edge-aligned). Use a shorter,
+ * centred track so thumb centres map to the track ends (with overhang) while
+ * keeping pill-shaped track ends.
+ */
+@supports selector(::-moz-range-thumb) {
+  .slider-range {
+    padding-inline: 0;
+    background: transparent;
+  }
+
+  .slider-range::-moz-range-track {
+    width: calc(100% - var(--slider-thumb-size));
+    height: 0.375rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--accent) 0%,
+      var(--accent) var(--slider-progress),
+      var(--border) var(--slider-progress),
+      var(--border) 100%
+    );
+  }
+
+  .slider-range::-moz-range-progress {
+    background: transparent;
+  }
+}
+
 .slider-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-top: calc((0.375rem - 1.25rem) / 2);
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
+  margin-top: calc((0.375rem - var(--slider-thumb-size)) / 2);
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
@@ -757,8 +794,8 @@
 }
 
 .slider-range::-moz-range-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);

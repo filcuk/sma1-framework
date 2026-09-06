@@ -2105,7 +2105,7 @@ Start the badge with the initial count (or `hidden` when zero) so it does not fl
 
 ### Slider
 
-Range input with an optional compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing.
+Range input with an optional compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing. The thumb is centred on the track value (so at min / max it overhangs the track ends).
 
 Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; values are still stored as plain numbers, e.g. `75` for 75%).
 
