@@ -11,9 +11,9 @@ When trimming: delete a feature’s JS only if unused; remove a **shared** CSS p
 | Area | Paths |
 | ---- | ----- |
 | Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/framework.css` (generated index), `app/css/app.css` (fork-owned) |
-| Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js` |
-| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js` |
-| Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js` (imported by `shell.js`) |
+| Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js`, `app-storage-ui.js` |
+| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js`, `app-storage.js` |
+| Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js`, `app/components/dialog.js`, `app/components/popover.js` (imported by `shell.js` / `app-storage-ui.js`) |
 | Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
 | Brand | `app/res/` logos as wired in HTML / `__MICROAPP__` |
 

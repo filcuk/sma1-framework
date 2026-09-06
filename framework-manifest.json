@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T17:46:41.286Z",
+  "generatedAt": "2026-09-06T17:49:24.473Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -1230,7 +1230,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "27923f60f8fb2ea01613ff09af596565840c50b6f7e4d0cf253391655451cf30"
+      "sha256": "53b5502ec5431fc85fec4a0d09c98c9efcced6d5ce75dac601b02acaf95a21d2"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -1289,6 +1289,7 @@
       "app/shell/also-see.js",
       "app/shell/external-link.js",
       "app/shell/heading-link.js",
+      "app/shell/app-storage-ui.js",
       "app/utils/dom.js",
       "app/utils/document-listeners.js",
       "app/utils/clipboard.js",
@@ -1299,6 +1300,7 @@
       "app/utils/brand-icon.js",
       "app/utils/also-see-svg.js",
       "app/utils/menu.js",
+      "app/utils/app-storage.js",
       "app/components/tooltip.js",
       "app/components/banner.js"
     ],
@@ -1314,7 +1316,8 @@
       "chevron-up",
       "chevron-down",
       "arrow-outward",
-      "link"
+      "link",
+      "shield"
     ]
   },
   "infra": {
@@ -1357,6 +1360,9 @@
     ],
     "orbit-home": [
       "app/utils/orbit-home.js"
+    ],
+    "app-storage": [
+      "app/utils/app-storage.js"
     ]
   },
   "components": {
@@ -1413,7 +1419,9 @@
       "infra": [
         "dom",
         "document-listeners"
-      ]
+      ],
+      "always": true,
+      "notes": "Pulled by shell footer storage confirm"
     },
     "about-dialog": {
       "files": [
@@ -1449,7 +1457,8 @@
         "document-listeners",
         "icons"
       ],
-      "notes": "Speech-bubble card; optional action icons (e.g. chevrons)"
+      "always": true,
+      "notes": "Speech-bubble card; optional action icons (e.g. chevrons); pulled by shell footer storage privacy"
     },
     "tutorial": {
       "files": [

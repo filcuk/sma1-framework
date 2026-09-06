@@ -66,6 +66,7 @@ export const CORE = {
     "app/shell/also-see.js",
     "app/shell/external-link.js",
     "app/shell/heading-link.js",
+    "app/shell/app-storage-ui.js",
     "app/utils/dom.js",
     "app/utils/document-listeners.js",
     "app/utils/clipboard.js",
@@ -76,6 +77,7 @@ export const CORE = {
     "app/utils/brand-icon.js",
     "app/utils/also-see-svg.js",
     "app/utils/menu.js",
+    "app/utils/app-storage.js",
     "app/components/tooltip.js",
     "app/components/banner.js",
   ],
@@ -88,6 +90,7 @@ export const CORE = {
     "chevron-down",
     "arrow-outward",
     "link",
+    "shield",
   ],
 };
 
@@ -109,6 +112,7 @@ export const INFRA = {
   "also-see-svg": ["app/utils/also-see-svg.js"],
   "sanitize-svg": ["app/utils/sanitize-svg.js"],
   "orbit-home": ["app/utils/orbit-home.js"],
+  "app-storage": ["app/utils/app-storage.js"],
 };
 
 /**
@@ -138,6 +142,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: [],
     infra: ["dom", "document-listeners"],
+    always: true,
+    notes: "Pulled by shell footer storage confirm",
   },
   "about-dialog": {
     files: [
@@ -156,7 +162,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: ["clear"],
     infra: ["dom", "document-listeners", "icons"],
-    notes: "Speech-bubble card; optional action icons (e.g. chevrons)",
+    always: true,
+    notes: "Speech-bubble card; optional action icons (e.g. chevrons); pulled by shell footer storage privacy",
   },
   tutorial: {
     files: [
