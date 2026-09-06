@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T08:54:59.465Z",
+  "generatedAt": "2026-09-06T09:24:17.573Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -144,7 +144,7 @@
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
     },
     "app/components/model-preview.js": {
-      "sha256": "8588e6ac62e03685cba30471670e52acfa46f370a47ce60d47b19918256a19cc"
+      "sha256": "d506273b045865790e7590964762e2875623496d7a920673c7847cee0685ee70"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
@@ -165,7 +165,7 @@
       "sha256": "a47c40e4063c9e60ed6b0db6eccb77954bb11557cfbbc0e2a70548edcae41af6"
     },
     "app/components/slider.js": {
-      "sha256": "153e05b57eeb96374cb2142ce3a796aea953a2454c1aa2f1837023440472695a"
+      "sha256": "7a16c0940e0e93eb09826175c6424809987a3e5a97de6603d5da8576fa442091"
     },
     "app/components/spinner.js": {
       "sha256": "01171c4add024fb8e3ad2422ec41f4d99bd3130d40fcf188827ee5111697d342"
@@ -204,7 +204,7 @@
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
     "app/components/toolpath-preview.js": {
-      "sha256": "9fc4c952b5b7221beca95b615582d4a2b8926d6568689eb96012d2ae327c62cb"
+      "sha256": "214d7e4e6c0ae2f7a21fcf792761f7d613db382861293b0ec3c35f0c8f820eb6"
     },
     "app/components/tooltip.js": {
       "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
@@ -258,7 +258,7 @@
       "sha256": "d4b0ccfdf46e566813bfcd1fa4e2b5a060a3d18e4f8abcc975753bd79dc5b2bd"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "4a3602e937b6d6487d991607e9697d125ded7dd8b7740ffe926aac6488616c8d"
+      "sha256": "0701ca2984641e4f39e34a7534b4a1d8e83c2b6ffa63d87b4024bfc22e993697"
     },
     "app/css/layout.css": {
       "sha256": "94e9ac5c7d9e864622ac757180ea438a5e2d387784a81a87c2ef7822bcb64427"
@@ -336,7 +336,7 @@
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "7d62e96d2990d2b6a87e75279c01e9cd2bb875683ecdf628f949bd720adb531d"
+      "sha256": "5eee64aa3678bcd94acab95a2d10b0937645c7335a594da3d28bd759f47e47e7"
     },
     "app/utils/icons.js": {
       "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
@@ -1215,7 +1215,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "e0a5c13afe2cd91c0d94a30c56dc8984b63df4760f4b387079d41cb6c89b8e4a"
+      "sha256": "4f2a631f35cba7f9d9c6eefd80580dfc337527e6ec3269eac99ae0f0cefbb6af"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
