@@ -100,6 +100,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `setHidden()` / `parseBooleanAttr()` / `syncDisclosurePanel()` / `hydrateDisclosure()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values; disclosure panels (expand / accordion) stay in layout for height animation via `inert` + `aria-hidden`, wrap padded body in `.disclosure-clip`, then hydrate transitions after the initial open state |
 | `initRequiredField()` / `initRequiredFields()` / `setFieldRequired()` / `syncRequiredField()` | Required field chrome (`.field.is-required` asterisk + empty `aria-invalid`) — see [`required-field.js`](app/utils/required-field.js) |
 | `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); `lockWidth` defaults on — see [`button-label.js`](app/utils/button-label.js) |
+| `setControlGlow()` / `clearControlGlow()` / `setControlGlowMask()` | Opt-in attention glow (`.control-glow`; accent / danger / success / custom colour; optional icon glyph mask) — see [`control-glow.js`](app/utils/control-glow.js) |
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |
@@ -190,6 +191,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-chips.css` | Selectable / removable chips and coloured legend chips |
 | `app/css/controls-fields.css` | Fields, combobox, date/time |
 | `app/css/controls-widgets.css` | Toggle, segmented control, pagination, progress bar, spinner, slider, stepper, color input |
+| `app/css/controls-glow.css` | Opt-in control attention glow (`.control-glow`) |
 | `app/css/controls-section-panel.css` | Section panel grid rows |
 | `app/css/controls-menus.css` | Combo button, dropdown menus |
 | `app/css/controls-disclosure.css` | Expand, accordion, tabs, progress indicator |
@@ -221,7 +223,7 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | ----- | -------- | ---- |
 | Entry | `main.js`, `demo.js`, `theme-init.js`, `config.js`, `version.js` | Loaded directly from HTML |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
-| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `required-field.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
+| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `required-field.js`, `control-glow.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
 | Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put framework wrappers here |
 

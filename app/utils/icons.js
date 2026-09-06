@@ -93,6 +93,22 @@ export function createIcon(name, { className = "", includeAttribution = true } =
 }
 
 /**
+ * Build a CSS `mask-image` / `-webkit-mask-image` value from an icon definition
+ * (reuses catalogue markup — does not invent paths). Fill is forced to black so
+ * alpha masks follow the glyph.
+ * @param {string} name
+ * @returns {string} e.g. `url("data:image/svg+xml,...")`
+ */
+export function getIconCssMaskImage(name) {
+  const def = resolveIconDef(name);
+  const markup = def.markup
+    .replace(/\bfill="currentColor"/gi, 'fill="black"')
+    .replace(/\bfill='currentColor'/gi, "fill='black'");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${def.viewBox}">${markup}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+/**
  * Build a stacked idle / hover icon pair for `.btn-icon-swap` CSS.
  * @param {string} name
  * @param {string} hoverName

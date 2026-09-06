@@ -461,7 +461,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
-| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon` (icon-only), labeled icons via child `data-icon` + `.btn-icon-svg` (`.btn-icon-end` for trailing), hover swap via `data-icon-hover`, click/pressed swap via `initToggleButton`, optional `.btn-fixed` + `--btn-width` and `.btn-align-start` / `-center` / `-end`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
+| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon` (icon-only), labeled icons via child `data-icon` + `.btn-icon-svg` (`.btn-icon-end` for trailing), hover swap via `data-icon-hover`, click/pressed swap via `initToggleButton`, optional `.btn-fixed` + `--btn-width` and `.btn-align-start` / `-center` / `-end`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. Opt-in attention glow via `.control-glow` — see **Control glow**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
@@ -1281,6 +1281,38 @@ copyBtn.addEventListener("click", async () => {
 ```
 
 `lockWidth` defaults to **on** — `prepareButtonLabelFlash()` auto-measures idle / success / fail (plus `measureLabels`) so longer flash text does not shift layout. Pass `lockWidth: false` to skip. Use `setButtonLabelFlash()` for other temporary labels (e.g. paste-arming **Ctrl+V**). See [`DESIGN.md`](DESIGN.md) (Action feedback).
+
+### Control glow
+
+Opt-in attention cue for any control chrome (button, input, and similar) — “ready to use” or “focus here next”. Soft accent halo with a light shine sweep; tones for danger / success; optional custom colour. Not a selection style, focus ring, or tooltip substitute — pair with a persistent tooltip or tutorial when copy is needed. See [`DESIGN.md`](DESIGN.md).
+
+Markup (static glow). Apply on the interactive control, not a wrapping `.field` label host:
+
+```html
+<button type="button" class="btn control-glow">Ready</button>
+<button type="button" class="btn btn-danger control-glow control-glow--danger">Danger</button>
+<input class="input control-glow control-glow--success" type="text" />
+<button type="button" class="btn control-glow" style="--control-glow-color: #c37500">Custom</button>
+<button type="button" class="btn control-glow control-glow--static">Static halo</button>
+```
+
+Runtime toggle:
+
+```javascript
+import { setControlGlow, clearControlGlow } from "./utils/control-glow.js";
+
+setControlGlow(button, { tone: "accent" }); // default
+setControlGlow(input, { tone: "success" });
+setControlGlow(btn, { tone: "danger" });
+setControlGlow(el, { color: "#c37500" });
+setControlGlow(el, { animated: false }); // static halo only
+setControlGlow(el, { maskIcon: "shield" }); // shine + halo follow icon glyph
+clearControlGlow(el);
+```
+
+For icon-only controls, `maskIcon` (or `setControlGlowMask(el, "shield")`) masks the shine to the catalogue SVG and uses a drop-shadow halo instead of a rectangular box-shadow.
+
+Demo: second labeled **Copy** button (accent) and slim **Danger** in the Buttons panel. The footer storage shield always uses a success glyph-masked glow (core shell; switches to danger when local storage is disabled).
 
 ### Toggle button
 

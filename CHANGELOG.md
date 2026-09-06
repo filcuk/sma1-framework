@@ -43,6 +43,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Control glow: opt-in attention cue (`.control-glow`) with accent / danger / success tones, optional custom `--control-glow-color`, soft breathe + shine (static under `prefers-reduced-motion` or `.control-glow--static`). Optional `maskIcon` / `setControlGlowMask()` masks shine to a catalogue icon glyph. Core footer storage shield uses a success glyph-masked glow by default (danger when storage is disabled). Helpers in [`app/utils/control-glow.js`](app/utils/control-glow.js); styles in [`app/css/controls-glow.css`](app/css/controls-glow.css). Demo: second Copy button and slim Danger.
 - Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
 - Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Dropdown / toggle-dropdown fixed positioning: `fixed` / `fixedAlign` on `initDropdown()` / `initToggleDropdown()`, or `data-dropdown-fixed` / `data-dropdown-fixed-align` on the host — escapes `overflow: hidden` (e.g. model preview overlays).

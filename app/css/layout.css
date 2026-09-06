@@ -1076,14 +1076,26 @@ body > footer {
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 0;
+  padding: 0.15em;
   border: none;
+  border-radius: 4px;
   background: transparent;
   color: var(--muted);
   font: inherit;
   line-height: 1;
   cursor: pointer;
   vertical-align: middle;
+}
+
+.footer-storage-trigger.footer-storage-trigger--disabled.control-glow {
+  /* Tone class is synced in JS; keep colour override if markup-only. */
+  --control-glow-color: var(--danger);
+}
+
+/* Match the icon’s optical nudge so the masked shine sits on the glyph */
+.footer-storage-trigger.control-glow--masked:not(.control-glow--static)::after {
+  -webkit-mask-position: center calc(50% + 0.08em);
+  mask-position: center calc(50% + 0.08em);
 }
 
 .footer-storage-trigger:hover,

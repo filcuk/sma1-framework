@@ -9,11 +9,18 @@
 
 .control-glow {
   --control-glow-color: var(--accent);
+  /* Light: soft gray gloss (white wash is invisible on surface controls). */
+  --control-glow-shine: color-mix(in srgb, var(--text) 20%, transparent);
   position: relative;
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--control-glow-color) 42%, transparent),
     0 0 0.45rem color-mix(in srgb, var(--control-glow-color) 30%, transparent);
   animation: control-glow-breathe 2.6s ease-in-out infinite;
+}
+
+:root[data-theme="dark"] .control-glow {
+  /* Dark: softer light wash — full white at high opacity reads harsh. */
+  --control-glow-shine: color-mix(in srgb, var(--text) 14%, transparent);
 }
 
 .control-glow--accent {
@@ -22,27 +29,86 @@
 
 .control-glow--danger {
   --control-glow-color: var(--danger);
+  --control-glow-shine: color-mix(in srgb, var(--danger) 34%, transparent);
+}
+
+:root[data-theme="dark"] .control-glow--danger {
+  --control-glow-shine: color-mix(in srgb, var(--danger) 42%, transparent);
 }
 
 .control-glow--success {
   --control-glow-color: var(--banner-success-border);
+  --control-glow-shine: color-mix(
+    in srgb,
+    var(--banner-success-border) 34%,
+    transparent
+  );
 }
 
-/* Soft shine band sweeping the control surface */
+:root[data-theme="dark"] .control-glow--success {
+  --control-glow-shine: color-mix(
+    in srgb,
+    var(--banner-success-border) 42%,
+    transparent
+  );
+}
+
+/* Soft shine band sweeping the control surface (clipped to the control) */
 .control-glow:not(.control-glow--static)::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
+  overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(
+  background-image: linear-gradient(
     105deg,
-    transparent 28%,
-    color-mix(in srgb, #fff 38%, transparent) 50%,
-    transparent 72%
+    transparent 35%,
+    var(--control-glow-shine) 50%,
+    transparent 65%
   );
-  transform: translateX(-100%);
+  background-repeat: no-repeat;
+  background-size: 220% 100%;
+  background-position: 120% 0;
   animation: control-glow-shine 2.6s ease-in-out infinite;
+}
+
+/*
+ * Icon-shaped glow: `--control-glow-mask` from `setControlGlow({ maskIcon })`
+ * / `setControlGlowMask()`. Shine follows the glyph; halo uses drop-shadow.
+ */
+.control-glow--masked {
+  box-shadow: none;
+  animation: none;
+}
+
+.control-glow--masked:not(.control-glow--static)::after {
+  border-radius: 0;
+  overflow: visible;
+  -webkit-mask-image: var(--control-glow-mask);
+  mask-image: var(--control-glow-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+}
+
+.control-glow--masked > svg {
+  filter: drop-shadow(
+      0 0 0.12rem color-mix(in srgb, var(--control-glow-color) 55%, transparent)
+    )
+    drop-shadow(
+      0 0 0.4rem color-mix(in srgb, var(--control-glow-color) 32%, transparent)
+    );
+  animation: control-glow-icon-breathe 2.6s ease-in-out infinite;
+}
+
+.control-glow--masked.control-glow--static > svg {
+  animation: none;
 }
 
 .control-glow--static {
@@ -69,13 +135,34 @@
   }
 }
 
+@keyframes control-glow-icon-breathe {
+  0%,
+  100% {
+    filter: drop-shadow(
+        0 0 0.08rem color-mix(in srgb, var(--control-glow-color) 45%, transparent)
+      )
+      drop-shadow(
+        0 0 0.28rem color-mix(in srgb, var(--control-glow-color) 24%, transparent)
+      );
+  }
+
+  50% {
+    filter: drop-shadow(
+        0 0 0.16rem color-mix(in srgb, var(--control-glow-color) 65%, transparent)
+      )
+      drop-shadow(
+        0 0 0.55rem color-mix(in srgb, var(--control-glow-color) 40%, transparent)
+      );
+  }
+}
+
 @keyframes control-glow-shine {
   0% {
-    transform: translateX(-100%);
+    background-position: 120% 0;
   }
 
   100% {
-    transform: translateX(100%);
+    background-position: -120% 0;
   }
 }
 
@@ -86,6 +173,10 @@
 
   .control-glow:not(.control-glow--static)::after {
     content: none;
+    animation: none;
+  }
+
+  .control-glow--masked > svg {
     animation: none;
   }
 }

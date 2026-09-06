@@ -59,10 +59,11 @@ With the exception of persistent tooltips, never show multiple tooltips at once.
 | Short text on hover / focus | **Tooltip** (hover) |
 | Brief reaction on an icon-only control | **Tooltip** (timer) or in-place label flash |
 | One lasting tip on a control, no chrome | **Persistent tooltip** |
+| Draw the eye to a control without copy | **Control glow** (`.control-glow`) |
 | Rich tip with title, longer copy, or buttons | **Popover** |
 | Multi-step guided walkthrough with dimmed page and back/next | **Tutorial** (builds on popover + spotlight) |
 
-Prefer a **tutorial** when the user must move through several steps. Prefer a **persistent tooltip** for a single highlight without navigation chrome. Prefer a **popover** when one tip needs actions but not a full tour.
+Prefer a **tutorial** when the user must move through several steps. Prefer a **persistent tooltip** for a single highlight with copy and no navigation chrome. Prefer **control glow** when the cue is visual only (“this is ready” / “next”). Prefer a **popover** when one tip needs actions but not a full tour. Glow is not a third selection look and does not replace the focus ring.
 
 ## Selection highlights
 

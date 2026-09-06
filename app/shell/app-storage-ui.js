@@ -15,6 +15,7 @@ import {
   setAppStorageEnabled,
 } from "../utils/app-storage.js";
 import { setHidden } from "../utils/dom.js";
+import { setControlGlow } from "../utils/control-glow.js";
 import { createIcon } from "../utils/icons.js";
 import { initPopupMenu } from "../utils/menu.js";
 
@@ -129,10 +130,13 @@ function syncStorageMenu(containerEl, statusEl) {
   const enabled = isAppStorageEnabled();
   const trigger = containerEl.querySelector(".footer-storage-trigger");
   if (trigger instanceof HTMLElement) {
-    trigger.classList.toggle(
-      "footer-storage-trigger--disabled",
-      ready && !enabled,
-    );
+    const disabled = ready && !enabled;
+    trigger.classList.toggle("footer-storage-trigger--disabled", disabled);
+    // Core shield cue: success when storage is on; danger when disabled.
+    setControlGlow(trigger, {
+      tone: disabled ? "danger" : "success",
+      maskIcon: "shield",
+    });
   }
   const toggleLabel = containerEl.querySelector("[data-storage-toggle-label]");
   if (toggleLabel) {
@@ -252,6 +256,8 @@ export function initAppStorageUi(root = document, options = {}) {
 
   const trigger = containerEl.querySelector(".footer-storage-trigger");
   if (!(trigger instanceof HTMLElement)) return null;
+
+  setControlGlow(trigger, { tone: "success", maskIcon: "shield" });
 
   const privacyBody = createFooterStoragePrivacyBody({ manage });
   const privacyStatusEl = privacyBody.querySelector(

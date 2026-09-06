@@ -857,7 +857,7 @@ export function renderFooterStorageMarkup({ manage = true } = {}) {
 
   return `<span class="footer-meta-sep" aria-hidden="true">·</span>
         <span class="footer-storage${manage ? " dropdown" : ""}" id="footer-storage">
-          <button type="button" class="footer-storage-trigger" id="footer-storage-trigger" ${triggerAttrs} data-icon="shield" data-icon-class="footer-storage-icon"></button>${menu}
+          <button type="button" class="footer-storage-trigger control-glow control-glow--success" id="footer-storage-trigger" ${triggerAttrs} data-icon="shield" data-icon-class="footer-storage-icon"></button>${menu}
         </span>`;
 }
 
