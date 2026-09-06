@@ -823,16 +823,21 @@ export function initModelPreview(previewEl, options = {}) {
     const frozenPos = camera.position.clone();
     const frozenTarget = controls.target.clone();
     const damping = controls.enableDamping;
+    const rotating = controls.autoRotate;
+    controls.autoRotate = false;
     controls.enableDamping = false;
     controls.update();
     camera.position.copy(frozenPos);
     controls.target.copy(frozenTarget);
     controls.update();
     controls.enableDamping = damping;
+    controls.autoRotate = rotating;
   }
 
   function syncControlsAfterHomeStep() {
     const damping = controls.enableDamping;
+    // Home easing must not compete with orbit auto-rotate; resume via syncAnimationControls.
+    controls.autoRotate = false;
     controls.enableDamping = false;
     controls.update();
     controls.enableDamping = damping;
@@ -845,11 +850,15 @@ export function initModelPreview(previewEl, options = {}) {
 
     if (prefersReducedMotion()) {
       homeAnim = null;
+      controls.autoRotate = false;
       applyFitPose(previewEl, camera, controls, pose);
+      syncAnimationControls();
+      lastAnimationFrameTime = performance.now();
       renderer.render(scene, camera);
       return;
     }
 
+    controls.autoRotate = false;
     clearOrbitInertia();
     homeAnim = createOrbitHomeAnim(pose);
   }
@@ -905,7 +914,10 @@ export function initModelPreview(previewEl, options = {}) {
   controls.autoRotate = false;
   controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
   controls.addEventListener("start", () => {
+    if (!homeAnim) return;
     homeAnim = null;
+    syncAnimationControls();
+    lastAnimationFrameTime = performance.now();
   });
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
@@ -962,15 +974,23 @@ export function initModelPreview(previewEl, options = {}) {
     controls.minDistance = homeAnim.minDistance;
     controls.maxDistance = homeAnim.maxDistance;
     homeAnim = null;
+    // Resume play/pause animation (built-in orbit and/or custom frame hook).
+    syncAnimationControls();
+    lastAnimationFrameTime = performance.now();
   }
 
   function render() {
     if (destroyed) return;
     if (homeAnim) {
       tickHomeAnim();
-      // Resync OrbitControls internals from the orbit pose without damping motion.
-      syncControlsAfterHomeStep();
-      lastAnimationFrameTime = performance.now();
+      if (homeAnim) {
+        // Still easing — keep orbit auto-rotate off so home can settle.
+        syncControlsAfterHomeStep();
+        lastAnimationFrameTime = performance.now();
+      } else {
+        tickCustomAnimation();
+        controls.update();
+      }
     } else {
       tickCustomAnimation();
       controls.update();
