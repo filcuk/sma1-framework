@@ -6,7 +6,7 @@
  * For third-party icons, set `name` to the collection id (e.g. `round-info`).
  * To reuse an existing framework icon under another id, set `ref` to the target key.
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, play, pause, stop, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, play, pause, stop, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette, cube
  */
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
@@ -19,6 +19,8 @@ export const ICON_ATTRIBUTIONS = {
     "Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE",
   materialSymbols:
     "Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE",
+  materialDesignIcons:
+    "Icon from Material Design Icons by Pictogrammers - https://github.com/Templarian/MaterialDesign/blob/master/LICENSE",
 };
 
 /** @type {Record<string, IconDef>} */
@@ -305,5 +307,11 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10a2.5 2.5 0 0 0 2.5-2.5c0-.61-.23-1.2-.64-1.67a.53.53 0 0 1-.13-.33c0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6c0-4.96-4.49-9-10-9m5.5 11c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5m-3-4c-.83 0-1.5-.67-1.5-1.5S13.67 6 14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9M5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S7.33 13 6.5 13S5 12.33 5 11.5m6-4c0 .83-.67 1.5-1.5 1.5S8 8.33 8 7.5S8.67 6 9.5 6s1.5.67 1.5 1.5"/>`,
     attribution: ICON_ATTRIBUTIONS.materialIcons,
     name: "round-palette",
+  },
+  cube: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.99.99 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88zM12 4.15L6.04 7.5L12 10.85l5.96-3.35zM5 15.91l6 3.38v-6.71L5 9.21zm14 0v-6.7l-6 3.37v6.71z"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialDesignIcons,
+    name: "cube-outline",
   },
 };

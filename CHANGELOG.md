@@ -39,6 +39,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Dropdown / toggle-dropdown fixed positioning: `fixed` / `fixedAlign` on `initDropdown()` / `initToggleDropdown()`, or `data-dropdown-fixed` / `data-dropdown-fixed-align` on the host — escapes `overflow: hidden` (e.g. model preview overlays).
 - Tooltip placement anchor: `data-tooltip-anchor` (CSS selector), plus `openTooltip(target, { text, anchor, … })` and `updateTooltip({ text })`, so tip copy can change (e.g. menu items) while staying fixed on another control (e.g. an icon dropdown trigger).
 - Toggle track size tokens (`--toggle-track-height` / `--toggle-track-width`, slim track and thumb tokens) in [`tokens.css`](app/tokens.css). `.panel-row--end` bottom-aligns labeled fields and optically centres bare toggles on the control line without growing stacked `.toggle-group` rows. Code-block toolbar extras (`.code-block-toolbar__extras`) centre injected chrome and densify toggle labels for slim toolbar type — see `USAGE.md` / `DESIGN.md`.
@@ -81,6 +83,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Data table row hover uses one outer accent border per row instead of a box around every cell.
 - Tabular input logical columns use the slim toggle (`.toggle--slim`) instead of a checkbox.
 
@@ -98,12 +102,16 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Also-see links accept a theme pair (`accentLight` / `accentDark`, and the same for hover) as well as a single `accent` / `accentHover`; the pair wins and a missing side clones the other.
 
 ## [0.12.0] - 2026-08-16
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; framework `clock` icon (`ic:round-schedule`).
 - Slim toggle variant (`.toggle--slim`) — thin track with an oversized overhanging thumb and no icon; Forms demo and USAGE docs.
 - Toggle button (`initToggleButton` / `initToggleButtons`) — `.btn-toggle` pressed state with optional next-action label/icon swapping; `data-toggle-button-always-active` keeps the default button appearance for controls where both states are actions; Actions demo shows pressed-state and swapping icon toggles at standard and slim sizes.
@@ -131,6 +139,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Diagrams (`initDiagram` / `initDiagrams`) — thin Mermaid (`mermaid@11.16.1`) text→SVG host; vendored ESM entry + chunks under `app/vendor/mermaid/`; light/dark theme re-render; empty `update({ source: "" })` clears the canvas; Specialised demo sequence beside the bar chart.
 - Charts (`initChart` / `initCharts`) — thin TanStack Charts (`@tanstack/charts@0.9.0`) SVG host; vendored ESM under `app/vendor/tanstack-charts/` plus `d3-scale` / `d3-shape` bundles and a demo import map; Specialised demo bar chart after Editors.
 - Agent rule [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc) — vendor bytes in `app/vendor/`; components own single-consumer access; shared accessors only in `app/utils/` when two+ components need them.
@@ -152,6 +162,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
 - Colour picker (`initColorPicker`) — HSV/HSL plane + hue slider, RGB/CMYK/alpha via shared `initSlider`, HEX field; format switch changes the visual; optional adjacent colour-set panel (palette icon toggle on the value row).
 - Framework icon `palette` (`ic:round-palette`).
@@ -204,6 +216,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - App icon modes: light/dark pair or single logo via `APP_ICON_SRC` / `__MICROAPP__` (`appIcon`, `appIconLight`, `appIconDark`).
 - Improved related-links (also-see) icon handling for light/dark assets.
 
@@ -211,6 +225,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Remote `alsoSeeUrl` JSON for the footer related-apps menu, with local `alsoSee` fallback.
 - Also-see topic whitelist (`alsoSeeTopics`).
 - Tabular input copy/paste options (in-place and replace), wider canvas breakout, and related demo/docs/tests.
@@ -225,6 +241,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Tabular input (editable typed grid, row/column controls, clipboard helpers, keyboard nav).
 - Badge and chips components.
 - Footer related-apps (“also see”) menu.
@@ -248,6 +266,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Colour picker, data table, rich text editor (Toast UI + merged-cell plugin).
 - Spinner, progress bar, pagination, segmented control, toggle.
 - Slider, stepper, progress indicator.
@@ -266,6 +286,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Initial framework: theme toggle, layout shell, buttons, banners, tooltips, dialogs.
 - Code blocks (Prism), expandable surfaces, page navigation, heading links, external-link icons.
 - Section panel, toolbar, USAGE.md, disclaimer, SemVer `FRAMEWORK_VERSION` / `APP_VERSION`.

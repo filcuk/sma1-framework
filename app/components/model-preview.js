@@ -31,6 +31,9 @@
  * data-model-preview-meta-extra — append app-specific text to the meta strip
  * data-model-preview-maximize — floating fullscreen control via expandable-surface
  * data-model-preview-home — floating reset-view (home) control
+ * data-model-preview-rendering — floating Rendering mode dropdown (shaded / wireframe /
+ *   ghosted / x-ray / arctic); off by default
+ * data-model-preview-rendering-mode — initial mode when rendering is on (default `shaded`)
  * data-model-preview-animation — floating play/pause for preview animation (off by default).
  *   Default motion is slow OrbitControls auto-rotate; pass `onAnimationFrame` for a
  *   custom tick (and/or set `animationAutoRotate: false` / `data-model-preview-animation-auto-rotate="false"`).
@@ -48,10 +51,13 @@
  * API:
  *   const preview = initModelPreview(element, {
  *     animation: true,
+ *     rendering: true,
  *     onAnimationFrame: ({ delta, elapsed, model, camera, controls, scene }) => { … },
  *   });
  *   preview.setMesh({ positions, indices });
  *   preview.resetView();
+ *   preview.setRenderingMode("wireframe");
+ *   preview.getRenderingMode();
  *   preview.setAnimationPlaying(true);
  *   preview.getAnimationPlaying();
  *   preview.setAnimationAutoRotate(false);
@@ -66,14 +72,47 @@ import { APP_CONFIG } from "../config.js";
 import { setHidden, prefersReducedMotion, parseBooleanAttr } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 import { createOrbitHomeAnim, tickOrbitHomeAnim } from "../utils/orbit-home.js";
+import { initDropdown } from "./dropdown.js";
 
 /** @type {const} */
 export const THREE_VERSION = "0.185.1";
+
+/** @typedef {"shaded" | "wireframe" | "ghosted" | "xray" | "arctic"} ModelRenderingMode */
 
 const DEFAULT_ARIA_LABEL = "3D model preview";
 const MAX_PIXEL_RATIO = 2;
 /** OrbitControls autoRotateSpeed; 1 ≈ one full turn per minute at 60fps. */
 const AUTO_ROTATE_SPEED = 1;
+const GHOST_OPACITY = 0.35;
+
+/** @type {readonly { value: ModelRenderingMode, label: string }[]} */
+const RENDERING_MODE_OPTIONS = [
+  { value: "shaded", label: "Shaded" },
+  { value: "wireframe", label: "Wireframe" },
+  { value: "ghosted", label: "Ghosted" },
+  { value: "xray", label: "X-Ray" },
+  { value: "arctic", label: "Arctic" },
+];
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {ModelRenderingMode}
+ */
+function resolveRenderingMode(value) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (
+    trimmed === "shaded" ||
+    trimmed === "wireframe" ||
+    trimmed === "ghosted" ||
+    trimmed === "xray" ||
+    trimmed === "arctic"
+  ) {
+    return trimmed;
+  }
+  return "shaded";
+}
 
 /**
  * @param {string | null | undefined} value
@@ -127,7 +166,14 @@ function resolveActionsVisibility(value) {
  * Call `initExpandableSurfaces()` after init (or on the page) to activate maximise.
  *
  * @param {HTMLElement} el
- * @param {{ maximize?: boolean, expandOnClick?: boolean, home?: boolean, animation?: boolean, actions?: string }} options
+ * @param {{
+ *   maximize?: boolean,
+ *   expandOnClick?: boolean,
+ *   home?: boolean,
+ *   animation?: boolean,
+ *   rendering?: boolean,
+ *   actions?: string,
+ * }} options
  */
 function syncExpandableAttrs(el, options) {
   const maximize =
@@ -146,6 +192,10 @@ function syncExpandableAttrs(el, options) {
     typeof options.animation === "boolean"
       ? options.animation
       : el.hasAttribute("data-model-preview-animation");
+  const rendering =
+    typeof options.rendering === "boolean"
+      ? options.rendering
+      : el.hasAttribute("data-model-preview-rendering");
   const actionsVisibility = resolveActionsVisibility(
     typeof options.actions === "string"
       ? options.actions
@@ -164,7 +214,10 @@ function syncExpandableAttrs(el, options) {
   if (animation) el.setAttribute("data-model-preview-animation", "");
   else el.removeAttribute("data-model-preview-animation");
 
-  if (!maximize && !expandOnClick && !home && !animation) {
+  if (rendering) el.setAttribute("data-model-preview-rendering", "");
+  else el.removeAttribute("data-model-preview-rendering");
+
+  if (!maximize && !expandOnClick && !home && !animation && !rendering) {
     el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
     delete el.dataset.modelPreviewActions;
@@ -173,6 +226,7 @@ function syncExpandableAttrs(el, options) {
       expandOnClick: false,
       home: false,
       animation: false,
+      rendering: false,
       actionsVisibility,
     };
   }
@@ -194,7 +248,7 @@ function syncExpandableAttrs(el, options) {
     el.removeAttribute("data-expandable-surface-control");
   }
 
-  if (maximize || home || animation) {
+  if (maximize || home || animation || rendering) {
     let actionsHost = el.querySelector(":scope > .surface-actions");
     if (!actionsHost) {
       actionsHost = document.createElement("div");
@@ -206,7 +260,7 @@ function syncExpandableAttrs(el, options) {
     delete el.dataset.modelPreviewActions;
   }
 
-  return { maximize, expandOnClick, home, animation, actionsVisibility };
+  return { maximize, expandOnClick, home, animation, rendering, actionsVisibility };
 }
 
 /**
@@ -451,6 +505,8 @@ function fitCameraToModel(el, camera, controls, model) {
  *   expandOnClick?: boolean,
  *   home?: boolean,
  *   animation?: boolean,
+ *   rendering?: boolean,
+ *   renderingMode?: ModelRenderingMode | string,
  *   animationPlaying?: boolean,
  *   animationAutoRotate?: boolean,
  *   onAnimationFrame?: ((ctx: {
@@ -472,6 +528,8 @@ function fitCameraToModel(el, camera, controls, model) {
  *     objects?: unknown[],
  *   }) => void,
  *   resetView: () => void,
+ *   setRenderingMode: (mode: ModelRenderingMode | string) => void,
+ *   getRenderingMode: () => ModelRenderingMode,
  *   setAnimationPlaying: (playing: boolean) => void,
  *   getAnimationPlaying: () => boolean,
  *   setAnimationAutoRotate: (enabled: boolean) => void,
@@ -548,6 +606,17 @@ export function initModelPreview(previewEl, options = {}) {
   const expandState = syncExpandableAttrs(previewEl, options);
   const showHome = expandState.home;
   const showAnimation = expandState.animation;
+  const showRendering = expandState.rendering;
+  let renderingMode = resolveRenderingMode(
+    typeof options.renderingMode === "string"
+      ? options.renderingMode
+      : previewEl.dataset.modelPreviewRenderingMode
+  );
+  if (showRendering) {
+    previewEl.dataset.modelPreviewRenderingMode = renderingMode;
+  } else {
+    delete previewEl.dataset.modelPreviewRenderingMode;
+  }
   let animationPlaying =
     resolveAnimationPlaying(previewEl, options, showAnimation) &&
     !prefersReducedMotion();
@@ -608,6 +677,18 @@ export function initModelPreview(previewEl, options = {}) {
   let homeBtn = null;
   /** @type {HTMLButtonElement | null} */
   let animationBtn = null;
+  /** @type {HTMLElement | null} */
+  let renderingHost = null;
+  /** @type {HTMLButtonElement | null} */
+  let renderingTrigger = null;
+  /** @type {ReturnType<typeof initDropdown> | null} */
+  let renderingDropdownApi = null;
+  /** @type {THREE.LineSegments | null} */
+  let edgeLines = null;
+  /** @type {THREE.Points | null} */
+  let vertexPoints = null;
+  /** @type {THREE.Mesh | null} */
+  let shadowGround = null;
   /** @type {ReturnType<typeof computeMeshStats> | null} */
   let meshStats = null;
   /** @type {number | null} */
@@ -811,6 +892,258 @@ export function initModelPreview(previewEl, options = {}) {
     return animationBtn;
   }
 
+  function syncRenderingMenuSelection() {
+    if (!renderingHost) return;
+    renderingHost.querySelectorAll(".dropdown-menu-item").forEach((item) => {
+      const selected = item.dataset.value === renderingMode;
+      item.classList.toggle("is-selected", selected);
+      item.setAttribute("aria-checked", selected ? "true" : "false");
+    });
+  }
+
+  function syncRenderingControl() {
+    if (!renderingTrigger) return;
+    renderingTrigger.disabled = !model;
+  }
+
+  function ensureRenderingDropdown() {
+    if (!showRendering) return null;
+    if (renderingHost?.isConnected) {
+      syncRenderingControl();
+      return renderingHost;
+    }
+    const actionsHost = ensureActionsHost();
+    renderingHost = actionsHost.querySelector(".model-preview__rendering");
+    if (!(renderingHost instanceof HTMLElement)) {
+      const triggerId = previewEl.id
+        ? `${previewEl.id}-rendering-trigger`
+        : `model-preview-rendering-${Math.random().toString(36).slice(2, 9)}`;
+      const menuId = `${triggerId}-menu`;
+
+      renderingHost = document.createElement("div");
+      renderingHost.className = "model-preview__rendering dropdown";
+
+      renderingTrigger = document.createElement("button");
+      renderingTrigger.type = "button";
+      renderingTrigger.id = triggerId;
+      renderingTrigger.className =
+        "btn btn-slim btn-icon dropdown-trigger model-preview__rendering-trigger";
+      renderingTrigger.dataset.tooltip = "Rendering";
+      renderingTrigger.dataset.tooltipPosition = "top";
+      renderingTrigger.setAttribute("aria-label", "Rendering");
+      renderingTrigger.setAttribute("aria-haspopup", "menu");
+      renderingTrigger.setAttribute("aria-expanded", "false");
+      renderingTrigger.setAttribute("aria-controls", menuId);
+      renderingTrigger.append(createIcon("cube", { className: "btn-icon-svg" }));
+      renderingTrigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+
+      const menu = document.createElement("ul");
+      menu.id = menuId;
+      menu.className = "dropdown-menu hidden";
+      menu.setAttribute("role", "menu");
+      menu.hidden = true;
+
+      for (const option of RENDERING_MODE_OPTIONS) {
+        const li = document.createElement("li");
+        li.setAttribute("role", "none");
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "dropdown-menu-item";
+        item.setAttribute("role", "menuitemradio");
+        item.dataset.value = option.value;
+        item.dataset.tooltip = option.label;
+        item.dataset.tooltipAnchor = `#${CSS.escape(triggerId)}`;
+        item.textContent = option.label;
+        li.append(item);
+        menu.append(li);
+      }
+
+      renderingHost.append(renderingTrigger, menu);
+      // Append so row-reverse places it left of home / maximise (last = leftmost).
+      actionsHost.append(renderingHost);
+
+      renderingDropdownApi = initDropdown(renderingHost, {
+        fixed: true,
+        fixedAlign: "end",
+        onSelect: ({ value }) => {
+          setRenderingMode(value);
+        },
+      });
+    } else {
+      renderingTrigger = renderingHost.querySelector(
+        ".model-preview__rendering-trigger"
+      );
+    }
+    syncRenderingMenuSelection();
+    syncRenderingControl();
+    return renderingHost;
+  }
+
+  function disposeOverlays() {
+    if (edgeLines) {
+      scene.remove(edgeLines);
+      edgeLines.geometry.dispose();
+      if (edgeLines.material instanceof THREE.Material) edgeLines.material.dispose();
+      edgeLines = null;
+    }
+    if (vertexPoints) {
+      scene.remove(vertexPoints);
+      vertexPoints.geometry.dispose();
+      if (vertexPoints.material instanceof THREE.Material) {
+        vertexPoints.material.dispose();
+      }
+      vertexPoints = null;
+    }
+  }
+
+  function disposeShadowGround() {
+    if (!shadowGround) return;
+    scene.remove(shadowGround);
+    shadowGround.geometry.dispose();
+    if (shadowGround.material instanceof THREE.Material) {
+      shadowGround.material.dispose();
+    }
+    shadowGround = null;
+  }
+
+  function syncShadowGround() {
+    const enabled = renderingMode === "arctic" && Boolean(model);
+    if (!enabled) {
+      disposeShadowGround();
+      return;
+    }
+    if (!shadowGround) {
+      const geometry = new THREE.PlaneGeometry(1, 1);
+      const material = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 1,
+        metalness: 0,
+      });
+      shadowGround = new THREE.Mesh(geometry, material);
+      shadowGround.rotation.x = -Math.PI / 2;
+      shadowGround.receiveShadow = true;
+      scene.add(shadowGround);
+    }
+    const bounds = new THREE.Box3().setFromObject(model);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    const span = Math.max(size.x, size.z, 1) * 4;
+    shadowGround.scale.set(span, span, 1);
+    shadowGround.position.set(center.x, bounds.min.y - 0.02, center.z);
+
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.radius = 4;
+    keyLight.shadow.bias = -0.0005;
+    const extent = Math.max(size.x, size.y, size.z, 1) * 2;
+    const shadowCam = keyLight.shadow.camera;
+    shadowCam.left = -extent;
+    shadowCam.right = extent;
+    shadowCam.top = extent;
+    shadowCam.bottom = -extent;
+    shadowCam.near = 0.1;
+    shadowCam.far = extent * 6;
+    shadowCam.updateProjectionMatrix();
+    keyLight.position.set(center.x + extent, center.y + extent * 1.5, center.z + extent);
+    keyLight.target.position.copy(center);
+    if (!keyLight.target.parent) scene.add(keyLight.target);
+    keyLight.target.updateMatrixWorld();
+  }
+
+  function syncOverlays() {
+    disposeOverlays();
+    if (!model) return;
+
+    const needEdges = renderingMode === "wireframe" || renderingMode === "xray";
+    const needPoints = renderingMode === "wireframe";
+    if (!needEdges && !needPoints) return;
+
+    const lineColor = renderingMode === "arctic" ? 0x333333 : readCssColor("--text", "#1f2328");
+    const depthTest = renderingMode !== "xray";
+
+    if (needEdges) {
+      const wireGeo = new THREE.WireframeGeometry(model.geometry);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: lineColor,
+        depthTest,
+        transparent: !depthTest,
+        opacity: depthTest ? 1 : 0.9,
+      });
+      edgeLines = new THREE.LineSegments(wireGeo, lineMat);
+      edgeLines.renderOrder = 2;
+      scene.add(edgeLines);
+    }
+
+    if (needPoints) {
+      const positions = model.geometry.getAttribute("position");
+      const pointsGeo = new THREE.BufferGeometry();
+      pointsGeo.setAttribute("position", positions.clone());
+      const pointsMat = new THREE.PointsMaterial({
+        color: lineColor,
+        size: 3,
+        sizeAttenuation: false,
+        depthTest: true,
+      });
+      vertexPoints = new THREE.Points(pointsGeo, pointsMat);
+      vertexPoints.renderOrder = 3;
+      scene.add(vertexPoints);
+    }
+  }
+
+  function applyRenderingMode() {
+    if (showRendering) {
+      previewEl.dataset.modelPreviewRenderingMode = renderingMode;
+    }
+
+    const arctic = renderingMode === "arctic";
+    renderer.shadowMap.enabled = arctic;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    keyLight.castShadow = arctic;
+
+    if (model?.material instanceof THREE.Material) {
+      const material = /** @type {THREE.MeshStandardMaterial} */ (model.material);
+      const ghosted = renderingMode === "ghosted" || renderingMode === "xray";
+      const hideFill = renderingMode === "wireframe";
+
+      model.visible = !hideFill;
+      model.castShadow = arctic;
+      model.receiveShadow = arctic;
+
+      material.transparent = ghosted;
+      material.opacity = ghosted ? GHOST_OPACITY : 1;
+      material.depthWrite = !ghosted;
+      material.wireframe = false;
+      material.color.set(
+        arctic ? 0xffffff : readCssColor("--accent", "#0969da")
+      );
+      material.needsUpdate = true;
+    }
+
+    syncOverlays();
+    syncShadowGround();
+    if (renderingMode !== "arctic") {
+      keyLight.position.set(1, 2, 3);
+      if (keyLight.target.parent) {
+        keyLight.target.position.set(0, 0, 0);
+        keyLight.target.updateMatrixWorld();
+      }
+    }
+    syncRenderingMenuSelection();
+    syncRenderingControl();
+  }
+
+  function setRenderingMode(mode) {
+    if (!showRendering) return;
+    renderingMode = resolveRenderingMode(mode);
+    applyRenderingMode();
+    applyTheme();
+  }
+
+  function getRenderingMode() {
+    return renderingMode;
+  }
+
   let renderer;
   let model = null;
   let destroyed = false;
@@ -873,6 +1206,10 @@ export function initModelPreview(previewEl, options = {}) {
     return {
       setMesh() {},
       resetView() {},
+      setRenderingMode() {},
+      getRenderingMode() {
+        return renderingMode;
+      },
       setAnimationPlaying() {},
       getAnimationPlaying() {
         return false;
@@ -925,20 +1262,36 @@ export function initModelPreview(previewEl, options = {}) {
 
   ensureHomeButton();
   ensureAnimationButton();
+  ensureRenderingDropdown();
   syncAnimationControls();
+  applyRenderingMode();
 
   function applyTheme() {
-    const background = readCssColor("--surface", "#ffffff");
+    const background =
+      renderingMode === "arctic"
+        ? "#ffffff"
+        : readCssColor("--surface", "#ffffff");
     const text = readCssColor("--text", "#1f2328");
     const surface = readCssColor("--bg", "#ffffff");
-    const accent = readCssColor("--accent", "#0969da");
+    const accent =
+      renderingMode === "arctic" ? "#ffffff" : readCssColor("--accent", "#0969da");
     scene.background = new THREE.Color(background);
-    hemisphere.color.set(text);
-    hemisphere.groundColor.set(surface);
-    keyLight.color.set(text);
+    hemisphere.color.set(renderingMode === "arctic" ? 0xffffff : text);
+    hemisphere.groundColor.set(renderingMode === "arctic" ? 0xe8e8e8 : surface);
+    keyLight.color.set(renderingMode === "arctic" ? 0xffffff : text);
     if (model?.material instanceof THREE.Material) {
       const material = /** @type {THREE.MeshStandardMaterial} */ (model.material);
       material.color.set(accent);
+    }
+    if (edgeLines?.material instanceof THREE.Material) {
+      /** @type {THREE.LineBasicMaterial} */ (edgeLines.material).color.set(
+        renderingMode === "arctic" ? 0x333333 : text
+      );
+    }
+    if (vertexPoints?.material instanceof THREE.Material) {
+      /** @type {THREE.PointsMaterial} */ (vertexPoints.material).color.set(
+        renderingMode === "arctic" ? 0x333333 : text
+      );
     }
   }
 
@@ -951,6 +1304,8 @@ export function initModelPreview(previewEl, options = {}) {
   }
 
   function disposeModel() {
+    disposeOverlays();
+    disposeShadowGround();
     if (!model) return;
     scene.remove(model);
     model.geometry.dispose();
@@ -1026,6 +1381,7 @@ export function initModelPreview(previewEl, options = {}) {
     scene.add(model);
     fitCameraToModel(previewEl, camera, controls, model);
     if (emptyEl) setHidden(emptyEl, true);
+    applyRenderingMode();
     syncHomeButton();
     syncAnimationControls();
     syncMeta();
@@ -1046,6 +1402,7 @@ export function initModelPreview(previewEl, options = {}) {
     if (emptyEl) setHidden(emptyEl, false);
     syncHomeButton();
     syncAnimationControls();
+    syncRenderingControl();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -1068,6 +1425,8 @@ export function initModelPreview(previewEl, options = {}) {
   return {
     setMesh,
     resetView,
+    setRenderingMode,
+    getRenderingMode,
     setAnimationPlaying,
     getAnimationPlaying,
     setAnimationAutoRotate,
@@ -1084,6 +1443,8 @@ export function initModelPreview(previewEl, options = {}) {
       controls.dispose();
       renderer.dispose();
       canvas.remove();
+      renderingDropdownApi?.destroy();
+      renderingHost?.remove();
       animationBtn?.remove();
       homeBtn?.remove();
       metaEl?.remove();

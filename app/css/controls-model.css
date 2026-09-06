@@ -124,6 +124,14 @@
   gap: 0.5rem;
 }
 
+.model-preview__rendering.dropdown {
+  align-self: center;
+}
+
+.model-preview__rendering .dropdown-menu {
+  min-width: 7.5rem;
+}
+
 /* Full-width action strip so a left-aligned hover slider can sit opposite
    home / maximise (`.surface-actions` is row-reverse and right-anchored). */
 .toolpath-preview > .surface-actions {

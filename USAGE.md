@@ -1896,6 +1896,7 @@ Pages using the preview must include an import map before module scripts:
   data-model-preview-meta-extra="PETG"
   data-model-preview-maximize
   data-model-preview-home
+  data-model-preview-rendering
   data-model-preview-animation
   data-model-preview-actions="hover">
   <p class="model-preview__empty">No preview</p>
@@ -1910,6 +1911,7 @@ import { initExpandableSurfaces } from "./components/expandable-surface.js";
 const preview = initModelPreview(document.getElementById("my-model-preview"));
 preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
 preview?.setMetaExtra(["PETG", "box.stl"]);
+preview?.setRenderingMode("ghosted");
 initExpandableSurfaces(document); // required when maximise attrs are used
 // preview?.clear();
 // preview?.destroy();
@@ -1919,7 +1921,7 @@ Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × 
 
 `data-model-preview-meta` controls strip visibility: `hover` (default), `always`, `not-hover`, or `never`. On touch devices without hover, `hover` and `not-hover` behave like `always`. Add `data-model-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array) for app-specific text.
 
-`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-home` shows a reset-view (home) control that restores the default camera fit; `data-model-preview-animation` shows a floating play/pause control for preview animation (off by default). Default motion is slow OrbitControls auto-rotate; pass `onAnimationFrame({ delta, elapsed, model, camera, controls, scene })` (or `setOnAnimationFrame()`) for a custom tick while playing. Set `data-model-preview-animation-auto-rotate="false"` / `animationAutoRotate: false` (or `setAnimationAutoRotate(false)`) to disable the built-in orbit and use only a custom handler. When animation is enabled it starts playing unless you set `data-model-preview-animation-playing="false"` / `animationPlaying: false` (and always starts paused when `prefers-reduced-motion` is set). Use `preview.setAnimationPlaying(true|false)` / `getAnimationPlaying()` at runtime. `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Maximise maps onto expandable-surface. `data-model-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`. Call `preview.resetView()` to reset the camera from script.
+`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-home` shows a reset-view (home) control that restores the default camera fit; `data-model-preview-rendering` shows a floating **Rendering** icon dropdown (cube icon) with modes `shaded` (default), `wireframe`, `ghosted`, `xray`, and `arctic`. Set the initial mode with `data-model-preview-rendering-mode` / `renderingMode`, and use `preview.setRenderingMode()` / `getRenderingMode()` at runtime. Menu item tips stay anchored on the trigger via `data-tooltip-anchor`. `data-model-preview-animation` shows a floating play/pause control for preview animation (off by default). Default motion is slow OrbitControls auto-rotate; pass `onAnimationFrame({ delta, elapsed, model, camera, controls, scene })` (or `setOnAnimationFrame()`) for a custom tick while playing. Set `data-model-preview-animation-auto-rotate="false"` / `animationAutoRotate: false` (or `setAnimationAutoRotate(false)`) to disable the built-in orbit and use only a custom handler. When animation is enabled it starts playing unless you set `data-model-preview-animation-playing="false"` / `animationPlaying: false` (and always starts paused when `prefers-reduced-motion` is set). Use `preview.setAnimationPlaying(true|false)` / `getAnimationPlaying()` at runtime. `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Maximise maps onto expandable-surface. `data-model-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`. Call `preview.resetView()` to reset the camera from script.
 
 The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.### G-code toolpath preview
 
