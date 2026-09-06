@@ -906,13 +906,27 @@ export function initModelPreview(previewEl, options = {}) {
     renderingTrigger.disabled = !model;
   }
 
+  /**
+   * Place rendering in `.surface-actions`. The strip is `row-reverse`, so earlier
+   * DOM order is further right — insert before home for … | home | rendering | maximise.
+   * @param {HTMLElement} actionsHost
+   * @param {HTMLElement} host
+   */
+  function placeRenderingControl(actionsHost, host) {
+    const homeEl = actionsHost.querySelector(".model-preview__home");
+    if (homeEl) actionsHost.insertBefore(host, homeEl);
+    else if (!host.isConnected) actionsHost.append(host);
+  }
+
   function ensureRenderingDropdown() {
     if (!showRendering) return null;
+    const actionsHost = ensureActionsHost();
     if (renderingHost?.isConnected) {
+      // Keep between maximise and home if peers remount.
+      placeRenderingControl(actionsHost, renderingHost);
       syncRenderingControl();
       return renderingHost;
     }
-    const actionsHost = ensureActionsHost();
     renderingHost = actionsHost.querySelector(".model-preview__rendering");
     if (!(renderingHost instanceof HTMLElement)) {
       const triggerId = previewEl.id
@@ -961,8 +975,7 @@ export function initModelPreview(previewEl, options = {}) {
       }
 
       renderingHost.append(renderingTrigger, menu);
-      // Append so row-reverse places it left of home / maximise (last = leftmost).
-      actionsHost.append(renderingHost);
+      placeRenderingControl(actionsHost, renderingHost);
 
       renderingDropdownApi = initDropdown(renderingHost, {
         fixed: true,
@@ -975,6 +988,7 @@ export function initModelPreview(previewEl, options = {}) {
       renderingTrigger = renderingHost.querySelector(
         ".model-preview__rendering-trigger"
       );
+      placeRenderingControl(actionsHost, renderingHost);
     }
     syncRenderingMenuSelection();
     syncRenderingControl();
@@ -1261,8 +1275,8 @@ export function initModelPreview(previewEl, options = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   ensureHomeButton();
-  ensureAnimationButton();
   ensureRenderingDropdown();
+  ensureAnimationButton();
   syncAnimationControls();
   applyRenderingMode();
 
