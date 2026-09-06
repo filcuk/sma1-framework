@@ -317,6 +317,21 @@ A      <div class="content-tier-body">
                   <span class="field-label">Multi-line input</span>
                   <textarea id="demo-input-multiline" class="textarea" rows="3" placeholder="Enter longer text…"></textarea>
                 </label>
+                <label class="field is-required" for="demo-input-email" data-validate="email">
+                  <span class="field-label">Email</span>
+                  <input type="email" id="demo-input-email" class="input" placeholder="name@example.com" autocomplete="email" />
+                  <span class="field-error" hidden></span>
+                </label>
+                <label class="field" for="demo-input-code" data-validate="alphanumeric|noSpaces">
+                  <span class="field-label">Code</span>
+                  <input type="text" id="demo-input-code" class="input" placeholder="ABC123" />
+                  <span class="field-error" hidden></span>
+                </label>
+                <label class="field" for="demo-input-qty" data-validate="number" data-validate-min="1" data-validate-max="10">
+                  <span class="field-label">Quantity (1–10)</span>
+                  <input type="text" id="demo-input-qty" class="input" inputmode="numeric" placeholder="5" />
+                  <span class="field-error" hidden></span>
+                </label>
               </div>
               <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
               <div class="panel-stack">

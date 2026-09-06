@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T18:30:13.969Z",
+  "generatedAt": "2026-09-06T18:35:02.027Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -237,7 +237,7 @@
       "sha256": "3f585f925b2c869cd5f25839935e3e89593229fe9a7560e19814599c71eabbe4"
     },
     "app/css/controls-fields.css": {
-      "sha256": "1725535e1449dc43faa7921ad3ec26b083f6803315a770cf306bbceee2cf207b"
+      "sha256": "193b9f1a0d0bfc688349092875bf5543b6b0c01d4879fb716485f5035e5def64"
     },
     "app/css/controls-file.css": {
       "sha256": "63a11b2ed941d98ad3cfc4dbf06207638d8747c42d342a8c9571ac81c615cec0"
@@ -346,6 +346,9 @@
     },
     "app/utils/dom.js": {
       "sha256": "62aa90ef1934a6219173aff4a662591fbd7d2b5db4396505009139946efed0d1"
+    },
+    "app/utils/field-validation.js": {
+      "sha256": "f48c1d7e7f21e66cdb5b20b20b625dd946b058ce9448b5c4cc4e107790a00c47"
     },
     "app/utils/icons-framework.js": {
       "sha256": "502258d7a4e95870b0f1c19c36d34d43a48d1a169db77ae6e426f68360bfa78a"
@@ -1236,7 +1239,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "5c5f63a960c62c584d8f2026edac5a3e6448b63496e97f2c408fda231a7b69e6"
+      "sha256": "654afccc65e98b11416bb81d929658dabcc9a64f8faeecf0a1fddb938132a086"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c1b1abdc5f20b2340048b921d4b1874821d85398d8a4dbb37006d5e4980be728"
@@ -1301,6 +1304,7 @@
       "app/utils/clipboard.js",
       "app/utils/button-label.js",
       "app/utils/required-field.js",
+      "app/utils/field-validation.js",
       "app/utils/control-glow.js",
       "app/utils/icons.js",
       "app/utils/icons-framework.js",
@@ -1345,6 +1349,9 @@
     ],
     "required-field": [
       "app/utils/required-field.js"
+    ],
+    "field-validation": [
+      "app/utils/field-validation.js"
     ],
     "control-glow": [
       "app/utils/control-glow.js"

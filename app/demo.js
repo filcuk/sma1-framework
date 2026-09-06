@@ -64,10 +64,19 @@ import { initBadge } from "./components/badge.js";
 import { initChipGroup, initChipInput } from "./components/chip.js";
 import { initLegend } from "./components/legend.js";
 import { setHidden } from "./utils/dom.js";
-import { initRequiredFields } from "./utils/required-field.js";
+import { initRequiredField } from "./utils/required-field.js";
+import { initFieldValidations } from "./utils/field-validation.js";
 
 initShell();
-initRequiredFields(document);
+// Required-only fields; skip hosts with data-validate (field-validation owns those).
+document.querySelectorAll(".field.is-required").forEach((field) => {
+  if (!(field instanceof HTMLElement)) return;
+  if (field.hasAttribute("data-validate") || field.querySelector("[data-validate]")) {
+    return;
+  }
+  initRequiredField(field);
+});
+initFieldValidations(document);
 initExpands(document);
 initTabs(document);
 const codeBlockInstances = initCodeBlocks(document);

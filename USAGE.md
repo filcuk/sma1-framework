@@ -465,7 +465,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
-| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. Mark required fields with `.field.is-required` (red asterisk) and wire [`initRequiredFields`](app/utils/required-field.js) for empty `aria-invalid` sync. |
+| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. Mark required fields with `.field.is-required` (red asterisk) and wire [`initRequiredFields`](app/utils/required-field.js) for empty `aria-invalid` sync. Optional format rules via [`initFieldValidations`](app/utils/field-validation.js) (`data-validate`, custom `registerValidator`). |
 | **File** | `.file` segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. [`app/components/file.js`](app/components/file.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
@@ -1580,6 +1580,45 @@ syncRequiredField(document.getElementById("driver-field"), {
   required: true,
   control: document.getElementById("driver-trigger"),
 });
+```
+
+**Field validation** — simple format rules on plain `.field` / `.input` controls (separate from input adornments). Presets: `email` (must contain `@`), `number` (finite; optional `data-validate-min` / `data-validate-max`), `noSpaces`, `alphanumeric` (ASCII letters and digits), `required`. Compose with `|` on `data-validate`, pass functions in `rules`, or `registerValidator("name", fn)` and reference the name. Empty optional fields skip format rules. Format errors show after blur by default (or when `validate()` / `validateField()` runs); required emptiness flags immediately when `.is-required` or a `required` rule is present. Optional `.field-error` (or `[data-field-error]`) shows the message and is linked via `aria-describedby`. Do **not** also call `initRequiredField` on the same field — validation owns `aria-invalid` there.
+
+```html
+<label class="field is-required" for="email" data-validate="email">
+  <span class="field-label">Email</span>
+  <input type="email" id="email" class="input" autocomplete="email" />
+  <span class="field-error" hidden></span>
+</label>
+
+<label class="field" for="qty" data-validate="number" data-validate-min="1" data-validate-max="10">
+  <span class="field-label">Quantity</span>
+  <input type="text" id="qty" class="input" inputmode="numeric" />
+  <span class="field-error" hidden></span>
+</label>
+```
+
+```javascript
+import {
+  initFieldValidation,
+  initFieldValidations,
+  registerValidator,
+  validateField,
+} from "./utils/field-validation.js";
+
+registerValidator("endsWithCom", (value) =>
+  value.endsWith(".com") ? true : "Must end with .com"
+);
+
+initFieldValidations(document); // every `.field` with data-validate
+
+const emailField = document.querySelector("#email")?.closest(".field");
+initFieldValidation(emailField, {
+  rules: ["required", "email", "endsWithCom", (value) => value.includes("@")],
+});
+
+// Gate submit:
+const ok = validateField(emailField); // reveals format errors too
 ```
 
 ```javascript
