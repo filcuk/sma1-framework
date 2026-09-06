@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T16:30:01.377Z",
+  "generatedAt": "2026-09-06T16:32:11.870Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -246,7 +246,7 @@
       "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
     },
     "app/css/controls-menus.css": {
-      "sha256": "bb68985fd7baae41d3f1cbbad35fa51c837273769d298b03ea337fbba93dd2d3"
+      "sha256": "214830deda2c1b1453d4f7fc89d4b41c585bd148d86f874744451289dba731ec"
     },
     "app/css/controls-model.css": {
       "sha256": "162888f34812fcaa0efd1b3190890293796582278c4fa0e4670e13d97fe207e6"

@@ -562,6 +562,12 @@ li:not(:first-child) > .dropdown-menu-group {
   text-align: left;
 }
 
+/* Icon-only triggers stay centred in the square control. */
+.btn.btn-icon.dropdown-trigger {
+  justify-content: center;
+  text-align: center;
+}
+
 .btn.dropdown-trigger[aria-invalid="true"] {
   border-color: var(--banner-error-border);
 }
