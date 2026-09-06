@@ -1670,6 +1670,8 @@ initFile(document.getElementById("my-file"), {
   ],
   // download: true (default), remove: false, upload: false
   // nameAction: "none" | "download" | "upload" | "remove" | "custom"
+  // removeMode: "clear" | "detach" — default clear when upload is on
+  // emptyLabel: "No file" — placeholder when cleared
   // extVisibility / sizeVisibility: "hover" | "always" | "never"
   // dropActive: true — when upload is on, the row accepts file drops
   onDownload: ({ filename, size }) => console.log(filename, size),
@@ -1704,7 +1706,7 @@ await downloadFile({
 initFiles(document); // wire every `.file` (rows, large, and fullscreen hosts)
 ```
 
-Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Fullscreen defaults: activate-on-drag **on**. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
+Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. When upload is enabled, remove **clears** the row to an empty upload placeholder (`No file`) by default instead of deleting it — set `data-file-remove-mode="detach"` / `removeMode: "detach"` to remove the row from the DOM; override the label with `data-file-empty-label` / `emptyLabel`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Single-file large hosts **hide the prompt** once a file is selected (remove the file to show it again); multi-file hosts keep the prompt. Override with `data-file-hide-prompt-when-full="false"` or `hidePromptWhenFull: false` (or set `true` on a multi host to hide the prompt when `data-file-max` is reached). Fullscreen defaults: activate-on-drag **on**. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
 
 `data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep advise-only behaviour. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
 

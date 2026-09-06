@@ -130,8 +130,9 @@
   border-left: 1px solid var(--border);
 }
 
+/* Colour the shared seam even when the next segment is disabled (empty slot). */
 .file-item > .btn:not(:first-child):hover:not(:disabled),
-.file-item > .btn:hover:not(:disabled) + .btn:not(:disabled) {
+.file-item > .btn:hover:not(:disabled) + .btn {
   border-left-color: var(--accent);
 }
 
@@ -155,6 +156,10 @@ button.file-item-main:not([aria-disabled="true"]) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.file-item--empty .file-item-name {
+  color: var(--muted);
 }
 
 .file-item-ext,

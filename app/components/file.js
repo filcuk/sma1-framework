@@ -24,7 +24,11 @@ import { createIcon } from "../utils/icons.js";
  *   </div>
  *
  * Row defaults: download on, remove off, upload off.
+ * Row remove with upload on clears to an empty upload placeholder by default
+ * (`removeMode: "clear"`); set `detach` to remove the row from the DOM.
  * Large defaults: remove on, download off, upload off; size meta always visible.
+ * Large single-file hosts hide the prompt once a file is present (override with
+ * `hidePromptWhenFull` / `data-file-hide-prompt-when-full`); multi hosts keep it.
  * Fullscreen defaults: activate on document file-drag (hide after drop); `onFiles` only.
  * Name action: none | download | upload | remove | custom (via onNameAction).
  * Ext / size visibility: hover | always | never (independent).
@@ -34,6 +38,8 @@ const DEFAULT_MIME_TYPE = "text/plain;charset=utf-8";
 
 const NAME_ACTIONS = new Set(["none", "download", "upload", "remove", "custom"]);
 const VISIBILITY_MODES = new Set(["hover", "always", "never"]);
+const REMOVE_MODES = new Set(["clear", "detach"]);
+const DEFAULT_EMPTY_LABEL = "No file";
 
 /**
  * @param {string | null | undefined} accept
@@ -176,6 +182,20 @@ function resolveVisibility(value, fallback = "hover") {
     .toLowerCase();
   if (VISIBILITY_MODES.has(trimmed)) return /** @type {typeof fallback} */ (trimmed);
   return fallback;
+}
+
+/**
+ * @param {string | null | undefined} value
+ * @param {boolean} uploadEnabled
+ * @returns {"clear" | "detach"}
+ */
+function resolveRemoveMode(value, uploadEnabled) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (REMOVE_MODES.has(trimmed)) return /** @type {"clear" | "detach"} */ (trimmed);
+  // Upload slots clear to an empty placeholder; download-only rows detach.
+  return uploadEnabled ? "clear" : "detach";
 }
 
 function readFilename(sourceEl, fallback) {
@@ -477,6 +497,12 @@ function initFileRows(fileEl, options = {}) {
   );
   const hostDropActive =
     options.dropActive ?? parseBooleanAttr(fileEl.dataset.fileDropActive) ?? false;
+  const hostEmptyLabel =
+    (typeof options.emptyLabel === "string" && options.emptyLabel.trim()) ||
+    fileEl.dataset.fileEmptyLabel?.trim() ||
+    DEFAULT_EMPTY_LABEL;
+  const hostRemoveModeAttr =
+    options.removeMode ?? fileEl.dataset.fileRemoveMode;
 
   const items = [...fileEl.querySelectorAll(".file-item")];
   if (!items.length) return null;
@@ -493,9 +519,88 @@ function initFileRows(fileEl, options = {}) {
    *   remove: boolean,
    *   upload: boolean,
    *   nameAction: string,
+   *   removeMode: "clear" | "detach",
+   *   emptyLabel: string,
+   *   hasFile: boolean,
    *   input: HTMLInputElement | null,
    * }>} */
   const itemStates = [];
+
+  /**
+   * @param {(typeof itemStates)[number]} state
+   * @param {boolean} hasFile
+   * @param {{ byteLength?: number }} [meta]
+   */
+  function syncRowFilledState(state, hasFile, meta = {}) {
+    state.hasFile = hasFile;
+    state.itemEl.classList.toggle("file-item--empty", !hasFile);
+
+    const downloadBtn = state.itemEl.querySelector(".file-item-download");
+    const uploadBtn = state.itemEl.querySelector(".file-item-upload");
+    const removeBtn = state.itemEl.querySelector(".file-item-remove");
+
+    if (!hasFile) {
+      const main = state.itemEl.querySelector(".file-item-main");
+      if (main instanceof HTMLElement) {
+        delete main.dataset.fileName;
+        delete main.dataset.fileMime;
+        if (state.nameAction === "upload") {
+          main.setAttribute("aria-label", "Upload file");
+          if (main instanceof HTMLButtonElement) main.disabled = false;
+        } else if (state.nameAction !== "none") {
+          main.setAttribute("aria-label", state.emptyLabel);
+          if (main instanceof HTMLButtonElement) main.disabled = true;
+        }
+      }
+      const nameEl = state.itemEl.querySelector(".file-item-name");
+      const extEl = state.itemEl.querySelector(".file-item-ext");
+      const metaEl = state.itemEl.querySelector(".file-item-meta");
+      if (nameEl) nameEl.textContent = state.emptyLabel;
+      if (extEl) {
+        extEl.textContent = "";
+        setHidden(extEl, true);
+      }
+      if (metaEl) {
+        metaEl.textContent = "";
+        setHidden(metaEl, true);
+      }
+      if (downloadBtn instanceof HTMLButtonElement) {
+        downloadBtn.disabled = true;
+        downloadBtn.setAttribute("aria-label", "Download");
+      }
+      if (uploadBtn instanceof HTMLButtonElement) {
+        uploadBtn.disabled = false;
+        uploadBtn.setAttribute("aria-label", "Upload file");
+      }
+      if (removeBtn instanceof HTMLButtonElement) {
+        removeBtn.disabled = true;
+        removeBtn.setAttribute("aria-label", "Remove file");
+      }
+      return;
+    }
+
+    updateItemMeta(state.itemEl, {
+      filename: state.filename,
+      byteLength: meta.byteLength ?? 0,
+    });
+    const main = state.itemEl.querySelector(".file-item-main");
+    if (main instanceof HTMLElement && state.nameAction !== "none") {
+      main.setAttribute("aria-label", `${state.nameAction} ${state.filename}`);
+      if (main instanceof HTMLButtonElement) main.disabled = false;
+    }
+    if (downloadBtn instanceof HTMLButtonElement) {
+      downloadBtn.disabled = false;
+      downloadBtn.setAttribute("aria-label", `Download ${state.filename}`);
+    }
+    if (uploadBtn instanceof HTMLButtonElement) {
+      uploadBtn.disabled = false;
+      uploadBtn.setAttribute("aria-label", `Replace ${state.filename}`);
+    }
+    if (removeBtn instanceof HTMLButtonElement) {
+      removeBtn.disabled = false;
+      removeBtn.setAttribute("aria-label", `Remove ${state.filename}`);
+    }
+  }
 
   /**
    * @param {number} index
@@ -506,20 +611,15 @@ function initFileRows(fileEl, options = {}) {
     if (!state) return;
 
     state.filename = file.name;
-    state.mimeType = file.type || state.mimeType;
+    state.mimeType = file.type || state.mimeType || DEFAULT_MIME_TYPE;
     state.content = file;
     state.getContent = undefined;
 
     const main = state.itemEl.querySelector(".file-item-main");
-    if (main) {
+    if (main instanceof HTMLElement) {
       main.dataset.fileName = file.name;
       if (file.type) main.dataset.fileMime = file.type;
     }
-
-    updateItemMeta(state.itemEl, {
-      filename: state.filename,
-      byteLength: file.size,
-    });
 
     if (state.download) {
       ensureSegment(state.itemEl, "download", state.filename, true);
@@ -530,6 +630,8 @@ function initFileRows(fileEl, options = {}) {
     if (state.remove) {
       ensureSegment(state.itemEl, "remove", state.filename, true);
     }
+
+    syncRowFilledState(state, true, { byteLength: file.size });
 
     onUpload?.({
       fileEl,
@@ -590,7 +692,7 @@ function initFileRows(fileEl, options = {}) {
 
   async function runDownload(index) {
     const state = itemStates[index];
-    if (!state) return null;
+    if (!state?.hasFile) return null;
     const result = await downloadFile({
       filename: state.filename,
       content: /** @type {string | Blob | ArrayBuffer | undefined} */ (state.content),
@@ -611,18 +713,29 @@ function initFileRows(fileEl, options = {}) {
 
   function runRemove(index) {
     const state = itemStates[index];
-    if (!state) return;
+    if (!state?.hasFile) return;
 
+    const previousFilename = state.filename;
     onRemove?.({
       fileEl,
       itemEl: state.itemEl,
       index,
-      filename: state.filename,
+      filename: previousFilename,
     });
 
-    const listItem = state.itemEl.closest("li");
-    (listItem ?? state.itemEl).remove();
-    itemStates[index] = /** @type {any} */ (null);
+    if (state.removeMode === "detach") {
+      const listItem = state.itemEl.closest("li");
+      (listItem ?? state.itemEl).remove();
+      itemStates[index] = /** @type {any} */ (null);
+      return;
+    }
+
+    state.filename = "";
+    state.mimeType = DEFAULT_MIME_TYPE;
+    state.content = undefined;
+    state.getContent = undefined;
+    if (state.input) state.input.value = "";
+    syncRowFilledState(state, false);
   }
 
   function openPickerFor(index) {
@@ -712,6 +825,20 @@ function initFileRows(fileEl, options = {}) {
         /** @type {HTMLElement} */ (mainSource).dataset?.fileDropActive
       ) ??
       hostDropActive;
+    const removeMode = resolveRemoveMode(
+      fromOptions.removeMode ??
+        /** @type {HTMLElement} */ (mainSource).dataset?.fileRemoveMode ??
+        hostRemoveModeAttr,
+      upload
+    );
+    const emptyLabel =
+      (typeof fromOptions.emptyLabel === "string" &&
+        fromOptions.emptyLabel.trim()) ||
+      /** @type {HTMLElement} */ (mainSource).dataset?.fileEmptyLabel?.trim() ||
+      hostEmptyLabel;
+    const hasFile =
+      typeof getContent === "function" ||
+      (content !== undefined && content !== null);
 
     const main = ensureMain(itemEl, { nameAction, filename });
     main.dataset.fileName = filename;
@@ -755,18 +882,23 @@ function initFileRows(fileEl, options = {}) {
       remove,
       upload,
       nameAction,
+      removeMode,
+      emptyLabel,
+      hasFile,
       input,
     };
     itemStates[index] = state;
 
-    void resolveContent(getContent, content).then((resolved) => {
-      if (!itemStates[index]) return;
-      updateItemMeta(itemEl, {
-        filename: itemStates[index].filename,
-        byteLength: resolveByteLength(resolved),
+    if (hasFile) {
+      void resolveContent(getContent, content).then((resolved) => {
+        if (!itemStates[index]?.hasFile) return;
+        syncRowFilledState(itemStates[index], true, {
+          byteLength: resolveByteLength(resolved),
+        });
       });
-    });
-
+    } else {
+      syncRowFilledState(state, false);
+    }
     if (nameAction !== "none") {
       cleanups.push(bindClick(main, () => runNameAction(index)));
     }
@@ -883,6 +1015,12 @@ function initFileLarge(fileEl, options = {}) {
   const max =
     options.maxFiles ??
     (fileEl.dataset.fileMax ? Number(fileEl.dataset.fileMax) : undefined);
+  // Single-file hosts hide the prompt once filled; multi hosts keep it (override with
+  // hidePromptWhenFull / data-file-hide-prompt-when-full).
+  const hidePromptWhenFull =
+    options.hidePromptWhenFull ??
+    parseBooleanAttr(fileEl.dataset.fileHidePromptWhenFull) ??
+    !isMultiple;
 
   // Large defaults: remove on, download/upload off (selection list, not export).
   const hostDownload =
@@ -985,11 +1123,35 @@ function initFileLarge(fileEl, options = {}) {
     listCleanups = [];
   }
 
+  function selectionCapacity() {
+    if (!isMultiple) return 1;
+    if (max && Number.isFinite(max) && max > 0) return max;
+    return Number.POSITIVE_INFINITY;
+  }
+
+  function isSelectionFull() {
+    return files.length >= selectionCapacity();
+  }
+
+  function syncPromptVisibility() {
+    const hide = hidePromptWhenFull && isSelectionFull();
+    setHidden(prompt, hide);
+    if ("disabled" in prompt) {
+      /** @type {HTMLButtonElement} */ (prompt).disabled = hide;
+    }
+    fileEl.classList.toggle("is-full", hide);
+    if (hide) {
+      dragDepth = 0;
+      setDragover(false);
+    }
+  }
+
   function commitFiles(nextFiles) {
     const hadFiles = files.length > 0;
     files = nextFiles;
     syncInputFiles(input, files);
     renderList();
+    syncPromptVisibility();
 
     if (!files.length) {
       if (hadFiles) onClear?.({ fileEl });
@@ -1002,6 +1164,7 @@ function initFileLarge(fileEl, options = {}) {
 
   function addFiles(incoming) {
     if (!incoming.length) return;
+    if (hidePromptWhenFull && isSelectionFull()) return;
 
     const { accepted, rejected } = partitionByAccept(incoming);
     reportRejected(rejected);
@@ -1040,6 +1203,7 @@ function initFileLarge(fileEl, options = {}) {
   }
 
   function openPicker() {
+    if (hidePromptWhenFull && isSelectionFull()) return;
     input.value = "";
     input.click();
   }
@@ -1184,17 +1348,23 @@ function initFileLarge(fileEl, options = {}) {
 
   function onDragEnter(event) {
     event.preventDefault();
+    if (hidePromptWhenFull && isSelectionFull()) return;
     dragDepth += 1;
     setDragover(true);
   }
 
   function onDragOver(event) {
     event.preventDefault();
+    if (hidePromptWhenFull && isSelectionFull()) {
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "none";
+      return;
+    }
     if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
   }
 
   function onDragLeave(event) {
     event.preventDefault();
+    if (hidePromptWhenFull && isSelectionFull()) return;
     dragDepth -= 1;
     if (dragDepth <= 0) {
       dragDepth = 0;
@@ -1206,6 +1376,7 @@ function initFileLarge(fileEl, options = {}) {
     event.preventDefault();
     dragDepth = 0;
     setDragover(false);
+    if (hidePromptWhenFull && isSelectionFull()) return;
 
     const incoming = [...(event.dataTransfer?.files ?? [])];
     if (!incoming.length) return;
@@ -1220,6 +1391,7 @@ function initFileLarge(fileEl, options = {}) {
   fileEl.addEventListener("drop", onDrop);
 
   renderList();
+  syncPromptVisibility();
 
   return {
     openPicker,
