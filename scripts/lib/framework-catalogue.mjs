@@ -35,6 +35,7 @@ export const CSS_INDEX_ORDER = [
   "controls-chips.css",
   "controls-fields.css",
   "controls-widgets.css",
+  "controls-glow.css",
   "controls-section-panel.css",
   "controls-menus.css",
   "controls-disclosure.css",
@@ -72,6 +73,7 @@ export const CORE = {
     "app/utils/clipboard.js",
     "app/utils/button-label.js",
     "app/utils/required-field.js",
+    "app/utils/control-glow.js",
     "app/utils/icons.js",
     "app/utils/icons-framework.js",
     "app/utils/brand-icon.js",
@@ -81,7 +83,7 @@ export const CORE = {
     "app/components/tooltip.js",
     "app/components/banner.js",
   ],
-  css: ["layout.css", "controls-buttons.css", "overlays.css"],
+  css: ["layout.css", "controls-buttons.css", "controls-glow.css", "overlays.css"],
   icons: [
     "light-mode",
     "dark-mode",
@@ -104,6 +106,7 @@ export const INFRA = {
   clipboard: ["app/utils/clipboard.js"],
   "button-label": ["app/utils/button-label.js"],
   "required-field": ["app/utils/required-field.js"],
+  "control-glow": ["app/utils/control-glow.js"],
   color: ["app/utils/color.js"],
   icons: ["app/utils/icons.js", "app/utils/icons-framework.js"],
   menu: ["app/utils/menu.js"],
@@ -536,6 +539,7 @@ export const COMPONENTS = {
 export const CSS_ONLY = {
   buttons: { css: ["controls-buttons.css"], always: true },
   toolbar: { css: ["controls-buttons.css"], always: true },
+  "control-glow": { css: ["controls-glow.css"], always: true },
   fields: { css: ["controls-fields.css"] },
   "section-panel": { css: ["controls-section-panel.css"] },
   callout: { css: ["overlays.css"] },
@@ -545,6 +549,7 @@ export const CSS_ONLY = {
 export const CSS_PARTIAL_FEATURES = {
   "layout.css": ["shell", "page-nav", "sticky", "title-numbering", "theme-toggle", "about-dialog"],
   "controls-buttons.css": ["buttons", "toolbar", "toggle-button"],
+  "controls-glow.css": ["control-glow"],
   "overlays.css": ["tooltip", "banner", "dialog", "about-dialog", "callout", "popover", "tutorial"],
   "tutorial.css": ["tutorial"],
   "code-block.css": ["code-block", "expandable-surface"],

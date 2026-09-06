@@ -12,9 +12,9 @@ When trimming: delete a feature’s JS only if unused; remove a **shared** CSS p
 | ---- | ----- |
 | Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/framework.css` (generated index), `app/css/app.css` (fork-owned) |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js`, `app-storage-ui.js` |
-| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js`, `app-storage.js` |
+| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js`, `required-field.js`, `control-glow.js`, `app-storage.js` |
 | Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js`, `app/components/dialog.js`, `app/components/popover.js` (imported by `shell.js` / `app-storage-ui.js`) |
-| Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
+| Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/controls-glow.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
 | Brand | `app/res/` logos as wired in HTML / `__MICROAPP__` |
 
 Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-toggle, tabular-input type menu).
@@ -25,6 +25,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | -------------------- | --------------------- |
 | `layout.css` | Shell, section layout, page nav, footer, theme toggle, sticky, title numbering |
 | `controls-buttons.css` | Buttons, toolbar, toggle-button (always with shell) |
+| `controls-glow.css` | control-glow (always with shell) |
 | `overlays.css` | tooltip, banner, dialog, callout, popover |
 | `tutorial.css` | tutorial |
 | `code-block.css` | code-block, expandable-surface |
@@ -106,6 +107,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | -- | ------------ | ----- |
 | buttons | `.btn*`, `controls-buttons.css` | Always keep with shell; `.btn-toggle` pressed styles shared with toggle-button |
 | toolbar | `.toolbar` | Layout helper; no JS module |
+| control-glow | `.control-glow`, `controls-glow.css` + `app/utils/control-glow.js` | Always keep with shell; opt-in attention glow (`setControlGlow` / `clearControlGlow`) |
 | fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css`; required chrome via `.is-required` + `app/utils/required-field.js` |
 | section-panel | `.section-panel`, `controls-section-panel.css` | Demo pattern; drop partial if unused |
 | callout | `.callout`, `overlays.css` | CSS-only tip card; keep `overlays.css` if banners/tooltips/dialogs remain |
