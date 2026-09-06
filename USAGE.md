@@ -503,7 +503,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
 | **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
-| **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
+| **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. Hover/focus tips skip disabled controls unless `data-tooltip-when-disabled`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
 | **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps and `when` / nested `steps` branches. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
 | **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/components/banner.js`](app/components/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
@@ -764,8 +764,12 @@ if (aboutOpenBtn instanceof HTMLElement && !hasSeenAboutHint()) {
 
 Hover tips (default): add `data-tooltip` and optional `data-tooltip-position="top|bottom|left|right"`. Optional `data-tooltip-tone="success|error"` for bold green/red tips with check / × icons (info is the default, text only).
 
+Hover and focus tips do **not** show on disabled controls (`disabled`, `aria-disabled="true"`, or a host class ending in `--disabled`, e.g. `.slider--disabled`). Add `data-tooltip-when-disabled` to keep the tip (for example to explain why the control is unavailable). Timer (`flashTooltip`) and persistent tips are unaffected.
+
 ```html
 <button type="button" data-tooltip="Help text" data-tooltip-position="top">?</button>
+<button type="button" disabled data-tooltip="Unavailable until you save"
+  data-tooltip-when-disabled>Save</button>
 ```
 
 ```javascript

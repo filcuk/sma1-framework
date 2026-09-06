@@ -1,8 +1,13 @@
 /**
  * Tooltips: hover (default), timer (reaction flash), and persistent (tutorial).
  * See DESIGN.md — hover/timer share one slot; persistent tips are separate.
+ *
+ * Hover/focus tips skip disabled controls by default (`disabled`,
+ * `aria-disabled="true"`, or a host class ending in `--disabled`). Opt in with
+ * `data-tooltip-when-disabled`. Timer / persistent APIs are unaffected.
  */
 
+import { parseBooleanAttr } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 
 const GAP = 8;
@@ -132,6 +137,31 @@ function normalizePosition(value) {
  */
 function getPosition(target) {
   return normalizePosition(target.dataset.tooltipPosition);
+}
+
+/**
+ * @param {HTMLElement} target
+ * @returns {boolean}
+ */
+function isDisabledTooltipTarget(target) {
+  if ("disabled" in target && Boolean(/** @type {{ disabled?: boolean }} */ (target).disabled)) {
+    return true;
+  }
+  if (target.getAttribute("aria-disabled") === "true") return true;
+  for (const name of target.classList) {
+    if (name.endsWith("--disabled")) return true;
+  }
+  return false;
+}
+
+/**
+ * Hover/focus tips are suppressed on disabled controls unless opted in.
+ * @param {HTMLElement} target
+ * @returns {boolean}
+ */
+function shouldSuppressHoverTooltip(target) {
+  if (parseBooleanAttr(target.dataset.tooltipWhenDisabled)) return false;
+  return isDisabledTooltipTarget(target);
 }
 
 /**
@@ -312,6 +342,13 @@ function showSharedSlot(target, mode) {
  * @param {HTMLElement} target
  */
 function showHover(target) {
+  if (shouldSuppressHoverTooltip(target)) {
+    if (slotMode === "hover" && activeTarget === target) {
+      hideSharedSlot();
+    }
+    return;
+  }
+
   if (timerState && timerState.target !== target) {
     restoreTimerTarget();
     hideSharedSlot();
@@ -368,6 +405,10 @@ function repositionShared() {
   if (!activeTarget || !tooltipEl) return;
   if (!activeTarget.isConnected) {
     cancelSharedSlot();
+    return;
+  }
+  if (slotMode === "hover" && shouldSuppressHoverTooltip(activeTarget)) {
+    hideSharedSlot();
     return;
   }
   const text = activeTarget.dataset.tooltip;

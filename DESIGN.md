@@ -22,7 +22,7 @@ Success and error **tooltips** (when used) use bold green / red styling (banner 
 
 | Mode | Role | Lifetime |
 | ---- | ---- | -------- |
-| **Hover** (default) | Describe a control on pointer over or focus | Until pointer/focus leaves |
+| **Hover** (default) | Describe a control on pointer over or focus | Until pointer/focus leaves (skipped on disabled controls unless opted in) |
 | **Timer** | Reaction feedback when in-place is not an option (e.g. icon-only copy → “Copied”) | Fixed duration; stays visible without hover |
 | **Persistent** | Single anchored tip that stays until dismissed (e.g. highlight one control) | Until explicitly dismissed (e.g. user activates the highlighted control) |
 

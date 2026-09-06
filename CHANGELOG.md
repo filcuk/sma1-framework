@@ -26,6 +26,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
+- Hover/focus tooltips no longer show on disabled controls by default (`disabled`, `aria-disabled="true"`, or a host `*--disabled` class). Opt in with `data-tooltip-when-disabled`. Timer and persistent tips are unchanged.
 - Slider thumb is centred on the track value (overhangs the track at min / max) instead of keeping the thumb fully inside the track ends.
 - File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`. Cleared slots hide download / remove segments, promote the main segment to upload, and set main-segment tooltips for download / upload / remove actions. Action segments tip **Download** / **Upload** / **Replace** / **Remove**. When only one action is active, the row collapses to a single control (icon on the main).
 - Large `.file--large` hosts hide the drop prompt when the selection is full by default for single-file mode (`hidePromptWhenFull`; multi-file keeps the prompt). Set `data-file-hide-prompt-when-full` / `hidePromptWhenFull` to override.
