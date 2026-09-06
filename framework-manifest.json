@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T09:24:17.573Z",
+  "generatedAt": "2026-09-06T09:48:55.646Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -207,7 +207,7 @@
       "sha256": "214d7e4e6c0ae2f7a21fcf792761f7d613db382861293b0ec3c35f0c8f820eb6"
     },
     "app/components/tooltip.js": {
-      "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
+      "sha256": "167ad80ebb154119038d57225397b4e2a1b7373cdd4ca32466582bc1e4e70462"
     },
     "app/components/tutorial.js": {
       "sha256": "0ad1c22cc4bf19cc69e66a557f53f4fd2e53f9daaef7903c536f02e38d3e8d2b"
@@ -237,7 +237,7 @@
       "sha256": "5ffe088437760b57023b2ddbfe2a7b91eb5d0b8de13849992e6a9bef26ccdfbf"
     },
     "app/css/controls-fields.css": {
-      "sha256": "7fa37f92dc2c15d949b5d9b04fc7e594d96aca86335b5eae386d3adc65b910c7"
+      "sha256": "1725535e1449dc43faa7921ad3ec26b083f6803315a770cf306bbceee2cf207b"
     },
     "app/css/controls-file.css": {
       "sha256": "63a11b2ed941d98ad3cfc4dbf06207638d8747c42d342a8c9571ac81c615cec0"
@@ -246,7 +246,7 @@
       "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
     },
     "app/css/controls-menus.css": {
-      "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
+      "sha256": "bb68985fd7baae41d3f1cbbad35fa51c837273769d298b03ea337fbba93dd2d3"
     },
     "app/css/controls-model.css": {
       "sha256": "71406d6888e2e9c48be2d88be954b5844b70a4a11293e0014b97a002b4006a76"
@@ -261,10 +261,10 @@
       "sha256": "0701ca2984641e4f39e34a7534b4a1d8e83c2b6ffa63d87b4024bfc22e993697"
     },
     "app/css/layout.css": {
-      "sha256": "94e9ac5c7d9e864622ac757180ea438a5e2d387784a81a87c2ef7822bcb64427"
+      "sha256": "af46d87e44681f5b9599bff2ca4fb9b3fef0f741cc03d95775d33a087c0afb9c"
     },
     "app/css/overlays.css": {
-      "sha256": "4996f03cf5b44330d2509cb52f16d718389f639ba25bfb4ec23569766a015f2b"
+      "sha256": "fbd8a211dc8c2f835e7b20885b9f953a164db9b0aa841bb833b0018717dee6d4"
     },
     "app/css/rich-text-editor.css": {
       "sha256": "d111287589509fc59852cbf4f7d4d249a39a49b03424bc6e40d1813adbfeaabc"
@@ -346,6 +346,9 @@
     },
     "app/utils/orbit-home.js": {
       "sha256": "9f5d9c8c5a9b97cbc71f6fa1d35832a70895e4e25325ddb3a9bc99e179ecf11e"
+    },
+    "app/utils/required-field.js": {
+      "sha256": "f8d67172a97f75627d61d8a1984684a31aa65989d0c99779bf305ebea8fa64dd"
     },
     "app/utils/sanitize-svg.js": {
       "sha256": "433ca97df4ed3a0ad45c227448d0606a019a4be70215f3a0648eca0ab2b1f0ce"
@@ -1215,7 +1218,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "4f2a631f35cba7f9d9c6eefd80580dfc337527e6ec3269eac99ae0f0cefbb6af"
+      "sha256": "a218ddee0f59b8621dc654b78b0790b136ca1fdb9d40f23967a396fa8521aa64"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -1278,6 +1281,7 @@
       "app/utils/document-listeners.js",
       "app/utils/clipboard.js",
       "app/utils/button-label.js",
+      "app/utils/required-field.js",
       "app/utils/icons.js",
       "app/utils/icons-framework.js",
       "app/utils/brand-icon.js",
@@ -1313,6 +1317,9 @@
     ],
     "button-label": [
       "app/utils/button-label.js"
+    ],
+    "required-field": [
+      "app/utils/required-field.js"
     ],
     "color": [
       "app/utils/color.js"

@@ -63,8 +63,10 @@ import { initBadge } from "./components/badge.js";
 import { initChipGroup, initChipInput } from "./components/chip.js";
 import { initLegend } from "./components/legend.js";
 import { setHidden } from "./utils/dom.js";
+import { initRequiredFields } from "./utils/required-field.js";
 
 initShell();
+initRequiredFields(document);
 initExpands(document);
 initTabs(document);
 const codeBlockInstances = initCodeBlocks(document);

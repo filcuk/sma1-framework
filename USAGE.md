@@ -465,7 +465,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
-| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
+| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. Mark required fields with `.field.is-required` (red asterisk) and wire [`initRequiredFields`](app/utils/required-field.js) for empty `aria-invalid` sync. |
 | **File** | `.file` segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. [`app/components/file.js`](app/components/file.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
@@ -1405,7 +1405,7 @@ initLegends(document);
   <input type="text" id="name" class="input" placeholder="Enter text…" />
 </label>
 
-<label class="field" for="notes">
+<label class="field is-required" for="notes">
   <span class="field-label">Notes</span>
   <textarea id="notes" class="textarea" rows="4"></textarea>
 </label>
@@ -1434,6 +1434,31 @@ initLegends(document);
     </label>
   </div>
 </div>
+```
+
+**Required fields** — add `.is-required` on the `.field` (or any host whose direct child is `.field-label`). CSS appends a red `*` after the label. Call `initRequiredFields()` (or `initRequiredField()` / `setRequired()` / `syncRequiredField()`) so empty required controls get `aria-required`, optional native `required`, and `aria-invalid="true"` (error border) until filled. Hidden or disabled controls are not flagged. For non-standard controls (dropdown trigger, etc.), put `data-required-control` on the element to validate, or pass `control` / `isEmpty` to the init helpers.
+
+```javascript
+import {
+  initRequiredField,
+  initRequiredFields,
+  setFieldRequired,
+  syncRequiredField,
+} from "./utils/required-field.js";
+
+initRequiredFields(document); // every `.field.is-required`
+
+const notesField = document.querySelector("#notes")?.closest(".field");
+const notes = initRequiredField(notesField);
+notes?.setRequired(false); // drop asterisk + clear invalid
+notes?.setRequired(true);
+notes?.sync(); // after programmatic value changes
+
+setFieldRequired(document.getElementById("host-field"), true); // ensure + sync
+syncRequiredField(document.getElementById("driver-field"), {
+  required: true,
+  control: document.getElementById("driver-trigger"),
+});
 ```
 
 ```javascript

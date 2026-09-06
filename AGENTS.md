@@ -94,6 +94,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initTitleNumbering()` / `setTitleNumbering()` / `syncTitleNumbering()` | Optional hierarchical outline prefixes (`data-title-numbering`) |
 | `initTab()` / `initTabs()` | Single tabbed section vs every `.tabs` block |
 | `setHidden()` / `parseBooleanAttr()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values |
+| `initRequiredField()` / `initRequiredFields()` / `setFieldRequired()` / `syncRequiredField()` | Required field chrome (`.field.is-required` asterisk + empty `aria-invalid`) — see [`required-field.js`](app/utils/required-field.js) |
 | `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); `lockWidth` defaults on — see [`button-label.js`](app/utils/button-label.js) |
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
@@ -215,7 +216,7 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | ----- | -------- | ---- |
 | Entry | `main.js`, `demo.js`, `theme-init.js`, `config.js`, `version.js` | Loaded directly from HTML |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
-| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
+| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `required-field.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
 | Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put framework wrappers here |
 

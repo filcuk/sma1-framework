@@ -38,6 +38,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Required fields: `.field.is-required` adds a red label asterisk; [`app/utils/required-field.js`](app/utils/required-field.js) syncs `aria-required` / empty `aria-invalid` (and optional native `required`) via `initRequiredField(s)` / `setFieldRequired()` / `syncRequiredField()`. `.input` / `.textarea` and `.btn.dropdown-trigger` pick up the shared error border. Demo multi-line input is required.
 - Tooltip layout options: `data-tooltip-max-width` (CSS length / `none` / `match` to equal the trigger width; default `16rem`), `data-tooltip-nowrap` (single line), and `data-tooltip-offset` (px gap from trigger; default `8`). Same `maxWidth` / `nowrap` / `offset` on `flashTooltip()` and `showPersistentTooltip()`.
 - Model and toolpath preview optional auto-rotate (`data-*-preview-animation`) with a floating play/pause control; off by default. `animationPlaying` / `data-*-preview-animation-playing` choose the initial state; `setAnimationPlaying()` / `getAnimationPlaying()` update it at runtime. Apps can hook custom motion with `onAnimationFrame` / `setOnAnimationFrame()` and optionally disable the built-in orbit via `animationAutoRotate` / `setAnimationAutoRotate()`. Starts paused under `prefers-reduced-motion`. Demo: mesh plays; toolpath starts paused.
 - Framework `play`, `pause`, and `stop` icons from Material Icons Round (`round-play-arrow`, `round-pause`, `round-stop`).

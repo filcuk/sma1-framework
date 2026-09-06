@@ -562,6 +562,14 @@ li:not(:first-child) > .dropdown-menu-group {
   text-align: left;
 }
 
+.btn.dropdown-trigger[aria-invalid="true"] {
+  border-color: var(--banner-error-border);
+}
+
+.btn.dropdown-trigger[aria-invalid="true"]:focus-visible {
+  outline-color: var(--banner-error-border);
+}
+
 .btn.dropdown-trigger .combo-btn-chevron,
 .btn.dropdown-trigger .color-picker-format-chevron {
   margin-left: auto;
