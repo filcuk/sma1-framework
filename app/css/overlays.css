@@ -259,14 +259,12 @@
 }
 
 .tooltip--success {
-  font-weight: 700;
   color: var(--banner-success-text);
   background: var(--banner-success-bg);
   border-color: var(--banner-success-border);
 }
 
 .tooltip--error {
-  font-weight: 700;
   color: var(--banner-error-text);
   background: var(--banner-error-bg);
   border-color: var(--banner-error-border);
