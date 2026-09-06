@@ -632,7 +632,7 @@ const dialog = initDialog({
 // dialog.openDialog(), dialog.closeDialog(), dialog.isDialogOpen()
 ```
 
-Close controls use `data-dialog-close` on backdrop, × button, or footer buttons.
+Close controls use `data-dialog-close` on backdrop, the header close button, or footer buttons.
 
 **Default action / Enter:** mark the intended Enter target with `data-dialog-default` (focused on open). If omitted, Enter falls back to `.modal-footer-actions .btn-primary` (not `.btn-danger`). For destructive dialogs, put `data-dialog-default` on Cancel and style the primary action with `.btn-danger`.
 
@@ -654,7 +654,8 @@ All copy lives in the markup, so editing the explanation never means touching JS
   <div class="modal-panel">
     <div class="modal-header">
       <h2 id="about-dialog-title">What does this do?</h2>
-      <button type="button" class="modal-close" aria-label="Close" data-dialog-close>×</button>
+      <button type="button" class="modal-close" aria-label="Close" data-dialog-close
+        data-icon="clear" data-icon-class="modal-close-icon"></button>
     </div>
     <div class="modal-body">
       <p>Full explanation…</p>

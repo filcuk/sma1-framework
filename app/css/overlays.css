@@ -376,8 +376,9 @@
   display: none !important;
 }
 
+/* Shared with `.file-fullscreen-close` (controls-file.css): bordered surface + clear icon. */
+.modal-close,
 .popover__close {
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -393,6 +394,11 @@
     color var(--control-hover-ms) ease-out;
 }
 
+.popover__close {
+  flex-shrink: 0;
+}
+
+.modal-close:hover,
 .popover__close:hover {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
@@ -400,11 +406,13 @@
   transition-duration: 0s;
 }
 
+.modal-close:focus-visible,
 .popover__close:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+.modal-close-icon,
 .popover__close-icon {
   display: block;
   width: 1.125rem;
@@ -523,27 +531,6 @@ body.modal-open {
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-}
-
-.modal-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.modal-close:hover {
-  background: var(--code-bg);
-  color: var(--text);
 }
 
 .modal-body {

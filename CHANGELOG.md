@@ -29,7 +29,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
-- Popover dismiss control matches the file fullscreen overlay close (bordered surface button + `clear` icon) instead of a slim icon button.
+- Dialog and popover dismiss controls match the file fullscreen overlay close (bordered surface button + `clear` icon) instead of a text `×` / slim icon button.
 - About dialog demo drops Huh? / Uhh… stages; the footer link is **Repository** and shows immediately when no stages are present (`data-about-final`). Progressive stages remain optional in `initAboutDialog`.
 - Hover/focus tooltips no longer show on disabled controls by default (`disabled`, `aria-disabled="true"`, or a host `*--disabled` class). Opt in with `data-tooltip-when-disabled`. Timer and persistent tips are unchanged.
 - Slider thumb is centred on the track value (overhangs the track at min / max) instead of keeping the thumb fully inside the track ends.

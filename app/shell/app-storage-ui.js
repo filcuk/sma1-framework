@@ -15,6 +15,7 @@ import {
   setAppStorageEnabled,
 } from "../utils/app-storage.js";
 import { setHidden } from "../utils/dom.js";
+import { createIcon } from "../utils/icons.js";
 import { initPopupMenu } from "../utils/menu.js";
 
 const PRIVACY_HIDE_MS = 120;
@@ -97,7 +98,7 @@ function ensureConfirmDialogEl() {
     <div class="modal-panel">
       <div class="modal-header">
         <h2 id="${CONFIRM_DIALOG_ID}-title"></h2>
-        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>×</button>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close></button>
       </div>
       <div class="modal-body">
         <p data-storage-confirm-body></p>
@@ -110,6 +111,9 @@ function ensureConfirmDialogEl() {
       </div>
     </div>
   `;
+  el.querySelector(".modal-close")?.append(
+    createIcon("clear", { className: "modal-close-icon" }),
+  );
   document.body.append(el);
   return el;
 }
