@@ -812,7 +812,7 @@
               <div class="panel-stack">
                 <h3 class="panel-title">Tooltips</h3>
                 <p class="panel-hint">
-                  Tooltips can use optional position, timer, persistence and success/error state.
+                  Tooltips can use optional position, max-width (including match), nowrap, offset, timer, persistence and success/error state.
                 </p>
                 <div class="panel-row">
                   <button type="button" class="btn" data-tooltip="Save your changes">
@@ -821,6 +821,22 @@
                   <button type="button" class="btn btn-icon" aria-label="Help" data-tooltip="Inline help for this control"
                     data-tooltip-position="right">
                     <span class="help-icon" aria-hidden="true">?</span>
+                  </button>
+                  <button type="button" class="btn" data-tooltip="A longer tip that wraps inside a wider max-width box"
+                    data-tooltip-max-width="22rem">
+                    Wider tip
+                  </button>
+                  <button type="button" class="btn" data-tooltip="This tip matches the trigger control width"
+                    data-tooltip-max-width="match">
+                    Match width
+                  </button>
+                  <button type="button" class="btn" data-tooltip="Single-line tip that does not wrap"
+                    data-tooltip-nowrap>
+                    No wrap
+                  </button>
+                  <button type="button" class="btn" data-tooltip="Farther from the control"
+                    data-tooltip-offset="20">
+                    Offset
                   </button>
                   <span class="panel-inline">
                     Positions:
