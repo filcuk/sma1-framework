@@ -116,12 +116,13 @@
   border-bottom-left-radius: 6px;
 }
 
-.file-item > .btn:last-child {
+/* Prefer last `.btn` so a trailing hidden file input does not steal `:last-child`. */
+.file-item > .btn:nth-last-child(1 of .btn) {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-.file-item > .btn:not(:last-child) {
+.file-item > .btn:not(:nth-last-child(1 of .btn)) {
   border-right: none;
 }
 
@@ -138,7 +139,7 @@
   flex: 1;
   min-width: 0;
   justify-content: flex-start;
-  gap: 0.35rem;
+  gap: 0;
   padding: 0 0.75rem 0 1rem;
   font-size: 0.875rem;
   text-align: left;
@@ -165,6 +166,7 @@ button.file-item-main:not([aria-disabled="true"]) {
 .file-item-meta {
   font-size: 0.8125rem;
   margin-left: auto;
+  padding-left: 0.5rem;
 }
 
 .file-item--ext-never .file-item-ext,
@@ -172,11 +174,21 @@ button.file-item-main:not([aria-disabled="true"]) {
   display: none;
 }
 
-.file-item--ext-hover .file-item-ext,
-.file-item--size-hover .file-item-meta {
+.file-item--ext-hover .file-item-ext {
   opacity: 0;
   max-width: 0;
   margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity var(--control-hover-ms) ease-out, max-width var(--control-hover-ms) ease-out;
+}
+
+.file-item--size-hover .file-item-meta {
+  opacity: 0;
+  max-width: 0;
+  /* Keep right alignment while max-width collapses so exit does not flash left. */
+  margin-left: auto;
+  padding-left: 0;
   overflow: hidden;
   pointer-events: none;
   transition: opacity var(--control-hover-ms) ease-out, max-width var(--control-hover-ms) ease-out;
@@ -194,14 +206,19 @@ button.file-item-main:not([aria-disabled="true"]) {
 
 .file-item--size-hover .file-item-main:hover .file-item-meta,
 .file-item--size-hover .file-item-main:focus-visible .file-item-meta {
-  margin-left: auto;
+  padding-left: 0.5rem;
 }
 
 .file-item-download,
 .file-item-upload,
 .file-item-remove {
   flex-shrink: 0;
-  padding: 0 0.625rem;
+  box-sizing: border-box;
+  width: var(--control-height);
+  min-width: var(--control-height);
+  height: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0;
 }
 
 .file-item [data-icon] {

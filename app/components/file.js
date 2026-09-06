@@ -724,13 +724,14 @@ function initFileRows(fileEl, options = {}) {
     /** @type {HTMLInputElement | null} */
     let input = null;
     if (upload) {
-      input = itemEl.querySelector(".file-item-input");
+      const listItem = itemEl.closest("li") ?? itemEl;
+      input = listItem.querySelector(":scope > .file-item-input");
       if (!input) {
         input = document.createElement("input");
         input.type = "file";
         input.className = "file-item-input";
         input.hidden = true;
-        itemEl.append(input);
+        listItem.append(input);
       }
       if (acceptTypes) input.accept = acceptTypes;
       input.multiple = false;
@@ -1094,7 +1095,7 @@ function initFileLarge(fileEl, options = {}) {
         rowInput.hidden = true;
         if (acceptTypes) rowInput.accept = acceptTypes;
         rowInput.multiple = false;
-        itemEl.append(rowInput);
+        li.append(rowInput);
 
         const onRowChange = () => {
           const incoming = [...(rowInput?.files ?? [])];
