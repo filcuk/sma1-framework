@@ -108,7 +108,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | buttons | `.btn*`, `controls-buttons.css` | Always keep with shell; `.btn-toggle` pressed styles shared with toggle-button |
 | toolbar | `.toolbar` | Layout helper; no JS module |
 | control-glow | `.control-glow`, `controls-glow.css` + `app/utils/control-glow.js` | Always keep with shell; opt-in attention glow (`setControlGlow` / `clearControlGlow`) |
-| fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css`; required chrome via `.is-required` + `app/utils/required-field.js`; format rules via `app/utils/field-validation.js` |
+| fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css`; required chrome via `.is-required` + `app/utils/required-field.js`; format rules via `app/utils/field-validation.js`; units / uppercase / decimals via `app/utils/input-affix.js` |
 | section-panel | `.section-panel`, `controls-section-panel.css` | Demo pattern; drop partial if unused |
 | callout | `.callout`, `overlays.css` | CSS-only tip card; keep `overlays.css` if banners/tooltips/dialogs remain |
 | page-nav | `app/shell/page-nav.js`, `layout.css` | Via `initShell` |

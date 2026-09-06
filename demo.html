@@ -311,20 +311,11 @@ A      <div class="content-tier-body">
         <section class="content-section" aria-labelledby="demo-fields">
           <h3 id="demo-fields" class="section-title">Simple inputs</h3>
           <div class="section-panel">
-            <div class="panel-split">
+            <div class="panel-grid panel-grid-2">
               <div class="panel-stack">
-                <label class="field is-required" for="demo-input-multiline">
-                  <span class="field-label">Multi-line input</span>
-                  <textarea id="demo-input-multiline" class="textarea" rows="3" placeholder="Enter longer text…"></textarea>
-                </label>
                 <label class="field is-required" for="demo-input-email" data-validate="email">
                   <span class="field-label">Email</span>
                   <input type="email" id="demo-input-email" class="input" placeholder="name@example.com" autocomplete="email" />
-                  <span class="field-error" hidden></span>
-                </label>
-                <label class="field" for="demo-input-code" data-validate="alphanumeric|noSpaces">
-                  <span class="field-label">Code</span>
-                  <input type="text" id="demo-input-code" class="input" placeholder="ABC123" />
                   <span class="field-error" hidden></span>
                 </label>
                 <label class="field" for="demo-input-qty" data-validate="number" data-validate-min="1" data-validate-max="10">
@@ -333,27 +324,21 @@ A      <div class="content-tier-body">
                   <span class="field-error" hidden></span>
                 </label>
               </div>
-              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
               <div class="panel-stack">
-                <h3 class="panel-title">Radio</h3>
-                <div class="radio-group" id="demo-radio-group" role="radiogroup" aria-label="Radio">
-                  <label class="radio" for="demo-radio-a">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-a" value="a" />
-                    <span>Radio</span>
-                  </label>
-                  <label class="radio" for="demo-radio-b">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-b" value="b" checked />
-                    <span>Selected</span>
-                  </label>
-                  <label class="radio" for="demo-radio-c">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-c" value="c" disabled />
-                    <span>Disabled (off)</span>
-                  </label>
-                </div>
+                <label class="field" for="demo-input-price" data-validate="number" data-input-prefix="£" data-input-decimals="2">
+                  <span class="field-label">Price</span>
+                  <input type="text" id="demo-input-price" class="input" inputmode="decimal" />
+                  <span class="field-error" hidden></span>
+                </label>
+                <label class="field" for="demo-input-length" data-validate="number" data-input-suffix="cm" data-input-decimals="2">
+                  <span class="field-label">Length</span>
+                  <input type="text" id="demo-input-length" class="input" inputmode="decimal" />
+                  <span class="field-error" hidden></span>
+                </label>
               </div>
             </div>
             <hr class="panel-divider" />
-            <div class="panel-split">
+            <div class="panel-split panel-split--3">
               <div class="panel-stack">
                 <h3 class="panel-title">Toggle</h3>
                 <div class="toggle-group" id="demo-toggle-group">
@@ -421,6 +406,24 @@ A      <div class="content-tier-body">
                   </label>
                   <label class="checkbox" for="demo-checkbox-disabled">
                     <input type="checkbox" class="checkbox-input" id="demo-checkbox-disabled" disabled />
+                    <span>Disabled (off)</span>
+                  </label>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="panel-title">Radio</h3>
+                <div class="radio-group" id="demo-radio-group" role="radiogroup" aria-label="Radio">
+                  <label class="radio" for="demo-radio-a">
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-a" value="a" />
+                    <span>Radio</span>
+                  </label>
+                  <label class="radio" for="demo-radio-b">
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-b" value="b" checked />
+                    <span>Selected</span>
+                  </label>
+                  <label class="radio" for="demo-radio-c">
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-c" value="c" disabled />
                     <span>Disabled (off)</span>
                   </label>
                 </div>

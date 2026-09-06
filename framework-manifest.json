@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T18:35:02.027Z",
+  "generatedAt": "2026-09-06T18:39:04.227Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -237,7 +237,7 @@
       "sha256": "3f585f925b2c869cd5f25839935e3e89593229fe9a7560e19814599c71eabbe4"
     },
     "app/css/controls-fields.css": {
-      "sha256": "193b9f1a0d0bfc688349092875bf5543b6b0c01d4879fb716485f5035e5def64"
+      "sha256": "a6394dadab53ad9cd555961887e6772d9b718c9397348929939034adc31fa95a"
     },
     "app/css/controls-file.css": {
       "sha256": "63a11b2ed941d98ad3cfc4dbf06207638d8747c42d342a8c9571ac81c615cec0"
@@ -355,6 +355,9 @@
     },
     "app/utils/icons.js": {
       "sha256": "feb7fd54db5c7ad40b00a9e0e93fc6cb3071f986806c0382ffb355110bb8febe"
+    },
+    "app/utils/input-affix.js": {
+      "sha256": "1fefa1b60704f8f4dde48a3950881856e936a13368ba0503d7af4985ff99935e"
     },
     "app/utils/menu.js": {
       "sha256": "c9bfa427a04ab873b370a2bed3648a8bd8b6370ca220c8b7fef708ccf03c3414"
@@ -1239,7 +1242,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "654afccc65e98b11416bb81d929658dabcc9a64f8faeecf0a1fddb938132a086"
+      "sha256": "99f532d3b7c313abf2348a6af6c70d4d281a2f28c30a91b1c8757d6678a65a59"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "c1b1abdc5f20b2340048b921d4b1874821d85398d8a4dbb37006d5e4980be728"
@@ -1305,6 +1308,7 @@
       "app/utils/button-label.js",
       "app/utils/required-field.js",
       "app/utils/field-validation.js",
+      "app/utils/input-affix.js",
       "app/utils/control-glow.js",
       "app/utils/icons.js",
       "app/utils/icons-framework.js",
@@ -1352,6 +1356,9 @@
     ],
     "field-validation": [
       "app/utils/field-validation.js"
+    ],
+    "input-affix": [
+      "app/utils/input-affix.js"
     ],
     "control-glow": [
       "app/utils/control-glow.js"

@@ -100,6 +100,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `setHidden()` / `parseBooleanAttr()` / `syncDisclosurePanel()` / `hydrateDisclosure()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values; disclosure panels (expand / accordion) stay in layout for height animation via `inert` + `aria-hidden`, wrap padded body in `.disclosure-clip`, then hydrate transitions after the initial open state |
 | `initRequiredField()` / `initRequiredFields()` / `setFieldRequired()` / `syncRequiredField()` | Required field chrome (`.field.is-required` asterisk + empty `aria-invalid`) — see [`required-field.js`](app/utils/required-field.js) |
 | `initFieldValidation()` / `initFieldValidations()` / `registerValidator()` / `validateField()` | Simple field rules (`email`, `number`, `noSpaces`, `alphanumeric`, `required` + custom) — see [`field-validation.js`](app/utils/field-validation.js) |
+| `initInputAffix()` / `initInputAffixes()` | Muted in-field units, uppercase, fixed decimals — see [`input-affix.js`](app/utils/input-affix.js) |
 | `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); `lockWidth` defaults on — see [`button-label.js`](app/utils/button-label.js) |
 | `setControlGlow()` / `clearControlGlow()` / `setControlGlowMask()` | Opt-in attention glow (`.control-glow`; accent / danger / success / custom colour; optional icon glyph mask) — see [`control-glow.js`](app/utils/control-glow.js) |
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
@@ -224,7 +225,7 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | ----- | -------- | ---- |
 | Entry | `main.js`, `demo.js`, `theme-init.js`, `config.js`, `version.js` | Loaded directly from HTML |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
-| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `required-field.js`, `field-validation.js`, `control-glow.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
+| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `required-field.js`, `field-validation.js`, `input-affix.js`, `control-glow.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
 | Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put framework wrappers here |
 

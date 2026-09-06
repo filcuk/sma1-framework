@@ -45,6 +45,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 ### Added
 
 - Field validation: simple presets (`email`, `number` + min/max, `noSpaces`, `alphanumeric`, `required`) plus `registerValidator` / function rules in [`app/utils/field-validation.js`](app/utils/field-validation.js). Opt-in via `data-validate` / `initFieldValidation(s)`; optional `.field-error` messages; format checks after blur by default. Do not also wire `initRequiredField` on the same field.
+- Input adornments: display-only muted prefix/suffix (units), uppercase transform, and fixed decimals on blur in [`app/utils/input-affix.js`](app/utils/input-affix.js) (`data-input-prefix` / `-suffix` / `-uppercase` / `-decimals`).
 - Segmented control muted variant (`.segmented-control--muted`): light selection on a flush surface track (theme-like), with standard accent hover border and exit animation.
 - Control glow: opt-in attention cue (`.control-glow`) with accent / danger / success tones, optional custom `--control-glow-color`, soft breathe + shine (static under `prefers-reduced-motion` or `.control-glow--static`). Optional `maskIcon` / `setControlGlowMask()` masks shine to a catalogue icon glyph. Core footer storage shield uses a success glyph-masked glow by default (danger when storage is disabled). Helpers in [`app/utils/control-glow.js`](app/utils/control-glow.js); styles in [`app/css/controls-glow.css`](app/css/controls-glow.css). Demo: second Copy button and slim Danger.
 - Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).

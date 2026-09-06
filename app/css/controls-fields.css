@@ -81,6 +81,82 @@
   cursor: not-allowed;
 }
 
+/* Display-only muted prefix/suffix inside the field border (units, currency). */
+.input-affix {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--control-height);
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.input-affix:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: var(--accent);
+}
+
+.input-affix:has(.input[aria-invalid="true"]) {
+  border-color: var(--banner-error-border);
+}
+
+.input-affix:has(.input[aria-invalid="true"]):focus-within {
+  outline-color: var(--banner-error-border);
+  border-color: var(--banner-error-border);
+}
+
+.input-affix-prefix,
+.input-affix-suffix {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 0.15rem 0 0.75rem;
+  color: var(--muted);
+  user-select: none;
+  pointer-events: none;
+}
+
+.input-affix-suffix {
+  padding: 0 0.75rem 0 0.15rem;
+}
+
+.input-affix .input {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  min-height: calc(var(--control-height) - 2px);
+}
+
+.input-affix--prefix .input {
+  padding-left: 0.25rem;
+}
+
+.input-affix--suffix .input {
+  padding-right: 0.25rem;
+}
+
+.input-affix .input:focus {
+  outline: none;
+  border-color: transparent;
+}
+
+.input-affix .input:disabled {
+  opacity: 1;
+}
+
+.input-affix:has(.input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .combobox {
   position: relative;
   display: flex;

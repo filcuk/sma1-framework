@@ -465,7 +465,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
-| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. Mark required fields with `.field.is-required` (red asterisk) and wire [`initRequiredFields`](app/utils/required-field.js) for empty `aria-invalid` sync. Optional format rules via [`initFieldValidations`](app/utils/field-validation.js) (`data-validate`, custom `registerValidator`). |
+| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. Mark required fields with `.field.is-required` (red asterisk) and wire [`initRequiredFields`](app/utils/required-field.js) for empty `aria-invalid` sync. Optional format rules via [`initFieldValidations`](app/utils/field-validation.js) (`data-validate`, custom `registerValidator`). Display-only units / uppercase / fixed decimals via [`initInputAffixes`](app/utils/input-affix.js). |
 | **File** | `.file` segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. [`app/components/file.js`](app/components/file.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
@@ -1619,6 +1619,33 @@ initFieldValidation(emailField, {
 
 // Gate submit:
 const ok = validateField(emailField); // reveals format errors too
+```
+
+**Input adornments** — display-only muted prefix/suffix inside the field border (currency / units; value stays bare), optional uppercase while typing, and fixed decimal formatting on blur. Separate from validation; compose both on the same field. Attributes may sit on the `.field` or the control: `data-input-prefix`, `data-input-suffix`, `data-input-uppercase`, `data-input-decimals` (default `2` when present). Does not set `aria-invalid`.
+
+```html
+<label class="field" for="price" data-validate="number" data-input-prefix="£" data-input-decimals="2">
+  <span class="field-label">Price</span>
+  <input type="text" id="price" class="input" inputmode="decimal" />
+  <span class="field-error" hidden></span>
+</label>
+
+<label class="field" for="sku" data-input-uppercase data-validate="alphanumeric|noSpaces">
+  <span class="field-label">SKU</span>
+  <input type="text" id="sku" class="input" />
+</label>
+```
+
+```javascript
+import { initInputAffix, initInputAffixes } from "./utils/input-affix.js";
+
+initInputAffixes(document);
+
+const price = initInputAffix(document.querySelector("#price")?.closest(".field"), {
+  prefix: "£",
+  decimals: 2,
+});
+price?.setSuffix("cm");
 ```
 
 ```javascript
