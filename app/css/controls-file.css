@@ -1,12 +1,5 @@
 ﻿/* Large file dropzone host */
 
-.file--large {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
 .file-prompt {
   display: flex;
   flex-direction: column;
@@ -83,6 +76,10 @@
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
+}
+
+.file.file--large {
+  gap: 1rem;
 }
 
 .file-list {
