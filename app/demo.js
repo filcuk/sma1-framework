@@ -26,7 +26,6 @@ import {
 } from "./utils/button-label.js";
 import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
-import { initFileDropzone } from "./components/file-dropzone.js";
 import { initFile } from "./components/file.js";
 import { initImagePreview } from "./components/image-preview.js";
 import { initDatePicker } from "./components/date-picker/index.js";
@@ -305,7 +304,7 @@ async function readDemoGcode({ files }) {
   await loadDemoGcode(await file.arrayBuffer(), file.name);
 }
 
-const demoGcodeDropzoneApi = initFileDropzone(demoGcodeDropzone, {
+const demoGcodeDropzoneApi = initFile(demoGcodeDropzone, {
   onFiles: readDemoGcode,
   onError: ({ message }) => {
     if (demoGcodeStatus) {
@@ -328,9 +327,9 @@ const demoGcodeDropzoneApi = initFileDropzone(demoGcodeDropzone, {
   },
 });
 
-initFileDropzone(document.getElementById("demo-file-dropzone-single"));
+initFile(document.getElementById("demo-file-dropzone-single"));
 
-initFileDropzone(document.getElementById("demo-file-dropzone-multi"));
+initFile(document.getElementById("demo-file-dropzone-multi"));
 
 initFile(document.getElementById("demo-file-download"), {
   files: [

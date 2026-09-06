@@ -4,7 +4,7 @@ import {
   fileMatchesAccept,
   parseAcceptTokens,
   resolveAcceptFilter,
-} from "../app/components/file-dropzone.js";
+} from "../app/components/file.js";
 
 test("parseAcceptTokens splits and normalises accept lists", () => {
   assert.deepEqual(parseAcceptTokens(".gcode,.bgcode"), [".gcode", ".bgcode"]);

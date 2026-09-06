@@ -392,7 +392,7 @@ app/
     controls-section-panel.css # Section panel grid
     controls-menus.css    # Combo, dropdown
     controls-disclosure.css # Expand, accordion, tabs, progress indicator
-    controls-file.css     # File dropzone, segmented file rows
+    controls-file.css     # Segmented file rows, large dropzone host
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
     controls-diagram.css  # Mermaid diagram host
@@ -466,8 +466,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
-| **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
-| **File** | `.file` segmented rows (download / upload / remove) with on-demand content and hover meta. [`app/components/file.js`](app/components/file.js). |
+| **File** | `.file` segmented rows and `.file--large` dropzone host (download / upload / remove). [`app/components/file.js`](app/components/file.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
@@ -1602,48 +1601,11 @@ duration?.close();
 initDurationInputs(document);
 ```
 
-### File dropzone
-
-Drag-and-drop or click-to-browse file picker. Selected files appear in a list with remove buttons.
-
-```html
-<div class="file-dropzone" id="my-dropzone" data-file-accept="image/*" data-file-multiple data-file-max="5">
-  <input type="file" class="file-dropzone-input" hidden />
-  <button type="button" class="file-dropzone-prompt">
-    <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
-    <span class="file-dropzone-text">
-      <span class="file-dropzone-primary">Drop files here</span>
-      <span class="file-dropzone-secondary">select to browse</span>
-    </span>
-  </button>
-  <ul class="file-dropzone-list hidden" hidden></ul>
-</div>
-```
-
-```javascript
-import { initFileDropzone, initFileDropzones } from "./components/file-dropzone.js";
-
-const dropzone = initFileDropzone(document.getElementById("my-dropzone"), {
-  onFiles: ({ files }) => console.log(files),
-  onError: ({ message }) => console.warn(message),
-  onClear: () => console.log("cleared"),
-});
-
-dropzone?.openPicker();
-dropzone?.getFiles();
-dropzone?.setFiles([file]); // programmatic selection (triggers onFiles)
-dropzone?.clear();
-
-initFileDropzones(document); // wire every `.file-dropzone`
-```
-
-`data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep the old advise-only behaviour: picker hint + meta label only, no rejection. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
-
-On init, the prompt shows a `.file-dropzone-meta` line when there is something non-default to communicate: allowed types (from `accept`) and/or a multi-file count (`Up to N files` or `Multiple files`). A plain single-file dropzone with no `accept` shows no meta line. The element is created if missing.
-
 ### File
 
-Segmented combo-style rows (standard control height). Optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand.
+Segmented combo-style rows and an optional large dropzone host (`.file--large`).
+
+**Rows** — optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand.
 
 ```html
 <div class="file" id="my-file" data-file-download data-file-ext-visibility="hover"
@@ -1662,6 +1624,22 @@ Segmented combo-style rows (standard control height). Optional download, upload/
       </div>
     </li>
   </ul>
+</div>
+```
+
+**Large host** — drag-and-drop / browse picker. Selected files render as segmented `.file-item` rows (remove on by default; download / upload off; size meta always visible).
+
+```html
+<div class="file file--large" id="my-dropzone" data-file-accept="image/*" data-file-multiple data-file-max="5">
+  <input type="file" class="file-input" hidden />
+  <button type="button" class="file-prompt">
+    <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+    <span class="file-prompt-text">
+      <span class="file-prompt-primary">Drop files here</span>
+      <span class="file-prompt-secondary">select to browse</span>
+    </span>
+  </button>
+  <ul class="file-list hidden" hidden></ul>
 </div>
 ```
 
@@ -1685,16 +1663,31 @@ initFile(document.getElementById("my-file"), {
   onNameAction: ({ filename }) => console.log("custom", filename),
 });
 
-// Or trigger directly:
+const dropzone = initFile(document.getElementById("my-dropzone"), {
+  onFiles: ({ files }) => console.log(files),
+  onError: ({ message }) => console.warn(message),
+  onClear: () => console.log("cleared"),
+});
+
+dropzone?.openPicker();
+dropzone?.getFiles();
+dropzone?.setFiles([file]); // programmatic selection (triggers onFiles)
+dropzone?.clear();
+
+// Or trigger a download directly:
 await downloadFile({
   filename: "notes.txt",
   content: "Plain text body",
 });
 
-initFiles(document); // wire every `.file`
+initFiles(document); // wire every `.file` (rows and large hosts)
 ```
 
-Defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. Enable upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target. `data-file-accept` / `data-file-accept-filter` (`strict` | `soft`) apply to upload browse and drop. Pass a `files` array with per-file `getContent` callbacks; size fills `.file-item-meta` when content resolves at init.
+Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
+
+`data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep advise-only behaviour. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
+
+On large init, the prompt shows a `.file-prompt-meta` line when there is something non-default to communicate: allowed types and/or a multi-file count. A plain single-file host with no `accept` shows no meta line. The element is created if missing.
 
 ### STL export
 

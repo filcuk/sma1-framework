@@ -35,7 +35,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
 | `controls-menus.css` | combo, dropdown, dropdown-toggle, color-picker (format menu) |
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
-| `controls-file.css` | file-dropzone, file |
+| `controls-file.css` | file |
 | `controls-image.css` | image-preview |
 | `controls-color.css` | color-set, color-picker |
 | `controls-charts.css` | charts |
@@ -85,8 +85,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | accordion | `app/components/accordion.js` | `controls-disclosure.css` | — | `chevron-right` | `dom`, `icons` | |
 | tabs | `app/components/tabs.js` | `controls-disclosure.css` | — | — | `dom` | |
 | progress-indicator | `app/components/progress-indicator.js` | `controls-disclosure.css` | — | — | `dom` | |
-| file-dropzone | `app/components/file-dropzone.js` | `controls-file.css` | — | Markup: `upload`; JS: `error` | `dom`, `icons` | |
-| file | `app/components/file.js` | `controls-file.css` | — | `download`, `upload`, `remove-circle` | `dom`, `icons` | Segmented combo-style rows; optional upload/remove; hover/always/never ext+size |
+| file | `app/components/file.js` | `controls-file.css` | — | `download`, `upload`, `remove-circle` | `dom`, `icons` | Segmented rows + `.file--large` dropzone; optional upload/remove; hover/always/never ext+size |
 | image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`, `sanitize-svg`; download uses `file`; maximise: expandable-surface | Checkerboard host; `setSvg` (sanitized) / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
 | code-block | `app/components/code-block.js` | `code-block.css` | `app/vendor/prism/`, `app/prism.css` | `clear`, `copy`, `paste`, `lines`, `highlight`, `fullscreen` | `dom`, `clipboard`, `button-label`, `icons` | Load Prism scripts on the page |
 | expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
@@ -138,13 +137,13 @@ Do not remove these from `ICONS` while using `initShell`:
 | `app/dialog.js`, `app/combo.js`, … | `app/components/<name>.js` |
 | `app/icons.js` | `app/utils/icons.js` (merge API; definitions in `icons-framework.js` / `icons-app.js`) |
 | `app/page-nav.js`, `app/heading-link.js`, … | `app/shell/<name>.js` |
-| `app/file-dropzone.js` | `app/components/file-dropzone.js` |
+| `app/file-dropzone.js` | `app/components/file.js` (`.file--large`) |
 | `app/components/toastui-editor.js` | Merged into `app/components/rich-text-editor.js` (no separate seam) |
 
 ## Trim decision algorithm
 
 1. Collect entry HTML files → their `type=module` scripts → transitive imports.
-2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file`, `.file-dropzone`, etc.).
+2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file`, `.file--large`, etc.).
 3. Mark a catalogue `id` **used** if imported or markup-matched.
 4. Unused ids → candidates to delete (JS + exclusive vendor).
 5. For each CSS partial, if no remaining used feature maps to it → drop `@import` from `app/css/framework.css` and delete the file.

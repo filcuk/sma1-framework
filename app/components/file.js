@@ -2,35 +2,24 @@ import { parseBooleanAttr, setHidden } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 
 /**
- * Segmented file control (combo-style). Rows expose an optional name segment plus
- * download / upload / remove action segments.
+ * Segmented file control (combo-style) and large dropzone host.
  *
- * Markup:
- *   <div class="file" data-file-download data-file-ext-visibility="hover"
- *     data-file-size-visibility="hover" data-file-name-action="none">
- *     <ul class="file-list">
- *       <li>
- *         <div class="file-item">
- *           <div class="btn file-item-main" data-file-name="notes.txt">
- *             <span class="file-item-name">notes</span>
- *             <span class="file-item-ext">.txt</span>
- *             <span class="file-item-meta"></span>
- *           </div>
- *           <button type="button" class="btn file-item-download" aria-label="Download notes.txt">
- *             <span data-icon="download" data-icon-class="btn-icon-svg"></span>
- *           </button>
- *         </div>
- *       </li>
- *     </ul>
+ * Row markup (default):
+ *   <div class="file" data-file-download …>
+ *     <ul class="file-list">… .file-item …</ul>
  *   </div>
  *
- * Segment defaults: download on, remove off, upload off.
+ * Large dropzone:
+ *   <div class="file file--large" data-file-accept=".json" data-file-multiple data-file-max="5">
+ *     <input type="file" class="file-input" hidden />
+ *     <button type="button" class="file-prompt">…</button>
+ *     <ul class="file-list hidden" hidden></ul>
+ *   </div>
+ *
+ * Row defaults: download on, remove off, upload off.
+ * Large defaults: remove on, download off, upload off; size meta always visible.
  * Name action: none | download | upload | remove | custom (via onNameAction).
  * Ext / size visibility: hover | always | never (independent).
- *
- * data-file-name / data-file-mime — per-item filename and MIME
- * data-file-accept / data-file-accept-filter — upload accept (strict | soft)
- * data-file-drop-active — when upload is on, treat the row as a drop target
  */
 
 const DEFAULT_MIME_TYPE = "text/plain;charset=utf-8";
@@ -352,32 +341,95 @@ function bindClick(el, handler) {
 }
 
 /**
+ * @param {string | undefined} option
  * @param {HTMLElement} fileEl
- * @param {{
- *   filename?: string,
- *   mimeType?: string,
- *   content?: string | Blob | ArrayBuffer,
- *   getContent?: () => string | Blob | ArrayBuffer | Promise<string | Blob | ArrayBuffer>,
- *   files?: Array<Record<string, unknown>>,
- *   download?: boolean,
- *   remove?: boolean,
- *   upload?: boolean,
- *   nameAction?: string,
- *   onNameAction?: (detail: object) => void,
- *   extVisibility?: string,
- *   sizeVisibility?: string,
- *   accept?: string,
- *   acceptFilter?: string,
- *   dropActive?: boolean,
- *   onDownload?: (detail: object) => void,
- *   onUpload?: (detail: object) => void,
- *   onRemove?: (detail: object) => void,
- *   onError?: (detail: object) => void,
- * }} [options]
+ * @returns {"default" | "large" | "fullscreen"}
+ */
+function resolveVariant(option, fileEl) {
+  const fromOption = String(option ?? "")
+    .trim()
+    .toLowerCase();
+  if (fromOption === "large" || fromOption === "fullscreen" || fromOption === "default") {
+    return /** @type {"default" | "large" | "fullscreen"} */ (fromOption);
+  }
+  if (fileEl.classList.contains("file--fullscreen")) return "fullscreen";
+  if (fileEl.classList.contains("file--large")) return "large";
+  return "default";
+}
+
+/** Human-readable label for one `accept` token (e.g. `.json` → `JSON`, `image/*` → `Images`). */
+function formatAcceptToken(token) {
+  const value = token.trim();
+  if (!value) return "";
+
+  if (value.startsWith(".")) {
+    return value.slice(1).toUpperCase();
+  }
+
+  const slash = value.indexOf("/");
+  if (slash !== -1) {
+    const type = value.slice(0, slash);
+    const subtype = value.slice(slash + 1);
+    if (subtype === "*") {
+      if (type === "image") return "Images";
+      if (type === "audio") return "Audio";
+      if (type === "video") return "Videos";
+      return `${type.charAt(0).toUpperCase()}${type.slice(1)}`;
+    }
+    return subtype.toUpperCase();
+  }
+
+  return value;
+}
+
+function formatAcceptLabel(accept) {
+  if (!accept?.trim()) return "";
+  return accept
+    .split(",")
+    .map(formatAcceptToken)
+    .filter(Boolean)
+    .join(", ");
+}
+
+function formatFilesLabel(max) {
+  if (max && Number.isFinite(max) && max > 0) {
+    return `Up to ${max} file${max === 1 ? "" : "s"}`;
+  }
+  return "Multiple files";
+}
+
+function formatConstraintsLabel(acceptTypes, isMultiple, max) {
+  const parts = [];
+  const acceptLabel = formatAcceptLabel(acceptTypes);
+  if (acceptLabel) parts.push(acceptLabel);
+  if (isMultiple) parts.push(formatFilesLabel(max));
+  return parts.join(" · ");
+}
+
+function syncInputFiles(input, files) {
+  const transfer = new DataTransfer();
+  files.forEach((file) => transfer.items.add(file));
+  input.files = transfer.files;
+}
+
+/**
+ * @param {HTMLElement} fileEl
+ * @param {object} [options]
  */
 export function initFile(fileEl, options = {}) {
   if (!fileEl) return null;
+  const variant = resolveVariant(options.variant, fileEl);
+  if (variant === "large") return initFileLarge(fileEl, options);
+  // fullscreen lands in a later step
+  if (variant === "fullscreen") return null;
+  return initFileRows(fileEl, options);
+}
 
+/**
+ * @param {HTMLElement} fileEl
+ * @param {object} [options]
+ */
+function initFileRows(fileEl, options = {}) {
   const {
     filename: hostFilename,
     mimeType: hostMimeType,
@@ -788,11 +840,411 @@ export function initFile(fileEl, options = {}) {
   };
 }
 
+/**
+ * Large dropzone host (`.file.file--large`). Selected files render as segmented
+ * `.file-item` rows (remove on by default; download / upload off).
+ *
+ * @param {HTMLElement} fileEl
+ * @param {object} [options]
+ */
+function initFileLarge(fileEl, options = {}) {
+  const input = fileEl.querySelector(".file-input");
+  const prompt = fileEl.querySelector(".file-prompt");
+  const list = fileEl.querySelector(".file-list");
+  if (!input || !prompt) return null;
+
+  const {
+    onFiles,
+    onError,
+    onClear,
+    onDownload,
+    onUpload,
+    onRemove,
+    onNameAction,
+  } = options;
+
+  const acceptTypes = options.accept ?? fileEl.dataset.fileAccept ?? "";
+  const acceptTokens = parseAcceptTokens(acceptTypes);
+  const acceptFilterMode = resolveAcceptFilter(
+    typeof options.acceptFilter === "string"
+      ? options.acceptFilter
+      : fileEl.dataset.fileAcceptFilter
+  );
+  const isMultiple =
+    options.multiple ?? parseBooleanAttr(fileEl.dataset.fileMultiple) ?? false;
+  const max =
+    options.maxFiles ??
+    (fileEl.dataset.fileMax ? Number(fileEl.dataset.fileMax) : undefined);
+
+  // Large defaults: remove on, download/upload off (selection list, not export).
+  const hostDownload =
+    options.download ?? parseBooleanAttr(fileEl.dataset.fileDownload) ?? false;
+  const hostRemove =
+    options.remove ?? parseBooleanAttr(fileEl.dataset.fileRemove) ?? true;
+  const hostUpload =
+    options.upload ?? parseBooleanAttr(fileEl.dataset.fileUpload) ?? false;
+  const hostNameAction = resolveNameAction(
+    options.nameAction ?? fileEl.dataset.fileNameAction,
+    "none"
+  );
+  const hostExtVisibility = resolveVisibility(
+    options.extVisibility ?? fileEl.dataset.fileExtVisibility,
+    "hover"
+  );
+  const hostSizeVisibility = resolveVisibility(
+    options.sizeVisibility ?? fileEl.dataset.fileSizeVisibility,
+    "always"
+  );
+
+  if (acceptTypes) input.accept = acceptTypes;
+  input.multiple = isMultiple;
+  if (acceptFilterMode === "soft") {
+    fileEl.dataset.fileAcceptFilter = "soft";
+  } else {
+    delete fileEl.dataset.fileAcceptFilter;
+  }
+
+  const constraintsLabel = formatConstraintsLabel(acceptTypes, isMultiple, max);
+  const text = prompt.querySelector(".file-prompt-text") ?? prompt;
+  let meta = text.querySelector(".file-prompt-meta");
+  if (constraintsLabel) {
+    if (!meta) {
+      meta = document.createElement("span");
+      meta.className = "file-prompt-meta";
+      text.append(meta);
+    }
+    meta.textContent = constraintsLabel;
+    setHidden(meta, false);
+  } else if (meta) {
+    meta.textContent = "";
+    setHidden(meta, true);
+  }
+
+  /** @type {File[]} */
+  let files = [];
+  let dragDepth = 0;
+  /** @type {Array<() => void>} */
+  let listCleanups = [];
+
+  function setDragover(active) {
+    fileEl.classList.toggle("is-dragover", active);
+  }
+
+  function partitionByAccept(incoming) {
+    if (!acceptTokens.length || acceptFilterMode === "soft") {
+      return { accepted: incoming, rejected: [] };
+    }
+    /** @type {File[]} */
+    const accepted = [];
+    /** @type {File[]} */
+    const rejected = [];
+    for (const file of incoming) {
+      if (fileMatchesAccept(file, acceptTokens)) accepted.push(file);
+      else rejected.push(file);
+    }
+    return { accepted, rejected };
+  }
+
+  function reportRejected(rejected) {
+    if (!rejected.length) return;
+    const message =
+      rejected.length === 1
+        ? `"${rejected[0].name}" is not an accepted file type.`
+        : `${rejected.length} files were not an accepted type.`;
+    onError?.({
+      fileEl,
+      message,
+      files: rejected,
+      reason: "accept",
+    });
+  }
+
+  function trimToMax(candidateFiles) {
+    if (!max || !Number.isFinite(max) || max <= 0) return candidateFiles;
+    if (candidateFiles.length <= max) return candidateFiles;
+
+    onError?.({
+      fileEl,
+      message: `You can add at most ${max} file${max === 1 ? "" : "s"}.`,
+      files: candidateFiles,
+      reason: "max",
+    });
+    return candidateFiles.slice(0, max);
+  }
+
+  function destroyListBindings() {
+    listCleanups.forEach((cleanup) => cleanup());
+    listCleanups = [];
+  }
+
+  function commitFiles(nextFiles) {
+    const hadFiles = files.length > 0;
+    files = nextFiles;
+    syncInputFiles(input, files);
+    renderList();
+
+    if (!files.length) {
+      if (hadFiles) onClear?.({ fileEl });
+      onFiles?.({ fileEl, files });
+      return;
+    }
+
+    onFiles?.({ fileEl, files });
+  }
+
+  function addFiles(incoming) {
+    if (!incoming.length) return;
+
+    const { accepted, rejected } = partitionByAccept(incoming);
+    reportRejected(rejected);
+    if (!accepted.length) return;
+
+    const next = isMultiple ? [...files, ...accepted] : accepted.slice(0, 1);
+    commitFiles(trimToMax(next));
+  }
+
+  function removeFile(index) {
+    const file = files[index];
+    onRemove?.({
+      fileEl,
+      index,
+      filename: file?.name,
+      file,
+    });
+    commitFiles(files.filter((_, fileIndex) => fileIndex !== index));
+  }
+
+  async function runDownload(index) {
+    const file = files[index];
+    if (!file) return null;
+    const result = await downloadFile({
+      filename: file.name,
+      content: file,
+      mimeType: file.type || DEFAULT_MIME_TYPE,
+    });
+    onDownload?.({
+      fileEl,
+      index,
+      filename: file.name,
+      size: result.size,
+    });
+    return result;
+  }
+
+  function openPicker() {
+    input.value = "";
+    input.click();
+  }
+
+  function renderList() {
+    if (!list) return;
+    destroyListBindings();
+
+    if (!files.length) {
+      setHidden(list, true);
+      list.replaceChildren();
+      return;
+    }
+
+    setHidden(list, false);
+    list.replaceChildren();
+
+    files.forEach((file, index) => {
+      const li = document.createElement("li");
+      const itemEl = document.createElement("div");
+      itemEl.className = "file-item";
+
+      const main = ensureMain(itemEl, {
+        nameAction: hostNameAction,
+        filename: file.name,
+      });
+      main.dataset.fileName = file.name;
+      if (file.type) main.dataset.fileMime = file.type;
+      applyVisibilityClasses(itemEl, {
+        extVisibility: hostExtVisibility,
+        sizeVisibility: hostSizeVisibility,
+      });
+      updateItemMeta(itemEl, {
+        filename: file.name,
+        byteLength: file.size,
+      });
+
+      const downloadBtn = ensureSegment(
+        itemEl,
+        "download",
+        file.name,
+        hostDownload
+      );
+      const uploadBtn = ensureSegment(itemEl, "upload", file.name, hostUpload);
+      const removeBtn = ensureSegment(itemEl, "remove", file.name, hostRemove);
+
+      /** @type {HTMLInputElement | null} */
+      let rowInput = null;
+      if (hostUpload) {
+        rowInput = document.createElement("input");
+        rowInput.type = "file";
+        rowInput.className = "file-item-input";
+        rowInput.hidden = true;
+        if (acceptTypes) rowInput.accept = acceptTypes;
+        rowInput.multiple = false;
+        itemEl.append(rowInput);
+
+        const onRowChange = () => {
+          const incoming = [...(rowInput?.files ?? [])];
+          if (!incoming.length) return;
+          const { accepted, rejected } = partitionByAccept(incoming);
+          reportRejected(rejected);
+          if (!accepted.length) return;
+          const replacement = accepted[0];
+          const next = [...files];
+          next[index] = replacement;
+          onUpload?.({
+            fileEl,
+            itemEl,
+            index,
+            file: replacement,
+            filename: replacement.name,
+          });
+          commitFiles(next);
+        };
+        rowInput.addEventListener("change", onRowChange);
+        listCleanups.push(() =>
+          rowInput?.removeEventListener("change", onRowChange)
+        );
+      }
+
+      if (hostNameAction === "download") {
+        listCleanups.push(bindClick(main, () => {
+          void runDownload(index);
+        }));
+      } else if (hostNameAction === "upload" && rowInput) {
+        listCleanups.push(
+          bindClick(main, () => {
+            rowInput.value = "";
+            rowInput.click();
+          })
+        );
+      } else if (hostNameAction === "remove") {
+        listCleanups.push(bindClick(main, () => removeFile(index)));
+      } else if (hostNameAction === "custom") {
+        listCleanups.push(
+          bindClick(main, () => {
+            onNameAction?.({
+              fileEl,
+              itemEl,
+              index,
+              filename: file.name,
+              file,
+            });
+          })
+        );
+      }
+
+      if (downloadBtn) {
+        listCleanups.push(
+          bindClick(downloadBtn, () => {
+            void runDownload(index);
+          })
+        );
+      }
+      if (uploadBtn && rowInput) {
+        listCleanups.push(
+          bindClick(uploadBtn, () => {
+            rowInput.value = "";
+            rowInput.click();
+          })
+        );
+      }
+      if (removeBtn) {
+        listCleanups.push(bindClick(removeBtn, () => removeFile(index)));
+      }
+
+      li.append(itemEl);
+      list.append(li);
+    });
+  }
+
+  function onPromptClick() {
+    openPicker();
+  }
+
+  function onInputChange() {
+    const incoming = [...input.files];
+    if (!incoming.length) return;
+    addFiles(incoming);
+  }
+
+  function onDragEnter(event) {
+    event.preventDefault();
+    dragDepth += 1;
+    setDragover(true);
+  }
+
+  function onDragOver(event) {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+  }
+
+  function onDragLeave(event) {
+    event.preventDefault();
+    dragDepth -= 1;
+    if (dragDepth <= 0) {
+      dragDepth = 0;
+      setDragover(false);
+    }
+  }
+
+  function onDrop(event) {
+    event.preventDefault();
+    dragDepth = 0;
+    setDragover(false);
+
+    const incoming = [...(event.dataTransfer?.files ?? [])];
+    if (!incoming.length) return;
+    addFiles(incoming);
+  }
+
+  prompt.addEventListener("click", onPromptClick);
+  input.addEventListener("change", onInputChange);
+  fileEl.addEventListener("dragenter", onDragEnter);
+  fileEl.addEventListener("dragover", onDragOver);
+  fileEl.addEventListener("dragleave", onDragLeave);
+  fileEl.addEventListener("drop", onDrop);
+
+  renderList();
+
+  return {
+    openPicker,
+    clear: () => commitFiles([]),
+    setFiles: (nextFiles) => {
+      const incoming = Array.isArray(nextFiles) ? nextFiles.filter(Boolean) : [];
+      const { accepted, rejected } = partitionByAccept(incoming);
+      reportRejected(rejected);
+      if (!accepted.length) return;
+      commitFiles(isMultiple ? trimToMax(accepted) : accepted.slice(0, 1));
+    },
+    getFiles: () => [...files],
+    download: (index = 0) => runDownload(index),
+    remove: (index = 0) => removeFile(index),
+    destroy: () => {
+      destroyListBindings();
+      prompt.removeEventListener("click", onPromptClick);
+      input.removeEventListener("change", onInputChange);
+      fileEl.removeEventListener("dragenter", onDragEnter);
+      fileEl.removeEventListener("dragover", onDragOver);
+      fileEl.removeEventListener("dragleave", onDragLeave);
+      fileEl.removeEventListener("drop", onDrop);
+      dragDepth = 0;
+      setDragover(false);
+    },
+  };
+}
+
 /** Wire every `.file` block in `root`. */
 export function initFiles(root = document) {
   const instances = [];
-  root.querySelectorAll(".file").forEach((fileEl) => {
-    const instance = initFile(fileEl);
+  root.querySelectorAll(".file").forEach((el) => {
+    const instance = initFile(el);
     if (instance) instances.push(instance);
   });
   return instances;

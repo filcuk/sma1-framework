@@ -24,7 +24,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
-- **Breaking (pre-release):** `file-download` is replaced by segmented `.file` / `initFile()` (combo-style download / upload / remove segments). `downloadFile()` moves to [`app/components/file.js`](app/components/file.js). Old `.file-download*` markup and `initFileDownload` are removed.
+- **Breaking (pre-release):** `file-download` and `file-dropzone` are replaced by unified `.file` / `initFile()` — segmented rows plus `.file--large` dropzone host. `downloadFile()` and accept helpers live in [`app/components/file.js`](app/components/file.js). Old `.file-download*` / `.file-dropzone*` markup and APIs are removed.
 - Model and toolpath preview home control eases in spherical orbit space (radius / angles), matching OrbitControls motion and avoiding the mid-flight Cartesian zoom dip; snaps when `prefers-reduced-motion`.
 - Image preview meta visibility gains `not-hover` (parity with mesh / toolpath); hover action strip uses `data-image-preview-actions` (`hover` / `always` / `never`) with `:focus-visible` instead of `:focus-within`; `metaExtra` / `setMetaExtra()` accept a string array.
 - Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).

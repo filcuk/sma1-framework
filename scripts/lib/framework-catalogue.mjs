@@ -391,13 +391,6 @@ export const COMPONENTS = {
     icons: [],
     infra: ["dom"],
   },
-  "file-dropzone": {
-    files: ["app/components/file-dropzone.js"],
-    css: ["controls-file.css"],
-    vendor: [],
-    icons: ["upload", "error"],
-    infra: ["dom", "icons"],
-  },
   file: {
     files: ["app/components/file.js"],
     css: ["controls-file.css"],
@@ -576,7 +569,7 @@ export const CSS_PARTIAL_FEATURES = {
     "tabs",
     "progress-indicator",
   ],
-  "controls-file.css": ["file-dropzone", "file"],
+  "controls-file.css": ["file"],
   "controls-image.css": ["image-preview"],
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],

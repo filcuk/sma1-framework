@@ -1,11 +1,13 @@
-﻿.file-dropzone {
+﻿/* Large file dropzone host */
+
+.file--large {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
 }
 
-.file-dropzone-prompt {
+.file-prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,14 +25,14 @@
   transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
-.file-dropzone-prompt:hover,
-.file-dropzone.is-dragover .file-dropzone-prompt {
+.file-prompt:hover,
+.file--large.is-dragover .file-prompt {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
 }
 
-.file-dropzone-prompt:active:not(:disabled) {
+.file-prompt:active:not(:disabled) {
   border-color: var(--accent);
   background: color-mix(
     in srgb,
@@ -40,18 +42,18 @@
   transition-duration: 0s;
 }
 
-.file-dropzone-prompt:focus-visible {
+.file-prompt:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.file-dropzone-icon {
+.file-prompt-icon {
   width: 1.75rem;
   height: 1.75rem;
   color: var(--muted);
 }
 
-.file-dropzone-text {
+.file-prompt-text {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,62 +61,19 @@
   text-align: center;
 }
 
-.file-dropzone-primary {
+.file-prompt-primary {
   font-weight: 600;
   font-size: 0.875rem;
 }
 
-.file-dropzone-secondary {
+.file-prompt-secondary {
   font-size: 0.8125rem;
   color: var(--muted);
 }
 
-.file-dropzone-meta {
+.file-prompt-meta {
   font-size: 0.75rem;
   color: var(--muted);
-}
-
-.file-dropzone-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.file-dropzone-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  font-size: 0.875rem;
-}
-
-.file-dropzone-item-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.file-dropzone-item-meta {
-  flex-shrink: 0;
-  font-size: 0.8125rem;
-  color: var(--muted);
-}
-
-.file-dropzone-remove {
-  flex-shrink: 0;
-}
-
-.file-dropzone-remove-icon {
-  width: 1rem;
-  height: 1rem;
 }
 
 /* Segmented file rows (combo-style join) */
@@ -272,4 +231,3 @@ button.file-item-main:not([aria-disabled="true"]) {
   opacity: 0;
   pointer-events: none;
 }
-

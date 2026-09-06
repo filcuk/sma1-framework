@@ -98,8 +98,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |
-| `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker; `accept` enforced by default (`acceptFilter: "soft"` for advise-only) |
-| `initFile()` / `initFiles()` | Segmented file rows (download / upload / remove); `downloadFile()` helper |
+| `initFile()` / `initFiles()` | Segmented file rows and `.file--large` dropzone host; `downloadFile()` helper; `accept` enforced by default (`acceptFilter: "soft"` for advise-only) |
 | `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
 | `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta; meta visibility `hover` / `always` / `not-hover` / `never`; action visibility `hover` / `always` / `never` |
 | `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes; optional meta strip (size / triangles / vertices / volume / surface area / objects / `setMetaExtra`); optional maximise and home/reset via expandable-surface |
