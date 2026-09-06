@@ -19,10 +19,25 @@
 }
 
 .file-prompt:hover,
-.file--large.is-dragover .file-prompt {
+.file.is-dragover:not(.is-drag-reject) .file-prompt {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
+}
+
+.file.is-drag-reject .file-prompt {
+  border-color: var(--banner-error-border);
+  background: color-mix(
+    in srgb,
+    var(--banner-error-border) var(--control-hover-mix),
+    var(--surface)
+  );
+  cursor: not-allowed;
+  transition-duration: 0s;
+}
+
+.file.is-drag-reject {
+  cursor: not-allowed;
 }
 
 .file-prompt:active:not(:disabled) {
@@ -102,9 +117,23 @@
   width: 100%;
 }
 
-.file-item.is-dragover > .btn {
+.file-item.is-dragover:not(.is-drag-reject) > .btn {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+}
+
+.file-item.is-drag-reject > .btn {
+  border-color: var(--banner-error-border);
+  background: color-mix(
+    in srgb,
+    var(--banner-error-border) var(--control-hover-mix),
+    var(--surface)
+  );
+  cursor: not-allowed;
+}
+
+.file-item.is-drag-reject {
+  cursor: not-allowed;
 }
 
 .file-item > .btn {
@@ -116,13 +145,13 @@
   border-bottom-left-radius: 6px;
 }
 
-/* Prefer last `.btn` so a trailing hidden file input does not steal `:last-child`. */
-.file-item > .btn:nth-last-child(1 of .btn) {
+/* Prefer last visible `.btn` so hidden empty-slot segments do not steal the join. */
+.file-item > .btn:nth-last-child(1 of .btn:not([hidden])) {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-.file-item > .btn:not(:nth-last-child(1 of .btn)) {
+.file-item > .btn:not(:nth-last-child(1 of .btn:not([hidden]))) {
   border-right: none;
 }
 
@@ -130,9 +159,11 @@
   border-left: 1px solid var(--border);
 }
 
-/* Colour the shared seam even when the next segment is disabled (empty slot). */
+/* Colour the shared seam; skip hidden neighbours (empty download/remove slots). */
 .file-item > .btn:not(:first-child):hover:not(:disabled),
-.file-item > .btn:hover:not(:disabled) + .btn {
+.file-item > .btn:hover:not(:disabled) + .btn:not([hidden]),
+.file-item > .btn:hover:not(:disabled) + .btn[hidden] + .btn:not([hidden]),
+.file-item > .btn:hover:not(:disabled) + .btn[hidden] + .btn[hidden] + .btn:not([hidden]) {
   border-left-color: var(--accent);
 }
 
@@ -267,6 +298,48 @@ button.file-item-main:not([aria-disabled="true"]) {
 }
 
 .file--fullscreen[hidden] {
+  display: none !important;
+}
+
+.file-fullscreen-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out,
+    color var(--control-hover-ms) ease-out;
+}
+
+.file-fullscreen-close:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+.file-fullscreen-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.file-fullscreen-close-icon {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.file-fullscreen-close[hidden] {
   display: none !important;
 }
 

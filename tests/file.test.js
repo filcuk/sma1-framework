@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  dataTransferMatchesAccept,
   fileMatchesAccept,
   parseAcceptTokens,
   resolveAcceptFilter,
@@ -68,4 +69,62 @@ test("resolveAcceptFilter defaults to strict and accepts soft", () => {
   assert.equal(resolveAcceptFilter(""), "strict");
   assert.equal(resolveAcceptFilter("strict"), "strict");
   assert.equal(resolveAcceptFilter("SOFT"), "soft");
+});
+
+test("dataTransferMatchesAccept allows empty accept and unknown empty MIME", () => {
+  assert.equal(dataTransferMatchesAccept({ items: [], files: [] }, "image/*"), true);
+  assert.equal(
+    dataTransferMatchesAccept(
+      { items: [{ kind: "file", type: "" }], files: [] },
+      ".gcode"
+    ),
+    true
+  );
+});
+
+test("dataTransferMatchesAccept matches and rejects by MIME during drag", () => {
+  assert.equal(
+    dataTransferMatchesAccept(
+      { items: [{ kind: "file", type: "image/png" }], files: [] },
+      "image/*,.txt"
+    ),
+    true
+  );
+  assert.equal(
+    dataTransferMatchesAccept(
+      { items: [{ kind: "file", type: "text/plain" }], files: [] },
+      "image/*,.txt"
+    ),
+    true
+  );
+  assert.equal(
+    dataTransferMatchesAccept(
+      { items: [{ kind: "file", type: "application/pdf" }], files: [] },
+      "image/*,.txt"
+    ),
+    false
+  );
+});
+
+test("dataTransferMatchesAccept prefers File.name when files are exposed", () => {
+  assert.equal(
+    dataTransferMatchesAccept(
+      {
+        items: [{ kind: "file", type: "" }],
+        files: [{ name: "tool.gcode", type: "" }],
+      },
+      ".gcode"
+    ),
+    true
+  );
+  assert.equal(
+    dataTransferMatchesAccept(
+      {
+        items: [{ kind: "file", type: "application/pdf" }],
+        files: [{ name: "doc.pdf", type: "application/pdf" }],
+      },
+      ".gcode"
+    ),
+    false
+  );
 });

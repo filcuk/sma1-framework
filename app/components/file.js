@@ -29,7 +29,11 @@ import { createIcon } from "../utils/icons.js";
  * Large defaults: remove on, download off, upload off; size meta always visible.
  * Large single-file hosts hide the prompt once a file is present (override with
  * `hidePromptWhenFull` / `data-file-hide-prompt-when-full`); multi hosts keep it.
- * Fullscreen defaults: activate on document file-drag (hide after drop); `onFiles` only.
+ * Fullscreen defaults: activate on document file-drag (hide after drop / leave
+ * window); keep dragover highlight for the whole drag; `onFiles` only.
+ * Manually shown overlays are dismissible by default (backdrop + close).
+ * Strict `accept` shows reject styling + `dropEffect: none` while dragging an
+ * incompatible MIME (large, fullscreen, and drop-active rows).
  * Name action: none | download | upload | remove | custom (via onNameAction).
  * Ext / size visibility: hover | always | never (independent).
  */
@@ -88,6 +92,93 @@ export function fileMatchesAccept(file, accept) {
   });
 }
 
+/** MIME hints for extension tokens when drag payloads expose type but not name. */
+const EXT_DRAG_MIME_HINTS = {
+  ".txt": ["text/plain"],
+  ".csv": ["text/csv"],
+  ".json": ["application/json"],
+  ".html": ["text/html"],
+  ".htm": ["text/html"],
+  ".xml": ["application/xml", "text/xml"],
+  ".pdf": ["application/pdf"],
+  ".png": ["image/png"],
+  ".jpg": ["image/jpeg"],
+  ".jpeg": ["image/jpeg"],
+  ".gif": ["image/gif"],
+  ".webp": ["image/webp"],
+  ".svg": ["image/svg+xml"],
+  ".mp3": ["audio/mpeg"],
+  ".wav": ["audio/wav", "audio/x-wav"],
+  ".mp4": ["video/mp4"],
+  ".webm": ["video/webm"],
+};
+
+/**
+ * @param {string} type
+ * @param {string[]} tokens
+ */
+function mimeTypeMatchesAcceptTokens(type, tokens) {
+  if (!type) return false;
+  if (fileMatchesAccept({ name: "", type }, tokens)) return true;
+
+  return tokens.some((token) => {
+    if (!token.startsWith(".")) return false;
+    const hints = EXT_DRAG_MIME_HINTS[token];
+    if (hints?.includes(type)) return true;
+    const ext = token.slice(1);
+    if (!ext || ext.includes(".")) return false;
+    return (
+      type === `image/${ext}` ||
+      type === `audio/${ext}` ||
+      type === `video/${ext}` ||
+      type === `text/${ext}` ||
+      type.endsWith(`/${ext}`) ||
+      type.endsWith(`+${ext}`)
+    );
+  });
+}
+
+/**
+ * Whether a drag payload looks acceptable for an `accept` list during dragover.
+ * Uses `files` when the browser exposes them; otherwise MIME types from `items`.
+ * Unknown payloads (empty types) return true so drop-time filtering can decide.
+ *
+ * @param {DataTransfer | null | undefined} dataTransfer
+ * @param {string | string[] | null | undefined} accept
+ */
+export function dataTransferMatchesAccept(dataTransfer, accept) {
+  const tokens = Array.isArray(accept) ? accept : parseAcceptTokens(accept);
+  if (!tokens.length) return true;
+  if (!dataTransfer) return true;
+
+  const files = [...(dataTransfer.files ?? [])].filter(Boolean);
+  if (files.length) {
+    return files.some((file) => fileMatchesAccept(file, tokens));
+  }
+
+  const items = [...(dataTransfer.items ?? [])].filter(
+    (item) => item && item.kind === "file"
+  );
+  if (!items.length) return true;
+
+  let sawMatch = false;
+  let sawUnknown = false;
+  for (const item of items) {
+    const type = String(item.type ?? "")
+      .trim()
+      .toLowerCase();
+    if (!type) {
+      sawUnknown = true;
+      continue;
+    }
+    if (mimeTypeMatchesAcceptTokens(type, tokens)) sawMatch = true;
+  }
+
+  if (sawMatch) return true;
+  if (sawUnknown) return true;
+  return false;
+}
+
 /**
  * @param {string | null | undefined} value
  * @returns {"strict" | "soft"}
@@ -98,6 +189,34 @@ export function resolveAcceptFilter(value) {
     .toLowerCase();
   if (trimmed === "soft") return "soft";
   return "strict";
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {{ over?: boolean, reject?: boolean }} [state]
+ */
+function setFileDragState(el, { over = false, reject = false } = {}) {
+  el.classList.toggle("is-dragover", over);
+  el.classList.toggle("is-drag-reject", over && reject);
+}
+
+/**
+ * @param {DragEvent} event
+ * @param {boolean} allowed
+ */
+function applyDropEffect(event, allowed) {
+  if (!event.dataTransfer) return;
+  event.dataTransfer.dropEffect = allowed ? "copy" : "none";
+}
+
+/**
+ * @param {DragEvent} event
+ * @param {string[]} acceptTokens
+ * @param {"strict" | "soft"} acceptFilterMode
+ */
+function dragEventIsAccepted(event, acceptTokens, acceptFilterMode) {
+  if (!acceptTokens.length || acceptFilterMode === "soft") return true;
+  return dataTransferMatchesAccept(event.dataTransfer, acceptTokens);
 }
 
 function formatFileSize(bytes) {
@@ -308,6 +427,23 @@ function ensureSegment(itemEl, kind, filename, enabled) {
 }
 
 /**
+ * @param {string} action
+ * @returns {string}
+ */
+function nameActionTooltip(action) {
+  switch (action) {
+    case "upload":
+      return "Select to upload";
+    case "download":
+      return "Select to download";
+    case "remove":
+      return "Select to remove";
+    default:
+      return "";
+  }
+}
+
+/**
  * Ensure main name segment exists. Returns the main element.
  * @param {HTMLElement} itemEl
  * @param {{ nameAction: string, filename: string }} options
@@ -328,20 +464,32 @@ function ensureMain(itemEl, { nameAction, filename }) {
     main.type = "button";
     if (nameAction === "none") {
       main.setAttribute("aria-disabled", "true");
+      main.disabled = false;
     } else {
       main.removeAttribute("aria-disabled");
-      main.setAttribute("aria-label", `${nameAction} ${filename}`);
+      main.disabled = false;
+      main.setAttribute(
+        "aria-label",
+        filename ? `${nameAction} ${filename}` : nameActionTooltip(nameAction) || nameAction
+      );
     }
   } else if (wantsButton) {
     // Author used a non-button; keep it interactive via role when action is set.
     main.setAttribute("role", "button");
     main.tabIndex = 0;
-    main.setAttribute("aria-label", `${nameAction} ${filename}`);
+    main.setAttribute(
+      "aria-label",
+      filename ? `${nameAction} ${filename}` : nameActionTooltip(nameAction) || nameAction
+    );
   } else {
     main.removeAttribute("role");
     main.removeAttribute("tabindex");
     main.removeAttribute("aria-label");
   }
+
+  const tip = nameActionTooltip(nameAction);
+  if (tip) main.setAttribute("data-tooltip", tip);
+  else main.removeAttribute("data-tooltip");
 
   if (!main.querySelector(".file-item-name")) {
     const nameEl = document.createElement("span");
@@ -527,6 +675,15 @@ function initFileRows(fileEl, options = {}) {
   const itemStates = [];
 
   /**
+   * Empty upload slots use the main segment as upload even when configured `nameAction` is `none`.
+   * @param {(typeof itemStates)[number]} state
+   */
+  function getEffectiveNameAction(state) {
+    if (!state.hasFile && state.upload) return "upload";
+    return state.nameAction;
+  }
+
+  /**
    * @param {(typeof itemStates)[number]} state
    * @param {boolean} hasFile
    * @param {{ byteLength?: number }} [meta]
@@ -538,19 +695,26 @@ function initFileRows(fileEl, options = {}) {
     const downloadBtn = state.itemEl.querySelector(".file-item-download");
     const uploadBtn = state.itemEl.querySelector(".file-item-upload");
     const removeBtn = state.itemEl.querySelector(".file-item-remove");
+    const effectiveAction = getEffectiveNameAction(state);
 
     if (!hasFile) {
+      // Static/required slot: hide download/remove; keep upload (and main → upload).
+      if (downloadBtn instanceof HTMLElement) setHidden(downloadBtn, true);
+      if (removeBtn instanceof HTMLElement) setHidden(removeBtn, true);
+      if (uploadBtn instanceof HTMLElement) {
+        setHidden(uploadBtn, false);
+        uploadBtn.disabled = false;
+        uploadBtn.setAttribute("aria-label", "Upload file");
+      }
+
+      ensureMain(state.itemEl, {
+        nameAction: effectiveAction,
+        filename: "",
+      });
       const main = state.itemEl.querySelector(".file-item-main");
       if (main instanceof HTMLElement) {
         delete main.dataset.fileName;
         delete main.dataset.fileMime;
-        if (state.nameAction === "upload") {
-          main.setAttribute("aria-label", "Upload file");
-          if (main instanceof HTMLButtonElement) main.disabled = false;
-        } else if (state.nameAction !== "none") {
-          main.setAttribute("aria-label", state.emptyLabel);
-          if (main instanceof HTMLButtonElement) main.disabled = true;
-        }
       }
       const nameEl = state.itemEl.querySelector(".file-item-name");
       const extEl = state.itemEl.querySelector(".file-item-ext");
@@ -564,42 +728,39 @@ function initFileRows(fileEl, options = {}) {
         metaEl.textContent = "";
         setHidden(metaEl, true);
       }
-      if (downloadBtn instanceof HTMLButtonElement) {
-        downloadBtn.disabled = true;
-        downloadBtn.setAttribute("aria-label", "Download");
-      }
-      if (uploadBtn instanceof HTMLButtonElement) {
-        uploadBtn.disabled = false;
-        uploadBtn.setAttribute("aria-label", "Upload file");
-      }
-      if (removeBtn instanceof HTMLButtonElement) {
-        removeBtn.disabled = true;
-        removeBtn.setAttribute("aria-label", "Remove file");
-      }
       return;
     }
 
+    if (downloadBtn instanceof HTMLElement) {
+      setHidden(downloadBtn, false);
+      if (downloadBtn instanceof HTMLButtonElement) {
+        downloadBtn.disabled = false;
+        downloadBtn.setAttribute("aria-label", `Download ${state.filename}`);
+      }
+    }
+    if (uploadBtn instanceof HTMLElement) {
+      setHidden(uploadBtn, false);
+      if (uploadBtn instanceof HTMLButtonElement) {
+        uploadBtn.disabled = false;
+        uploadBtn.setAttribute("aria-label", `Replace ${state.filename}`);
+      }
+    }
+    if (removeBtn instanceof HTMLElement) {
+      setHidden(removeBtn, false);
+      if (removeBtn instanceof HTMLButtonElement) {
+        removeBtn.disabled = false;
+        removeBtn.setAttribute("aria-label", `Remove ${state.filename}`);
+      }
+    }
+
+    ensureMain(state.itemEl, {
+      nameAction: effectiveAction,
+      filename: state.filename,
+    });
     updateItemMeta(state.itemEl, {
       filename: state.filename,
       byteLength: meta.byteLength ?? 0,
     });
-    const main = state.itemEl.querySelector(".file-item-main");
-    if (main instanceof HTMLElement && state.nameAction !== "none") {
-      main.setAttribute("aria-label", `${state.nameAction} ${state.filename}`);
-      if (main instanceof HTMLButtonElement) main.disabled = false;
-    }
-    if (downloadBtn instanceof HTMLButtonElement) {
-      downloadBtn.disabled = false;
-      downloadBtn.setAttribute("aria-label", `Download ${state.filename}`);
-    }
-    if (uploadBtn instanceof HTMLButtonElement) {
-      uploadBtn.disabled = false;
-      uploadBtn.setAttribute("aria-label", `Replace ${state.filename}`);
-    }
-    if (removeBtn instanceof HTMLButtonElement) {
-      removeBtn.disabled = false;
-      removeBtn.setAttribute("aria-label", `Remove ${state.filename}`);
-    }
   }
 
   /**
@@ -749,7 +910,7 @@ function initFileRows(fileEl, options = {}) {
     const state = itemStates[index];
     if (!state) return;
 
-    switch (state.nameAction) {
+    switch (getEffectiveNameAction(state)) {
       case "download":
         void runDownload(index);
         break;
@@ -899,7 +1060,8 @@ function initFileRows(fileEl, options = {}) {
     } else {
       syncRowFilledState(state, false);
     }
-    if (nameAction !== "none") {
+    // Empty upload slots promote the main segment to upload even when nameAction is none.
+    if (nameAction !== "none" || upload) {
       cleanups.push(bindClick(main, () => runNameAction(index)));
     }
 
@@ -920,19 +1082,29 @@ function initFileRows(fileEl, options = {}) {
     if (upload && dropActive) {
       let dragDepth = 0;
 
-      function setDragover(active) {
-        itemEl.classList.toggle("is-dragover", active);
+      function syncRowDrag(event, over) {
+        if (!over) {
+          setFileDragState(itemEl, { over: false });
+          return;
+        }
+        const allowed = dragEventIsAccepted(
+          event,
+          acceptTokens,
+          acceptFilterMode
+        );
+        setFileDragState(itemEl, { over: true, reject: !allowed });
+        applyDropEffect(event, allowed);
       }
 
       function onDragEnter(event) {
         event.preventDefault();
         dragDepth += 1;
-        setDragover(true);
+        syncRowDrag(event, true);
       }
 
       function onDragOver(event) {
         event.preventDefault();
-        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+        syncRowDrag(event, true);
       }
 
       function onDragLeave(event) {
@@ -940,14 +1112,24 @@ function initFileRows(fileEl, options = {}) {
         dragDepth -= 1;
         if (dragDepth <= 0) {
           dragDepth = 0;
-          setDragover(false);
+          setFileDragState(itemEl, { over: false });
         }
       }
 
       function onDrop(event) {
         event.preventDefault();
         dragDepth = 0;
-        setDragover(false);
+        const allowed = dragEventIsAccepted(
+          event,
+          acceptTokens,
+          acceptFilterMode
+        );
+        setFileDragState(itemEl, { over: false });
+        if (!allowed) {
+          const incoming = [...(event.dataTransfer?.files ?? [])];
+          if (incoming.length) handleIncomingFiles(index, incoming);
+          return;
+        }
         const incoming = [...(event.dataTransfer?.files ?? [])];
         if (!incoming.length) return;
         handleIncomingFiles(index, incoming);
@@ -963,7 +1145,7 @@ function initFileRows(fileEl, options = {}) {
         itemEl.removeEventListener("dragleave", onDragLeave);
         itemEl.removeEventListener("drop", onDrop);
         dragDepth = 0;
-        setDragover(false);
+        setFileDragState(itemEl, { over: false });
       });
     }
   });
@@ -1072,8 +1254,19 @@ function initFileLarge(fileEl, options = {}) {
   /** @type {Array<() => void>} */
   let listCleanups = [];
 
-  function setDragover(active) {
-    fileEl.classList.toggle("is-dragover", active);
+  function syncHostDrag(event, over) {
+    if (!over) {
+      setFileDragState(fileEl, { over: false });
+      return;
+    }
+    if (hidePromptWhenFull && isSelectionFull()) {
+      setFileDragState(fileEl, { over: true, reject: true });
+      applyDropEffect(event, false);
+      return;
+    }
+    const allowed = dragEventIsAccepted(event, acceptTokens, acceptFilterMode);
+    setFileDragState(fileEl, { over: true, reject: !allowed });
+    applyDropEffect(event, allowed);
   }
 
   function partitionByAccept(incoming) {
@@ -1142,7 +1335,7 @@ function initFileLarge(fileEl, options = {}) {
     fileEl.classList.toggle("is-full", hide);
     if (hide) {
       dragDepth = 0;
-      setDragover(false);
+      setFileDragState(fileEl, { over: false });
     }
   }
 
@@ -1348,35 +1541,46 @@ function initFileLarge(fileEl, options = {}) {
 
   function onDragEnter(event) {
     event.preventDefault();
-    if (hidePromptWhenFull && isSelectionFull()) return;
+    if (hidePromptWhenFull && isSelectionFull()) {
+      syncHostDrag(event, true);
+      return;
+    }
     dragDepth += 1;
-    setDragover(true);
+    syncHostDrag(event, true);
   }
 
   function onDragOver(event) {
     event.preventDefault();
-    if (hidePromptWhenFull && isSelectionFull()) {
-      if (event.dataTransfer) event.dataTransfer.dropEffect = "none";
-      return;
-    }
-    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    syncHostDrag(event, true);
   }
 
   function onDragLeave(event) {
     event.preventDefault();
-    if (hidePromptWhenFull && isSelectionFull()) return;
+    if (hidePromptWhenFull && isSelectionFull()) {
+      setFileDragState(fileEl, { over: false });
+      return;
+    }
     dragDepth -= 1;
     if (dragDepth <= 0) {
       dragDepth = 0;
-      setDragover(false);
+      setFileDragState(fileEl, { over: false });
     }
   }
 
   function onDrop(event) {
     event.preventDefault();
     dragDepth = 0;
-    setDragover(false);
-    if (hidePromptWhenFull && isSelectionFull()) return;
+    const allowed =
+      !(hidePromptWhenFull && isSelectionFull()) &&
+      dragEventIsAccepted(event, acceptTokens, acceptFilterMode);
+    setFileDragState(fileEl, { over: false });
+    if (!allowed) {
+      const incoming = [...(event.dataTransfer?.files ?? [])];
+      if (incoming.length && !(hidePromptWhenFull && isSelectionFull())) {
+        addFiles(incoming);
+      }
+      return;
+    }
 
     const incoming = [...(event.dataTransfer?.files ?? [])];
     if (!incoming.length) return;
@@ -1415,7 +1619,7 @@ function initFileLarge(fileEl, options = {}) {
       fileEl.removeEventListener("dragleave", onDragLeave);
       fileEl.removeEventListener("drop", onDrop);
       dragDepth = 0;
-      setDragover(false);
+      setFileDragState(fileEl, { over: false });
     },
   };
 }
@@ -1429,7 +1633,8 @@ function isFileDragEvent(event) {
 /**
  * Fullscreen page drop overlay (`.file.file--fullscreen`).
  * Default: activate when a file drag enters the document, fire `onFiles` on drop,
- * and hide again (no persistent list in the overlay).
+ * and hide again (no persistent list in the overlay). Manually shown overlays are
+ * dismissible by default (backdrop click + close control).
  *
  * @param {HTMLElement} fileEl
  * @param {object} [options]
@@ -1456,6 +1661,10 @@ function initFileFullscreen(fileEl, options = {}) {
   const activateOnDrag =
     options.fullscreenActivateOnDrag ??
     parseBooleanAttr(fileEl.dataset.fileFullscreenActivateOnDrag) ??
+    true;
+  const dismissible =
+    options.fullscreenDismissible ??
+    parseBooleanAttr(fileEl.dataset.fileFullscreenDismissible) ??
     true;
 
   if (input) {
@@ -1485,29 +1694,96 @@ function initFileFullscreen(fileEl, options = {}) {
   }
 
   let active = false;
-  let docDragDepth = 0;
-  let overlayDragDepth = 0;
+  /** True while a document-level file drag is driving the overlay. */
+  let dragSession = false;
+  /** True when the overlay was shown by a file drag (hides browse hint). */
+  let shownFromDrag = false;
 
-  function setDragover(on) {
-    fileEl.classList.toggle("is-dragover", on);
+  const secondary = prompt.querySelector(".file-prompt-secondary");
+  /** @type {HTMLButtonElement | null} */
+  let closeBtn = null;
+
+  function ensureCloseButton() {
+    if (!dismissible) {
+      closeBtn?.remove();
+      closeBtn = null;
+      return null;
+    }
+    closeBtn = fileEl.querySelector(".file-fullscreen-close");
+    if (!(closeBtn instanceof HTMLButtonElement)) {
+      closeBtn = document.createElement("button");
+      closeBtn.type = "button";
+      closeBtn.className = "file-fullscreen-close";
+      closeBtn.setAttribute("aria-label", "Close");
+      closeBtn.append(createIcon("clear", { className: "file-fullscreen-close-icon" }));
+      fileEl.append(closeBtn);
+    }
+    return closeBtn;
+  }
+
+  function syncDismissChrome() {
+    const showDismiss = dismissible && active && !shownFromDrag;
+    fileEl.classList.toggle("file--dismissible", showDismiss);
+    if (!dismissible) return;
+    const btn = ensureCloseButton();
+    if (btn) setHidden(btn, !showDismiss);
+  }
+
+  function syncPromptBrowseHint() {
+    if (!secondary) return;
+    // Drag-activated capture cannot open a file picker mid-drag.
+    setHidden(secondary, shownFromDrag);
+  }
+
+  function syncOverlayDrag(event) {
+    if (!active) return;
+    const allowed = dragEventIsAccepted(event, acceptTokens, acceptFilterMode);
+    setFileDragState(fileEl, { over: true, reject: !allowed });
+    applyDropEffect(event, allowed);
+  }
+
+  function endDragSession() {
+    dragSession = false;
+    setFileDragState(fileEl, { over: false });
+    if (activateOnDrag) {
+      setActive(false);
+      return;
+    }
+    shownFromDrag = false;
+    syncPromptBrowseHint();
+    syncDismissChrome();
   }
 
   function setActive(next, { fromDrag = false } = {}) {
     const want = Boolean(next);
     if (want === active) {
-      if (want) setDragover(fromDrag || overlayDragDepth > 0);
+      if (want && fromDrag) {
+        shownFromDrag = true;
+        setFileDragState(fileEl, { over: true });
+        syncPromptBrowseHint();
+        syncDismissChrome();
+      }
       return;
     }
     active = want;
     fileEl.classList.toggle("is-active", active);
     setHidden(fileEl, !active);
     if (!active) {
-      docDragDepth = 0;
-      overlayDragDepth = 0;
-      setDragover(false);
-    } else if (fromDrag) {
-      setDragover(true);
+      dragSession = false;
+      shownFromDrag = false;
+      setFileDragState(fileEl, { over: false });
+      syncPromptBrowseHint();
+      syncDismissChrome();
+      return;
     }
+    shownFromDrag = Boolean(fromDrag);
+    if (fromDrag) {
+      setFileDragState(fileEl, { over: true });
+    } else {
+      setFileDragState(fileEl, { over: false });
+    }
+    syncPromptBrowseHint();
+    syncDismissChrome();
   }
 
   function partitionByAccept(incoming) {
@@ -1568,13 +1844,26 @@ function initFileFullscreen(fileEl, options = {}) {
   }
 
   function openPicker() {
-    if (!input) return;
+    if (!input || shownFromDrag) return;
     input.value = "";
     input.click();
   }
 
   function onPromptClick() {
     openPicker();
+  }
+
+  function onCloseClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!dismissible || shownFromDrag) return;
+    setActive(false);
+  }
+
+  function onOverlayClick(event) {
+    if (!dismissible || shownFromDrag || !active) return;
+    // Backdrop only — prompt / close keep their own actions.
+    if (event.target === fileEl) setActive(false);
   }
 
   function onInputChange() {
@@ -1588,69 +1877,73 @@ function initFileFullscreen(fileEl, options = {}) {
   function onOverlayDragEnter(event) {
     if (!isFileDragEvent(event)) return;
     event.preventDefault();
-    overlayDragDepth += 1;
-    setDragover(true);
+    if (!active) setActive(true, { fromDrag: activateOnDrag });
+    syncOverlayDrag(event);
   }
 
   function onOverlayDragOver(event) {
     if (!isFileDragEvent(event)) return;
     event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    syncOverlayDrag(event);
   }
 
   function onOverlayDragLeave(event) {
     if (!isFileDragEvent(event)) return;
     event.preventDefault();
-    overlayDragDepth -= 1;
-    if (overlayDragDepth <= 0) {
-      overlayDragDepth = 0;
-      setDragover(false);
-      if (activateOnDrag) setActive(false);
+    // Keep the drag-session overlay visible for the whole document drag;
+    // only clear reject/over when leaving the window (handled on document).
+    if (dragSession) return;
+    if (!fileEl.contains(/** @type {Node | null} */ (event.relatedTarget))) {
+      setFileDragState(fileEl, { over: false });
     }
   }
 
   function onOverlayDrop(event) {
     event.preventDefault();
-    overlayDragDepth = 0;
-    docDragDepth = 0;
-    setDragover(false);
-
     const incoming = [...(event.dataTransfer?.files ?? [])];
     acceptIncoming(incoming);
-    if (activateOnDrag) setActive(false);
+    if (activateOnDrag) {
+      endDragSession();
+      return;
+    }
+    setFileDragState(fileEl, { over: false });
   }
 
   function onDocumentDragEnter(event) {
     if (!activateOnDrag || !isFileDragEvent(event)) return;
     event.preventDefault();
-    docDragDepth += 1;
+    dragSession = true;
     setActive(true, { fromDrag: true });
+    syncOverlayDrag(event);
   }
 
   function onDocumentDragOver(event) {
-    if (!activateOnDrag || !isFileDragEvent(event)) return;
+    if (!activateOnDrag || !dragSession || !isFileDragEvent(event)) return;
     event.preventDefault();
+    if (!active) setActive(true, { fromDrag: true });
+    syncOverlayDrag(event);
   }
 
   function onDocumentDragLeave(event) {
-    if (!activateOnDrag || !isFileDragEvent(event)) return;
-    docDragDepth -= 1;
-    if (docDragDepth <= 0) {
-      docDragDepth = 0;
-      // Leave to the overlay itself — keep showing; leave the window — hide.
-      if (!fileEl.contains(/** @type {Node | null} */ (event.relatedTarget))) {
-        setActive(false);
-      }
+    if (!activateOnDrag || !dragSession || !isFileDragEvent(event)) return;
+    // relatedTarget null ≈ left the browser window
+    if (event.relatedTarget == null) {
+      endDragSession();
     }
   }
 
   function onDocumentDrop(event) {
-    if (!activateOnDrag) return;
-    // Overlay drop handler owns accepted drops; reset counters if drop lands elsewhere.
+    if (!activateOnDrag || !dragSession) return;
+    // Overlay drop handler owns accepted drops; end session if drop landed elsewhere.
     if (!fileEl.contains(/** @type {Node | null} */ (event.target))) {
-      docDragDepth = 0;
-      setActive(false);
+      event.preventDefault();
+      endDragSession();
     }
+  }
+
+  function onDocumentDragEnd() {
+    if (!activateOnDrag || !dragSession) return;
+    endDragSession();
   }
 
   // Start hidden when drag-activation is on; otherwise leave author visibility as-is.
@@ -1659,9 +1952,15 @@ function initFileFullscreen(fileEl, options = {}) {
   } else {
     active = !fileEl.hidden && !fileEl.classList.contains("hidden");
     fileEl.classList.toggle("is-active", active);
+    syncPromptBrowseHint();
+    syncDismissChrome();
   }
 
+  if (dismissible) ensureCloseButton();
+
   prompt.addEventListener("click", onPromptClick);
+  closeBtn?.addEventListener("click", onCloseClick);
+  fileEl.addEventListener("click", onOverlayClick);
   input?.addEventListener("change", onInputChange);
   fileEl.addEventListener("dragenter", onOverlayDragEnter);
   fileEl.addEventListener("dragover", onOverlayDragOver);
@@ -1673,6 +1972,7 @@ function initFileFullscreen(fileEl, options = {}) {
     document.addEventListener("dragover", onDocumentDragOver);
     document.addEventListener("dragleave", onDocumentDragLeave);
     document.addEventListener("drop", onDocumentDrop);
+    document.addEventListener("dragend", onDocumentDragEnd);
   }
 
   return {
@@ -1683,6 +1983,8 @@ function initFileFullscreen(fileEl, options = {}) {
     isActive: () => active,
     destroy: () => {
       prompt.removeEventListener("click", onPromptClick);
+      closeBtn?.removeEventListener("click", onCloseClick);
+      fileEl.removeEventListener("click", onOverlayClick);
       input?.removeEventListener("change", onInputChange);
       fileEl.removeEventListener("dragenter", onOverlayDragEnter);
       fileEl.removeEventListener("dragover", onOverlayDragOver);
@@ -1693,10 +1995,12 @@ function initFileFullscreen(fileEl, options = {}) {
         document.removeEventListener("dragover", onDocumentDragOver);
         document.removeEventListener("dragleave", onDocumentDragLeave);
         document.removeEventListener("drop", onDocumentDrop);
+        document.removeEventListener("dragend", onDocumentDragEnd);
       }
-      docDragDepth = 0;
-      overlayDragDepth = 0;
-      setDragover(false);
+      dragSession = false;
+      shownFromDrag = false;
+      setFileDragState(fileEl, { over: false });
+      fileEl.classList.remove("file--dismissible");
     },
   };
 }

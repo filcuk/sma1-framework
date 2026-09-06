@@ -20,11 +20,12 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Combobox hosts elevate with `.is-popup-open` while the suggestion list is open (same stacking fix as dropdown / combo). Table row hover, time-picker duration mode, slim-size APIs, and tri-state cycle scope documented in `USAGE.md` / `DESIGN.md`.
 - Date / time / duration field CSS shares one trigger, popup shell, icon, and quick-action bar block in `controls-fields.css` (duration popups reuse `.time-picker-popup`).
 - Documented time-panel **00:00** / **Now** defaults per host (standalone time picker, duration mode, duration input, date+time combined picker).
-- Banner rotation requires `data-banner-expire`; `hideBanner()` resets to the first variation. `prepareButtonLabelFlash()` defaults `lockWidth` to on. Section panel inner gaps use `--panel-gap`.
+- File fullscreen overlay keeps dragover highlight for the whole file drag (CSS previously only styled `.file--large.is-dragover`), hides the browse secondary line while drag-activated, and ends the session on window leave / `dragend`. Strict `accept` shows reject chrome (`is-drag-reject`, forbidden cursor) on incompatible drags for fullscreen, large dropzones, and drop-active rows.
+- Manually shown `.file--fullscreen` overlays are dismissible by default (backdrop click + close control); opt out with `fullscreenDismissible: false` / `data-file-fullscreen-dismissible="false"`. Drag-activated sessions hide dismiss chrome.
 
 ### Changed
 
-- File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`.
+- File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`. Cleared slots hide download / remove segments, promote the main segment to upload, and set main-segment tooltips for download / upload / remove actions.
 - Large `.file--large` hosts hide the drop prompt when the selection is full by default for single-file mode (`hidePromptWhenFull`; multi-file keeps the prompt). Set `data-file-hide-prompt-when-full` / `hidePromptWhenFull` to override.
 - **Breaking (pre-release):** `file-download` and `file-dropzone` are replaced by unified `.file` / `initFile()` — segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. `downloadFile()` and accept helpers live in [`app/components/file.js`](app/components/file.js). Old `.file-download*` / `.file-dropzone*` markup and APIs are removed.
 - Model and toolpath preview home control eases in spherical orbit space (radius / angles), matching OrbitControls motion and avoiding the mid-flight Cartesian zoom dip; snaps when `prefers-reduced-motion`.

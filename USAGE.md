@@ -1643,7 +1643,9 @@ Segmented combo-style rows, a large dropzone host (`.file--large`), and a fullsc
 </div>
 ```
 
-**Fullscreen overlay** — fixed viewport capture. By default it activates when a file drag enters the document, fires `onFiles` on drop, and hides again (no persistent list in the overlay). Set `data-file-fullscreen-activate-on-drag="false"` (or `fullscreenActivateOnDrag: false`) to control visibility yourself via `show()` / `hide()` / `setActive()`. Escape is not wired — dismiss by drop, leave, or `hide()`. Overlay `z-index` is `180` (above modals, below tooltips).
+**Fullscreen overlay** — fixed viewport capture. By default it activates when a file drag enters the document, keeps the drop highlight for the whole drag, fires `onFiles` on drop, and hides again (no persistent list in the overlay). While drag-activated, the “select to browse” secondary line is hidden (a picker cannot open mid-drag). Set `data-file-fullscreen-activate-on-drag="false"` (or `fullscreenActivateOnDrag: false`) to control visibility yourself via `show()` / `hide()` / `setActive()` — browse remains available then. Manually shown overlays are **dismissible** by default: backdrop click and a corner close control (framework `clear` icon). Set `data-file-fullscreen-dismissible="false"` / `fullscreenDismissible: false` to opt out. Dismiss chrome is hidden during drag-activated sessions. Escape is not wired — dismiss by drop, leave the window, backdrop/close (when dismissible), or `hide()`. Overlay `z-index` is `180` (above modals, below tooltips).
+
+With a strict `data-file-accept` list, dragging an incompatible type over a large dropzone, fullscreen overlay, or drop-active row shows reject styling (`--banner-error-border`, same token as field `aria-invalid`) and a forbidden cursor (`dropEffect: "none"`); the file is not accepted. Soft accept (`acceptFilter: "soft"`) skips reject chrome.
 
 ```html
 <div class="file file--fullscreen hidden" hidden id="my-fullscreen" data-file-accept="image/*">
@@ -1657,6 +1659,8 @@ Segmented combo-style rows, a large dropzone host (`.file--large`), and a fullsc
   </button>
 </div>
 ```
+
+Browse secondary copy is shown for manually opened overlays (`show()` / `activateOnDrag: false`). Default drag-activated overlays hide it automatically while a file drag is in progress.
 
 ```javascript
 import { downloadFile, initFile, initFiles } from "./components/file.js";
@@ -1706,7 +1710,7 @@ await downloadFile({
 initFiles(document); // wire every `.file` (rows, large, and fullscreen hosts)
 ```
 
-Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. When upload is enabled, remove **clears** the row to an empty upload placeholder (`No file`) by default instead of deleting it — set `data-file-remove-mode="detach"` / `removeMode: "detach"` to remove the row from the DOM; override the label with `data-file-empty-label` / `emptyLabel`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Single-file large hosts **hide the prompt** once a file is selected (remove the file to show it again); multi-file hosts keep the prompt. Override with `data-file-hide-prompt-when-full="false"` or `hidePromptWhenFull: false` (or set `true` on a multi host to hide the prompt when `data-file-max` is reached). Fullscreen defaults: activate-on-drag **on**. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
+Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. When upload is enabled, remove **clears** the row to an empty upload placeholder (`No file`) by default instead of deleting it — set `data-file-remove-mode="detach"` / `removeMode: "detach"` to remove the row from the DOM; override the label with `data-file-empty-label` / `emptyLabel`. Cleared slots **hide** download / remove segments (upload stays), and the main segment acts as **upload** even when `nameAction` is `none`. When the main segment has an action (`download` / `upload` / `remove`, including the empty-slot upload default), it gets a hover tooltip (`Select to upload` / `Select to download` / `Select to remove`) via `data-tooltip`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Single-file large hosts **hide the prompt** once a file is selected (remove the file to show it again); multi-file hosts keep the prompt. Override with `data-file-hide-prompt-when-full="false"` or `hidePromptWhenFull: false` (or set `true` on a multi host to hide the prompt when `data-file-max` is reached). Fullscreen defaults: activate-on-drag **on**. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
 
 `data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep advise-only behaviour. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
 
