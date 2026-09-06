@@ -132,7 +132,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initTable()` / `initTables()` | Data table with optional sortable columns (Shift+click multi-sort) and row selection |
 | `initTabularInput()` / `initTabularInputs()` | Editable typed grid; paste; reset; add/remove rows and columns; rename / type |
 | `initProgressIndicator()` / `initProgressIndicators()` | Multi-step wizard with indicators, panels, and back/next |
-| `initAboutDialog()` | Tagline “What?” dialog with progressive Huh? / Uhh… stages (wraps `initDialog`) |
+| `initAboutDialog()` | Tagline “What?” dialog with optional final link and progressive stages (wraps `initDialog`) |
 | `initRichTextEditor()` / `initRichTextEditors()` | Toast UI rich text editor (Markdown + WYSIWYG); requires vendor scripts |
 | `initChart()` / `initCharts()` | TanStack Charts host (`mountChart`); requires vendored ESM + import map for `d3-scale` / `d3-shape` when using bars |
 | `initDiagram()` / `initDiagrams()` | Mermaid text→SVG host; requires vendored ESM + chunks under `app/vendor/mermaid/` |

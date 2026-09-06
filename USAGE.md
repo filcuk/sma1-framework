@@ -500,7 +500,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Tabular input** | Editable typed grid (text / number / logical); add/remove/reset; Excel/TSV paste (in-place or replace via footer buttons) with type detection; centered canvas breakout when wide. [`app/components/tabular-input.js`](app/components/tabular-input.js). |
 | **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/shell/page-nav.js`](app/shell/page-nav.js). |
 | **Dialogs** | Accessible modal: backdrop, focus trap, Escape, Enter (default action), focus restore. Markup uses `.modal` / `.modal-panel`; behaviour from [`app/components/dialog.js`](app/components/dialog.js). |
-| **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
+| **About dialog** | Tagline “What?” opener with an optional final link (e.g. Repository) and optional progressive simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
 | **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
 | **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-anchor` (CSS selector — place on another element while this one supplies the copy), `data-tooltip-tone="success\|error"`, `data-tooltip-max-width`, `data-tooltip-nowrap`, `data-tooltip-offset`. Hover tips and keyboard `:focus-visible` tips skip disabled controls unless `data-tooltip-when-disabled`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
@@ -638,7 +638,7 @@ Close controls use `data-dialog-close` on backdrop, × button, or footer buttons
 
 ### About dialog (“What?”)
 
-Pattern for explaining the app from the site tagline — same idea as [pqm-stepper](https://github.com/filcuk/pqm-stepper). A `.btn-link.tagline-link` opens a dialog; an optional **confused** button reveals progressively simpler copy, then hands over to a final link.
+Pattern for explaining the app from the site tagline — same idea as [pqm-stepper](https://github.com/filcuk/pqm-stepper). A `.btn-link.tagline-link` opens a dialog; an optional final link (e.g. **Repository**) sits in the footer. Optional **confused** stages can still reveal progressively simpler copy before handing over to that link.
 
 All copy lives in the markup, so editing the explanation never means touching JS.
 
@@ -658,18 +658,9 @@ All copy lives in the markup, so editing the explanation never means touching JS
     </div>
     <div class="modal-body">
       <p>Full explanation…</p>
-      <div class="about-extra-content" data-about-extra>
-        <div class="about-extra-block hidden" data-about-stage data-about-next-label="Uhh…" hidden>
-          <p>Simpler explanation…</p>
-        </div>
-        <div class="about-extra-block hidden" data-about-stage data-about-next-label="I don't get it" hidden>
-          <p>Even simpler…</p>
-        </div>
-      </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn" data-about-confused>Huh?</button>
-      <a class="btn hidden" data-about-final href="https://example.com/help" hidden>I don't get it</a>
+      <a class="btn" data-about-final href="https://example.com/" target="_blank" rel="noopener noreferrer">Repository</a>
       <div class="modal-footer-actions">
         <button type="button" class="btn" id="about-guided-tour">Guided tour</button>
         <button type="button" class="btn btn-primary" data-dialog-close data-dialog-default>Got it</button>
@@ -691,12 +682,12 @@ const about = initAboutDialog({
 
 | Markup hook | Role |
 | ----------- | ---- |
-| `data-about-confused` | The progressive button; its HTML text is the initial label |
+| `data-about-final` | Optional element (usually an `<a href>`); shown immediately when there are no stages |
+| `data-about-confused` | Optional progressive button; its HTML text is the initial label |
 | `data-about-stage` | One block per stage, revealed in DOM order (start them `hidden`) |
 | `data-about-next-label` | Optional label for the button once that stage is showing |
-| `data-about-final` | Optional element (usually an `<a href>`) shown after the last stage; the button hides and focus moves to it |
 
-Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely and the confused button hides itself. See the live example on [`demo.html`](demo.html).
+With stages present, the final link stays hidden until the last stage, then the confused button hides and focus moves to the final link. Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely (as in the demo) and the confused button hides itself while `data-about-final` stays visible. See the live example on [`demo.html`](demo.html).
 
 Once the first stage is showing, the dialog gains `data-about-dimmed` and the newest stage gains `data-about-current`. The stylesheet uses those to fade earlier copy to `--muted` so the new block reads first — restyle or drop those rules if you want every layer at full contrast.
 

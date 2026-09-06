@@ -56,7 +56,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | tooltip | `app/components/tooltip.js` | `overlays.css` | — | — | — | Always via `initShell` |
 | banner | `app/components/banner.js` | `overlays.css` | — | Markup: `note`, `info`, `success`, `important`, `warning`, `error`, `help`, `experiment`, `format-quote`, `tip` as used | `dom`, `icons` | Always via `initShell` (error banner) |
 | dialog | `app/components/dialog.js` | `overlays.css` | — | — | `dom`, `document-listeners` | |
-| about-dialog | `app/components/about-dialog.js` | `overlays.css`, `layout.css` (`.tagline-link`) | — | — | `dom`; wraps `dialog` | Tagline “What?” + progressive Huh? stages |
+| about-dialog | `app/components/about-dialog.js` | `overlays.css`, `layout.css` (`.tagline-link`) | — | — | `dom`; wraps `dialog` | Tagline “What?” + optional final link / stages |
 | popover | `app/components/popover.js` | `overlays.css` | — | JS: `clear` (dismiss) | `dom`, `document-listeners`, `icons` | Speech-bubble card; optional action icons |
 | tutorial | `app/components/tutorial.js` | `tutorial.css`, `overlays.css` | — | Via popover: `clear`, `chevron-left`, `chevron-right` | `dom`, `document-listeners`; wraps `popover` | Spotlight tour; optional `when` / nested `steps`; Escape priority 110 |
 | badge | `app/components/badge.js` | `controls-badges.css` | — | — | `dom` | |

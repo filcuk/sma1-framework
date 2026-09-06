@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T16:37:13.006Z",
+  "generatedAt": "2026-09-06T17:21:30.225Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -27,7 +27,7 @@
   },
   "files": {
     "app/components/about-dialog.js": {
-      "sha256": "d3f2bfe947f8083a890459b1b5edda62790e6650af6c7e34f645b0b635211193"
+      "sha256": "af036f58f2f45b0bb4e9353ddedc261a920886cb34b173bfcffc0d6fbf1ab702"
     },
     "app/components/accordion.js": {
       "sha256": "a9c66331f8087966c07c49101b99c7702414870e4eab35e5453f24b3a528aff8"
@@ -150,7 +150,7 @@
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
     },
     "app/components/popover.js": {
-      "sha256": "b6f91b1db68ec32887bd74bd997b18b4d80b889eb6160b811cd519e5c7132601"
+      "sha256": "35e28fa9435d2631414a66a35ff14fdb277ea6ff333675f4daff01f9fb4d6d10"
     },
     "app/components/progress-bar.js": {
       "sha256": "59666e299ef56baa1a1e51eeea7e430b32b514e46717cee2bc422837600233fb"
@@ -246,7 +246,7 @@
       "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
     },
     "app/css/controls-menus.css": {
-      "sha256": "214830deda2c1b1453d4f7fc89d4b41c585bd148d86f874744451289dba731ec"
+      "sha256": "6b872b8af24d8ffcd5cda49cb96c49ebe2750c79f85d7bccc8271351a997f907"
     },
     "app/css/controls-model.css": {
       "sha256": "162888f34812fcaa0efd1b3190890293796582278c4fa0e4670e13d97fe207e6"
@@ -261,7 +261,7 @@
       "sha256": "6b67a50320b0231c284d4d05c1f267b10819f6f0353f10f9850e537b587ee45c"
     },
     "app/css/layout.css": {
-      "sha256": "ae48a3b4f8fad79980f621e2e1aa13306e346acef7d771b119ed3e84b787a1de"
+      "sha256": "a2daf18ad06a9b395d8497230a3833d0f5d99495b64c4d02bcca76b7ec42cb23"
     },
     "app/css/overlays.css": {
       "sha256": "fbd8a211dc8c2f835e7b20885b9f953a164db9b0aa841bb833b0018717dee6d4"
@@ -281,6 +281,9 @@
     "app/shell/also-see.js": {
       "sha256": "e0035e39329ed2ace5b85e754ca8c02db77a3d607bdf8465a219e4c718bd9a4e"
     },
+    "app/shell/app-storage-ui.js": {
+      "sha256": "d336a1a8d5f76a75372c8f6abc6fe215d20fa37bc8c381be8b938189365c0ff8"
+    },
     "app/shell/external-link.js": {
       "sha256": "6a1e0d52b04d6f115419de2bac85b2e5581a7e0212fa6d6a32c64a8d0bb45fdc"
     },
@@ -291,10 +294,10 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "00fe127a7771c7c0bf38f0bd545375f04ac3e2de38cbbec62fae95f06e41d1bf"
+      "sha256": "d99c75178b8f83324607618e7f9bdf90bd2a48a9b463e40a219fcbdd63f29927"
     },
     "app/shell/shell.js": {
-      "sha256": "f3c7e30b25b10cae53e889378a92753794ad4d12589296e456bb814aa872947f"
+      "sha256": "5567c13ea517a12a69c295f78b4a025f4a254f7f81a873debab29a9b558e8d8b"
     },
     "app/shell/sticky.js": {
       "sha256": "4fbe8284625f6a7865bae63153aeced7ed46221f498875dc9e18e7e054bbe77a"
@@ -317,6 +320,9 @@
     "app/utils/also-see-svg.js": {
       "sha256": "af1ff194fde0ba9ffe09edf885fde4562bac5f14592fd2f348c366296447e854"
     },
+    "app/utils/app-storage.js": {
+      "sha256": "ff449d7d8b7e295179f967d407bb75278382a06a2c633ecd17eb795d5d66c9c7"
+    },
     "app/utils/brand-icon.js": {
       "sha256": "8d639a2da4e1538534dedc42305150a0158d7d12703f017b7d568a8a73d70c13"
     },
@@ -336,13 +342,13 @@
       "sha256": "62aa90ef1934a6219173aff4a662591fbd7d2b5db4396505009139946efed0d1"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "fc05fa732195bf597df64bb8d3a2ad827bfef7fd648aeddc9ed24e5fce75ff89"
+      "sha256": "502258d7a4e95870b0f1c19c36d34d43a48d1a169db77ae6e426f68360bfa78a"
     },
     "app/utils/icons.js": {
       "sha256": "da29c6129f26ac21c6612e66a2ba9ce9216bbe8a7182ed936f3d6be6e9c2107f"
     },
     "app/utils/menu.js": {
-      "sha256": "5e277123d1ae269f9912aff9e06d74767b509abe7f6d044ac641324e33a309b6"
+      "sha256": "c9bfa427a04ab873b370a2bed3648a8bd8b6370ca220c8b7fef708ccf03c3414"
     },
     "app/utils/orbit-home.js": {
       "sha256": "9f5d9c8c5a9b97cbc71f6fa1d35832a70895e4e25325ddb3a9bc99e179ecf11e"
@@ -1224,7 +1230,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "3a8bc2e5e200e9ab4845bc2d27d719e8ec6e52d769128da2db91294b077a5310"
+      "sha256": "38aafc032be082e6eeac0d85f63dafbd660fda877acfcf6fbe2204a317e02fd6"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"

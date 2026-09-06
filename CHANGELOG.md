@@ -29,6 +29,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
+- About dialog demo drops Huh? / Uhh… stages; the footer link is **Repository** and shows immediately when no stages are present (`data-about-final`). Progressive stages remain optional in `initAboutDialog`.
 - Hover/focus tooltips no longer show on disabled controls by default (`disabled`, `aria-disabled="true"`, or a host `*--disabled` class). Opt in with `data-tooltip-when-disabled`. Timer and persistent tips are unchanged.
 - Slider thumb is centred on the track value (overhangs the track at min / max) instead of keeping the thumb fully inside the track ends.
 - File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`. Cleared slots hide download / remove segments, promote the main segment to upload, and set main-segment tooltips for download / upload / remove actions. Action segments tip **Download** / **Upload** / **Replace** / **Remove**. When only one action is active, the row collapses to a single control (icon on the main).
