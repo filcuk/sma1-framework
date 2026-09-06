@@ -1605,7 +1605,7 @@ initDurationInputs(document);
 
 Segmented combo-style rows, a large dropzone host (`.file--large`), and a fullscreen page-drop overlay (`.file--fullscreen`).
 
-**Rows** — optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand.
+**Rows** — optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand. `initFile` injects a leading `file` type icon (`.file-item-type-icon`) on the main segment.
 
 ```html
 <div class="file" id="my-file" data-file-download data-file-ext-visibility="hover"
@@ -2923,6 +2923,8 @@ Start the badge as `hidden` when the initial selection count is zero so it does 
   </div>
 </div>
 ```
+
+Default expands cap at `32rem`. Add `.expand--full` for a panel-width disclosure (`max-width: none`). After a `.panel-split`, wrap following full-bleed content in `.panel-follow` (optional leading `.panel-divider`) so the split does not overlap it.
 
 ```javascript
 import { initExpand, initExpands } from "./components/expand.js";

@@ -166,9 +166,16 @@ function updateDemoStlDimension(name, value) {
 
 const demoGcodeDropzone = document.getElementById("demo-gcode-dropzone");
 const demoGcodeStatus = document.getElementById("demo-gcode-status");
-const demoGcodeReadout = document.getElementById("demo-gcode-readout");
+const demoGcodePanel = document.getElementById("demo-gcode-panel");
+const demoGcodeSummary = document.getElementById("demo-gcode-summary");
+const demoGcodeDetails = document.getElementById("demo-gcode-details-wrap");
 const demoToolpathStatus = document.getElementById("demo-toolpath-status");
 let demoGcodeRequest = 0;
+
+function setDemoGcodeReadoutHidden(hidden) {
+  setHidden(demoGcodeSummary, hidden);
+  setHidden(demoGcodeDetails, hidden);
+}
 
 function formatDemoDuration(seconds) {
   if (!Number.isFinite(seconds)) return "—";
@@ -217,11 +224,11 @@ function setDemoGcodeMetadata(metadata) {
   };
 
   for (const [name, value] of Object.entries(values)) {
-    const output = demoGcodeReadout?.querySelector(`[data-gcode-meta="${name}"]`);
+    const output = demoGcodePanel?.querySelector(`[data-gcode-meta="${name}"]`);
     if (output) output.textContent = value;
   }
 
-  const objectList = demoGcodeReadout?.querySelector('[data-gcode-meta="objects"]');
+  const objectList = demoGcodePanel?.querySelector('[data-gcode-meta="objects"]');
   if (objectList) {
     objectList.replaceChildren();
     if (!metadata.objects.length) {
@@ -248,7 +255,7 @@ function setDemoGcodeMetadata(metadata) {
       });
     }
   }
-  setHidden(demoGcodeReadout, false);
+  setDemoGcodeReadoutHidden(false);
 }
 
 const DEMO_GCODE_SAMPLE_NAME = "box_0.4n_0.25mm_PETG_COREONEL_9m.bgcode";
@@ -263,7 +270,7 @@ async function loadDemoGcode(bytes, label) {
     demoGcodeStatus.textContent = "Reading…";
     setHidden(demoGcodeStatus, false);
   }
-  setHidden(demoGcodeReadout, true);
+  setDemoGcodeReadoutHidden(true);
 
   try {
     const [metadata, toolpath] = await Promise.all([
@@ -314,7 +321,7 @@ const demoGcodeDropzoneApi = initFile(demoGcodeDropzone, {
   },
   onClear: () => {
     demoGcodeRequest += 1;
-    setHidden(demoGcodeReadout, true);
+    setDemoGcodeReadoutHidden(true);
     demoToolpathPreview?.clear();
     if (demoGcodeStatus) {
       demoGcodeStatus.textContent = "No G-code file selected.";
@@ -326,8 +333,6 @@ const demoGcodeDropzoneApi = initFile(demoGcodeDropzone, {
     }
   },
 });
-
-initFile(document.getElementById("demo-file-dropzone-single"));
 
 initFile(document.getElementById("demo-file-dropzone-multi"));
 
@@ -355,19 +360,13 @@ document.getElementById("demo-file-fullscreen-hide")?.addEventListener("click", 
   demoFileFullscreen?.hide();
 });
 
+initFile(document.getElementById("demo-file-upload"));
+
 initFile(document.getElementById("demo-file-download"), {
   files: [
     {
-      filename: "hello.txt",
-      getContent: () => buildDemoTextFile("Hello"),
-    },
-    {
-      filename: "notes.txt",
-      getContent: () => buildDemoTextFile("Notes"),
-    },
-    {
-      filename: "summary.txt",
-      getContent: () => buildDemoTextFile("Summary"),
+      filename: "readme.txt",
+      getContent: () => buildDemoTextFile("Readme"),
     },
   ],
 });
@@ -375,8 +374,8 @@ initFile(document.getElementById("demo-file-download"), {
 initFile(document.getElementById("demo-file-manage"), {
   files: [
     {
-      filename: "editable.txt",
-      getContent: () => buildDemoTextFile("Editable"),
+      filename: "notes.txt",
+      getContent: () => buildDemoTextFile("Notes"),
     },
   ],
 });

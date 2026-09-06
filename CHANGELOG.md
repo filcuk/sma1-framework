@@ -22,6 +22,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Documented time-panel **00:00** / **Now** defaults per host (standalone time picker, duration mode, duration input, date+time combined picker).
 - File fullscreen overlay keeps dragover highlight for the whole file drag (CSS previously only styled `.file--large.is-dragover`), hides the browse secondary line while drag-activated, and ends the session on window leave / `dragend`. Strict `accept` shows reject chrome (`is-drag-reject`, forbidden cursor) on incompatible drags for fullscreen, large dropzones, and drop-active rows.
 - Manually shown `.file--fullscreen` overlays are dismissible by default (backdrop click + close control); opt out with `fullscreenDismissible: false` / `data-file-fullscreen-dismissible="false"`. Drag-activated sessions hide dismiss chrome.
+- Expand supports `.expand--full` for panel-width disclosures (no `max-width: 32rem` cap). Panel splits followed by `.panel-follow` no longer bleed their bottom margin into that content.
 
 ### Changed
 
@@ -35,6 +36,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `file` icon from Material Icons Round (`round-insert-drive-file`) for the leading glyph on file row mains.
 - Framework `remove-circle` icon from Material Icons Round (`round-remove-circle`) for file remove segments.
 - Toolpath preview travel-move hover toggle (on by default; `data-toolpath-preview-travels="false"` hides gray paths; `data-toolpath-preview-travel-toggle="false"` removes the control). Framework `visibility` / `visibility-off` icons from Material Icons Round.
 - G-code toolpath parser tessellates XY-plane `G2` / `G3` arcs (I/J or R, including helical Z). Unsupported arc planes or invalid arc parameters emit a single `unsupported geometry` warning, which the toolpath preview appends to the meta strip.

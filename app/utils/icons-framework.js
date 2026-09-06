@@ -6,7 +6,7 @@
  * For third-party icons, set `name` to the collection id (e.g. `round-info`).
  * To reuse an existing framework icon under another id, set `ref` to the target key.
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
  */
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
@@ -179,6 +179,12 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M11.625 15.513q-.175-.063-.325-.213l-3.6-3.6q-.3-.3-.288-.7t.288-.7q.3-.3.713-.312t.712.287L11 12.15V5q0-.425.288-.712T12 4t.713.288T13 5v7.15l1.875-1.875q.3-.3.713-.288t.712.313q.275.3.288.7t-.288.7l-3.6 3.6q-.15.15-.325.213t-.375.062t-.375-.062M6 20q-.825 0-1.412-.587T4 18v-2q0-.425.288-.712T5 15t.713.288T6 16v2h12v-2q0-.425.288-.712T19 15t.713.288T20 16v2q0 .825-.587 1.413T18 20z"/>`,
     attribution: ICON_ATTRIBUTIONS.materialSymbols,
     name: "download-rounded",
+  },
+  file: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8.83c0-.53-.21-1.04-.59-1.41l-4.83-4.83c-.37-.38-.88-.59-1.41-.59zm7 6V3.5L18.5 9H14c-.55 0-1-.45-1-1"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-insert-drive-file",
   },
   calendar: {
     viewBox: "0 0 24 24",

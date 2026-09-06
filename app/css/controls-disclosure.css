@@ -8,6 +8,11 @@
   overflow: hidden;
 }
 
+.expand.expand--full {
+  max-width: none;
+  width: 100%;
+}
+
 .expand-trigger {
   display: flex;
   align-items: center;

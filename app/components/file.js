@@ -1,5 +1,6 @@
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
+import { closeTooltip } from "./tooltip.js";
 
 /**
  * Segmented file control (combo-style), large dropzone host, and fullscreen
@@ -595,6 +596,16 @@ function ensureMain(itemEl, { nameAction, filename }) {
   if (tip) main.setAttribute("data-tooltip", tip);
   else main.removeAttribute("data-tooltip");
 
+  if (!main.querySelector(".file-item-type-icon")) {
+    const typeIcon = document.createElement("span");
+    typeIcon.className = "file-item-type-icon";
+    typeIcon.setAttribute("aria-hidden", "true");
+    typeIcon.append(createIcon("file", { className: "btn-icon-svg" }));
+    const nameEl = main.querySelector(".file-item-name");
+    if (nameEl) main.insertBefore(typeIcon, nameEl);
+    else main.prepend(typeIcon);
+  }
+
   if (!main.querySelector(".file-item-name")) {
     const nameEl = document.createElement("span");
     nameEl.className = "file-item-name";
@@ -989,6 +1000,9 @@ function initFileRows(fileEl, options = {}) {
     const state = itemStates[index];
     if (!state?.hasFile) return;
 
+    // Row may be cleared or detached; dismiss tip anchored to the old control.
+    closeTooltip();
+
     const previousFilename = state.filename;
     onRemove?.({
       fileEl,
@@ -1022,6 +1036,7 @@ function initFileRows(fileEl, options = {}) {
   function runNameAction(index) {
     const state = itemStates[index];
     if (!state) return;
+    closeTooltip();
 
     switch (getEffectiveNameAction(state)) {
       case "download":
@@ -1429,6 +1444,7 @@ function initFileLarge(fileEl, options = {}) {
   }
 
   function destroyListBindings() {
+    closeTooltip();
     listCleanups.forEach((cleanup) => cleanup());
     listCleanups = [];
   }
@@ -1551,9 +1567,14 @@ function initFileLarge(fileEl, options = {}) {
         byteLength: file.size,
       });
 
-      ensureSegment(itemEl, "download", file.name, hostDownload);
-      ensureSegment(itemEl, "upload", file.name, hostUpload);
-      ensureSegment(itemEl, "remove", file.name, hostRemove);
+      const downloadBtn = ensureSegment(
+        itemEl,
+        "download",
+        file.name,
+        hostDownload
+      );
+      const uploadBtn = ensureSegment(itemEl, "upload", file.name, hostUpload);
+      const removeBtn = ensureSegment(itemEl, "remove", file.name, hostRemove);
 
       const solo = applySoloPresentation(itemEl, {
         download: hostDownload,

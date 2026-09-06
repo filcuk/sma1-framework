@@ -616,6 +616,18 @@ main {
   margin-bottom: calc(-1 * (var(--panel-gap, 0.75rem) + var(--panel-divider-margin, 0.35rem)));
 }
 
+/* Content after a split (e.g. full-width expand) — don't bleed into it. */
+.panel-split:has(+ .panel-follow) {
+  margin-bottom: 0;
+}
+
+.panel-follow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--panel-gap, 0.75rem);
+  min-width: 0;
+}
+
 .panel-divider + .panel-split:not(.panel-split--after-heading) {
   margin-top: calc(-1 * (var(--panel-gap, 0.75rem) + var(--panel-divider-margin, 0.35rem)));
 }
