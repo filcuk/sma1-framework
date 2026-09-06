@@ -6,6 +6,10 @@ Rules for AI agents working in the SMA1 Framework repository and its app forks.
 
 The always-applied [framework ownership rule](.cursor/rules/framework-ownership.mdc) defines which files app agents must treat as read-only. Follow it before editing an app fork.
 
+Commit messages follow [Conventional Commits](.cursor/rules/conventional-commits.mdc). Agents should suggest a correctly formatted commit after every change and only create a git commit when asked.
+
+Multi-step plans run [one step at a time](.cursor/rules/plan-execution.mdc): after each step, suggest a commit, pause for review, and wait for the user to say `continue` before the next step (unless told otherwise).
+
 ## Lifecycle skills
 
 Multi-step workflows live under [`.cursor/skills/`](.cursor/skills/). Read the matching `SKILL.md` when the task fits; shared rules and the feature dependency inventory are in [`.cursor/skills/_shared/`](.cursor/skills/_shared/).
@@ -57,7 +61,7 @@ Prose in documentation (`USAGE.md`, `README.md`, `CHANGELOG.md`, `DESIGN.md`, de
 
 - Use CSS custom properties from `app/tokens.css` (`--bg`, `--surface`, `--input-bg`, `--accent`, `--accent-hover`, `--accent-fg`, etc.)
 - Fork brand colour: override `--accent` (and `--accent-fg` when needed) in `app/css/app.css` — see **`manage-color`**; do not edit `tokens.css` in a fork for primary colour
-- Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.callout`, `.popover`, `.section-panel`, `.code-block`, `.theme-toggle`
+- Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.callout`, `.popover`, `.section-panel`, `.code-block`, `.segmented-control`
 - Add or edit inline UI icons in `app/utils/icons-framework.js` (catalogue) or `app/utils/icons-app.js` (fork) only — do not duplicate SVG paths in HTML
 - Do not introduce parallel styling systems (Tailwind, CSS-in-JS, component libraries)
 
@@ -86,25 +90,33 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initCodeBlocks(root)` / `initCodeBlock(el)` | Prism code blocks with toolbar/surface actions, modes, copy/paste |
 | `initExpandableSurfaces(root)` | Maximize `[data-expandable-surface]` to page-width overlay |
 | `showBanner()` / `hideBanner()` | Show or hide `.banner` elements; respects `data-banner-expire` |
-| `initTooltips()` / `flashTooltip()` / `showPersistentTooltip()` / `dismissPersistentTooltip()` | Hover tips; timer reaction when in-place is not possible; persistent tips — see [`DESIGN.md`](DESIGN.md) |
+| `initTooltips()` / `openTooltip()` / `updateTooltip()` / `closeTooltip()` / `flashTooltip()` / `showPersistentTooltip()` / `dismissPersistentTooltip()` | Hover tips (optional `data-tooltip-anchor` / `anchor` to place on another element); timer reaction when in-place is not possible; persistent tips — see [`DESIGN.md`](DESIGN.md) |
 | `initPopover()` | Anchored speech-bubble card with notch, title, body, and actions |
 | `initTutorial()` | Guided spotlight tour over a JS step script (uses popover); optional `when` / nested `steps` branches; multiple scripts per page, one active |
 | `initPageNav()` / `initPageNavPanel()` | Page nav only — requires `PAGE_NAV_MARKUP` from `app/shell/render-shell.js` |
 | `initStickyChrome()` / `setStickyHeader()` / `setStickySectionHeadings()` | Optional sticky site header and section headings (`data-sticky-header`, `data-sticky-section-headings`) |
 | `initTitleNumbering()` / `setTitleNumbering()` / `syncTitleNumbering()` | Optional hierarchical outline prefixes (`data-title-numbering`) |
 | `initTab()` / `initTabs()` | Single tabbed section vs every `.tabs` block |
-| `setHidden()` / `parseBooleanAttr()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values |
+| `setHidden()` / `parseBooleanAttr()` / `syncDisclosurePanel()` / `hydrateDisclosure()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values; disclosure panels (expand / accordion) stay in layout for height animation via `inert` + `aria-hidden`, wrap padded body in `.disclosure-clip`, then hydrate transitions after the initial open state |
+| `initRequiredField()` / `initRequiredFields()` / `setFieldRequired()` / `syncRequiredField()` | Required field chrome (`.field.is-required` asterisk + empty `aria-invalid`) — see [`required-field.js`](app/utils/required-field.js) |
+| `initFieldValidation()` / `initFieldValidations()` / `registerValidator()` / `validateField()` | Simple field rules (`email`, `number`, `noSpaces`, `alphanumeric`, `required` + custom) — see [`field-validation.js`](app/utils/field-validation.js) |
+| `initInputAffix()` / `initInputAffixes()` | Muted in-field units, uppercase, fixed decimals — see [`input-affix.js`](app/utils/input-affix.js) |
 | `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); `lockWidth` defaults on — see [`button-label.js`](app/utils/button-label.js) |
+| `setControlGlow()` / `clearControlGlow()` / `setControlGlowMask()` | Opt-in attention glow (`.control-glow`; accent / danger / success / custom colour; optional icon glyph mask) — see [`control-glow.js`](app/utils/control-glow.js) |
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
 | `initDropdown()` / `initToggleDropdown()` | Single-select vs multi-select toggle dropdown menus |
 | `initCombobox()` / `initComboboxes()` | Text input with filterable autocomplete list; `data-combobox-multi` for multi-select (comma summary + badge) |
-| `initFileDropzone()` / `initFileDropzones()` | Drag-and-drop / browse file picker |
-| `initFileDownload()` / `initFileDownloads()` | Click-to-download generated files |
-| `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta |
+| `initFile()` / `initFiles()` | Segmented file rows, `.file--large` dropzone, and `.file--fullscreen` overlay; `downloadFile()` helper; `accept` enforced by default (`acceptFilter: "soft"` for advise-only) |
+| `createBoxMesh()` / `encodeStl()` / `decodeStl()` / `downloadStl()` | Parametric mesh and STL export helpers (millimetres by convention) |
+| `initImagePreview()` / `initImagePreviews()` | Checkerboard image preview (SVG / URL / Blob); optional maximise, download, dimensions / file-size / SMIL frame+duration meta; meta visibility `hover` / `always` / `not-hover` / `never`; action visibility `hover` / `always` / `never` |
+| `initModelPreview()` / `initModelPreviews()` | Interactive Three.js preview for indexed meshes; optional meta strip (size / triangles / vertices / volume / surface area / objects / `setMetaExtra`); optional maximise, home/reset, rendering mode dropdown, and play/pause auto-rotate via expandable-surface |
+| `parseGcodeMeta()` / `isBgcode()` | Read timestamp, duration, filament, temperatures, density, perimeters, objects, and slicer metadata from ASCII G-code and binary bgcode without simulating toolpaths |
+| `parseGcodeToolpath()` | Parse ASCII G-code or bgcode motion into extrusion/travel segments (G0/G1 and XY G2/G3 arcs), layers, bounds, and warnings |
+| `initToolpathPreview()` / `initToolpathPreviews()` | Interactive Three.js LineSegments preview for parsed G-code toolpaths; maximum-layer filtering (hover `.slider--hover` on by default); travel-move toggle; optional meta strip (segments / layers / current layer / `setMetaExtra`); optional maximise, home/reset, and play/pause auto-rotate via expandable-surface |
 | `initDatePicker()` / `initDatePickers()` | Calendar popup with optional side-by-side time panel |
 | `initTimePicker()` / `initTimePickers()` | Editable time field with segmented popup; optional seconds / quick actions |
 | `initDurationInput()` / `initDurationInputs()` | Segmented duration field with the shared popup in duration mode |
-| `initSlider()` / `initSliders()` | Range slider with editable value (integer, decimal, percentage) |
+| `initSlider()` / `initSliders()` | Range slider with editable value (integer, decimal, percentage); `.slider--hover` for surface strips; `setBounds()` |
 | `initProgressBar()` / `initProgressBars()` | Progress bar with optional percent or fraction label |
 | `initSpinner()` / `initSpinners()` | Loading spinner; optional blocking overlay on a host |
 | `initStepper()` / `initSteppers()` | Numeric nudger with decrement/increment buttons |
@@ -118,12 +130,12 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initChipGroup()` / `initChipGroups()` | Selectable filter chips (toggle pressed; not removable) |
 | `initChipInput()` / `initChipInputs()` | Text field that adds removable chips |
 | `initLegend()` / `initLegends()` | Coloured legend chips (optional toggle; slots `--1`…`--8` or `--legend-color`) |
-| `initSegmentedControl()` / `initSegmentedControls()` | Segmented control (toggle button group); optional `.segmented-control--slim` |
+| `initSegmentedControl()` / `initSegmentedControls()` | Segmented control (toggle button group); optional `.segmented-control--slim` / `.segmented-control--muted` |
 | `initPagination()` / `initPaginations()` | Client-side pagination (numbered pages, no URL change) |
 | `initTable()` / `initTables()` | Data table with optional sortable columns (Shift+click multi-sort) and row selection |
 | `initTabularInput()` / `initTabularInputs()` | Editable typed grid; paste; reset; add/remove rows and columns; rename / type |
 | `initProgressIndicator()` / `initProgressIndicators()` | Multi-step wizard with indicators, panels, and back/next |
-| `initAboutDialog()` | Tagline “What?” dialog with progressive Huh? / Uhh… stages (wraps `initDialog`) |
+| `initAboutDialog()` | Tagline “What?” dialog with optional final link and progressive stages (wraps `initDialog`) |
 | `initRichTextEditor()` / `initRichTextEditors()` | Toast UI rich text editor (Markdown + WYSIWYG); requires vendor scripts |
 | `initChart()` / `initCharts()` | TanStack Charts host (`mountChart`); requires vendored ESM + import map for `d3-scale` / `d3-shape` when using bars |
 | `initDiagram()` / `initDiagrams()` | Mermaid text→SVG host; requires vendored ESM + chunks under `app/vendor/mermaid/` |
@@ -152,11 +164,12 @@ Triggers call `stopPropagation`, so outside-click alone cannot close peers — n
 
 ### Visibility
 
-Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements programmatically. Do not toggle `.hidden` alone.
+Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements programmatically. Do not toggle `.hidden` alone. Expand and accordion panels are the exception: use `syncDisclosurePanel()` so height can animate (do not `setHidden` those panels).
 
 ### Icons
 
 - Declare icons with `data-icon="name"` and optional `data-icon-class="…"` in HTML
+- Optional `data-icon-hover="name"` mounts a stacked hover alternate (`.btn-icon-swap`); click/pressed swaps use `initToggleButton` icon-off/on
 - Call `initIcons()` (via `initShell()`) to inject SVGs
 - **Agents must not invent or generate SVG paths** — see [`.cursor/rules/icons.mdc`](.cursor/rules/icons.mdc). If an icon is missing, reuse an existing id / `{ ref }`, or follow the [`add-icon`](.cursor/skills/add-icon/SKILL.md) skill to pull from Icônes (ask for app id + framework catalogue vs app if needed). Blank stubs via [`handle-assets`](.cursor/skills/handle-assets/SKILL.md) when the user will supply custom artwork.
 - Users / agents add icon entries in `icons-app.js` / `icons-framework.js` only — `icons.js` merges them; do not duplicate SVG paths in HTML
@@ -180,14 +193,16 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-chips.css` | Selectable / removable chips and coloured legend chips |
 | `app/css/controls-fields.css` | Fields, combobox, date/time |
 | `app/css/controls-widgets.css` | Toggle, segmented control, pagination, progress bar, spinner, slider, stepper, color input |
+| `app/css/controls-glow.css` | Opt-in control attention glow (`.control-glow`) |
 | `app/css/controls-section-panel.css` | Section panel grid rows |
 | `app/css/controls-menus.css` | Combo button, dropdown menus |
 | `app/css/controls-disclosure.css` | Expand, accordion, tabs, progress indicator |
-| `app/css/controls-file.css` | File dropzone, file download |
+| `app/css/controls-file.css` | Segmented file rows, large dropzone, fullscreen overlay |
 | `app/css/controls-image.css` | Image preview (checkerboard host) |
 | `app/css/controls-color.css` | Color set gallery and color picker |
 | `app/css/controls-charts.css` | TanStack Charts host |
 | `app/css/controls-diagram.css` | Mermaid diagram host |
+| `app/css/controls-model.css` | Model preview surface and 3D model hosts |
 | `app/css/overlays.css` | Banners, tooltips, popovers, modals |
 | `app/css/tutorial.css` | Tutorial spotlight overlay and step chrome |
 | `app/css/rich-text-editor.css` | Rich text editor field layout and Toast UI token overrides |
@@ -198,7 +213,7 @@ Keep HTML linking only `styles.css`. Edit tokens, `app/css/app.css`, or the rele
 
 ### Demo vs shared layout
 
-- **Shared layout** (usable in forks): `.content-section`, `.content-tier` / `.content-tier-header` / `.segment-title` / `.content-tier-lead` / `.content-tier-body`, `.section-title`, `.section-panel`, `.panel-title` / `.panel-hint` / `.panel-row` / `.panel-inline` / `.panel-grid`, `.panel-split` / `.panel-divider` / `.panel-stack`, `.callout`, …
+- **Shared layout** (usable in forks): `.content-section`, `.content-tier` / `.content-tier-header` / `.segment-title` / `.content-tier-lead` / `.content-tier-body`, `.section-title`, `.section-panel`, `.panel-title` / `.panel-hint` / `.panel-row` / `.panel-row--spread` / `.panel-row--end` / `.panel-inline` / `.panel-grid`, `.panel-split` / `.panel-divider` / `.panel-stack`, `.callout`, …
 - **Demo-only helpers** (catalogue wiring and visualisation): `.demo-colour-*`, `.demo-banner-*`, and demo element ids — fine in `demo.html` / `app/demo.js`
 - Shell and shared CSS/JS must **not** select `demo-*` classes. If sticky, page-nav, or other chrome depends on markup, use generic names and document them in `USAGE.md`. See [`.cursor/rules/demo-isolation.mdc`](.cursor/rules/demo-isolation.mdc).
 
@@ -210,7 +225,7 @@ Modules live under `app/shell/`, `app/utils/`, and `app/components/` (no build s
 | ----- | -------- | ---- |
 | Entry | `main.js`, `demo.js`, `theme-init.js`, `config.js`, `version.js` | Loaded directly from HTML |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, … | Shared page chrome via `initShell()` |
-| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
+| Infrastructure | `app/utils/dom.js`, `document-listeners.js`, `clipboard.js`, `button-label.js`, `required-field.js`, `field-validation.js`, `input-affix.js`, `control-glow.js`, `icons.js` (+ `icons-framework.js` / `icons-app.js`), `menu.js`, `brand-icon.js` | Shared helpers and registries |
 | Components | `app/components/dialog.js`, `dropdown.js`, `tabs.js`, `code-block.js`, … | One `initX` (or `initXs`) per feature — import only what you need |
 | Vendor | `app/vendor/**` | Upstream bytes only (UMD / ESM trees). Never put framework wrappers here |
 
@@ -253,7 +268,7 @@ Follow [`DESIGN.md`](DESIGN.md): prefer **in-place** label flashes when the cont
 
 ### Selection highlights
 
-Two styles ([`DESIGN.md`](DESIGN.md)): **standard** (accent border + tinted background; neighbouring selected items join under one outer border — default for controls/lists) and **light** (lighter background only — theme switch). Match an existing control; do not invent a third look.
+Two styles ([`DESIGN.md`](DESIGN.md)): **standard** (accent border + tinted background; neighbouring selected items join under one outer border — default for controls/lists) and **light** (lighter background only — muted segmented / theme switch). Match an existing control; do not invent a third look.
 
 ## Accessibility
 

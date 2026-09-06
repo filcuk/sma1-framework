@@ -1,0 +1,20 @@
+---
+description: Execute multi-step plans one step at a time; suggest a commit, pause, wait for continue
+alwaysApply: true
+---
+
+# Plan execution — one step at a time
+
+When implementing a **multi-step plan** (explicit plan, numbered steps, or an agreed phased approach), unless the user says otherwise:
+
+1. **Complete only the current step** — do not start later steps in the same turn.
+2. **Stop and suggest a commit** using [Conventional Commits](conventional-commits.mdc):
+   - Subject line (`type(scope): description`)
+   - Optional body as a short markdown bullet list (paths/commands in backticks) when detail helps
+3. **Pause** — wait for the user to review, commit (themselves or by asking you), and say **`continue`** before the next step.
+4. Do **not** chain multiple plan steps in one turn.
+5. Do **not** create a git commit unless the user explicitly asks you to.
+
+Single-step tasks and ad-hoc fixes are unchanged: still suggest a conventional commit when the change is done, but no `continue` gate.
+
+If the user says to run the whole plan without pausing, or to combine steps, follow that instruction for that plan.

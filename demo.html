@@ -24,7 +24,8 @@
     {
       "imports": {
         "d3-scale": "./app/vendor/d3-scale/d3-scale.esm.js",
-        "d3-shape": "./app/vendor/d3-shape/d3-shape.esm.js"
+        "d3-shape": "./app/vendor/d3-shape/d3-shape.esm.js",
+        "three": "./app/vendor/three/three.module.min.js"
       }
     }
   </script>
@@ -212,7 +213,7 @@
             </div>
           </div>
         </section>
-      </div>
+
     </section>
     
     <section class="content-tier" id="content-tier-basic" aria-labelledby="content-tier-basic-title">
@@ -223,7 +224,7 @@
         </p>
       </header>
       
-      <div class="content-tier-body">
+A      <div class="content-tier-body">
         <section class="content-section" aria-labelledby="demo-actions">
           <h3 id="demo-actions" class="section-title">Actions</h3>
           <div class="section-panel">
@@ -244,16 +245,18 @@
                     data-toggle-button-icon-off="fullscreen" data-toggle-button-icon-on="fullscreen-exit"
                     data-toggle-button-aria-label-off="Enter fullscreen"
                     data-toggle-button-aria-label-on="Exit fullscreen"
-                    data-tooltip="Icon toggle that swaps the next-action icon"
+                    data-tooltip="Click swaps the next-action icon"
                     data-icon-class="btn-icon-svg"></button>
                   <button type="button" class="btn-link">Link button</button>
                 </div>
-                <p class="panel-hint">Label flash with optional static width.</p>
+                <p class="panel-hint">Labeled icon + label flash (shift vs locked width).</p>
                 <div class="panel-row">
-                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-shift">
+                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-shift" aria-label="Copy">
+                    <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
                     <span class="btn-label-flash__label">Copy</span>
                   </button>
-                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-fixed">
+                  <button type="button" class="btn btn-label-flash control-glow" id="demo-label-flash-fixed" aria-label="Copy">
+                    <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
                     <span class="btn-label-flash__label">Copy</span>
                   </button>
                 </div>
@@ -264,8 +267,8 @@
                 <p class="panel-hint">Slim version for toolbar, icon-only, in-element embedded buttons.</p>
                 <div class="panel-row">
                   <button type="button" class="btn btn-slim">Slim</button>
-                  <button type="button" class="btn btn-primary btn-slim">Slim primary</button>
-                  <button type="button" class="btn btn-slim" disabled>Slim disabled</button>
+                  <button type="button" class="btn btn-primary btn-slim">Primary</button>
+                  <button type="button" class="btn btn-slim" disabled>Disabled</button>
                   <button type="button" class="btn btn-slim btn-icon btn-toggle" aria-pressed="false"
                     data-toggle-button aria-label="Slim icon toggle"
                     data-tooltip="Slim icon button" data-icon="lines"
@@ -275,9 +278,30 @@
                     data-toggle-button-icon-off="fullscreen" data-toggle-button-icon-on="fullscreen-exit"
                     data-toggle-button-aria-label-off="Enter fullscreen"
                     data-toggle-button-aria-label-on="Exit fullscreen"
-                    data-tooltip="Slim icon toggle that swaps the next-action icon"
+                    data-tooltip="Slim click-swap next-action icon"
                     data-icon-class="btn-icon-svg"></button>
-                  <button type="button" class="btn btn-slim btn-danger">Slim danger</button>
+                  <button type="button" class="btn btn-slim btn-icon" aria-label="Show"
+                    data-tooltip="Slim hover-swap icon"
+                    data-icon="visibility" data-icon-hover="visibility-off"
+                    data-icon-class="btn-icon-svg"></button>
+                  <button type="button" class="btn btn-slim btn-danger control-glow control-glow--danger">Danger</button>
+                </div>
+                <p class="panel-hint">Slim labeled icon hover + click (toggle) swaps.</p>
+                <div class="panel-row">
+                  <button type="button" class="btn btn-slim" aria-label="Show password"
+                    data-tooltip="Slim hover swaps the leading icon">
+                    <span data-icon="visibility" data-icon-hover="visibility-off"
+                      data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+                    Show
+                  </button>
+                  <button type="button" class="btn btn-slim btn-toggle" aria-pressed="false"
+                    data-toggle-button
+                    data-toggle-button-icon-off="visibility" data-toggle-button-icon-on="visibility-off"
+                    data-toggle-button-label-off="Show" data-toggle-button-label-on="Hide"
+                    data-toggle-button-aria-label-off="Show details"
+                    data-toggle-button-aria-label-on="Hide details"
+                    data-toggle-button-icon-class="btn-icon-svg"
+                    data-tooltip="Slim click swaps icon and label"></button>
                 </div>
               </div>
             </div>
@@ -287,34 +311,34 @@
         <section class="content-section" aria-labelledby="demo-fields">
           <h3 id="demo-fields" class="section-title">Simple inputs</h3>
           <div class="section-panel">
-            <div class="panel-split">
+            <div class="panel-grid panel-grid-2">
               <div class="panel-stack">
-                <label class="field" for="demo-input-multiline">
-                  <span class="field-label">Multi-line input</span>
-                  <textarea id="demo-input-multiline" class="textarea" rows="3" placeholder="Enter longer text…"></textarea>
+                <label class="field is-required" for="demo-input-email" data-validate="email">
+                  <span class="field-label">Email</span>
+                  <input type="email" id="demo-input-email" class="input" placeholder="name@example.com" autocomplete="email" />
+                  <span class="field-error" hidden></span>
+                </label>
+                <label class="field" for="demo-input-qty" data-validate="number" data-validate-min="1" data-validate-max="10">
+                  <span class="field-label">Quantity (1–10)</span>
+                  <input type="text" id="demo-input-qty" class="input" inputmode="numeric" placeholder="5" />
+                  <span class="field-error" hidden></span>
                 </label>
               </div>
-              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
               <div class="panel-stack">
-                <h3 class="panel-title">Radio</h3>
-                <div class="radio-group" id="demo-radio-group" role="radiogroup" aria-label="Radio">
-                  <label class="radio" for="demo-radio-a">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-a" value="a" />
-                    <span>Radio</span>
-                  </label>
-                  <label class="radio" for="demo-radio-b">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-b" value="b" checked />
-                    <span>Selected</span>
-                  </label>
-                  <label class="radio" for="demo-radio-c">
-                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-c" value="c" disabled />
-                    <span>Disabled (off)</span>
-                  </label>
-                </div>
+                <label class="field" for="demo-input-price" data-validate="number" data-input-prefix="£" data-input-decimals="2">
+                  <span class="field-label">Price</span>
+                  <input type="text" id="demo-input-price" class="input" inputmode="decimal" />
+                  <span class="field-error" hidden></span>
+                </label>
+                <label class="field" for="demo-input-length" data-validate="number" data-input-suffix="cm" data-input-decimals="2">
+                  <span class="field-label">Length</span>
+                  <input type="text" id="demo-input-length" class="input" inputmode="decimal" />
+                  <span class="field-error" hidden></span>
+                </label>
               </div>
             </div>
             <hr class="panel-divider" />
-            <div class="panel-split">
+            <div class="panel-split panel-split--3">
               <div class="panel-stack">
                 <h3 class="panel-title">Toggle</h3>
                 <div class="toggle-group" id="demo-toggle-group">
@@ -382,6 +406,24 @@
                   </label>
                   <label class="checkbox" for="demo-checkbox-disabled">
                     <input type="checkbox" class="checkbox-input" id="demo-checkbox-disabled" disabled />
+                    <span>Disabled (off)</span>
+                  </label>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="panel-title">Radio</h3>
+                <div class="radio-group" id="demo-radio-group" role="radiogroup" aria-label="Radio">
+                  <label class="radio" for="demo-radio-a">
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-a" value="a" />
+                    <span>Radio</span>
+                  </label>
+                  <label class="radio" for="demo-radio-b">
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-b" value="b" checked />
+                    <span>Selected</span>
+                  </label>
+                  <label class="radio" for="demo-radio-c">
+                    <input type="radio" class="radio-input" name="demo-radio" id="demo-radio-c" value="c" disabled />
                     <span>Disabled (off)</span>
                   </label>
                 </div>
@@ -811,7 +853,7 @@
               <div class="panel-stack">
                 <h3 class="panel-title">Tooltips</h3>
                 <p class="panel-hint">
-                  Tooltips can use optional position, timer, persistence and success/error state.
+                  Tooltips can use optional position, max-width (including match), nowrap, offset, timer, persistence and success/error state.
                 </p>
                 <div class="panel-row">
                   <button type="button" class="btn" data-tooltip="Save your changes">
@@ -820,6 +862,22 @@
                   <button type="button" class="btn btn-icon" aria-label="Help" data-tooltip="Inline help for this control"
                     data-tooltip-position="right">
                     <span class="help-icon" aria-hidden="true">?</span>
+                  </button>
+                  <button type="button" class="btn" data-tooltip="A longer tip that wraps inside a wider max-width box"
+                    data-tooltip-max-width="22rem">
+                    Wider tip
+                  </button>
+                  <button type="button" class="btn" data-tooltip="This tip matches the trigger control width"
+                    data-tooltip-max-width="match">
+                    Match width
+                  </button>
+                  <button type="button" class="btn" data-tooltip="Single-line tip that does not wrap"
+                    data-tooltip-nowrap>
+                    No wrap
+                  </button>
+                  <button type="button" class="btn" data-tooltip="Farther from the control"
+                    data-tooltip-offset="20">
+                    Offset
                   </button>
                   <span class="panel-inline">
                     Positions:
@@ -1045,10 +1103,11 @@
                   </div>
                 </div>
                 <div class="field">
-                  <span class="field-label" id="demo-segmented-slim-label">Slim</span>
-                  <div class="segmented-control segmented-control--slim segmented-control--full" id="demo-segmented-slim"
-                    data-segmented-control-default="list" aria-labelledby="demo-segmented-slim-label">
-                    <div class="segmented-control-list" role="radiogroup" aria-label="Slim segment control">
+                  <span class="field-label" id="demo-segmented-muted-label">Slim muted</span>
+                  <div class="segmented-control segmented-control--muted segmented-control--slim segmented-control--full"
+                    id="demo-segmented-muted" data-segmented-control-default="list"
+                    aria-labelledby="demo-segmented-muted-label">
+                    <div class="segmented-control-list" role="radiogroup" aria-label="Slim muted segment control">
                       <button type="button" class="segmented-control-item" role="radio" aria-checked="true"
                         data-segmented-control-value="list">List</button>
                       <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
@@ -1056,7 +1115,7 @@
                       <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
                         data-segmented-control-value="map">Map</button>
                     </div>
-                    <input type="hidden" class="segmented-control-value" name="demo-view-slim" value="list" />
+                    <input type="hidden" class="segmented-control-value" name="demo-view-muted" value="list" />
                   </div>
                 </div>
               </div>
@@ -1841,70 +1900,114 @@
             <div class="panel-split">
               <div class="panel-stack">
                 <div class="field">
-                  <span class="field-label">Single file dropzone</span>
-                  <div class="file-dropzone" id="demo-file-dropzone-single">
-                    <input type="file" class="file-dropzone-input" hidden />
-                    <button type="button" class="file-dropzone-prompt">
-                      <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
-                      <span class="file-dropzone-text">
-                        <span class="file-dropzone-primary">Drop a file here</span>
-                        <span class="file-dropzone-secondary">select to browse</span>
+                  <span class="field-label">Typed multi-file dropzone</span>
+                  <div class="file file--large" id="demo-file-dropzone-multi" data-file-accept="image/*"
+                    data-file-multiple data-file-max="5">
+                    <input type="file" class="file-input" hidden />
+                    <button type="button" class="file-prompt">
+                      <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+                      <span class="file-prompt-text">
+                        <span class="file-prompt-primary">Drop images here</span>
+                        <span class="file-prompt-secondary">select to browse</span>
                       </span>
                     </button>
-                    <ul class="file-dropzone-list hidden" hidden></ul>
+                    <ul class="file-list hidden" hidden></ul>
                   </div>
                 </div>
               </div>
               <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
               <div class="panel-stack">
-                <div class="field">
-                  <span class="field-label">Typed multi-file dropzone</span>
-                  <div class="file-dropzone" id="demo-file-dropzone-multi" data-file-accept="image/*" data-file-multiple
-                    data-file-max="5">
-                    <input type="file" class="file-dropzone-input" hidden />
-                    <button type="button" class="file-dropzone-prompt">
-                      <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
-                      <span class="file-dropzone-text">
-                        <span class="file-dropzone-primary">Drop images here</span>
-                        <span class="file-dropzone-secondary">select to browse</span>
+                <h3 class="panel-title">Fullscreen capture</h3>
+                <p class="panel-hint">
+                  Drag a file anywhere onto the page to open the overlay. Turn Overlay off to exercise
+                  other drop zones on this page.
+                </p>
+                <div class="panel-inline" style="gap: 0.75rem">
+                  <button type="button" class="btn" id="demo-file-fullscreen-show">Show overlay</button>
+                  <div class="toggle" id="demo-file-fullscreen-overlay" data-toggle-default="true">
+                    <button type="button" class="toggle-btn" role="switch" aria-checked="true">
+                      <span class="toggle-track" aria-hidden="true">
+                        <span class="toggle-thumb">
+                          <span data-icon="check" data-icon-class="toggle-thumb-icon" aria-hidden="true"></span>
+                        </span>
                       </span>
+                      <span class="toggle-label">Overlay</span>
                     </button>
-                    <ul class="file-dropzone-list hidden" hidden></ul>
+                    <input type="hidden" class="toggle-value" value="true" />
                   </div>
                 </div>
+                <p class="panel-hint" id="demo-file-fullscreen-status" aria-live="polite">No files dropped yet.</p>
               </div>
             </div>
             <hr class="panel-divider" />
             <div class="panel-split">
               <div class="panel-stack">
-                <h3 class="panel-title">File downloads</h3>
-                <p class="panel-hint">Sample files are generated in the browser.</p>
+                <h3 class="panel-title">File rows</h3>
+                <p class="panel-hint">Segmented controls for common single-file patterns.</p>
                 <div class="field">
-                  <div class="file-download" id="demo-file-download">
-                    <ul class="file-download-list">
+                  <div class="file" id="demo-file-upload" data-file-upload data-file-remove
+                    data-file-download="false" data-file-drop-active>
+                    <ul class="file-list">
                       <li>
-                        <button type="button" class="file-download-item btn" data-file-download-name="hello.txt"
-                          aria-label="Download hello.txt">
-                          <span class="file-download-item-name">hello<span class="file-download-item-ext">.txt</span></span>
-                          <span class="file-download-item-meta">Plain text</span>
-                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                        </button>
+                        <div class="file-item file-item--empty">
+                          <button type="button" class="btn file-item-main" aria-label="Upload file"
+                            data-tooltip="Select to upload">
+                            <span class="file-item-name">No file</span>
+                            <span class="file-item-ext" hidden></span>
+                            <span class="file-item-meta" hidden></span>
+                          </button>
+                          <button type="button" class="btn file-item-upload" aria-label="Upload file">
+                            <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                          <button type="button" class="btn file-item-remove hidden" hidden
+                            aria-label="Remove file">
+                            <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
                       </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="file" id="demo-file-download" data-file-ext-visibility="always"
+                    data-file-size-visibility="always">
+                    <ul class="file-list">
                       <li>
-                        <button type="button" class="file-download-item btn" data-file-download-name="notes.txt"
-                          aria-label="Download notes.txt">
-                          <span class="file-download-item-name">notes<span class="file-download-item-ext">.txt</span></span>
-                          <span class="file-download-item-meta">Plain text</span>
-                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                        </button>
+                        <div class="file-item">
+                          <div class="btn file-item-main" data-file-name="readme.txt">
+                            <span class="file-item-name">readme</span>
+                            <span class="file-item-ext">.txt</span>
+                            <span class="file-item-meta"></span>
+                          </div>
+                          <button type="button" class="btn file-item-download" aria-label="Download readme.txt">
+                            <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
                       </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="file" id="demo-file-manage" data-file-upload data-file-remove data-file-drop-active
+                    data-file-accept=".txt,text/plain">
+                    <ul class="file-list">
                       <li>
-                        <button type="button" class="file-download-item btn" data-file-download-name="summary.txt"
-                          aria-label="Download summary.txt">
-                          <span class="file-download-item-name">summary<span class="file-download-item-ext">.txt</span></span>
-                          <span class="file-download-item-meta">Plain text</span>
-                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-                        </button>
+                        <div class="file-item">
+                          <div class="btn file-item-main" data-file-name="notes.txt">
+                            <span class="file-item-name">notes</span>
+                            <span class="file-item-ext">.txt</span>
+                            <span class="file-item-meta"></span>
+                          </div>
+                          <button type="button" class="btn file-item-download" aria-label="Download notes.txt">
+                            <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                          <button type="button" class="btn file-item-upload" aria-label="Replace notes.txt">
+                            <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                          <button type="button" class="btn file-item-remove" aria-label="Remove notes.txt">
+                            <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
+                          </button>
+                        </div>
                       </li>
                     </ul>
                   </div>
@@ -1920,12 +2023,14 @@
                   data-image-preview-pixelated
                   data-image-preview-maximize
                   data-image-preview-expand-on-click
+                  data-image-preview-actions="hover"
                   data-image-preview-download
                   data-image-preview-download-name="example.svg"
                   data-image-preview-dimensions
                   data-image-preview-file-size
                   data-image-preview-frames
                   data-image-preview-duration
+                  data-image-preview-meta="hover"
                   data-expandable-surface
                   data-expandable-surface-click
                   data-expandable-surface-label="Image preview"
@@ -2047,9 +2152,236 @@
             </div>
           </div>
         </section>
+
+        <section class="content-section" aria-labelledby="demo-3d">
+          <h3 id="demo-3d" class="section-title">3D</h3>
+          <div class="section-panel">
+            <div class="panel-split">
+              <div class="panel-stack">
+                <h3 class="panel-title">Parametric STL</h3>
+                <p class="panel-hint">Generate a rectangular box (mm), or clear and upload your own <code>.stl</code>.</p>
+                <div class="panel-grid panel-grid-3">
+                  <div class="stepper" id="demo-stl-width" data-stepper-min="0.1" data-stepper-max="200"
+                    data-stepper-step="0.1" data-stepper-default="40" data-stepper-format="decimal">
+                    <label class="field-label" for="demo-stl-width-input">Width</label>
+                    <div class="stepper-control">
+                      <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                        aria-label="Decrease width">−</button>
+                      <input type="text" id="demo-stl-width-input" class="input stepper-input" inputmode="decimal"
+                        aria-label="Width in millimetres" />
+                      <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                        aria-label="Increase width">+</button>
+                      <input type="hidden" class="stepper-value" />
+                    </div>
+                  </div>
+                  <div class="stepper" id="demo-stl-length" data-stepper-min="0.1" data-stepper-max="200"
+                    data-stepper-step="0.1" data-stepper-default="20" data-stepper-format="decimal">
+                    <label class="field-label" for="demo-stl-length-input">Length</label>
+                    <div class="stepper-control">
+                      <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                        aria-label="Decrease length">−</button>
+                      <input type="text" id="demo-stl-length-input" class="input stepper-input" inputmode="decimal"
+                        aria-label="Length in millimetres" />
+                      <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                        aria-label="Increase length">+</button>
+                      <input type="hidden" class="stepper-value" />
+                    </div>
+                  </div>
+                  <div class="stepper" id="demo-stl-height" data-stepper-min="0.1" data-stepper-max="200"
+                    data-stepper-step="0.1" data-stepper-default="10" data-stepper-format="decimal">
+                    <label class="field-label" for="demo-stl-height-input">Height</label>
+                    <div class="stepper-control">
+                      <button type="button" class="btn btn-icon stepper-decrement" data-stepper-decrement
+                        aria-label="Decrease height">−</button>
+                      <input type="text" id="demo-stl-height-input" class="input stepper-input" inputmode="decimal"
+                        aria-label="Height in millimetres" />
+                      <button type="button" class="btn btn-icon stepper-increment" data-stepper-increment
+                        aria-label="Increase height">+</button>
+                      <input type="hidden" class="stepper-value" />
+                    </div>
+                  </div>
+                </div>
+                <div class="file" id="demo-stl-file" data-file-upload data-file-remove data-file-drop-active
+                  data-file-accept=".stl">
+                  <ul class="file-list">
+                    <li>
+                      <div class="file-item">
+                        <div class="btn file-item-main" data-file-name="box.stl">
+                          <span class="file-item-name">box</span>
+                          <span class="file-item-ext">.stl</span>
+                          <span class="file-item-meta"></span>
+                        </div>
+                        <button type="button" class="btn file-item-download" aria-label="Download box.stl">
+                          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                        <button type="button" class="btn file-item-upload" aria-label="Replace box.stl">
+                          <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                        <button type="button" class="btn file-item-remove" aria-label="Remove box.stl">
+                          <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="panel-title">Mesh preview</h3>
+                <div class="model-preview" id="demo-model-preview" aria-live="polite"
+                  aria-label="Generated box preview"
+                  data-model-preview-size
+                  data-model-preview-triangles
+                  data-model-preview-meta="hover"
+                  data-model-preview-maximize
+                  data-model-preview-home
+                  data-model-preview-rendering
+                  data-model-preview-animation
+                  data-model-preview-actions="hover">
+                  <p class="model-preview__empty">No preview yet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section-panel" id="demo-gcode-panel">
+            <div class="panel-split">
+              <div class="panel-stack">
+                <h3 class="panel-title">G-code metadata</h3>
+                <div class="file file--large" id="demo-gcode-dropzone" data-file-accept=".gcode,.bgcode">
+                  <input type="file" class="file-input" hidden />
+                  <button type="button" class="file-prompt">
+                    <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+                    <span class="file-prompt-text">
+                      <span class="file-prompt-primary">Drop a .gcode or .bgcode file here</span>
+                      <span class="file-prompt-secondary">select to browse</span>
+                    </span>
+                  </button>
+                  <ul class="file-list hidden" hidden></ul>
+                </div>
+                <p class="panel-hint" id="demo-gcode-status" role="status">Loading sample G-code…</p>
+                <div class="panel-stack hidden" id="demo-gcode-summary" hidden>
+                  <div class="panel-grid panel-grid-2">
+                    <div>
+                      <span class="field-label">Duration</span>
+                      <output data-gcode-meta="duration">—</output>
+                    </div>
+                    <div>
+                      <span class="field-label">Filament</span>
+                      <output data-gcode-meta="filament">—</output>
+                    </div>
+                  </div>
+                </div>
+                <div class="hidden" id="demo-gcode-details-wrap" hidden>
+                  <div class="expand expand--full" id="demo-gcode-details">
+                    <button type="button" class="expand-trigger" aria-expanded="false"
+                      aria-controls="demo-gcode-details-panel">
+                      <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg"
+                        aria-hidden="true"></span>
+                      <span class="expand-label">More metadata</span>
+                    </button>
+                    <div id="demo-gcode-details-panel" class="expand-panel hidden" hidden>
+                      <div class="expand-body">
+                        <div class="panel-grid panel-grid-2">
+                          <div>
+                            <span class="field-label">Timestamp</span>
+                            <output data-gcode-meta="timestamp">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Format</span>
+                            <output data-gcode-meta="format">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Nozzle</span>
+                            <output data-gcode-meta="nozzle">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Bed temperature</span>
+                            <output data-gcode-meta="bed-temperature">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Nozzle temperature</span>
+                            <output data-gcode-meta="nozzle-temperature">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Fill density</span>
+                            <output data-gcode-meta="fill-density">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Filament type</span>
+                            <output data-gcode-meta="filament-type">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Perimeters</span>
+                            <output data-gcode-meta="perimeters">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Objects</span>
+                            <output data-gcode-meta="object-count">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Layer height</span>
+                            <output data-gcode-meta="layer-height">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Slicer</span>
+                            <output data-gcode-meta="slicer">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Printer</span>
+                            <output data-gcode-meta="printer">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Wipe tower filament</span>
+                            <output data-gcode-meta="wipe-tower">—</output>
+                          </div>
+                          <div>
+                            <span class="field-label">Object details</span>
+                            <ul data-gcode-meta="objects">
+                              <li>—</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
+              <div class="panel-stack">
+                <h3 class="panel-title">Toolpath preview</h3>
+                <div class="model-preview toolpath-preview" id="demo-toolpath-preview" aria-live="polite"
+                  aria-label="G-code toolpath preview"
+                  data-toolpath-preview-segments
+                  data-toolpath-preview-layers
+                  data-toolpath-preview-current-layer
+                  data-toolpath-preview-meta="hover"
+                  data-toolpath-preview-maximize
+                  data-toolpath-preview-home
+                  data-toolpath-preview-animation
+                  data-toolpath-preview-animation-playing="false"
+                  data-toolpath-preview-actions="hover">
+                  <p class="model-preview__empty">No toolpath yet</p>
+                </div>
+                <p class="panel-hint" id="demo-toolpath-status" role="status">Loading sample toolpath…</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   </main>
+
+  <div class="file file--fullscreen hidden" hidden id="demo-file-fullscreen" data-file-accept="image/*,.txt,.gcode,.bgcode"
+    data-file-multiple aria-label="Drop files to capture">
+    <input type="file" class="file-input" hidden />
+    <button type="button" class="file-prompt">
+      <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+      <span class="file-prompt-text">
+        <span class="file-prompt-primary">Drop files anywhere</span>
+        <span class="file-prompt-secondary">or select to browse</span>
+      </span>
+    </button>
+  </div>
 
   <div id="about-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="about-dialog-title"
     hidden>
@@ -2057,9 +2389,8 @@
     <div class="modal-panel">
       <div class="modal-header">
         <h2 id="about-dialog-title">What is this?</h2>
-        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
-          ×
-        </button>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close
+          data-icon="clear" data-icon-class="modal-close-icon"></button>
       </div>
       <div class="modal-body">
         <p>
@@ -2072,24 +2403,11 @@
           <em>Theme → Options</em>, and open this dialog from the tagline whenever you need
           a refresher.
         </p>
-        <div class="about-extra-content" data-about-extra>
-          <div class="about-extra-block hidden" data-about-stage data-about-next-label="Uhh…" hidden>
-            <p>
-              In short: this site is a <em>living style guide</em>. Scroll the demo sections to
-              see each control, then copy the HTML and JS patterns into your own microapp fork.
-              Nothing here needs a build step.
-            </p>
-          </div>
-          <div class="about-extra-block hidden" data-about-stage data-about-next-label="I don't get it" hidden>
-            <p>Big page. Many box. Click box. See work. Is my box now. <em>Easy</em>.</p>
-          </div>
-        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn" data-about-confused>Huh?</button>
-        <a class="btn hidden" data-about-final href="https://github.com/filcuk/sma1-framework#readme"
-          target="_blank" rel="noopener noreferrer" hidden>
-          I don't get it
+        <a class="btn" data-about-final href="https://github.com/filcuk/sma1-framework#readme"
+          target="_blank" rel="noopener noreferrer">
+          Readme
         </a>
         <div class="modal-footer-actions">
           <button type="button" class="btn" id="about-guided-tour">
@@ -2108,9 +2426,8 @@
     <div class="modal-panel">
       <div class="modal-header">
         <h2 id="info-dialog-title">About this dialog</h2>
-        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
-          ×
-        </button>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close
+          data-icon="clear" data-icon-class="modal-close-icon"></button>
       </div>
       <div class="modal-body">
         <p>
@@ -2133,9 +2450,8 @@
     <div class="modal-panel">
       <div class="modal-header">
         <h2 id="confirm-dialog-title">Confirm action</h2>
-        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
-          ×
-        </button>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close
+          data-icon="clear" data-icon-class="modal-close-icon"></button>
       </div>
       <div class="modal-body">
         <p>Are you sure? This will not change anything.</p>
@@ -2157,9 +2473,8 @@
     <div class="modal-panel">
       <div class="modal-header">
         <h2 id="danger-dialog-title">Delete item?</h2>
-        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
-          ×
-        </button>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close
+          data-icon="clear" data-icon-class="modal-close-icon"></button>
       </div>
       <div class="modal-body">
         <p>This cannot be undone. <kbd>Enter</kbd> defaults to Cancel.</p>

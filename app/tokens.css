@@ -17,6 +17,12 @@
   --control-height: 2.625rem;
   --control-height-slim: 2.25rem;
   --control-height-micro: 1.3125rem;
+  /* Toggle switch track (not a control-height slot — stacks stay content-sized). */
+  --toggle-track-width: 2.5rem;
+  --toggle-track-height: 1.375rem;
+  --toggle-track-width-slim: 2rem;
+  --toggle-track-height-slim: 0.75rem;
+  --toggle-thumb-size-slim: 1.125rem;
   --accent: #0969da;
   --accent-hover: color-mix(in srgb, var(--accent) 80%, #ffffff);
   --accent-fg: #ffffff;
@@ -76,8 +82,11 @@
   /* Segment ↔ crumb and crumb-label crossfade while scrolling subsections. */
   --sticky-crumb-ms: 180ms;
   --sticky-shadow: rgb(0 0 0 / 0.2);
-  --banner-fade-ms: 200ms;
+  --banner-fade-ms: 80ms;
+  --chip-fade-ms: 80ms;
   --control-hover-ms: 80ms;
+  /* Expand / accordion panel open-close height. */
+  --disclosure-ms: 80ms;
   /* Action feedback mix ladder.
      Hover uses `--control-hover-mix` (existing 6% recipe). Click previews the
      selected look at `--control-selected-mix` (12%). Selected / pressed uses
@@ -218,7 +227,9 @@ a:hover {
   }
 
   .expand-icon,
-  .accordion-icon {
+  .accordion-icon,
+  .expand-panel,
+  .accordion-panel {
     transition: none;
   }
 
@@ -227,6 +238,10 @@ a:hover {
   }
 
   .banner-is-hiding {
+    animation: none;
+  }
+
+  .chip-is-leaving {
     animation: none;
   }
 }

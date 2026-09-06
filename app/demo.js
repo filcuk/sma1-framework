@@ -26,8 +26,8 @@ import {
 } from "./utils/button-label.js";
 import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
-import { initFileDropzone } from "./components/file-dropzone.js";
-import { initFileDownload } from "./components/file-download.js";
+import { initFile } from "./components/file.js";
+import { initIcons } from "./utils/icons.js";
 import { initImagePreview } from "./components/image-preview.js";
 import { initDatePicker } from "./components/date-picker/index.js";
 import { initTimePicker } from "./components/time-picker.js";
@@ -53,20 +53,35 @@ import { tooltip } from "./vendor/tanstack-charts/tooltip.js";
 import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
 import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
 import { initDiagrams } from "./components/diagram.js";
+import { createBoxMesh, decodeStl, encodeStl } from "./components/stl.js";
+import { initModelPreview } from "./components/model-preview.js";
+import { parseGcodeMeta } from "./components/gcode.js";
+import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
+import { initToolpathPreview } from "./components/toolpath-preview.js";
 import { initTable } from "./components/table.js";
 import { initTabularInput } from "./components/tabular-input.js";
 import { initBadge } from "./components/badge.js";
 import { initChipGroup, initChipInput } from "./components/chip.js";
 import { initLegend } from "./components/legend.js";
 import { setHidden } from "./utils/dom.js";
+import { initFieldValidations } from "./utils/field-validation.js";
+import { initInputAffixes } from "./utils/input-affix.js";
 
 initShell();
+initFieldValidations(document);
+initInputAffixes(document);
 initExpands(document);
 initTabs(document);
 const codeBlockInstances = initCodeBlocks(document);
 
 const demoImagePreview = initImagePreview(
   document.getElementById("demo-image-preview")
+);
+const demoModelPreview = initModelPreview(
+  document.getElementById("demo-model-preview")
+);
+const demoToolpathPreview = initToolpathPreview(
+  document.getElementById("demo-toolpath-preview")
 );
 
 initExpandableSurfaces(document);
@@ -143,31 +158,371 @@ initChart(document.getElementById("demo-bar-chart"), {
 
 initDiagrams(document);
 
-initFileDropzone(document.getElementById("demo-file-dropzone-single"));
+const demoStlDimensions = {
+  width: 40,
+  length: 20,
+  height: 10,
+};
 
-initFileDropzone(document.getElementById("demo-file-dropzone-multi"));
+/** @type {"parametric" | "custom" | "empty"} */
+let demoStlSource = "parametric";
+/** @type {ArrayBuffer | null} */
+let demoStlCustomBytes = null;
+/** @type {ReturnType<typeof initFile> | null} */
+let demoStlFileApi = null;
 
-initFileDownload(document.getElementById("demo-file-download"), {
+const demoStlFileEl = document.getElementById("demo-stl-file");
+const demoModelPreviewEl = document.getElementById("demo-model-preview");
+
+const DEMO_STL_BOX_ROW = `
+  <li>
+    <div class="file-item">
+      <div class="btn file-item-main" data-file-name="box.stl">
+        <span class="file-item-name">box</span>
+        <span class="file-item-ext">.stl</span>
+        <span class="file-item-meta"></span>
+      </div>
+      <button type="button" class="btn file-item-download" aria-label="Download box.stl">
+        <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+      </button>
+      <button type="button" class="btn file-item-upload" aria-label="Replace box.stl">
+        <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+      </button>
+      <button type="button" class="btn file-item-remove" aria-label="Remove box.stl">
+        <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
+      </button>
+    </div>
+  </li>
+`;
+
+function setDemoModelPreviewLabel(label) {
+  demoModelPreviewEl?.setAttribute("aria-label", label);
+}
+
+function showDemoParametricMesh() {
+  demoStlSource = "parametric";
+  demoStlCustomBytes = null;
+  demoModelPreview?.setMesh(createBoxMesh(demoStlDimensions));
+  setDemoModelPreviewLabel("Generated box preview");
+}
+
+function wireDemoStlFile() {
+  if (!(demoStlFileEl instanceof HTMLElement)) return;
+
+  demoStlFileApi?.destroy();
+  const list = demoStlFileEl.querySelector(".file-list");
+  if (list) list.innerHTML = DEMO_STL_BOX_ROW;
+  initIcons(demoStlFileEl);
+
+  demoStlFileApi = initFile(demoStlFileEl, {
+    getContent: () => {
+      if (demoStlSource === "custom" && demoStlCustomBytes) {
+        return demoStlCustomBytes;
+      }
+      return encodeStl(createBoxMesh(demoStlDimensions));
+    },
+    onUpload: async ({ file }) => {
+      try {
+        const buffer = await file.arrayBuffer();
+        const mesh = decodeStl(buffer);
+        demoStlCustomBytes = buffer.slice(0);
+        demoStlSource = "custom";
+        demoModelPreview?.setMesh(mesh);
+        setDemoModelPreviewLabel(`${file.name} preview`);
+      } catch {
+        flashTooltip(demoStlFileEl, {
+          text: "Could not read that STL",
+          tone: "error",
+        });
+        demoStlFileApi?.remove();
+        demoStlSource = "empty";
+        demoStlCustomBytes = null;
+        demoModelPreview?.clear();
+        setDemoModelPreviewLabel("3D model preview");
+      }
+    },
+    onRemove: () => {
+      demoStlSource = "empty";
+      demoStlCustomBytes = null;
+      demoModelPreview?.clear();
+      setDemoModelPreviewLabel("3D model preview");
+    },
+  });
+}
+
+function updateDemoStlDimension(name, value) {
+  demoStlDimensions[name] = value;
+  const needsFileRestore =
+    demoStlSource === "empty" || demoStlFileApi?.getFilename() !== "box.stl";
+  showDemoParametricMesh();
+  if (needsFileRestore) wireDemoStlFile();
+}
+
+const demoGcodeDropzone = document.getElementById("demo-gcode-dropzone");
+const demoGcodeStatus = document.getElementById("demo-gcode-status");
+const demoGcodePanel = document.getElementById("demo-gcode-panel");
+const demoGcodeSummary = document.getElementById("demo-gcode-summary");
+const demoGcodeDetails = document.getElementById("demo-gcode-details-wrap");
+const demoToolpathStatus = document.getElementById("demo-toolpath-status");
+let demoGcodeRequest = 0;
+
+function setDemoGcodeReadoutHidden(hidden) {
+  setHidden(demoGcodeSummary, hidden);
+  setHidden(demoGcodeDetails, hidden);
+}
+
+function formatDemoDuration(seconds) {
+  if (!Number.isFinite(seconds)) return "—";
+  const wholeSeconds = Math.max(0, Math.round(seconds));
+  const hours = Math.floor(wholeSeconds / 3600);
+  const minutes = Math.floor((wholeSeconds % 3600) / 60);
+  const remainder = wholeSeconds % 60;
+  if (hours) return `${hours}h ${minutes}m ${remainder}s`;
+  if (minutes) return `${minutes}m ${remainder}s`;
+  return `${remainder}s`;
+}
+
+function formatDemoNumber(value, unit) {
+  return Number.isFinite(value) ? `${value}${unit ? ` ${unit}` : ""}` : "—";
+}
+
+function formatDemoMetres(value) {
+  return Number.isFinite(value) ? `${value.toFixed(2)} m` : "—";
+}
+
+function setDemoGcodeMetadata(metadata) {
+  const values = {
+    timestamp: metadata.timestamp || "—",
+    format: metadata.format.toUpperCase(),
+    duration: formatDemoDuration(metadata.durationSec),
+    nozzle: Number.isFinite(metadata.nozzleMm)
+      ? `${metadata.nozzleMm} mm${metadata.nozzleHighFlow ? " [HF]" : ""}`
+      : "—",
+    "bed-temperature": formatDemoNumber(metadata.bedTemperatureC, "°C"),
+    "nozzle-temperature": formatDemoNumber(metadata.nozzleTemperatureC, "°C"),
+    "fill-density": formatDemoNumber(metadata.fillDensityPercent, "%"),
+    "filament-type": metadata.filamentType || "—",
+    filament: [
+      formatDemoNumber(metadata.filamentGrams, "g"),
+      formatDemoMetres(metadata.filamentM),
+      formatDemoNumber(metadata.filamentCm3, "cm³"),
+    ]
+      .filter((value) => value !== "—")
+      .join(" · ") || "—",
+    perimeters: formatDemoNumber(metadata.perimeters, ""),
+    "object-count": formatDemoNumber(metadata.objectCount, ""),
+    "layer-height": formatDemoNumber(metadata.layerHeightMm, "mm"),
+    slicer: metadata.slicer || "—",
+    printer: metadata.printerModel || "—",
+    "wipe-tower": formatDemoNumber(metadata.wipeTowerFilamentGrams, "g"),
+  };
+
+  for (const [name, value] of Object.entries(values)) {
+    const output = demoGcodePanel?.querySelector(`[data-gcode-meta="${name}"]`);
+    if (output) output.textContent = value;
+  }
+
+  const objectList = demoGcodePanel?.querySelector('[data-gcode-meta="objects"]');
+  if (objectList) {
+    objectList.replaceChildren();
+    if (!metadata.objects.length) {
+      const empty = document.createElement("li");
+      empty.textContent = "—";
+      objectList.append(empty);
+    } else {
+      metadata.objects.forEach((object, index) => {
+        const item = document.createElement("li");
+        const details = Object.entries(object)
+          .filter(([key]) => key !== "name")
+          .map(([key, value]) => {
+            if (key === "polygon" && Array.isArray(value)) {
+              return `${key}: ${value.length} points`;
+            }
+            return `${key}: ${
+              typeof value === "string" ? value : JSON.stringify(value)
+            }`;
+          });
+        item.textContent = `${object.name || `Object ${index + 1}`}${
+          details.length ? ` (${details.join("; ")})` : ""
+        }`;
+        objectList.append(item);
+      });
+    }
+  }
+  setDemoGcodeReadoutHidden(false);
+}
+
+const DEMO_GCODE_SAMPLE_NAME = "box_0.4n_0.25mm_PETG_COREONEL_9m.bgcode";
+const DEMO_GCODE_SAMPLE_URL = new URL(
+  `./res/demo/${DEMO_GCODE_SAMPLE_NAME}`,
+  import.meta.url
+);
+
+async function loadDemoGcode(bytes, label) {
+  const request = ++demoGcodeRequest;
+  if (demoGcodeStatus) {
+    demoGcodeStatus.textContent = "Reading…";
+    setHidden(demoGcodeStatus, false);
+  }
+  setDemoGcodeReadoutHidden(true);
+
+  try {
+    const [metadata, toolpath] = await Promise.all([
+      parseGcodeMeta(bytes),
+      parseGcodeToolpath(bytes),
+    ]);
+    if (request !== demoGcodeRequest) return;
+    setDemoGcodeMetadata(metadata);
+    demoToolpathPreview?.setToolpath(toolpath);
+    const warnings = [...metadata.warnings, ...toolpath.warnings];
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = warnings.join(" ");
+      setHidden(demoGcodeStatus, warnings.length === 0);
+    }
+    if (demoToolpathStatus) {
+      demoToolpathStatus.textContent = "";
+      setHidden(demoToolpathStatus, true);
+    }
+  } catch (error) {
+    if (request !== demoGcodeRequest) return;
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = `Could not read${label ? ` ${label}` : ""}: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+      setHidden(demoGcodeStatus, false);
+    }
+    demoToolpathPreview?.clear();
+    if (demoToolpathStatus) {
+      demoToolpathStatus.textContent = "Toolpath preview unavailable.";
+      setHidden(demoToolpathStatus, false);
+    }
+  }
+}
+
+async function readDemoGcode({ files }) {
+  const file = files[0];
+  if (!file) return;
+  await loadDemoGcode(await file.arrayBuffer(), file.name);
+}
+
+const demoGcodeDropzoneApi = initFile(demoGcodeDropzone, {
+  onFiles: readDemoGcode,
+  onError: ({ message }) => {
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = message;
+      setHidden(demoGcodeStatus, false);
+    }
+  },
+  onClear: () => {
+    demoGcodeRequest += 1;
+    setDemoGcodeReadoutHidden(true);
+    demoToolpathPreview?.clear();
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = "No G-code file selected.";
+      setHidden(demoGcodeStatus, false);
+    }
+    if (demoToolpathStatus) {
+      demoToolpathStatus.textContent = "No G-code file selected.";
+      setHidden(demoToolpathStatus, false);
+    }
+  },
+});
+
+initFile(document.getElementById("demo-file-dropzone-multi"));
+
+const demoFileFullscreenStatus = document.getElementById("demo-file-fullscreen-status");
+const demoFileFullscreenEl = document.getElementById("demo-file-fullscreen");
+/** @type {ReturnType<typeof initFile> | null} */
+let demoFileFullscreen = null;
+
+function setDemoFileFullscreenOverlay(enabled) {
+  demoFileFullscreen?.hide();
+  demoFileFullscreen?.destroy();
+  demoFileFullscreen = null;
+  if (!demoFileFullscreenEl) return;
+  demoFileFullscreen = initFile(demoFileFullscreenEl, {
+    fullscreenActivateOnDrag: enabled,
+    onFiles: ({ files }) => {
+      if (!demoFileFullscreenStatus) return;
+      if (!files.length) {
+        demoFileFullscreenStatus.textContent = "No fullscreen drop yet.";
+        return;
+      }
+      const names = files.map((file) => file.name).join(", ");
+      demoFileFullscreenStatus.textContent =
+        files.length === 1 ? `Captured ${names}.` : `Captured ${files.length} files: ${names}.`;
+    },
+    onError: ({ message }) => {
+      if (demoFileFullscreenStatus) demoFileFullscreenStatus.textContent = message;
+    },
+  });
+}
+
+initToggle(document.getElementById("demo-file-fullscreen-overlay"), {
+  onChange: ({ checked }) => setDemoFileFullscreenOverlay(checked),
+});
+
+document.getElementById("demo-file-fullscreen-show")?.addEventListener("click", () => {
+  demoFileFullscreen?.show();
+});
+
+initFile(document.getElementById("demo-file-upload"));
+
+initFile(document.getElementById("demo-file-download"), {
   files: [
     {
-      filename: "hello.txt",
-      getContent: () => buildDemoTextFile("Hello"),
+      filename: "readme.txt",
+      getContent: () => buildDemoTextFile("Readme"),
     },
+  ],
+});
+
+initFile(document.getElementById("demo-file-manage"), {
+  files: [
     {
       filename: "notes.txt",
       getContent: () => buildDemoTextFile("Notes"),
     },
-    {
-      filename: "summary.txt",
-      getContent: () => buildDemoTextFile("Summary"),
-    },
   ],
+});
+
+wireDemoStlFile();
+
+initStepper(document.getElementById("demo-stl-width"), {
+  onChange: ({ value }) => updateDemoStlDimension("width", value),
+});
+initStepper(document.getElementById("demo-stl-length"), {
+  onChange: ({ value }) => updateDemoStlDimension("length", value),
+});
+initStepper(document.getElementById("demo-stl-height"), {
+  onChange: ({ value }) => updateDemoStlDimension("height", value),
 });
 
 fetch(new URL("./res/demo-image-preview.svg", import.meta.url))
   .then((response) => response.text())
   .then((markup) => {
     demoImagePreview?.setSvg(markup);
+  });
+
+fetch(DEMO_GCODE_SAMPLE_URL)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.arrayBuffer();
+  })
+  .then((bytes) => {
+    const file = new File([bytes], DEMO_GCODE_SAMPLE_NAME, {
+      type: "application/octet-stream",
+    });
+    demoGcodeDropzoneApi?.setFiles([file]);
+  })
+  .catch((error) => {
+    if (demoGcodeStatus) {
+      demoGcodeStatus.textContent = `Could not load sample G-code: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+    }
   });
 
 initDatePicker(document.getElementById("demo-date-picker"));
@@ -203,7 +558,7 @@ initToggle(document.getElementById("demo-toggle-slim-off"));
 initToggle(document.getElementById("demo-toggle-slim-on"));
 
 initSegmentedControl(document.getElementById("demo-segmented-view"));
-initSegmentedControl(document.getElementById("demo-segmented-slim"));
+initSegmentedControl(document.getElementById("demo-segmented-muted"));
 
 const demoChipFilterResults = document.getElementById("demo-chip-filter-results");
 

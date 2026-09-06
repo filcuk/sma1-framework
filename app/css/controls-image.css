@@ -50,16 +50,41 @@
   cursor: pointer;
 }
 
-.image-preview:hover > .surface-actions,
-.image-preview > .surface-actions:focus-within,
-.image-preview.expandable-surface.is-expanded > .surface-actions {
+/* Keep gap between download + maximise (and any other strip actions). */
+.image-preview > .surface-actions {
+  gap: 0.5rem;
+}
+
+.image-preview[data-image-preview-actions="hover"] > .surface-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Use :focus-visible (not :focus-within) so a mouse click that focuses a child
+   control does not leave the strip stuck visible after the pointer leaves. */
+.image-preview[data-image-preview-actions="hover"]:hover > .surface-actions,
+.image-preview[data-image-preview-actions="hover"]
+  > .surface-actions:has(:focus-visible),
+.image-preview[data-image-preview-actions="hover"].expandable-surface.is-expanded
+  > .surface-actions {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* Keep gap between download + maximise (and any other strip actions). */
-.image-preview > .surface-actions {
-  gap: 0.5rem;
+.image-preview[data-image-preview-actions="always"] > .surface-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.image-preview[data-image-preview-actions="never"] > .surface-actions {
+  display: none;
+}
+
+@media (hover: none) {
+  .image-preview[data-image-preview-actions="hover"] > .surface-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .image-preview__meta {
@@ -84,8 +109,11 @@
   opacity: 0;
 }
 
+/* Use :focus-visible (not :focus-within) so a mouse click that focuses a child
+   control does not leave the meta stuck visible after the pointer leaves. */
 .image-preview[data-image-preview-meta="hover"]:hover > .image-preview__meta,
-.image-preview[data-image-preview-meta="hover"]:focus-within > .image-preview__meta,
+.image-preview[data-image-preview-meta="hover"]:has(:focus-visible)
+  > .image-preview__meta,
 .image-preview[data-image-preview-meta="hover"].expandable-surface.is-expanded
   > .image-preview__meta {
   opacity: 1;
@@ -95,12 +123,23 @@
   opacity: 1;
 }
 
+.image-preview[data-image-preview-meta="not-hover"] > .image-preview__meta {
+  opacity: 1;
+}
+
+.image-preview[data-image-preview-meta="not-hover"]:hover > .image-preview__meta,
+.image-preview[data-image-preview-meta="not-hover"]:has(:focus-visible)
+  > .image-preview__meta {
+  opacity: 0;
+}
+
 .image-preview[data-image-preview-meta="never"] > .image-preview__meta {
   display: none;
 }
 
 @media (hover: none) {
-  .image-preview[data-image-preview-meta="hover"] > .image-preview__meta {
+  .image-preview[data-image-preview-meta="hover"] > .image-preview__meta,
+  .image-preview[data-image-preview-meta="not-hover"] > .image-preview__meta {
     opacity: 1;
   }
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-08-29T10:57:08.960Z",
+  "frameworkVersion": "0.14.0",
+  "generatedAt": "2026-09-06T18:44:19.823Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -22,15 +22,15 @@
   "derived": {
     "app/css/framework.css": {
       "generator": "css-index",
-      "sha256": "c7eae0e7e9b189c73cd4c513af9fafb1bef39745646f4b7dace47c6d9db088e4"
+      "sha256": "871abb1f462cfec2a3dbbd426ec536693b7b3cff2127329b216ed6984dfab3f7"
     }
   },
   "files": {
     "app/components/about-dialog.js": {
-      "sha256": "d3f2bfe947f8083a890459b1b5edda62790e6650af6c7e34f645b0b635211193"
+      "sha256": "af036f58f2f45b0bb4e9353ddedc261a920886cb34b173bfcffc0d6fbf1ab702"
     },
     "app/components/accordion.js": {
-      "sha256": "e65229543af29d705e262cabc0a595350d62fec0c2f50e67d158d0c3a540059d"
+      "sha256": "a9c66331f8087966c07c49101b99c7702414870e4eab35e5453f24b3a528aff8"
     },
     "app/components/badge.js": {
       "sha256": "ddbde42721c3f3f439c0e80493eb2857211c918249dd971149d8d10d3aea01d7"
@@ -45,7 +45,7 @@
       "sha256": "9b982c2ac7f694df706189460ab2f780abfe7563d880e64c21d78622edfa24e3"
     },
     "app/components/chip.js": {
-      "sha256": "ea5960e31a19da5a29c99a93d8d8659e4d1b6f41dbc1b44159ccdb19b02c56fe"
+      "sha256": "56fffd2343d35d92708af948453ec963f99db507b61f924bc0d62d5ecb5b5863"
     },
     "app/components/code-block.js": {
       "sha256": "a95932533bce09c71c8cbb2a13eaabf6588e059a43b6e271178d9bce84a67f6a"
@@ -114,37 +114,43 @@
       "sha256": "81103e0d8b908fc495a21f3a503a92c1f01f06a45460fcd4e9f0efe9519a4a33"
     },
     "app/components/dropdown-toggle.js": {
-      "sha256": "d29ba7b3daabbaa8e32ffa2fcfb4acae75f770e40012ffbcebb9d35d65352abb"
+      "sha256": "11750e2c84d69d2908a630c121bf6baeb427f4ac4204c96602bac14a7bca1cbb"
     },
     "app/components/dropdown.js": {
-      "sha256": "28f9eb981818c9f55261e0993173aab3b7a0f6b855dd06d5e069ec6b0bd2e86f"
+      "sha256": "e492593e7d9d8fa633e9c023d377e7073010caeb5f88ae51e2ba3768d5599c1b"
     },
     "app/components/duration-input.js": {
       "sha256": "82aa6b6f9ece892a21cfbce0bceacf7bb7c0528b0cd01dbd24c8769f0eb93653"
     },
     "app/components/expand.js": {
-      "sha256": "9b3f0ac0631f11ea21fd3b998de9bd1d33115e437860f3456171a3a070bde437"
+      "sha256": "e010a3bcfc77fcfac99935b925b49f1d5f10554163e153119bede3bde8f1b13b"
     },
     "app/components/expandable-surface.js": {
       "sha256": "568a84db76db965ffbd092f6ee6706969302d140e8a82f939cf14977e07182f2"
     },
-    "app/components/file-download.js": {
-      "sha256": "a059ed3f44f61a53fd7035688f0cac0796050e240645caeca6d65a8232d32b81"
+    "app/components/file.js": {
+      "sha256": "ce4a86ba48cdebee5723094631ff7ce6400bd44ab008ca490fa0475ff17c6b10"
     },
-    "app/components/file-dropzone.js": {
-      "sha256": "d397a2b989468b7bf91f49db3cabaa340ad3c9a2fede9f00cb9ed9aad6ee884d"
+    "app/components/gcode-toolpath.js": {
+      "sha256": "57ca80587de8b701a5780624e8dd7e2424a661f7e3431699b946ba0f58a58f2a"
+    },
+    "app/components/gcode.js": {
+      "sha256": "17278ae5160b492b084510ee2e0965a7cd72ce3b9f4b11500c46049230d20c8b"
     },
     "app/components/image-preview.js": {
-      "sha256": "ed56923ab86353750b5cc8ee0df23c31186b023e3846877ddeb6bbc69ccbbba0"
+      "sha256": "f9675e54eafa58d5c48361a361af8484ba7824c6990e86213c5b44358014d482"
     },
     "app/components/legend.js": {
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
+    },
+    "app/components/model-preview.js": {
+      "sha256": "596855d8376d3d62c6f7f506809548bcef44a5bbc9379285e92fdbcefff7b9c7"
     },
     "app/components/pagination.js": {
       "sha256": "be41f293004dcbc0f15111d3b15b9ee35609bd314e7180f1d8938e4618611a75"
     },
     "app/components/popover.js": {
-      "sha256": "b6f91b1db68ec32887bd74bd997b18b4d80b889eb6160b811cd519e5c7132601"
+      "sha256": "396512d54ce8d9e2db93cabfe0b80471a1d8df880074493b9a3a0a12aefc33f5"
     },
     "app/components/progress-bar.js": {
       "sha256": "59666e299ef56baa1a1e51eeea7e430b32b514e46717cee2bc422837600233fb"
@@ -156,16 +162,19 @@
       "sha256": "8f6c491c0dc9bd7257761cc8c796271ae6d441a994e14d210b76317206d1de76"
     },
     "app/components/segmented-control.js": {
-      "sha256": "a47c40e4063c9e60ed6b0db6eccb77954bb11557cfbbc0e2a70548edcae41af6"
+      "sha256": "637e9141f956b6e33d706d191191dc4bd717f872b2f6f75567f33a73195c29f1"
     },
     "app/components/slider.js": {
-      "sha256": "d33e0abe0f79cd9ccd1498bb17e2a1fd4cf7c361f33c565996beb2bb90a14941"
+      "sha256": "7a16c0940e0e93eb09826175c6424809987a3e5a97de6603d5da8576fa442091"
     },
     "app/components/spinner.js": {
       "sha256": "01171c4add024fb8e3ad2422ec41f4d99bd3130d40fcf188827ee5111697d342"
     },
     "app/components/stepper.js": {
       "sha256": "0d3fcada4160cc4a912607b341d946bc18a02511dfcd9e47d478ac7cb28f22df"
+    },
+    "app/components/stl.js": {
+      "sha256": "2561dc700d84997384cd26bd66c10f7ae213bd92db5fd2b4afe03cd87adeed6b"
     },
     "app/components/table.js": {
       "sha256": "8ac06a8b91a68bd93b0741bbfa82ce993bdf35765b7c2d0bdbf331577b335194"
@@ -194,26 +203,29 @@
     "app/components/toggle.js": {
       "sha256": "c787ce6b1eae3f5f7dc8d52c0c055bbc26e14928a7d4e97ef4467eed673b0f08"
     },
+    "app/components/toolpath-preview.js": {
+      "sha256": "214d7e4e6c0ae2f7a21fcf792761f7d613db382861293b0ec3c35f0c8f820eb6"
+    },
     "app/components/tooltip.js": {
-      "sha256": "7a518b16783da12b9868b9dfe7e7bc939abdc96367555d7ee7fde27f96de22f2"
+      "sha256": "6084c1bf231d5da1e092c34e143b22dfb930c377358428d10824736f5f7309b2"
     },
     "app/components/tutorial.js": {
       "sha256": "0ad1c22cc4bf19cc69e66a557f53f4fd2e53f9daaef7903c536f02e38d3e8d2b"
     },
     "app/css/code-block.css": {
-      "sha256": "c137d67e18e0c7ed5da85b70cc8696dfd3ce3024bef159fead800d8c1af3dad3"
+      "sha256": "72fa7c9547e7a04dabeb7c2f230e9197c636d59b773a2e12249fe56f5e210ffb"
     },
     "app/css/controls-badges.css": {
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"
     },
     "app/css/controls-buttons.css": {
-      "sha256": "4083a1213934b023064b6d82ce03b8bfd13e9f979d13fa1f7bdedc980b68c130"
+      "sha256": "5b437ba8704a9049fcfba909c862cf7722f16de0c8f0bcbbc41e3a51ddbc0955"
     },
     "app/css/controls-charts.css": {
       "sha256": "a4d28adb3794666a0cf34928c5adc1809cd780ff102a5245ed5813faf70e2189"
     },
     "app/css/controls-chips.css": {
-      "sha256": "7aaef2f7a07832520dd88c98476c8e732aa8a21f530defba1942806e8545f15d"
+      "sha256": "69f8742585e2d9a7e5390883fc07794d1a4955d2f85e4792890ba3d0a29d1230"
     },
     "app/css/controls-color.css": {
       "sha256": "4ae99fbe7af7bece1d242f5193c8ea5188a23b1e678a6bd6d27e2b975ec8bcb3"
@@ -222,34 +234,40 @@
       "sha256": "fab5be1880d5ec4004035474183a4b461ae72232819d67f9aaa7c14f504efa1d"
     },
     "app/css/controls-disclosure.css": {
-      "sha256": "98a961b3a44750c9b7492c0e73b36c82a979aefd437fe0b5f1271d1e3f9d9a96"
+      "sha256": "3f585f925b2c869cd5f25839935e3e89593229fe9a7560e19814599c71eabbe4"
     },
     "app/css/controls-fields.css": {
-      "sha256": "7fa37f92dc2c15d949b5d9b04fc7e594d96aca86335b5eae386d3adc65b910c7"
+      "sha256": "a6394dadab53ad9cd555961887e6772d9b718c9397348929939034adc31fa95a"
     },
     "app/css/controls-file.css": {
-      "sha256": "f5d134acfc7b0553ccbd9a643768d7623ea5983b56b819d5dd21ac65255bad33"
+      "sha256": "63a11b2ed941d98ad3cfc4dbf06207638d8747c42d342a8c9571ac81c615cec0"
+    },
+    "app/css/controls-glow.css": {
+      "sha256": "9f20cbd3c17949758285e9c0bbf6071649cfaea24ce4439a467a4d050f2fc275"
     },
     "app/css/controls-image.css": {
-      "sha256": "8ff8164bafc01e0021ff09873dbf0f1a0192ea79ab0b4df1f486aaeab78da75c"
+      "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
     },
     "app/css/controls-menus.css": {
-      "sha256": "61bc903223956dfc6cc31a5601b1c31e1a61a62c1a882403b1ef4fe9600745b9"
+      "sha256": "6b872b8af24d8ffcd5cda49cb96c49ebe2750c79f85d7bccc8271351a997f907"
+    },
+    "app/css/controls-model.css": {
+      "sha256": "162888f34812fcaa0efd1b3190890293796582278c4fa0e4670e13d97fe207e6"
     },
     "app/css/controls-section-panel.css": {
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"
     },
     "app/css/controls-tabular-input.css": {
-      "sha256": "d4b0ccfdf46e566813bfcd1fa4e2b5a060a3d18e4f8abcc975753bd79dc5b2bd"
+      "sha256": "01075e8f4829a1e0553f6160282f479ff5147648852a95810acb896c17dee133"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "5f2a25c2804af97ec4227bb4bc48ed59cdd63e7f5820a288eec44b3923415488"
+      "sha256": "601245958be03f7e8bd405c85dac1083631d921642aef0b2b692d7361c9a1c5e"
     },
     "app/css/layout.css": {
-      "sha256": "6d1a934ee76f4572ea3dbb62b13ad1c2948205f9ff75658d9855ca76f6869c51"
+      "sha256": "52f21793f87fd03e19ff27eedfc742b9e9fa1a95db96c7db9c972f44e6b3d93f"
     },
     "app/css/overlays.css": {
-      "sha256": "4996f03cf5b44330d2509cb52f16d718389f639ba25bfb4ec23569766a015f2b"
+      "sha256": "60edaa6fc873ed19ad694ec9246b91dee798fab1679f945608e9240796fc2510"
     },
     "app/css/rich-text-editor.css": {
       "sha256": "d111287589509fc59852cbf4f7d4d249a39a49b03424bc6e40d1813adbfeaabc"
@@ -266,6 +284,9 @@
     "app/shell/also-see.js": {
       "sha256": "e0035e39329ed2ace5b85e754ca8c02db77a3d607bdf8465a219e4c718bd9a4e"
     },
+    "app/shell/app-storage-ui.js": {
+      "sha256": "c75c8dac55a0b5fac1eb21773fc2fa0564c6e9f08bc35210f4fdb3a581a85d61"
+    },
     "app/shell/external-link.js": {
       "sha256": "6a1e0d52b04d6f115419de2bac85b2e5581a7e0212fa6d6a32c64a8d0bb45fdc"
     },
@@ -276,16 +297,16 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "00fe127a7771c7c0bf38f0bd545375f04ac3e2de38cbbec62fae95f06e41d1bf"
+      "sha256": "784d66c3039cfbfbeebc87f11767522e602a7312658214916fa164d22f9765f3"
     },
     "app/shell/shell.js": {
-      "sha256": "f3c7e30b25b10cae53e889378a92753794ad4d12589296e456bb814aa872947f"
+      "sha256": "5567c13ea517a12a69c295f78b4a025f4a254f7f81a873debab29a9b558e8d8b"
     },
     "app/shell/sticky.js": {
       "sha256": "4fbe8284625f6a7865bae63153aeced7ed46221f498875dc9e18e7e054bbe77a"
     },
     "app/shell/theme.js": {
-      "sha256": "3b992e024cb2af8673730e9ab8cd8c100bd71fb7b4e6f549c0c8c161a8aee6aa"
+      "sha256": "ac4138f2e34fa1903b5c5b32eab7b123d94cba77c0d0e5b4c291fa4ccc860678"
     },
     "app/shell/title-numbering.js": {
       "sha256": "71f81d3e79c02e755243aafedd79a05bcd369d74317739fdf412ca6dbe26320c"
@@ -297,16 +318,19 @@
       "sha256": "3f9f55c503dec155b391c71c7a3ab3ed5c659de5df5695084831155e51e95f0b"
     },
     "app/tokens.css": {
-      "sha256": "37a8e35b27aaaa9d6be550df5e0b01c7d24e503ad23595fa70e77e336976465c"
+      "sha256": "1b3e7af4b288134cec96e77589af47cfba8d91e7de3e3c07a059c379a71d8956"
     },
     "app/utils/also-see-svg.js": {
       "sha256": "af1ff194fde0ba9ffe09edf885fde4562bac5f14592fd2f348c366296447e854"
+    },
+    "app/utils/app-storage.js": {
+      "sha256": "3465c58216560fea79ebe660978606afd67a7e62143c9f973e11c06fdb1b84b3"
     },
     "app/utils/brand-icon.js": {
       "sha256": "8d639a2da4e1538534dedc42305150a0158d7d12703f017b7d568a8a73d70c13"
     },
     "app/utils/button-label.js": {
-      "sha256": "f85c2d36168a4d3f6cf4cd3449b02b337dae05b5b6608047bbca535fe59e82fe"
+      "sha256": "9f99799d27a3601d45bad368f7fb0a9ca3fd0a4b5faaef1748486d796adbc381"
     },
     "app/utils/clipboard.js": {
       "sha256": "b8821da634ea9c1eb85771e1f2d3fd54f3085cf64116040adc449cd342f12def"
@@ -314,20 +338,35 @@
     "app/utils/color.js": {
       "sha256": "b17da2f325d37b2719d374dd2ab1f0f68c2a7232317fb17d19ab6cb52a60447a"
     },
+    "app/utils/control-glow.js": {
+      "sha256": "443709293ff19bb3b57ff62044363893a40398073d01599f18cb71ceed138de3"
+    },
     "app/utils/document-listeners.js": {
       "sha256": "af0b66fc6147906c9049c7425cec5b735dea048ce182ca28a55e34598c173c57"
     },
     "app/utils/dom.js": {
-      "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
+      "sha256": "62aa90ef1934a6219173aff4a662591fbd7d2b5db4396505009139946efed0d1"
+    },
+    "app/utils/field-validation.js": {
+      "sha256": "5e9d6b6d9c83a405e3fa992808f6e4d69b6a02fd8edcd652781d1ace5ae1b40d"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "b5e72f86da466f6436df7d90b3a33aecca97921bd4db87e02193a8962e000be3"
+      "sha256": "502258d7a4e95870b0f1c19c36d34d43a48d1a169db77ae6e426f68360bfa78a"
     },
     "app/utils/icons.js": {
-      "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
+      "sha256": "feb7fd54db5c7ad40b00a9e0e93fc6cb3071f986806c0382ffb355110bb8febe"
+    },
+    "app/utils/input-affix.js": {
+      "sha256": "526499e01d753bb11a74d64f09bca0be4248dc0a526a794a208b43dab57f6e22"
     },
     "app/utils/menu.js": {
-      "sha256": "2f9ccfa57eebf7530d8968705a65fa5a3018cd3f2fd5f92f656862fa51dd4e4a"
+      "sha256": "c9bfa427a04ab873b370a2bed3648a8bd8b6370ca220c8b7fef708ccf03c3414"
+    },
+    "app/utils/orbit-home.js": {
+      "sha256": "9f5d9c8c5a9b97cbc71f6fa1d35832a70895e4e25325ddb3a9bc99e179ecf11e"
+    },
+    "app/utils/required-field.js": {
+      "sha256": "f8d67172a97f75627d61d8a1984684a31aa65989d0c99779bf305ebea8fa64dd"
     },
     "app/utils/sanitize-svg.js": {
       "sha256": "433ca97df4ed3a0ad45c227448d0606a019a4be70215f3a0648eca0ab2b1f0ce"
@@ -1151,6 +1190,18 @@
     "app/vendor/tanstack-charts/waffle.js": {
       "sha256": "665932f756a28805175e3fc26beb0d6d81b766b6f5a023216ddda9baa845f8d4"
     },
+    "app/vendor/three/OrbitControls.js": {
+      "sha256": "faabb4e8dfd9235ee4a9fd7c9a3d75f90f1689dbd4944bd6fd32117dacec5f93"
+    },
+    "app/vendor/three/README.md": {
+      "sha256": "7f9b87bcc7b95295bcacefa7b2313b754a6c0450cf27d491127a5fa33ad4dca3"
+    },
+    "app/vendor/three/three.core.min.js": {
+      "sha256": "05b2609338c76cd65daf74f3ac515bc9a5045e1b3b33edc07d8c9bd55250fa90"
+    },
+    "app/vendor/three/three.module.min.js": {
+      "sha256": "86bcee248b64f44bcfc23c331ae74619061957d59cab040171dcb6fb5900beb6"
+    },
     "app/vendor/toastui-editor-plugin-table-merged-cell/toastui-editor-plugin-table-merged-cell.min.css": {
       "sha256": "f9e22de132b84d5547733353be9b7ea8bbc55c1afad1432a5745cccc50c76005"
     },
@@ -1167,7 +1218,10 @@
       "sha256": "c70e24c68fefc205e8e504edc07fd6a5efd3044a623b4be7e3ac16cc8a736ed9"
     },
     "app/version.js": {
-      "sha256": "a11235835593a625c427668810258af664808fd9b9f4fd9f70fbe3e4d728ac37"
+      "sha256": "839fba09bf02f975de09dbb40dd00ed75099b27531fc8bba77f98b9b39d77372"
+    },
+    ".cursor/rules/conventional-commits.mdc": {
+      "sha256": "df8f2aa5e36d83f9d62f5b90e6e9805f60fd8ad93aad0b85446d87443e5f9c1d"
     },
     ".cursor/rules/demo-isolation.mdc": {
       "sha256": "c04c50223d9417ac372fa394ffc84e84b602b5414b77f3c99b399e9b44906929"
@@ -1178,6 +1232,9 @@
     ".cursor/rules/icons.mdc": {
       "sha256": "30696dbd6562a8b00a088a14afcf8254a08bda4748dc8544f2d305e2edd5d667"
     },
+    ".cursor/rules/plan-execution.mdc": {
+      "sha256": "51e5af086fc5833b2a04330547ca0f1cc0573e192b9930d8ff83ac688323f25d"
+    },
     ".cursor/rules/usage-docs.mdc": {
       "sha256": "b21e49bc4da399ca84e69e7efab13a1afa15fa1c79dc2490d737286cfbeea6ac"
     },
@@ -1185,10 +1242,10 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "8157bf539a4c304345e81bed36cbbbc5c4f6fd33a48fb38194853c28a88f6a50"
+      "sha256": "99f532d3b7c313abf2348a6af6c70d4d281a2f28c30a91b1c8757d6678a65a59"
     },
     ".cursor/skills/_shared/invariants.md": {
-      "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
+      "sha256": "c1b1abdc5f20b2340048b921d4b1874821d85398d8a4dbb37006d5e4980be728"
     },
     ".cursor/skills/add-icon/SKILL.md": {
       "sha256": "c0446c94badf9983b52f10c0fd3f3fc0eb83e911f918360973920b30845edd23"
@@ -1200,7 +1257,7 @@
       "sha256": "9abc20e53ce7dbe999b5ab8993ecf362b57ed4cadc888bc202cd19d661f3f5b9"
     },
     ".cursor/skills/finalize-app/SKILL.md": {
-      "sha256": "f1f1295637714e38ab2e0f9969104093744bea9fea04edd127e3c273cc54229f"
+      "sha256": "46cd1aa2e716b7c9829764dca931d74b8d0ec1e6ef56863c865c7323b1f7f632"
     },
     ".cursor/skills/handle-assets/SKILL.md": {
       "sha256": "3ec92bb78776fd2a883c189a820b7a4566187fd012bd5ce9352a5a79c0894f84"
@@ -1244,21 +1301,30 @@
       "app/shell/also-see.js",
       "app/shell/external-link.js",
       "app/shell/heading-link.js",
+      "app/shell/app-storage-ui.js",
       "app/utils/dom.js",
       "app/utils/document-listeners.js",
       "app/utils/clipboard.js",
       "app/utils/button-label.js",
+      "app/utils/required-field.js",
+      "app/utils/field-validation.js",
+      "app/utils/input-affix.js",
+      "app/utils/control-glow.js",
       "app/utils/icons.js",
       "app/utils/icons-framework.js",
       "app/utils/brand-icon.js",
       "app/utils/also-see-svg.js",
       "app/utils/menu.js",
+      "app/utils/app-storage.js",
       "app/components/tooltip.js",
-      "app/components/banner.js"
+      "app/components/banner.js",
+      "app/components/segmented-control.js"
     ],
     "css": [
       "layout.css",
       "controls-buttons.css",
+      "controls-widgets.css",
+      "controls-glow.css",
       "overlays.css"
     ],
     "icons": [
@@ -1268,7 +1334,8 @@
       "chevron-up",
       "chevron-down",
       "arrow-outward",
-      "link"
+      "link",
+      "shield"
     ]
   },
   "infra": {
@@ -1283,6 +1350,18 @@
     ],
     "button-label": [
       "app/utils/button-label.js"
+    ],
+    "required-field": [
+      "app/utils/required-field.js"
+    ],
+    "field-validation": [
+      "app/utils/field-validation.js"
+    ],
+    "input-affix": [
+      "app/utils/input-affix.js"
+    ],
+    "control-glow": [
+      "app/utils/control-glow.js"
     ],
     "color": [
       "app/utils/color.js"
@@ -1305,6 +1384,12 @@
     ],
     "sanitize-svg": [
       "app/utils/sanitize-svg.js"
+    ],
+    "orbit-home": [
+      "app/utils/orbit-home.js"
+    ],
+    "app-storage": [
+      "app/utils/app-storage.js"
     ]
   },
   "components": {
@@ -1361,7 +1446,9 @@
       "infra": [
         "dom",
         "document-listeners"
-      ]
+      ],
+      "always": true,
+      "notes": "Pulled by shell footer storage confirm"
     },
     "about-dialog": {
       "files": [
@@ -1397,7 +1484,8 @@
         "document-listeners",
         "icons"
       ],
-      "notes": "Speech-bubble card; optional action icons (e.g. chevrons)"
+      "always": true,
+      "notes": "Speech-bubble card; optional action icons (e.g. chevrons); pulled by shell footer storage privacy"
     },
     "tutorial": {
       "files": [
@@ -1686,7 +1774,9 @@
       "icons": [],
       "infra": [
         "dom"
-      ]
+      ],
+      "always": true,
+      "notes": "Pulled by shell theme toggle (muted segmented)"
     },
     "pagination": {
       "files": [
@@ -1863,9 +1953,9 @@
         "dom"
       ]
     },
-    "file-dropzone": {
+    "file": {
       "files": [
-        "app/components/file-dropzone.js"
+        "app/components/file.js"
       ],
       "css": [
         "controls-file.css"
@@ -1873,27 +1963,12 @@
       "vendor": [],
       "vendorFiles": [],
       "icons": [
+        "download",
         "upload",
-        "error"
+        "remove-circle"
       ],
       "infra": [
         "dom",
-        "icons"
-      ]
-    },
-    "file-download": {
-      "files": [
-        "app/components/file-download.js"
-      ],
-      "css": [
-        "controls-file.css"
-      ],
-      "vendor": [],
-      "vendorFiles": [],
-      "icons": [
-        "upload"
-      ],
-      "infra": [
         "icons"
       ]
     },
@@ -2348,6 +2423,101 @@
         "dom"
       ],
       "notes": "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark"
+    },
+    "stl": {
+      "files": [
+        "app/components/stl.js"
+      ],
+      "css": [
+        "controls-model.css"
+      ],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [
+        "file"
+      ],
+      "notes": "Dependency-free indexed mesh and binary/ASCII STL export helpers"
+    },
+    "model-preview": {
+      "files": [
+        "app/components/model-preview.js"
+      ],
+      "css": [
+        "controls-model.css"
+      ],
+      "vendor": [
+        "app/vendor/three/"
+      ],
+      "vendorFiles": [
+        "app/vendor/three/OrbitControls.js",
+        "app/vendor/three/README.md",
+        "app/vendor/three/three.core.min.js",
+        "app/vendor/three/three.module.min.js"
+      ],
+      "icons": [
+        "home",
+        "fullscreen"
+      ],
+      "infra": [
+        "config",
+        "dom",
+        "orbit-home",
+        "icons"
+      ],
+      "notes": "Interactive Three.js host for the shared indexed mesh shape; optional meta strip, home/reset, and maximise via expandable-surface"
+    },
+    "toolpath-preview": {
+      "files": [
+        "app/components/toolpath-preview.js"
+      ],
+      "css": [
+        "controls-model.css"
+      ],
+      "vendor": [
+        "app/vendor/three/"
+      ],
+      "vendorFiles": [
+        "app/vendor/three/OrbitControls.js",
+        "app/vendor/three/README.md",
+        "app/vendor/three/three.core.min.js",
+        "app/vendor/three/three.module.min.js"
+      ],
+      "icons": [
+        "home",
+        "fullscreen"
+      ],
+      "infra": [
+        "config",
+        "dom",
+        "orbit-home",
+        "icons"
+      ],
+      "notes": "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip, home/reset, and maximise via expandable-surface"
+    },
+    "gcode": {
+      "files": [
+        "app/components/gcode.js"
+      ],
+      "css": [],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [],
+      "notes": "ASCII G-code and binary bgcode metadata parser"
+    },
+    "gcode-toolpath": {
+      "files": [
+        "app/components/gcode-toolpath.js"
+      ],
+      "css": [],
+      "vendor": [],
+      "vendorFiles": [],
+      "icons": [],
+      "infra": [
+        "gcode"
+      ],
+      "notes": "G-code and bgcode motion parser for extrusion/travel toolpath segments"
     }
   },
   "agent": {
@@ -2430,9 +2600,11 @@
       }
     },
     "rules": [
+      ".cursor/rules/conventional-commits.mdc",
       ".cursor/rules/demo-isolation.mdc",
       ".cursor/rules/framework-ownership.mdc",
       ".cursor/rules/icons.mdc",
+      ".cursor/rules/plan-execution.mdc",
       ".cursor/rules/usage-docs.mdc",
       ".cursor/rules/vendor.mdc"
     ]
@@ -2449,6 +2621,12 @@
     "toolbar": {
       "css": [
         "controls-buttons.css"
+      ],
+      "always": true
+    },
+    "control-glow": {
+      "css": [
+        "controls-glow.css"
       ],
       "always": true
     },
@@ -2481,6 +2659,9 @@
       "buttons",
       "toolbar",
       "toggle-button"
+    ],
+    "controls-glow.css": [
+      "control-glow"
     ],
     "overlays.css": [
       "tooltip",
@@ -2543,8 +2724,7 @@
       "progress-indicator"
     ],
     "controls-file.css": [
-      "file-dropzone",
-      "file-download"
+      "file"
     ],
     "controls-image.css": [
       "image-preview"
@@ -2558,6 +2738,11 @@
     ],
     "controls-diagram.css": [
       "diagram"
+    ],
+    "controls-model.css": [
+      "stl",
+      "model-preview",
+      "toolpath-preview"
     ],
     "rich-text-editor.css": [
       "rich-text-editor"
@@ -2577,6 +2762,7 @@
     "controls-chips.css",
     "controls-fields.css",
     "controls-widgets.css",
+    "controls-glow.css",
     "controls-section-panel.css",
     "controls-menus.css",
     "controls-disclosure.css",
@@ -2585,6 +2771,7 @@
     "controls-color.css",
     "controls-charts.css",
     "controls-diagram.css",
+    "controls-model.css",
     "overlays.css",
     "tutorial.css",
     "rich-text-editor.css",

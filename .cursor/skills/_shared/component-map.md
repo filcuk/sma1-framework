@@ -11,10 +11,10 @@ When trimming: delete a feature’s JS only if unused; remove a **shared** CSS p
 | Area | Paths |
 | ---- | ----- |
 | Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/framework.css` (generated index), `app/css/app.css` (fork-owned) |
-| Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js` |
-| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js` |
-| Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js` (imported by `shell.js`) |
-| Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
+| Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js`, `app-storage-ui.js` |
+| Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js`, `required-field.js`, `control-glow.js`, `app-storage.js` |
+| Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js`, `app/components/dialog.js`, `app/components/popover.js`, `app/components/segmented-control.js` (imported by `shell.js` / `app-storage-ui.js` / `theme.js`) |
+| Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/controls-widgets.css`, `app/css/controls-glow.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
 | Brand | `app/res/` logos as wired in HTML / `__MICROAPP__` |
 
 Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-toggle, tabular-input type menu).
@@ -25,21 +25,23 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | -------------------- | --------------------- |
 | `layout.css` | Shell, section layout, page nav, footer, theme toggle, sticky, title numbering |
 | `controls-buttons.css` | Buttons, toolbar, toggle-button (always with shell) |
+| `controls-glow.css` | control-glow (always with shell) |
 | `overlays.css` | tooltip, banner, dialog, callout, popover |
 | `tutorial.css` | tutorial |
 | `code-block.css` | code-block, expandable-surface |
 | `controls-badges.css` | badge |
 | `controls-chips.css` | chip, legend |
 | `controls-fields.css` | field/input (CSS-only), combobox, date-picker, time-picker, duration-input |
-| `controls-widgets.css` | toggle, checkbox, segmented-control, pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
+| `controls-widgets.css` | toggle, checkbox, segmented-control (always with shell theme), pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
 | `controls-menus.css` | combo, dropdown, dropdown-toggle, color-picker (format menu) |
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
-| `controls-file.css` | file-dropzone, file-download |
+| `controls-file.css` | file |
 | `controls-image.css` | image-preview |
 | `controls-color.css` | color-set, color-picker |
 | `controls-charts.css` | charts |
 | `controls-diagram.css` | diagram |
+| `controls-model.css` | stl, model-preview, toolpath-preview |
 | `rich-text-editor.css` | rich-text-editor (+ `app/toastui-editor.css`) |
 | `table.css` | table |
 | `controls-tabular-input.css` | tabular-input |
@@ -54,8 +56,8 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | -- | -- | --- | -------------- | ----- | ----- | ----- |
 | tooltip | `app/components/tooltip.js` | `overlays.css` | — | — | — | Always via `initShell` |
 | banner | `app/components/banner.js` | `overlays.css` | — | Markup: `note`, `info`, `success`, `important`, `warning`, `error`, `help`, `experiment`, `format-quote`, `tip` as used | `dom`, `icons` | Always via `initShell` (error banner) |
-| dialog | `app/components/dialog.js` | `overlays.css` | — | — | `dom`, `document-listeners` | |
-| about-dialog | `app/components/about-dialog.js` | `overlays.css`, `layout.css` (`.tagline-link`) | — | — | `dom`; wraps `dialog` | Tagline “What?” + progressive Huh? stages |
+| dialog | `app/components/dialog.js` | `overlays.css` | — | Markup: `clear` (`.modal-close`) | `dom`, `document-listeners` | |
+| about-dialog | `app/components/about-dialog.js` | `overlays.css`, `layout.css` (`.tagline-link`) | — | — | `dom`; wraps `dialog` | Tagline “What?” + optional final link / stages |
 | popover | `app/components/popover.js` | `overlays.css` | — | JS: `clear` (dismiss) | `dom`, `document-listeners`, `icons` | Speech-bubble card; optional action icons |
 | tutorial | `app/components/tutorial.js` | `tutorial.css`, `overlays.css` | — | Via popover: `clear`, `chevron-left`, `chevron-right` | `dom`, `document-listeners`; wraps `popover` | Spotlight tour; optional `when` / nested `steps`; Escape priority 110 |
 | badge | `app/components/badge.js` | `controls-badges.css` | — | — | `dom` | |
@@ -71,11 +73,11 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
 | toggle-button | `app/components/toggle-button.js` | `controls-buttons.css` | — | Optional: `fullscreen`, `fullscreen-exit` (or any pair) | `dom`, `icons` | Pressed `.btn-toggle`; optional next-action label/icon swap; `data-toggle-button-always-active` drops the pressed accent styling |
 | checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | — | `dom`, `icons` | Tri-state checkbox; inset face via `initIcons` / `ensureCheckboxFace` |
-| segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |
+| segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | Always with shell (theme toggle); optional `.segmented-control--slim` / `.segmented-control--muted` |
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
 | progress-bar | `app/components/progress-bar.js` | `controls-widgets.css` | — | — | `dom` | |
 | spinner | `app/components/spinner.js` | `controls-widgets.css` | — | — | `dom` | |
-| slider | `app/components/slider.js` | `controls-widgets.css` | — | — | `dom` | |
+| slider | `app/components/slider.js` | `controls-widgets.css` | — | — | `dom` | Form + `.slider--hover` surface chrome; `setBounds()` |
 | stepper | `app/components/stepper.js` | `controls-widgets.css` | — | — | `dom` | |
 | combo | `app/components/combo.js` | `controls-menus.css` | — | — (CSS chevron) | `menu` | |
 | dropdown | `app/components/dropdown.js` | `controls-menus.css` | — | — (CSS chevron) | `menu` | |
@@ -84,9 +86,8 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | accordion | `app/components/accordion.js` | `controls-disclosure.css` | — | `chevron-right` | `dom`, `icons` | |
 | tabs | `app/components/tabs.js` | `controls-disclosure.css` | — | — | `dom` | |
 | progress-indicator | `app/components/progress-indicator.js` | `controls-disclosure.css` | — | — | `dom` | |
-| file-dropzone | `app/components/file-dropzone.js` | `controls-file.css` | — | Markup: `upload`; JS: `error` | `dom`, `icons` | |
-| file-download | `app/components/file-download.js` | `controls-file.css` | — | `download` | `icons` | |
-| image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`, `sanitize-svg`; download uses `file-download`; maximise: expandable-surface | Checkerboard host; `setSvg` (sanitized) / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
+| file | `app/components/file.js` | `controls-file.css` | — | `file`, `download`, `upload`, `remove-circle`, `clear` | `dom`, `icons` | Segmented rows + `.file--large` + `.file--fullscreen`; optional upload/remove; hover/always/never ext+size |
+| image-preview | `app/components/image-preview.js` | `controls-image.css` | — | Markup/JS: `download` when download enabled | `dom`, `icons`, `sanitize-svg`; download uses `file`; maximise: expandable-surface | Checkerboard host; `setSvg` (sanitized) / `setSrc` / `setBlob`; optional maximise, download, dimensions, file-size, SMIL frames/duration meta |
 | code-block | `app/components/code-block.js` | `code-block.css` | `app/vendor/prism/`, `app/prism.css` | `clear`, `copy`, `paste`, `lines`, `highlight`, `fullscreen` | `dom`, `clipboard`, `button-label`, `icons` | Load Prism scripts on the page |
 | expandable-surface | `app/components/expandable-surface.js` | `code-block.css` | — | `fullscreen`, `fullscreen-exit` | `dom`, `document-listeners`, `icons`; closes `tooltip` | Code-block floating maximise respects `data-code-surface-actions`; `data-expandable-surface-click` / `data-expandable-surface-control="false"` |
 | table | `app/components/table.js` | `table.css` | — | `chevron-up` (sort) | `dom`, `icons` | |
@@ -94,6 +95,11 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | rich-text-editor | `app/components/rich-text-editor.js`, `segmented-control.js` | `rich-text-editor.css`; mode switch also `controls-widgets.css` | `app/vendor/toastui-editor/`, `app/vendor/toastui-editor-plugin-table-merged-cell/`, `app/toastui-editor.css` | — | `config`, `dom`; mode switch: segmented-control | Large vendor bundle; Markdown/WYSIWYG uses segmented control; owns Toast UI global access (no separate seam file) |
 | charts | `app/components/charts.js` | `controls-charts.css` | `app/vendor/tanstack-charts/`, `app/vendor/d3-scale/`, `app/vendor/d3-shape/` | — | `config` | Thin `mountChart` host; import map for `d3-scale` / `d3-shape` when using `barY` / `barX`; forks author `defineChart` |
 | diagram | `app/components/diagram.js` | `controls-diagram.css` | `app/vendor/mermaid/` | — | `config`, `dom` | Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark |
+| stl | `app/components/stl.js` | `controls-model.css` | — | — | `file` | Dependency-free indexed mesh and binary/ASCII STL export helpers |
+| model-preview | `app/components/model-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen`, `play`, `pause`, `cube` | `config`, `dom`, `orbit-home`, `icons`, `dropdown`; maximise: expandable-surface | Interactive Three.js host for the shared indexed mesh shape; pages need a `three` import map; optional meta strip, home/reset, rendering modes (shaded / wireframe / ghosted / x-ray / arctic), play/pause auto-rotate, and maximise |
+| toolpath-preview | `app/components/toolpath-preview.js` | `controls-model.css` | `app/vendor/three/` | `home`, `fullscreen`, `play`, `pause`, `visibility`, `visibility-off` | `config`, `dom`, `orbit-home`, `icons`, `slider`, `toggle-button`; maximise: expandable-surface | Interactive Three.js LineSegments host for parsed G-code toolpaths; reuses the `.model-preview` surface; optional meta strip, home/reset, play/pause auto-rotate, layer slider, travel toggle, and maximise |
+| gcode | `app/components/gcode.js` | — | — | — | — | ASCII G-code and binary bgcode metadata parser |
+| gcode-toolpath | `app/components/gcode-toolpath.js` | — | — | — | `gcode` | G-code and bgcode motion parser for extrusion/travel toolpath segments |
 
 ## CSS-only / shell patterns (no dedicated component module)
 
@@ -101,14 +107,15 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | -- | ------------ | ----- |
 | buttons | `.btn*`, `controls-buttons.css` | Always keep with shell; `.btn-toggle` pressed styles shared with toggle-button |
 | toolbar | `.toolbar` | Layout helper; no JS module |
-| fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css` |
+| control-glow | `.control-glow`, `controls-glow.css` + `app/utils/control-glow.js` | Always keep with shell; opt-in attention glow (`setControlGlow` / `clearControlGlow`) |
+| fields | `.field`, `.input`, `.textarea`, … | Base field styles in `controls-fields.css`; required chrome via `.is-required` + `app/utils/required-field.js`; format rules via `app/utils/field-validation.js`; units / uppercase / decimals via `app/utils/input-affix.js` |
 | section-panel | `.section-panel`, `controls-section-panel.css` | Demo pattern; drop partial if unused |
 | callout | `.callout`, `overlays.css` | CSS-only tip card; keep `overlays.css` if banners/tooltips/dialogs remain |
 | page-nav | `app/shell/page-nav.js`, `layout.css` | Via `initShell` |
 | heading-link | `app/shell/heading-link.js` | Icon: `link`; opt out with `initShell({ headingLinks: false })`, `data-no-heading-links`, or `data-no-heading-link` |
 | external-link | `app/shell/external-link.js` | Icon: `arrow-outward` |
 | also-see | `app/shell/also-see.js` | Icon: `arrow-outward` |
-| theme-toggle | `app/shell/theme.js` + render-shell | Icons: `light-mode`, `dark-mode`, `auto-mode` |
+| theme-toggle | `app/shell/theme.js` + render-shell | Muted segmented control; icons: `light-mode`, `dark-mode`, `auto-mode` |
 | sticky | `app/shell/sticky.js` | Optional `data-sticky-*` |
 | title-numbering | `app/shell/title-numbering.js` | Optional `data-title-numbering`; CSS `.title-number` in `layout.css` |
 
@@ -132,13 +139,13 @@ Do not remove these from `ICONS` while using `initShell`:
 | `app/dialog.js`, `app/combo.js`, … | `app/components/<name>.js` |
 | `app/icons.js` | `app/utils/icons.js` (merge API; definitions in `icons-framework.js` / `icons-app.js`) |
 | `app/page-nav.js`, `app/heading-link.js`, … | `app/shell/<name>.js` |
-| `app/file-dropzone.js` | `app/components/file-dropzone.js` |
+| `app/file-dropzone.js` | `app/components/file.js` (`.file--large`) |
 | `app/components/toastui-editor.js` | Merged into `app/components/rich-text-editor.js` (no separate seam) |
 
 ## Trim decision algorithm
 
 1. Collect entry HTML files → their `type=module` scripts → transitive imports.
-2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file-dropzone`, etc.).
+2. Scan markup for feature hooks (`.tabs`, `.modal`, `data-expandable-surface`, `.file`, `.file--large`, etc.).
 3. Mark a catalogue `id` **used** if imported or markup-matched.
 4. Unused ids → candidates to delete (JS + exclusive vendor).
 5. For each CSS partial, if no remaining used feature maps to it → drop `@import` from `app/css/framework.css` and delete the file.

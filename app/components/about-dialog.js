@@ -1,15 +1,17 @@
 /**
- * About / “What?” dialog — tagline opener plus optional progressive
- * simplification stages (Huh? → simpler copy → …).
+ * About / “What?” dialog — tagline opener with an optional final link and
+ * optional progressive simplification stages (Huh? → simpler copy → …).
  *
  * All copy lives in the markup so it can be edited without touching JS:
  *
- *   [data-about-confused]          the “Huh?” button (initial label = its text)
+ *   [data-about-confused]          optional progressive button (initial label =
+ *                                  its text); hidden when there are no stages
  *   [data-about-stage]             one block per stage, revealed in DOM order;
  *                                  optional data-about-next-label re-labels the
  *                                  button once that stage is showing
- *   [data-about-final]             optional element (usually an <a href>) shown
- *                                  after the last stage; the button hides
+ *   [data-about-final]             optional element (usually an <a href>); shown
+ *                                  immediately when there are no stages, or after
+ *                                  the last stage (the confused button then hides)
  *
  * While stages are showing, the dialog carries `data-about-dimmed` and the
  * newest stage `data-about-current`, so earlier copy can recede.
@@ -83,7 +85,8 @@ export function initAboutDialog({
       setHidden(el, true);
     }
     if (finalEl instanceof HTMLElement) {
-      setHidden(finalEl, true);
+      // No stages → show the final link up front (e.g. “Repository”).
+      setHidden(finalEl, stages.length > 0);
     }
     if (confusedBtn instanceof HTMLElement) {
       confusedBtn.textContent = initialLabel;

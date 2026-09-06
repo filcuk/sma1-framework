@@ -1,6 +1,11 @@
 import { initBadge } from "./badge.js";
 import { setHidden } from "../utils/dom.js";
-import { initPopupMenu, menuItemLabel, syncListGridSelectionJoins } from "../utils/menu.js";
+import {
+  initPopupMenu,
+  menuItemLabel,
+  resolvePopupFixedOptions,
+  syncListGridSelectionJoins,
+} from "../utils/menu.js";
 
 function isItemSelected(item) {
   return item.getAttribute("aria-checked") === "true";
@@ -111,9 +116,14 @@ function ensureSelectionBadgeHost(dropdownEl, trigger, baseLabel) {
  *   onToggle?: (detail: object) => void;
  *   gridMin?: number | false;
  *   gridCols?: number;
+ *   fixed?: boolean;
+ *   fixedAlign?: "start" | "end";
  * }} [options]
  */
-export function initToggleDropdown(dropdownEl, { onToggle, gridMin, gridCols } = {}) {
+export function initToggleDropdown(
+  dropdownEl,
+  { onToggle, gridMin, gridCols, fixed, fixedAlign } = {},
+) {
   if (!dropdownEl) return null;
 
   const trigger = dropdownEl.querySelector(".dropdown-trigger");
@@ -127,6 +137,7 @@ export function initToggleDropdown(dropdownEl, { onToggle, gridMin, gridCols } =
 
   const badgeHost = ensureSelectionBadgeHost(dropdownEl, trigger, baseLabel);
   const selectionBadge = initBadge(badgeHost, { value: 0 });
+  const popupFixed = resolvePopupFixedOptions(dropdownEl, { fixed, fixedAlign });
 
   function updateSelectionCount() {
     const count = getSelectedItems(menu, itemSelector).length;
@@ -147,6 +158,8 @@ export function initToggleDropdown(dropdownEl, { onToggle, gridMin, gridCols } =
     closeOnSelect: false,
     gridMin,
     gridCols,
+    fixed: popupFixed.fixed,
+    fixedAlign: popupFixed.fixedAlign,
     onSelect: ({ item, value, label }) => {
       const selected = !isItemSelected(item);
       setItemSelected(item, selected);

@@ -1,11 +1,6 @@
-﻿.file-dropzone {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
+﻿/* Large file dropzone host */
 
-.file-dropzone-prompt {
+.file-prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,14 +18,29 @@
   transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
-.file-dropzone-prompt:hover,
-.file-dropzone.is-dragover .file-dropzone-prompt {
+.file-prompt:hover,
+.file.is-dragover:not(.is-drag-reject) .file-prompt {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
 }
 
-.file-dropzone-prompt:active:not(:disabled) {
+.file.is-drag-reject .file-prompt {
+  border-color: var(--banner-error-border);
+  background: color-mix(
+    in srgb,
+    var(--banner-error-border) var(--control-hover-mix),
+    var(--surface)
+  );
+  cursor: not-allowed;
+  transition-duration: 0s;
+}
+
+.file.is-drag-reject {
+  cursor: not-allowed;
+}
+
+.file-prompt:active:not(:disabled) {
   border-color: var(--accent);
   background: color-mix(
     in srgb,
@@ -40,18 +50,18 @@
   transition-duration: 0s;
 }
 
-.file-dropzone-prompt:focus-visible {
+.file-prompt:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.file-dropzone-icon {
+.file-prompt-icon {
   width: 1.75rem;
   height: 1.75rem;
   color: var(--muted);
 }
 
-.file-dropzone-text {
+.file-prompt-text {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,72 +69,35 @@
   text-align: center;
 }
 
-.file-dropzone-primary {
+.file-prompt-primary {
   font-weight: 600;
   font-size: 0.875rem;
 }
 
-.file-dropzone-secondary {
+.file-prompt-secondary {
   font-size: 0.8125rem;
   color: var(--muted);
 }
 
-.file-dropzone-meta {
+.file-prompt-meta {
   font-size: 0.75rem;
   color: var(--muted);
 }
 
-.file-dropzone-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
+/* Segmented file rows (combo-style join) */
 
-.file-dropzone-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  font-size: 0.875rem;
-}
-
-.file-dropzone-item-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.file-dropzone-item-meta {
-  flex-shrink: 0;
-  font-size: 0.8125rem;
-  color: var(--muted);
-}
-
-.file-dropzone-remove {
-  flex-shrink: 0;
-}
-
-.file-dropzone-remove-icon {
-  width: 1rem;
-  height: 1rem;
-}
-
-.file-download {
+.file {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
 }
 
-.file-download-list {
+.file.file--large {
+  gap: 1rem;
+}
+
+.file-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -133,39 +106,210 @@
   gap: 0.35rem;
 }
 
-.file-download-list > li {
+.file-list > li {
   display: block;
   width: 100%;
 }
 
-.file-download-item.btn {
+.file-item {
+  display: flex;
+  align-items: stretch;
   width: 100%;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 0 0.75rem 0 1rem;
-  font-size: 0.875rem;
-  text-align: left;
 }
 
-.file-download-item-name {
+.file-item.is-dragover:not(.is-drag-reject) > .btn {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+}
+
+.file-item.is-drag-reject > .btn {
+  border-color: var(--banner-error-border);
+  background: color-mix(
+    in srgb,
+    var(--banner-error-border) var(--control-hover-mix),
+    var(--surface)
+  );
+  cursor: not-allowed;
+}
+
+.file-item.is-drag-reject {
+  cursor: not-allowed;
+}
+
+.file-item > .btn {
+  border-radius: 0;
+}
+
+.file-item > .btn:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+/* Prefer last visible `.btn` so hidden empty-slot segments do not steal the join. */
+.file-item > .btn:nth-last-child(1 of .btn:not([hidden])) {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.file-item > .btn:not(:nth-last-child(1 of .btn:not([hidden]))) {
+  border-right: none;
+}
+
+.file-item > .btn:not(:first-child) {
+  border-left: 1px solid var(--border);
+}
+
+/* Colour the shared seam; skip hidden neighbours (empty download/remove slots). */
+.file-item > .btn:not(:first-child):hover:not(:disabled),
+.file-item > .btn:hover:not(:disabled) + .btn:not([hidden]),
+.file-item > .btn:hover:not(:disabled) + .btn[hidden] + .btn:not([hidden]),
+.file-item > .btn:hover:not(:disabled) + .btn[hidden] + .btn[hidden] + .btn:not([hidden]) {
+  border-left-color: var(--accent);
+}
+
+.file-item-main {
   flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0 0.75rem 0 0.75rem;
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: default;
+}
+
+.file-item-type-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  color: var(--muted);
+  line-height: 0;
+}
+
+.file-item-type-icon .btn-icon-svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
+
+button.file-item-main:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* Single active action: icon lives on the main; segment buttons stay hidden.
+   Keep gap: 0 so name + extension stay flush; spacing is via margins on meta/icon. */
+.file-item--solo > .file-item-main {
+  padding-right: 0.75rem;
+}
+
+/* Keep size on the trailing edge; solo icon follows it. */
+.file-item--solo .file-item-meta {
+  margin-left: auto;
+}
+
+.file-item-solo-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted);
+  line-height: 0;
+}
+
+/* No visible size meta — icon takes the trailing slot alone. */
+.file-item--solo.file-item--size-never .file-item-solo-icon,
+.file-item--solo:not(:has(.file-item-meta:not([hidden]))) .file-item-solo-icon {
+  margin-left: auto;
+}
+
+.file-item--solo > .file-item-main:hover .file-item-solo-icon,
+.file-item--solo > .file-item-main:focus-visible .file-item-solo-icon {
+  color: var(--text);
+}
+
+.file-item-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.file-download-item-ext,
-.file-download-item-meta {
+.file-item--empty .file-item-name {
   color: var(--muted);
 }
 
-.file-download-item-meta {
+.file-item-ext,
+.file-item-meta {
   flex-shrink: 0;
-  font-size: 0.8125rem;
+  color: var(--muted);
 }
 
-.file-download-item [data-icon] {
+.file-item-meta {
+  font-size: 0.8125rem;
+  margin-left: auto;
+  padding-left: 0.5rem;
+}
+
+.file-item--ext-never .file-item-ext,
+.file-item--size-never .file-item-meta {
+  display: none;
+}
+
+.file-item--ext-hover .file-item-ext {
+  opacity: 0;
+  max-width: 0;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity var(--control-hover-ms) ease-out, max-width var(--control-hover-ms) ease-out;
+}
+
+.file-item--size-hover .file-item-meta {
+  opacity: 0;
+  max-width: 0;
+  /* Keep right alignment while max-width collapses so exit does not flash left. */
+  margin-left: auto;
+  padding-left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity var(--control-hover-ms) ease-out, max-width var(--control-hover-ms) ease-out;
+}
+
+.file-item--ext-hover .file-item-main:hover .file-item-ext,
+.file-item--ext-hover .file-item-main:focus-visible .file-item-ext,
+.file-item--size-hover .file-item-main:hover .file-item-meta,
+.file-item--size-hover .file-item-main:focus-visible .file-item-meta {
+  opacity: 1;
+  max-width: 8rem;
+  pointer-events: auto;
+  transition-duration: 0s;
+}
+
+.file-item--size-hover .file-item-main:hover .file-item-meta,
+.file-item--size-hover .file-item-main:focus-visible .file-item-meta {
+  padding-left: 0.5rem;
+}
+
+.file-item-download,
+.file-item-upload,
+.file-item-remove {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--control-height);
+  min-width: var(--control-height);
+  height: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0;
+}
+
+.file-item [data-icon] {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -175,10 +319,104 @@
   line-height: 0;
 }
 
-.file-download-item .btn-icon-svg {
+.file-item .btn-icon-svg {
   display: block;
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
 }
 
+.file-item-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Fullscreen page-drop overlay */
+
+.file--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 2rem;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.file--fullscreen[hidden] {
+  display: none !important;
+}
+
+.file-fullscreen-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out,
+    color var(--control-hover-ms) ease-out;
+}
+
+.file-fullscreen-close:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+.file-fullscreen-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.file-fullscreen-close-icon {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.file-fullscreen-close[hidden] {
+  display: none !important;
+}
+
+.file--fullscreen .file-prompt {
+  max-width: 28rem;
+  min-height: 10rem;
+  box-shadow: 0 8px 28px rgba(31, 35, 40, 0.16);
+}
+
+:root[data-theme="dark"] .file--fullscreen .file-prompt {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .file--fullscreen.is-active {
+    animation: file-fullscreen-in 160ms ease-out;
+  }
+}
+
+@keyframes file-fullscreen-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -825,10 +825,53 @@ export function mountAlsoSee(root, sections) {
 }
 
 /**
+ * Footer · + shield control (after also-see host).
+ *
+ * @param {{ manage?: boolean }} [options]
+ *   When `manage` is false, privacy shield only (no clear/disable menu).
+ * @returns {string}
+ */
+export function renderFooterStorageMarkup({ manage = true } = {}) {
+  const menu = manage
+    ? `
+          <ul id="footer-storage-menu" class="dropdown-menu footer-storage-menu hidden" role="menu" hidden>
+            <li role="none" data-storage-clear-item>
+              <button type="button" class="dropdown-menu-item" role="menuitem" data-storage-action="clear">
+                <span class="dropdown-menu-item-text">
+                  <span class="dropdown-menu-item-label">Clear stored data</span>
+                </span>
+              </button>
+            </li>
+            <li role="none">
+              <button type="button" class="dropdown-menu-item" role="menuitem" data-storage-action="toggle">
+                <span class="dropdown-menu-item-text">
+                  <span class="dropdown-menu-item-label" data-storage-toggle-label>Disable local storage</span>
+                </span>
+              </button>
+            </li>
+          </ul>`
+    : "";
+  const triggerAttrs = manage
+    ? `aria-label="Local storage" aria-haspopup="menu" aria-expanded="false" aria-controls="footer-storage-menu"`
+    : `aria-label="Privacy"`;
+
+  return `<span class="footer-meta-sep" aria-hidden="true">·</span>
+        <span class="footer-storage${manage ? " dropdown" : ""}" id="footer-storage">
+          <button type="button" class="footer-storage-trigger control-glow control-glow--success" id="footer-storage-trigger" ${triggerAttrs} data-icon="shield" data-icon-class="footer-storage-icon"></button>${menu}
+        </span>`;
+}
+
+/**
  * Inject shared page chrome: footer (links + theme toggle) and page navigation.
  *
- * @param {{ pageNav?: false | import("./page-nav.js").PageNavOptions }} [options]
+ * @param {{
+ *   pageNav?: false | import("./page-nav.js").PageNavOptions,
+ *   storage?: boolean,
+ *   storageManage?: boolean,
+ * }} [options]
  *   Set `pageNav` to `false` to omit page navigation.
+ *   Set `storage` to `false` to omit the footer shield entirely.
+ *   Set `storageManage` to `false` for privacy shield only (no clear/disable menu).
  * Skips if `#app-page-footer` already exists.
  */
 export function renderPageShell(options = {}) {
@@ -852,6 +895,8 @@ export function renderPageShell(options = {}) {
     appVersion,
     frameworkVersion,
     pageNav,
+    storage = true,
+    storageManage = true,
   } = {
     ...DEFAULTS,
     ...overrides,
@@ -861,6 +906,10 @@ export function renderPageShell(options = {}) {
     ? normalizeAlsoSee(alsoSee, appUrl, ["*"])
     : [];
   const alsoSeeMarkup = renderAlsoSeeMarkup(alsoSeeSections);
+  const storageMarkup =
+    storage !== false
+      ? renderFooterStorageMarkup({ manage: storageManage !== false })
+      : "";
 
   document.body.insertAdjacentHTML(
     "beforeend",
@@ -873,13 +922,25 @@ export function renderPageShell(options = {}) {
           <a href="${issuesUrl}" target="_blank" rel="noopener noreferrer">issue</a></span>
           <span class="footer-meta-sep" aria-hidden="true">·</span>
           <span data-tooltip="show your support" data-tooltip-position="top" tabindex="0">star on
-          <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">GitHub</a></span><span id="footer-also-see-host">${alsoSeeMarkup}</span>
+          <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">GitHub</a></span><span id="footer-also-see-host">${alsoSeeMarkup}</span>${storageMarkup}
         </div>
       </div>
-      <div id="theme-toggle" class="theme-toggle" role="group" aria-label="Theme">
-        <button type="button" class="theme-toggle-btn" data-theme-mode="light" data-icon="light-mode" data-icon-class="theme-icon" aria-label="Light theme" aria-pressed="false" title="Light"></button>
-        <button type="button" class="theme-toggle-btn" data-theme-mode="dark" data-icon="dark-mode" data-icon-class="theme-icon" aria-label="Dark theme" aria-pressed="false" title="Dark"></button>
-        <button type="button" class="theme-toggle-btn" data-theme-mode="auto" data-icon="auto-mode" data-icon-class="theme-icon" aria-label="System theme" aria-pressed="false" title="System"></button>
+      <div id="theme-toggle" class="segmented-control segmented-control--muted"
+        data-segmented-control-default="auto">
+        <div class="segmented-control-list" role="radiogroup" aria-label="Theme">
+          <button type="button" class="segmented-control-item" role="radio"
+            data-segmented-control-value="light" data-icon="light-mode"
+            data-icon-class="theme-icon" aria-label="Light theme"
+            data-tooltip="Light theme" data-tooltip-position="top"></button>
+          <button type="button" class="segmented-control-item" role="radio"
+            data-segmented-control-value="dark" data-icon="dark-mode"
+            data-icon-class="theme-icon" aria-label="Dark theme"
+            data-tooltip="Dark theme" data-tooltip-position="top"></button>
+          <button type="button" class="segmented-control-item" role="radio"
+            data-segmented-control-value="auto" data-icon="auto-mode"
+            data-icon-class="theme-icon" aria-label="System theme"
+            data-tooltip="System theme" data-tooltip-position="top"></button>
+        </div>
       </div>
     </footer>
     ${pageNav === false ? "" : PAGE_NAV_MARKUP}`

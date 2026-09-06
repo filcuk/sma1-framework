@@ -40,8 +40,8 @@
 .toggle-track {
   position: relative;
   flex-shrink: 0;
-  width: 2.5rem;
-  height: 1.375rem;
+  width: var(--toggle-track-width);
+  height: var(--toggle-track-height);
   border-radius: 999px;
   background: var(--border);
   transition: background 0.15s ease;
@@ -54,8 +54,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(1.375rem - 4px);
-  height: calc(1.375rem - 4px);
+  width: calc(var(--toggle-track-height) - 4px);
+  height: calc(var(--toggle-track-height) - 4px);
   border-radius: 999px;
   background: var(--surface);
   box-shadow: 0 1px 2px rgba(31, 35, 40, 0.18);
@@ -105,11 +105,11 @@
 }
 
 .toggle-btn[aria-checked="true"] .toggle-thumb {
-  transform: translateX(calc(2.5rem - 1.375rem));
+  transform: translateX(calc(var(--toggle-track-width) - var(--toggle-track-height)));
 }
 
 .toggle-btn[aria-checked="mixed"] .toggle-thumb {
-  transform: translateX(calc((2.5rem - 1.375rem) / 2));
+  transform: translateX(calc((var(--toggle-track-width) - var(--toggle-track-height)) / 2));
 }
 
 .toggle-label {
@@ -122,16 +122,16 @@
 
 /* Slim: thin track with an oversized thumb that overhangs the slot (no icon) */
 .toggle--slim .toggle-track {
-  width: 2rem;
-  height: 0.75rem;
+  width: var(--toggle-track-width-slim);
+  height: var(--toggle-track-height-slim);
   overflow: visible;
 }
 
 .toggle--slim .toggle-thumb {
-  top: calc((0.75rem - 1.125rem) / 2);
+  top: calc((var(--toggle-track-height-slim) - var(--toggle-thumb-size-slim)) / 2);
   left: 0;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: var(--toggle-thumb-size-slim);
+  height: var(--toggle-thumb-size-slim);
   border: 1px solid var(--border);
   box-sizing: border-box;
 }
@@ -141,11 +141,11 @@
 }
 
 .toggle--slim .toggle-btn[aria-checked="true"] .toggle-thumb {
-  transform: translateX(calc(2rem - 1.125rem));
+  transform: translateX(calc(var(--toggle-track-width-slim) - var(--toggle-thumb-size-slim)));
 }
 
 .toggle--slim .toggle-btn[aria-checked="mixed"] .toggle-thumb {
-  transform: translateX(calc((2rem - 1.125rem) / 2));
+  transform: translateX(calc((var(--toggle-track-width-slim) - var(--toggle-thumb-size-slim)) / 2));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -272,6 +272,99 @@
 
 .segmented-control--disabled .segmented-control-item {
   cursor: not-allowed;
+}
+
+/* Muted — light selection (theme-like flush track); standard accent hover + exit animation */
+
+.segmented-control--muted .segmented-control-list {
+  gap: 0;
+  padding: 0;
+  background: var(--surface);
+}
+
+.segmented-control--muted .segmented-control-item {
+  /* No layout border — inset shadows draw dividers / hover rings flush to the fill */
+  border: 0;
+  border-radius: 0;
+  min-width: var(--control-height);
+  padding: 0 0.875rem;
+  transition: box-shadow var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out,
+    color var(--control-hover-ms) ease-out;
+}
+
+.segmented-control--muted.segmented-control--slim .segmented-control-item {
+  padding: 0.35rem 0.875rem;
+}
+
+/* Match track inner radius (6px outer − 1px border) so hover rings follow the curve */
+.segmented-control--muted .segmented-control-item:first-child {
+  border-start-start-radius: 5px;
+  border-end-start-radius: 5px;
+}
+
+.segmented-control--muted .segmented-control-item:last-child {
+  border-start-end-radius: 5px;
+  border-end-end-radius: 5px;
+}
+
+.segmented-control--muted .segmented-control-item:not(:last-child) {
+  box-shadow: inset -1px 0 0 var(--border);
+}
+
+.segmented-control--muted .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item:active:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--accent);
+  z-index: 1;
+}
+
+.segmented-control--muted .segmented-control-item:hover:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  transition-duration: 0s;
+}
+
+.segmented-control--muted .segmented-control-item:active:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--text);
+  background: color-mix(
+    in srgb,
+    var(--accent) var(--control-selected-mix),
+    var(--surface)
+  );
+  transition-duration: 0s;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"] {
+  background: var(--code-bg);
+  color: var(--text);
+  font-weight: 600;
+  z-index: 1;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:not(:last-child) {
+  box-shadow: inset -1px 0 0 var(--border);
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:last-child {
+  box-shadow: none;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:hover:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]),
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--code-bg);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+.segmented-control--muted .segmented-control-item[aria-checked="true"]:active:not(:disabled):not([aria-disabled="true"]) {
+  background: color-mix(in srgb, var(--text) var(--control-press-mix), var(--code-bg));
+  color: var(--text);
+  transition-duration: 0s;
 }
 
 .segmented-control-panels {
@@ -697,6 +790,7 @@
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+  overflow: visible;
 }
 
 .slider-range {
@@ -704,12 +798,18 @@
   min-width: 0;
   height: 1.25rem;
   margin: 0;
-  padding: 0;
+  /* Half-thumb inset so the thumb centre sits on the track value (overhangs at 0% / 100%). */
+  --slider-thumb-size: 1.25rem;
+  --slider-progress: 0%;
+  --slider-progress-ratio: 0;
+  box-sizing: border-box;
+  /* Chromium/WebKit: padding shrinks the track; thumb still travels the outer box. */
+  padding: 0 calc(var(--slider-thumb-size) / 2);
   appearance: none;
   -webkit-appearance: none;
   background: transparent;
   cursor: pointer;
-  --slider-progress: 0%;
+  overflow: visible;
 }
 
 .slider-range:disabled {
@@ -743,12 +843,42 @@
   background: var(--accent);
 }
 
+/*
+ * Firefox: thumb travels the input content-box (edge-aligned). Use a shorter,
+ * centred track so thumb centres map to the track ends (with overhang) while
+ * keeping pill-shaped track ends.
+ */
+@supports selector(::-moz-range-thumb) {
+  .slider-range {
+    padding-inline: 0;
+    background: transparent;
+  }
+
+  .slider-range::-moz-range-track {
+    width: calc(100% - var(--slider-thumb-size));
+    height: 0.375rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--accent) 0%,
+      var(--accent) var(--slider-progress),
+      var(--border) var(--slider-progress),
+      var(--border) 100%
+    );
+  }
+
+  .slider-range::-moz-range-progress {
+    background: transparent;
+  }
+}
+
 .slider-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-top: calc((0.375rem - 1.25rem) / 2);
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
+  margin-top: calc((0.375rem - var(--slider-thumb-size)) / 2);
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
@@ -757,8 +887,8 @@
 }
 
 .slider-range::-moz-range-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
@@ -830,6 +960,48 @@
 .slider--disabled .slider-range,
 .slider--disabled .slider-input {
   cursor: not-allowed;
+}
+
+/* Compact chrome for display-surface hover strips (`.surface-actions`). */
+.slider--hover {
+  box-sizing: border-box;
+  width: min(12rem, 42vw);
+  max-width: 12rem;
+  gap: 0;
+}
+
+.slider--hover .field-label {
+  display: none;
+}
+
+.slider--hover .slider-row {
+  gap: 0.5rem;
+  min-height: var(--control-height-slim);
+}
+
+.slider--hover .slider-range {
+  height: var(--control-height-slim);
+}
+
+.slider--hover .slider-input-wrap {
+  display: none;
+}
+
+.slider--hover .slider-readout {
+  flex: 0 0 auto;
+  width: max-content;
+  min-width: 0;
+  margin: 0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
+  user-select: none;
+  white-space: nowrap;
 }
 
 /* Stepper (numeric nudger) */

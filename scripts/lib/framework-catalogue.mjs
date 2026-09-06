@@ -35,6 +35,7 @@ export const CSS_INDEX_ORDER = [
   "controls-chips.css",
   "controls-fields.css",
   "controls-widgets.css",
+  "controls-glow.css",
   "controls-section-panel.css",
   "controls-menus.css",
   "controls-disclosure.css",
@@ -43,6 +44,7 @@ export const CSS_INDEX_ORDER = [
   "controls-color.css",
   "controls-charts.css",
   "controls-diagram.css",
+  "controls-model.css",
   "overlays.css",
   "tutorial.css",
   "rich-text-editor.css",
@@ -65,19 +67,32 @@ export const CORE = {
     "app/shell/also-see.js",
     "app/shell/external-link.js",
     "app/shell/heading-link.js",
+    "app/shell/app-storage-ui.js",
     "app/utils/dom.js",
     "app/utils/document-listeners.js",
     "app/utils/clipboard.js",
     "app/utils/button-label.js",
+    "app/utils/required-field.js",
+    "app/utils/field-validation.js",
+    "app/utils/input-affix.js",
+    "app/utils/control-glow.js",
     "app/utils/icons.js",
     "app/utils/icons-framework.js",
     "app/utils/brand-icon.js",
     "app/utils/also-see-svg.js",
     "app/utils/menu.js",
+    "app/utils/app-storage.js",
     "app/components/tooltip.js",
     "app/components/banner.js",
+    "app/components/segmented-control.js",
   ],
-  css: ["layout.css", "controls-buttons.css", "overlays.css"],
+  css: [
+    "layout.css",
+    "controls-buttons.css",
+    "controls-widgets.css",
+    "controls-glow.css",
+    "overlays.css",
+  ],
   icons: [
     "light-mode",
     "dark-mode",
@@ -86,6 +101,7 @@ export const CORE = {
     "chevron-down",
     "arrow-outward",
     "link",
+    "shield",
   ],
 };
 
@@ -98,6 +114,10 @@ export const INFRA = {
   "document-listeners": ["app/utils/document-listeners.js"],
   clipboard: ["app/utils/clipboard.js"],
   "button-label": ["app/utils/button-label.js"],
+  "required-field": ["app/utils/required-field.js"],
+  "field-validation": ["app/utils/field-validation.js"],
+  "input-affix": ["app/utils/input-affix.js"],
+  "control-glow": ["app/utils/control-glow.js"],
   color: ["app/utils/color.js"],
   icons: ["app/utils/icons.js", "app/utils/icons-framework.js"],
   menu: ["app/utils/menu.js"],
@@ -105,6 +125,8 @@ export const INFRA = {
   "brand-icon": ["app/utils/brand-icon.js"],
   "also-see-svg": ["app/utils/also-see-svg.js"],
   "sanitize-svg": ["app/utils/sanitize-svg.js"],
+  "orbit-home": ["app/utils/orbit-home.js"],
+  "app-storage": ["app/utils/app-storage.js"],
 };
 
 /**
@@ -134,6 +156,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: [],
     infra: ["dom", "document-listeners"],
+    always: true,
+    notes: "Pulled by shell footer storage confirm",
   },
   "about-dialog": {
     files: [
@@ -152,7 +176,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: ["clear"],
     infra: ["dom", "document-listeners", "icons"],
-    notes: "Speech-bubble card; optional action icons (e.g. chevrons)",
+    always: true,
+    notes: "Speech-bubble card; optional action icons (e.g. chevrons); pulled by shell footer storage privacy",
   },
   tutorial: {
     files: [
@@ -303,6 +328,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: [],
     infra: ["dom"],
+    always: true,
+    notes: "Pulled by shell theme toggle (muted segmented)",
   },
   pagination: {
     files: ["app/components/pagination.js"],
@@ -389,19 +416,12 @@ export const COMPONENTS = {
     icons: [],
     infra: ["dom"],
   },
-  "file-dropzone": {
-    files: ["app/components/file-dropzone.js"],
+  file: {
+    files: ["app/components/file.js"],
     css: ["controls-file.css"],
     vendor: [],
-    icons: ["upload", "error"],
+    icons: ["download", "upload", "remove-circle"],
     infra: ["dom", "icons"],
-  },
-  "file-download": {
-    files: ["app/components/file-download.js"],
-    css: ["controls-file.css"],
-    vendor: [],
-    icons: ["upload"],
-    infra: ["icons"],
   },
   "image-preview": {
     files: ["app/components/image-preview.js"],
@@ -484,12 +504,55 @@ export const COMPONENTS = {
     notes:
       "Thin Mermaid host; ESM entry lazy-loads diagram chunks; theme follows light/dark",
   },
+  stl: {
+    files: ["app/components/stl.js"],
+    css: ["controls-model.css"],
+    vendor: [],
+    icons: [],
+    infra: ["file"],
+    notes: "Dependency-free indexed mesh and binary/ASCII STL export helpers",
+  },
+  "model-preview": {
+    files: ["app/components/model-preview.js"],
+    css: ["controls-model.css"],
+    vendor: ["app/vendor/three/"],
+    icons: ["home", "fullscreen"],
+    infra: ["config", "dom", "orbit-home", "icons"],
+    notes:
+      "Interactive Three.js host for the shared indexed mesh shape; optional meta strip, home/reset, and maximise via expandable-surface",
+  },
+  "toolpath-preview": {
+    files: ["app/components/toolpath-preview.js"],
+    css: ["controls-model.css"],
+    vendor: ["app/vendor/three/"],
+    icons: ["home", "fullscreen"],
+    infra: ["config", "dom", "orbit-home", "icons"],
+    notes:
+      "Interactive Three.js LineSegments host for parsed G-code toolpaths; optional meta strip, home/reset, and maximise via expandable-surface",
+  },
+  gcode: {
+    files: ["app/components/gcode.js"],
+    css: [],
+    vendor: [],
+    icons: [],
+    infra: [],
+    notes: "ASCII G-code and binary bgcode metadata parser",
+  },
+  "gcode-toolpath": {
+    files: ["app/components/gcode-toolpath.js"],
+    css: [],
+    vendor: [],
+    icons: [],
+    infra: ["gcode"],
+    notes: "G-code and bgcode motion parser for extrusion/travel toolpath segments",
+  },
 };
 
 /** CSS-only / shell patterns (no dedicated component JS beyond shell). */
 export const CSS_ONLY = {
   buttons: { css: ["controls-buttons.css"], always: true },
   toolbar: { css: ["controls-buttons.css"], always: true },
+  "control-glow": { css: ["controls-glow.css"], always: true },
   fields: { css: ["controls-fields.css"] },
   "section-panel": { css: ["controls-section-panel.css"] },
   callout: { css: ["overlays.css"] },
@@ -499,6 +562,7 @@ export const CSS_ONLY = {
 export const CSS_PARTIAL_FEATURES = {
   "layout.css": ["shell", "page-nav", "sticky", "title-numbering", "theme-toggle", "about-dialog"],
   "controls-buttons.css": ["buttons", "toolbar", "toggle-button"],
+  "controls-glow.css": ["control-glow"],
   "overlays.css": ["tooltip", "banner", "dialog", "about-dialog", "callout", "popover", "tutorial"],
   "tutorial.css": ["tutorial"],
   "code-block.css": ["code-block", "expandable-surface"],
@@ -532,11 +596,12 @@ export const CSS_PARTIAL_FEATURES = {
     "tabs",
     "progress-indicator",
   ],
-  "controls-file.css": ["file-dropzone", "file-download"],
+  "controls-file.css": ["file"],
   "controls-image.css": ["image-preview"],
   "controls-color.css": ["color-set", "color-picker"],
   "controls-charts.css": ["charts"],
   "controls-diagram.css": ["diagram"],
+  "controls-model.css": ["stl", "model-preview", "toolpath-preview"],
   "rich-text-editor.css": ["rich-text-editor"],
   "table.css": ["table"],
   "controls-tabular-input.css": ["tabular-input"],
@@ -615,9 +680,11 @@ export const AGENT_SKILLS = {
 
 /** Framework-owned Cursor rules (always synced with the agent set). */
 export const AGENT_RULES = [
+  ".cursor/rules/conventional-commits.mdc",
   ".cursor/rules/demo-isolation.mdc",
   ".cursor/rules/framework-ownership.mdc",
   ".cursor/rules/icons.mdc",
+  ".cursor/rules/plan-execution.mdc",
   ".cursor/rules/usage-docs.mdc",
   ".cursor/rules/vendor.mdc",
 ];

@@ -6,6 +6,19 @@ export const APP_CONFIG = {
   themeStorageKey: "microapp-theme",
   themeChangeEvent: "microapp-theme-change",
   /**
+   * Stable id for app-scoped localStorage (`sma1:{storageId}:meta|data`).
+   * Set a non-empty id to enable the managed bag + footer clear/disable menu.
+   * Leave `""` for the privacy shield only (static-site notice; no manage UI).
+   * Theme preference uses `themeStorageKey` and is always separate.
+   */
+  storageId: "sma1-framework",
+  /**
+   * Bump when stored drafts/selections are incompatible. On boot, if the
+   * stored meta version is lower, the data bag is cleared. Ignored when
+   * `storageId` is empty.
+   */
+  storageVersion: 1,
+  /**
    * Remote JSON for the footer “also see” menu.
    * Top-level array of `{ topic, items, order? }` sections and/or flat link objects.
    * Optional `order` on topics/links; `accent` / `accentHover` hex colours, or

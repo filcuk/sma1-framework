@@ -392,10 +392,11 @@ app/
     controls-section-panel.css # Section panel grid
     controls-menus.css    # Combo, dropdown
     controls-disclosure.css # Expand, accordion, tabs, progress indicator
-    controls-file.css     # File dropzone, file download
+    controls-file.css     # Segmented file rows, large dropzone, fullscreen overlay
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
     controls-diagram.css  # Mermaid diagram host
+    controls-model.css    # Model preview surface and 3D model hosts
     overlays.css        # Banners, tooltips, modals
     rich-text-editor.css # Rich text editor layout + Toast UI token overrides
     table.css            # Data tables
@@ -415,7 +416,7 @@ app/
     sticky.js           # Optional sticky header / section headings
     title-numbering.js  # Optional hierarchical outline title prefixes
   utils/
-    dom.js              # setHidden(), parseBooleanAttr(), focus helpers
+    dom.js              # setHidden(), syncDisclosurePanel(), parseBooleanAttr(), focus helpers
     document-listeners.js # Outside click, Escape, one-popup-at-a-time registry
     menu.js             # Shared popup menu logic
     icons.js            # Inline SVG icon registry
@@ -455,24 +456,27 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 
 | Feature | Description |
 | -------- | ----------- |
-| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`framework.css`](app/css/framework.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
+| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), toggle track sizes (`--toggle-track-height`, `--toggle-track-width`, slim track / thumb tokens), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`framework.css`](app/css/framework.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
 | **Press feedback** | Enabled click reactions use `:active` colour-mix (`--control-hover-mix` / `--control-selected-mix` / `--control-press-mix`) and filled button darkening (`--accent-active` / `--danger-active`). |
-| **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
+| **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`) via muted segmented control with hover tooltips. Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
-| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
+| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon` (icon-only), labeled icons via child `data-icon` + `.btn-icon-svg` (`.btn-icon-end` for trailing), hover swap via `data-icon-hover`, click/pressed swap via `initToggleButton`, optional `.btn-fixed` + `--btn-width` and `.btn-align-start` / `-center` / `-end`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. Opt-in attention glow via `.control-glow` — see **Control glow**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
-| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
-| **File dropzone** | `.file-dropzone` drag-and-drop / browse picker with file list and remove buttons. [`app/components/file-dropzone.js`](app/components/file-dropzone.js). |
-| **File download** | `.file-download` full-width button rows with on-demand download. [`app/components/file-download.js`](app/components/file-download.js). |
-| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta. [`app/components/image-preview.js`](app/components/image-preview.js). |
+| **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. Mark required fields with `.field.is-required` (red asterisk) and wire [`initRequiredFields`](app/utils/required-field.js) for empty `aria-invalid` sync. Optional format rules via [`initFieldValidations`](app/utils/field-validation.js) (`data-validate`, custom `registerValidator`). Display-only units / uppercase / fixed decimals via [`initInputAffixes`](app/utils/input-affix.js). |
+| **File** | `.file` segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. [`app/components/file.js`](app/components/file.js). |
+| **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
+| **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
+| **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
+| **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js (optional hover meta strip). [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
+| **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate, Heatshrink, and MeatPack payloads. [`app/components/gcode.js`](app/components/gcode.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
-| **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
+| **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-row--spread`, `.panel-row--end`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
 | **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
-| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled. [`app/components/slider.js`](app/components/slider.js). |
+| **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled; `.slider--hover` compact chrome for surface action strips. [`app/components/slider.js`](app/components/slider.js). |
 | **Progress bar** | Horizontal fill for a value between min and max; optional % or x/y label; optional shine; indeterminate (sweep or bounce), error (stuck) and disabled states. [`app/components/progress-bar.js`](app/components/progress-bar.js). |
 | **Spinner** | Loading indicator; optional blocking overlay on a host region. [`app/components/spinner.js`](app/components/spinner.js). |
 | **Stepper** | Numeric nudger with − / + buttons and editable value; integer or decimal. [`app/components/stepper.js`](app/components/stepper.js). |
@@ -484,9 +488,9 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Duration input** | Segmented hours:minutes (optional seconds) field with the shared popup in duration mode. [`app/components/duration-input.js`](app/components/duration-input.js). |
 | **Toggle** | On/off switch with track and thumb; `role="switch"`. Optional `.toggle--slim` (thin track, oversized overhanging thumb, no icon). Optional tri-state (`data-toggle-tristate`) with configurable cycle (`data-toggle-tristate-cycle`). [`app/components/toggle.js`](app/components/toggle.js). |
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
-| **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
+| **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size; add `.segmented-control--muted` for the light-selection (flush) variant. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
 | **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/components/progress-indicator.js`](app/components/progress-indicator.js). |
-| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, and auto grid layout (`data-dropdown-grid*`). Behaviour from [`app/components/dropdown.js`](app/components/dropdown.js). |
+| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, auto grid layout (`data-dropdown-grid*`), and fixed positioning (`data-dropdown-fixed` / `fixed`) to escape overflow clipping. Behaviour from [`app/components/dropdown.js`](app/components/dropdown.js). |
 | **Toggle dropdown** | Multi-select dropdown; items toggle with `aria-checked`, menu stays open; selection count via badge. [`app/components/dropdown-toggle.js`](app/components/dropdown-toggle.js). |
 | **Expand** | `.expand` disclosure with chevron + label trigger and collapsible `.expand-panel`; behaviour from [`app/components/expand.js`](app/components/expand.js). |
 | **Accordion** | `.accordion` vertical stack of collapsible sections; one open at a time by default. [`app/components/accordion.js`](app/components/accordion.js). |
@@ -496,10 +500,10 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Tabular input** | Editable typed grid (text / number / logical); add/remove/reset; Excel/TSV paste (in-place or replace via footer buttons) with type detection; centered canvas breakout when wide. [`app/components/tabular-input.js`](app/components/tabular-input.js). |
 | **Page navigation** | Fixed `#page-nav`: always-visible jump up/down (shared progress ring), section links on hover. Group nested headings under `data-page-nav-tier` parents. [`app/shell/page-nav.js`](app/shell/page-nav.js). |
 | **Dialogs** | Accessible modal: backdrop, focus trap, Escape, Enter (default action), focus restore. Markup uses `.modal` / `.modal-panel`; behaviour from [`app/components/dialog.js`](app/components/dialog.js). |
-| **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
+| **About dialog** | Tagline “What?” opener with an optional final link (e.g. Repository) and optional progressive simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
 | **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
-| **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
+| **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-anchor` (CSS selector — place on another element while this one supplies the copy), `data-tooltip-tone="success\|error"`, `data-tooltip-max-width`, `data-tooltip-nowrap`, `data-tooltip-offset`. Hover tips and keyboard `:focus-visible` tips skip disabled controls unless `data-tooltip-when-disabled`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
 | **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps and `when` / nested `steps` branches. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
 | **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/components/banner.js`](app/components/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
@@ -628,13 +632,13 @@ const dialog = initDialog({
 // dialog.openDialog(), dialog.closeDialog(), dialog.isDialogOpen()
 ```
 
-Close controls use `data-dialog-close` on backdrop, × button, or footer buttons.
+Close controls use `data-dialog-close` on backdrop, the header close button, or footer buttons.
 
 **Default action / Enter:** mark the intended Enter target with `data-dialog-default` (focused on open). If omitted, Enter falls back to `.modal-footer-actions .btn-primary` (not `.btn-danger`). For destructive dialogs, put `data-dialog-default` on Cancel and style the primary action with `.btn-danger`.
 
 ### About dialog (“What?”)
 
-Pattern for explaining the app from the site tagline — same idea as [pqm-stepper](https://github.com/filcuk/pqm-stepper). A `.btn-link.tagline-link` opens a dialog; an optional **confused** button reveals progressively simpler copy, then hands over to a final link.
+Pattern for explaining the app from the site tagline — same idea as [pqm-stepper](https://github.com/filcuk/pqm-stepper). A `.btn-link.tagline-link` opens a dialog; an optional final link (e.g. **Repository**) sits in the footer. Optional **confused** stages can still reveal progressively simpler copy before handing over to that link.
 
 All copy lives in the markup, so editing the explanation never means touching JS.
 
@@ -650,22 +654,14 @@ All copy lives in the markup, so editing the explanation never means touching JS
   <div class="modal-panel">
     <div class="modal-header">
       <h2 id="about-dialog-title">What does this do?</h2>
-      <button type="button" class="modal-close" aria-label="Close" data-dialog-close>×</button>
+      <button type="button" class="modal-close" aria-label="Close" data-dialog-close
+        data-icon="clear" data-icon-class="modal-close-icon"></button>
     </div>
     <div class="modal-body">
       <p>Full explanation…</p>
-      <div class="about-extra-content" data-about-extra>
-        <div class="about-extra-block hidden" data-about-stage data-about-next-label="Uhh…" hidden>
-          <p>Simpler explanation…</p>
-        </div>
-        <div class="about-extra-block hidden" data-about-stage data-about-next-label="I don't get it" hidden>
-          <p>Even simpler…</p>
-        </div>
-      </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn" data-about-confused>Huh?</button>
-      <a class="btn hidden" data-about-final href="https://example.com/help" hidden>I don't get it</a>
+      <a class="btn" data-about-final href="https://example.com/" target="_blank" rel="noopener noreferrer">Repository</a>
       <div class="modal-footer-actions">
         <button type="button" class="btn" id="about-guided-tour">Guided tour</button>
         <button type="button" class="btn btn-primary" data-dialog-close data-dialog-default>Got it</button>
@@ -687,12 +683,12 @@ const about = initAboutDialog({
 
 | Markup hook | Role |
 | ----------- | ---- |
-| `data-about-confused` | The progressive button; its HTML text is the initial label |
+| `data-about-final` | Optional element (usually an `<a href>`); shown immediately when there are no stages |
+| `data-about-confused` | Optional progressive button; its HTML text is the initial label |
 | `data-about-stage` | One block per stage, revealed in DOM order (start them `hidden`) |
 | `data-about-next-label` | Optional label for the button once that stage is showing |
-| `data-about-final` | Optional element (usually an `<a href>`) shown after the last stage; the button hides and focus moves to it |
 
-Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely and the confused button hides itself. See the live example on [`demo.html`](demo.html).
+With stages present, the final link stays hidden until the last stage, then the confused button hides and focus moves to the final link. Stages reset every time the dialog opens or closes. Omit `data-about-stage` entirely (as in the demo) and the confused button hides itself while `data-about-final` stays visible. See the live example on [`demo.html`](demo.html).
 
 Once the first stage is showing, the dialog gains `data-about-dimmed` and the newest stage gains `data-about-current`. The stylesheet uses those to fade earlier copy to `--muted` so the new block reads first — restyle or drop those rules if you want every layer at full contrast.
 
@@ -760,19 +756,51 @@ if (aboutOpenBtn instanceof HTMLElement && !hasSeenAboutHint()) {
 
 Hover tips (default): add `data-tooltip` and optional `data-tooltip-position="top|bottom|left|right"`. Optional `data-tooltip-tone="success|error"` for bold green/red tips with check / × icons (info is the default, text only).
 
+Optional **anchor** — place the tip on a different element while this one supplies the copy. Set `data-tooltip-anchor` to a document CSS selector (e.g. `#view-style-trigger`), or pass `anchor` to `openTooltip()` / keep updating copy with `updateTooltip({ text })`. Sources that share the same resolved anchor can be swept without the tip jumping (ideal for icon-only dropdown triggers with menu-item labels).
+
+Optional layout: `data-tooltip-max-width` accepts any CSS length (default `16rem`), `none` for uncapped, or `match` to set the tip width to the **placement** control’s width. `data-tooltip-nowrap` keeps the tip on one line (and clears the default max-width unless you also set `data-tooltip-max-width`). `data-tooltip-offset` sets the gap in pixels between tip and trigger (default `8`; negatives overlap). The same `maxWidth` / `nowrap` / `offset` options are available on `flashTooltip()`, `openTooltip()`, `updateTooltip()`, and `showPersistentTooltip()`.
+
+Hover and keyboard `:focus-visible` tips do **not** show on disabled controls (`disabled`, `aria-disabled="true"`, or a host class ending in `--disabled`, e.g. `.slider--disabled`). Add `data-tooltip-when-disabled` to keep the tip (for example to explain why the control is unavailable). Mouse / programmatic focus (for example restoring focus after a menu closes) does not show a tip — only `:focus-visible`. Timer (`flashTooltip`) and persistent tips are unaffected.
+
 ```html
 <button type="button" data-tooltip="Help text" data-tooltip-position="top">?</button>
+<button type="button" data-tooltip="A longer explanation that wraps within a wider box"
+  data-tooltip-max-width="24rem">Wide tip</button>
+<button type="button" data-tooltip="Aligned to this control’s width"
+  data-tooltip-max-width="match">Match width</button>
+<button type="button" data-tooltip="Keep this on one line" data-tooltip-nowrap>No wrap</button>
+<button type="button" data-tooltip="Farther from the control" data-tooltip-offset="20">Offset</button>
+<button type="button" disabled data-tooltip="Unavailable until you save"
+  data-tooltip-when-disabled>Save</button>
+
+<!-- Icon dropdown: tip stays on the trigger while menu items change the copy -->
+<button type="button" id="view-style-trigger" class="btn btn-slim btn-icon dropdown-trigger"
+  data-tooltip="View style" data-tooltip-position="top" aria-label="View style"></button>
+<button type="button" class="dropdown-menu-item" role="menuitem" data-value="shaded"
+  data-tooltip="Shaded" data-tooltip-anchor="#view-style-trigger">Shaded</button>
 ```
 
 ```javascript
 import {
   initTooltips,
+  openTooltip,
+  updateTooltip,
+  closeTooltip,
   flashTooltip,
   showPersistentTooltip,
   dismissPersistentTooltip,
 } from "./components/tooltip.js";
 
 initTooltips(document);
+
+// Imperative: place on the trigger, copy from elsewhere
+openTooltip(menuItem, {
+  text: "Shaded",
+  anchor: triggerBtn,
+  position: "top",
+});
+updateTooltip({ text: "Wireframe" }); // same anchor; tip does not jump
+closeTooltip();
 
 // Timer mode — reaction feedback when the control cannot flash in-place
 // (e.g. icon-only). Prefer rewriting a visible label (Copy → Copied) when possible.
@@ -1133,20 +1161,91 @@ Calling `initShell({ headingLinks: false })` **after** `initHeadingLinks(documen
 
 Standard height uses `--control-height`. Add `.btn-slim` for the compact `--control-height-slim` size (labeled or icon-only).
 
+**Icon-only** — square `.btn.btn-icon` with `data-icon` on the button:
+
 ```html
-<button type="button" class="btn">Standard</button>
-<button type="button" class="btn btn-slim">Slim</button>
-<button type="button" class="btn btn-primary btn-slim">Slim primary</button>
+<button type="button" class="btn btn-icon" aria-label="More options"
+  data-icon="lines" data-icon-class="btn-icon-svg"></button>
 <button type="button" class="btn btn-slim btn-icon" aria-label="More options"
   data-icon="lines" data-icon-class="btn-icon-svg"></button>
 ```
 
+**Labeled with icon** — put a child icon host before the label text (or `.btn-label-flash__label`). Use `data-icon-class="btn-icon-svg"` so size and alignment follow the button:
+
+```html
+<button type="button" class="btn">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Copy
+</button>
+<button type="button" class="btn btn-slim">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Copy
+</button>
+```
+
+In JS, prepend `createIcon("copy", { className: "btn-icon-svg" })` instead of a `data-icon` host. Icon-only glyphs are 1.25rem (1rem when slim); labeled glyphs are 1rem so they sit with the type.
+
+**Trailing icon** — keep icon-then-label markup and add `.btn-icon-end` (`flex-direction: row-reverse`). Works with `initToggleButton` content too (icon is mounted before the label).
+
+```html
+<button type="button" class="btn btn-icon-end">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Copy
+</button>
+```
+
+**Hover icon swap** — add `data-icon-hover` beside `data-icon` (on the button or a labeled child host). `initIcons()` mounts a stacked `.btn-icon-swap` pair; pointer devices with hover show the alternate glyph (`@media (hover: hover)`). Touch keeps the idle icon. For JS-built markup, use `createIconSwap()` / `mountIcon(…, { hoverName })`.
+
+```html
+<button type="button" class="btn btn-icon" aria-label="Show"
+  data-icon="visibility" data-icon-hover="visibility-off"
+  data-icon-class="btn-icon-svg"></button>
+
+<button type="button" class="btn">
+  <span data-icon="visibility" data-icon-hover="visibility-off"
+    data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Show
+</button>
+```
+
+**Click / pressed icon swap** — use `initToggleButton` with `data-toggle-button-icon-off` / `-on` (and optional labels). See **Toggle button**.
+
+**Fixed width** — add `.btn-fixed` and set `--btn-width` (inline or on a parent). Width is independent of the label; content still centres by default. Distinct from label-flash `lockWidth`, which measures flash strings.
+
+```html
+<button type="button" class="btn btn-fixed" style="--btn-width: 8rem">Save</button>
+```
+
+**Content alignment** — optional `.btn-align-start` / `.btn-align-center` / `.btn-align-end` (`justify-content`). Default without these classes remains centred.
+
+```html
+<button type="button" class="btn btn-fixed btn-align-start" style="--btn-width: 8rem">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Start
+</button>
+<button type="button" class="btn btn-fixed btn-icon-end btn-align-end" style="--btn-width: 8rem">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  End
+</button>
+```
+
+```html
+<button type="button" class="btn">Standard</button>
+<button type="button" class="btn btn-slim">Slim</button>
+<button type="button" class="btn btn-primary btn-slim">Slim primary</button>
+```
+
 ### Button label flash
 
-In-place **Copy** → **Copied** / **Failed** feedback on labeled buttons. Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional). Icon-only controls should keep using timer `flashTooltip()` instead.
+In-place **Copy** → **Copied** / **Failed** feedback on labeled buttons. Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional — same labeled-icon pattern as above). Icon-only controls should keep using timer `flashTooltip()` instead.
 
 ```html
 <button type="button" class="btn btn-label-flash" aria-label="Copy">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  <span class="btn-label-flash__label">Copy</span>
+</button>
+<button type="button" class="btn btn-slim btn-label-flash" aria-label="Copy">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
   <span class="btn-label-flash__label">Copy</span>
 </button>
 ```
@@ -1183,9 +1282,41 @@ copyBtn.addEventListener("click", async () => {
 
 `lockWidth` defaults to **on** — `prepareButtonLabelFlash()` auto-measures idle / success / fail (plus `measureLabels`) so longer flash text does not shift layout. Pass `lockWidth: false` to skip. Use `setButtonLabelFlash()` for other temporary labels (e.g. paste-arming **Ctrl+V**). See [`DESIGN.md`](DESIGN.md) (Action feedback).
 
+### Control glow
+
+Opt-in attention cue for any control chrome (button, input, and similar) — “ready to use” or “focus here next”. Soft accent halo with a light shine sweep; tones for danger / success; optional custom colour. Not a selection style, focus ring, or tooltip substitute — pair with a persistent tooltip or tutorial when copy is needed. See [`DESIGN.md`](DESIGN.md).
+
+Markup (static glow). Apply on the interactive control, not a wrapping `.field` label host:
+
+```html
+<button type="button" class="btn control-glow">Ready</button>
+<button type="button" class="btn btn-danger control-glow control-glow--danger">Danger</button>
+<input class="input control-glow control-glow--success" type="text" />
+<button type="button" class="btn control-glow" style="--control-glow-color: #c37500">Custom</button>
+<button type="button" class="btn control-glow control-glow--static">Static halo</button>
+```
+
+Runtime toggle:
+
+```javascript
+import { setControlGlow, clearControlGlow } from "./utils/control-glow.js";
+
+setControlGlow(button, { tone: "accent" }); // default
+setControlGlow(input, { tone: "success" });
+setControlGlow(btn, { tone: "danger" });
+setControlGlow(el, { color: "#c37500" });
+setControlGlow(el, { animated: false }); // static halo only
+setControlGlow(el, { maskIcon: "shield" }); // shine + halo follow icon glyph
+clearControlGlow(el);
+```
+
+For icon-only controls, `maskIcon` (or `setControlGlowMask(el, "shield")`) masks the shine to the catalogue SVG and uses a drop-shadow halo instead of a rectangular box-shadow.
+
+Demo: second labeled **Copy** button (accent) and slim **Danger** in the Buttons panel. The footer storage shield always uses a success glyph-masked glow (core shell; switches to danger when local storage is disabled).
+
 ### Toggle button
 
-Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/icon swapping. By default the pressed state shows the accent on/off appearance. Add `data-toggle-button-always-active` when both states are equally valid actions rather than on/off: the accent pressed styling is suppressed so the control keeps the default button appearance, and the swapped label/icon describes the **next action** (e.g. Enter fullscreen ↔ Exit fullscreen).
+Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/icon swapping on **click**. By default the pressed state shows the accent on/off appearance. Add `data-toggle-button-always-active` when both states are equally valid actions rather than on/off: the accent pressed styling is suppressed so the control keeps the default button appearance, and the swapped label/icon describes the **next action** (e.g. Enter fullscreen ↔ Exit fullscreen). For pointer-only hover icon changes (no pressed state), use `data-icon-hover` instead — see **Buttons**.
 
 ```html
 <button type="button" class="btn btn-icon btn-toggle" aria-pressed="false"
@@ -1194,6 +1325,12 @@ Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/ic
   data-toggle-button-aria-label-off="Enter fullscreen"
   data-toggle-button-aria-label-on="Exit fullscreen"
   data-icon-class="btn-icon-svg"></button>
+
+<button type="button" class="btn btn-toggle" aria-pressed="false"
+  data-toggle-button
+  data-toggle-button-icon-off="visibility" data-toggle-button-icon-on="visibility-off"
+  data-toggle-button-label-off="Show" data-toggle-button-label-on="Hide"
+  data-toggle-button-icon-class="btn-icon-svg"></button>
 
 <button type="button" class="btn btn-toggle" aria-pressed="false"
   data-toggle-button
@@ -1214,7 +1351,7 @@ btn?.toggle();
 initToggleButtons(document); // all [data-toggle-button]
 ```
 
-`data-toggle-button-label-off` / `-on`, `data-toggle-button-aria-label-off` / `-on`, `data-toggle-button-icon-off` / `-on`, `data-toggle-button-icon-class`, and `data-toggle-button-always-active` mirror the JS options. Actions in [`demo.html`](demo.html) shows both variants at standard and slim sizes.
+`data-toggle-button-label-off` / `-on`, `data-toggle-button-aria-label-off` / `-on`, `data-toggle-button-icon-off` / `-on`, `data-toggle-button-icon-class`, and `data-toggle-button-always-active` mirror the JS options. Actions in [`demo.html`](demo.html) shows icon-only and labeled click-swap toggles at standard and slim sizes.
 
 ### Toolbar
 
@@ -1389,7 +1526,7 @@ initLegends(document);
   <input type="text" id="name" class="input" placeholder="Enter text…" />
 </label>
 
-<label class="field" for="notes">
+<label class="field is-required" for="notes">
   <span class="field-label">Notes</span>
   <textarea id="notes" class="textarea" rows="4"></textarea>
 </label>
@@ -1418,6 +1555,97 @@ initLegends(document);
     </label>
   </div>
 </div>
+```
+
+**Required fields** — add `.is-required` on the `.field` (or any host whose direct child is `.field-label`). CSS appends a red `*` after the label. Call `initRequiredFields()` (or `initRequiredField()` / `setRequired()` / `syncRequiredField()`) so empty required controls get `aria-required`, optional native `required`, and `aria-invalid="true"` (error border) until filled. Hidden or disabled controls are not flagged. For non-standard controls (dropdown trigger, etc.), put `data-required-control` on the element to validate, or pass `control` / `isEmpty` to the init helpers.
+
+```javascript
+import {
+  initRequiredField,
+  initRequiredFields,
+  setFieldRequired,
+  syncRequiredField,
+} from "./utils/required-field.js";
+
+initRequiredFields(document); // every `.field.is-required`
+
+const notesField = document.querySelector("#notes")?.closest(".field");
+const notes = initRequiredField(notesField);
+notes?.setRequired(false); // drop asterisk + clear invalid
+notes?.setRequired(true);
+notes?.sync(); // after programmatic value changes
+
+setFieldRequired(document.getElementById("host-field"), true); // ensure + sync
+syncRequiredField(document.getElementById("driver-field"), {
+  required: true,
+  control: document.getElementById("driver-trigger"),
+});
+```
+
+**Field validation** — simple format rules on plain `.field` / `.input` controls (separate from input adornments). Presets: `email` (must contain `@`), `number` (finite; optional `data-validate-min` / `data-validate-max`), `noSpaces`, `alphanumeric` (ASCII letters and digits), `required`. Compose with `|` on `data-validate`, pass functions in `rules`, or `registerValidator("name", fn)` and reference the name. Empty optional fields skip format rules. Format errors show after blur by default (or when `validate()` / `validateField()` runs); required emptiness flags immediately when `.is-required` or a `required` rule is present. Optional `.field-error` (or `[data-field-error]`) shows the message and is linked via `aria-describedby`. Do **not** also call `initRequiredField` on the same field — validation owns `aria-invalid` there.
+
+```html
+<label class="field is-required" for="email" data-validate="email">
+  <span class="field-label">Email</span>
+  <input type="email" id="email" class="input" autocomplete="email" />
+  <span class="field-error" hidden></span>
+</label>
+
+<label class="field" for="qty" data-validate="number" data-validate-min="1" data-validate-max="10">
+  <span class="field-label">Quantity</span>
+  <input type="text" id="qty" class="input" inputmode="numeric" />
+  <span class="field-error" hidden></span>
+</label>
+```
+
+```javascript
+import {
+  initFieldValidation,
+  initFieldValidations,
+  registerValidator,
+  validateField,
+} from "./utils/field-validation.js";
+
+registerValidator("endsWithCom", (value) =>
+  value.endsWith(".com") ? true : "Must end with .com"
+);
+
+initFieldValidations(document); // every `.field` with data-validate
+
+const emailField = document.querySelector("#email")?.closest(".field");
+initFieldValidation(emailField, {
+  rules: ["required", "email", "endsWithCom", (value) => value.includes("@")],
+});
+
+// Gate submit:
+const ok = validateField(emailField); // reveals format errors too
+```
+
+**Input adornments** — display-only muted prefix/suffix inside the field border (currency / units; value stays bare), optional uppercase while typing, and fixed decimal formatting on blur. Separate from validation; compose both on the same field. Attributes may sit on the `.field` or the control: `data-input-prefix`, `data-input-suffix`, `data-input-uppercase`, `data-input-decimals` (default `2` when present). Does not set `aria-invalid`.
+
+```html
+<label class="field" for="price" data-validate="number" data-input-prefix="£" data-input-decimals="2">
+  <span class="field-label">Price</span>
+  <input type="text" id="price" class="input" inputmode="decimal" />
+  <span class="field-error" hidden></span>
+</label>
+
+<label class="field" for="sku" data-input-uppercase data-validate="alphanumeric|noSpaces">
+  <span class="field-label">SKU</span>
+  <input type="text" id="sku" class="input" />
+</label>
+```
+
+```javascript
+import { initInputAffix, initInputAffixes } from "./utils/input-affix.js";
+
+initInputAffixes(document);
+
+const price = initInputAffix(document.querySelector("#price")?.closest(".field"), {
+  prefix: "£",
+  decimals: 2,
+});
+price?.setSuffix("cm");
 ```
 
 ```javascript
@@ -1597,28 +1825,90 @@ duration?.close();
 initDurationInputs(document);
 ```
 
-### File dropzone
+### File
 
-Drag-and-drop or click-to-browse file picker. Selected files appear in a list with remove buttons.
+Segmented combo-style rows, a large dropzone host (`.file--large`), and a fullscreen page-drop overlay (`.file--fullscreen`).
+
+**Rows** — optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand. `initFile` injects a leading `file` type icon (`.file-item-type-icon`) on the main segment.
 
 ```html
-<div class="file-dropzone" id="my-dropzone" data-file-accept="image/*" data-file-multiple data-file-max="5">
-  <input type="file" class="file-dropzone-input" hidden />
-  <button type="button" class="file-dropzone-prompt">
-    <span data-icon="upload" data-icon-class="file-dropzone-icon"></span>
-    <span class="file-dropzone-text">
-      <span class="file-dropzone-primary">Drop files here</span>
-      <span class="file-dropzone-secondary">select to browse</span>
-    </span>
-  </button>
-  <ul class="file-dropzone-list hidden" hidden></ul>
+<div class="file" id="my-file" data-file-download data-file-ext-visibility="hover"
+  data-file-size-visibility="hover" data-file-name-action="none">
+  <ul class="file-list">
+    <li>
+      <div class="file-item">
+        <div class="btn file-item-main" data-file-name="export.txt">
+          <span class="file-item-name">export</span>
+          <span class="file-item-ext">.txt</span>
+          <span class="file-item-meta"></span>
+        </div>
+        <button type="button" class="btn file-item-download" aria-label="Download export.txt">
+          <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+        </button>
+      </div>
+    </li>
+  </ul>
 </div>
 ```
 
-```javascript
-import { initFileDropzone, initFileDropzones } from "./components/file-dropzone.js";
+**Large host** — drag-and-drop / browse picker. Selected files render as segmented `.file-item` rows (remove on by default; download / upload off; size meta always visible).
 
-const dropzone = initFileDropzone(document.getElementById("my-dropzone"), {
+```html
+<div class="file file--large" id="my-dropzone" data-file-accept="image/*" data-file-multiple data-file-max="5">
+  <input type="file" class="file-input" hidden />
+  <button type="button" class="file-prompt">
+    <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+    <span class="file-prompt-text">
+      <span class="file-prompt-primary">Drop files here</span>
+      <span class="file-prompt-secondary">select to browse</span>
+    </span>
+  </button>
+  <ul class="file-list hidden" hidden></ul>
+</div>
+```
+
+**Fullscreen overlay** — fixed viewport capture. By default it activates when a file drag enters the document, keeps the drop highlight for the whole drag, fires `onFiles` on drop, and hides again (no persistent list in the overlay). While drag-activated, the “select to browse” secondary line is hidden (a picker cannot open mid-drag). Set `data-file-fullscreen-activate-on-drag="false"` (or `fullscreenActivateOnDrag: false`) to control visibility yourself via `show()` / `hide()` / `setActive()` — browse remains available then. Manually shown overlays are **dismissible** by default: backdrop click and a corner close control (framework `clear` icon). Set `data-file-fullscreen-dismissible="false"` / `fullscreenDismissible: false` to opt out. Dismiss chrome is hidden during drag-activated sessions. Escape is not wired — dismiss by drop, leave the window, backdrop/close (when dismissible), or `hide()`. Overlay `z-index` is `180` (above modals, below tooltips).
+
+With a strict `data-file-accept` list, dragging an incompatible type over a large dropzone, fullscreen overlay, or drop-active row shows reject styling (`--banner-error-border`, same token as field `aria-invalid`) and a forbidden cursor (`dropEffect: "none"`); the file is not accepted. Soft accept (`acceptFilter: "soft"`) skips reject chrome.
+
+```html
+<div class="file file--fullscreen hidden" hidden id="my-fullscreen" data-file-accept="image/*">
+  <input type="file" class="file-input" hidden />
+  <button type="button" class="file-prompt">
+    <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+    <span class="file-prompt-text">
+      <span class="file-prompt-primary">Drop files anywhere</span>
+      <span class="file-prompt-secondary">or select to browse</span>
+    </span>
+  </button>
+</div>
+```
+
+Browse secondary copy is shown for manually opened overlays (`show()` / `activateOnDrag: false`). Default drag-activated overlays hide it automatically while a file drag is in progress.
+
+```javascript
+import { downloadFile, initFile, initFiles } from "./components/file.js";
+
+initFile(document.getElementById("my-file"), {
+  files: [
+    {
+      filename: "export.txt",
+      getContent: () => `Generated at ${new Date().toISOString()}\n`,
+    },
+  ],
+  // download: true (default), remove: false, upload: false
+  // nameAction: "none" | "download" | "upload" | "remove" | "custom"
+  // removeMode: "clear" | "detach" — default clear when upload is on
+  // emptyLabel: "No file" — placeholder when cleared
+  // extVisibility / sizeVisibility: "hover" | "always" | "never"
+  // dropActive: true — when upload is on, the row accepts file drops
+  onDownload: ({ filename, size }) => console.log(filename, size),
+  onUpload: ({ file }) => console.log("replaced", file.name),
+  onRemove: ({ filename }) => console.log("removed", filename),
+  onNameAction: ({ filename }) => console.log("custom", filename),
+});
+
+const dropzone = initFile(document.getElementById("my-dropzone"), {
   onFiles: ({ files }) => console.log(files),
   onError: ({ message }) => console.warn(message),
   onClear: () => console.log("cleared"),
@@ -1626,57 +1916,157 @@ const dropzone = initFileDropzone(document.getElementById("my-dropzone"), {
 
 dropzone?.openPicker();
 dropzone?.getFiles();
+dropzone?.setFiles([file]); // programmatic selection (triggers onFiles)
 dropzone?.clear();
 
-initFileDropzones(document); // wire every `.file-dropzone`
-```
-
-`data-file-accept` maps to the hidden input's `accept`. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called).
-
-On init, the prompt shows a `.file-dropzone-meta` line when there is something non-default to communicate: allowed types (from `accept`) and/or a multi-file count (`Up to N files` or `Multiple files`). A plain single-file dropzone with no `accept` shows no meta line. The element is created if missing.
-
-### File download
-
-Full-width `.btn` rows (standard control height) with an inline download icon. Content is generated on demand when the user clicks the row.
-
-```html
-<div class="file-download" id="my-download">
-  <ul class="file-download-list">
-    <li>
-      <button type="button" class="file-download-item btn" data-file-download-name="export.txt"
-        aria-label="Download export.txt">
-        <span class="file-download-item-name">export<span class="file-download-item-ext">.txt</span></span>
-        <span class="file-download-item-meta">Plain text</span>
-        <span data-icon="download" data-icon-class="btn-icon-svg"></span>
-      </button>
-    </li>
-  </ul>
-</div>
-```
-
-```javascript
-import { downloadFile, initFileDownload, initFileDownloads } from "./components/file-download.js";
-
-initFileDownload(document.getElementById("my-download"), {
-  files: [
-    {
-      filename: "export.txt",
-      getContent: () => `Generated at ${new Date().toISOString()}\n`,
-    },
-  ],
-  onDownload: ({ filename, size }) => console.log(filename, size),
+const fullscreen = initFile(document.getElementById("my-fullscreen"), {
+  onFiles: ({ files }) => console.log("captured", files),
 });
+fullscreen?.show();
+fullscreen?.hide();
 
-// Or trigger directly:
+// Or trigger a download directly:
 await downloadFile({
   filename: "notes.txt",
   content: "Plain text body",
 });
 
-initFileDownloads(document); // wire every `.file-download`
+initFiles(document); // wire every `.file` (rows, large, and fullscreen hosts)
 ```
 
-Pass a `files` array with per-file `getContent` callbacks. File size is shown in `.file-download-item-meta` when content can be resolved at init time.
+Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. When upload is enabled, remove **clears** the row to an empty upload placeholder (`No file`) by default instead of deleting it — set `data-file-remove-mode="detach"` / `removeMode: "detach"` to remove the row from the DOM; override the label with `data-file-empty-label` / `emptyLabel`. Cleared slots **hide** download / remove segments (upload stays), and the main segment acts as **upload** even when `nameAction` is `none`. When only one action is active (e.g. download-only, or a cleared upload slot), the row collapses to a **single control**: the action icon sits on the main and the separate segment is hidden; the whole control runs that action. When the main segment has an action (`download` / `upload` / `remove`, including solo / empty-slot defaults), it gets a hover tooltip (`Select to upload` / `Select to download` / `Select to remove`) via `data-tooltip`. Action segments use short tooltips: **Download**, **Upload** or **Replace** (when a file is loaded), and **Remove**. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Single-file large hosts **hide the prompt** once a file is selected (remove the file to show it again); multi-file hosts keep the prompt. Override with `data-file-hide-prompt-when-full="false"` or `hidePromptWhenFull: false` (or set `true` on a multi host to hide the prompt when `data-file-max` is reached). Fullscreen defaults: activate-on-drag **on**. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
+
+`data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep advise-only behaviour. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
+
+On large / fullscreen init, the prompt shows a `.file-prompt-meta` line when there is something non-default to communicate: allowed types and/or a multi-file count. A plain single-file host with no `accept` shows no meta line. The element is created if missing.
+
+### STL export
+
+The STL helpers generate indexed meshes and encode them as binary or ASCII STL. Coordinates are in millimetres by convention; STL does not store units. Binary STL is the default and is suitable for direct browser download.
+
+```javascript
+import {
+  createBoxMesh,
+  decodeStl,
+  downloadStl,
+  encodeStl,
+} from "./components/stl.js";
+
+const mesh = createBoxMesh({ width: 40, length: 20, height: 10 });
+const binary = encodeStl(mesh); // ArrayBuffer
+const ascii = encodeStl(mesh, { format: "ascii", name: "box" }); // string
+const decoded = decodeStl(binary);
+
+await downloadStl(mesh, { filename: "box.stl" });
+```
+
+`createBoxMesh()` requires finite, positive `width`, `length`, and `height` values. The returned mesh has `positions` (`x, y, z` triplets) and `indices` (triangle triplets). `encodeStl()` rejects malformed or degenerate triangles. `downloadStl()` uses the framework `downloadFile` helper and reports the file as `model/stl`.
+
+### 3D model preview
+
+The model preview renders an indexed mesh with Three.js. It supports orbit rotation, zoom, pan, automatic camera fitting, responsive resizing, and light/dark theme colours. The mesh is not mutated; STL coordinates remain Z-up while the preview applies a display-only rotation.
+
+Pages using the preview must include an import map before module scripts:
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "three": "./app/vendor/three/three.module.min.js"
+    }
+  }
+</script>
+```
+
+```html
+<div class="model-preview" id="my-model-preview" aria-label="3D model preview"
+  data-model-preview-size
+  data-model-preview-triangles
+  data-model-preview-meta="hover"
+  data-model-preview-meta-extra="PETG"
+  data-model-preview-maximize
+  data-model-preview-home
+  data-model-preview-rendering
+  data-model-preview-animation
+  data-model-preview-actions="hover">
+  <p class="model-preview__empty">No preview</p>
+</div>
+```
+
+```javascript
+import { createBoxMesh } from "./components/stl.js";
+import { initModelPreview } from "./components/model-preview.js";
+import { initExpandableSurfaces } from "./components/expandable-surface.js";
+
+const preview = initModelPreview(document.getElementById("my-model-preview"));
+preview?.setMesh(createBoxMesh({ width: 40, length: 20, height: 10 }));
+preview?.setMetaExtra(["PETG", "box.stl"]);
+preview?.setRenderingMode("ghosted");
+initExpandableSurfaces(document); // required when maximise attrs are used
+// preview?.clear();
+// preview?.destroy();
+```
+
+Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × L × H mm`), `data-model-preview-triangles`, `data-model-preview-vertices`, `data-model-preview-volume` (`mm³`), `data-model-preview-surface-area` (`mm²`), and `data-model-preview-objects`. Object count uses `mesh.objectCount`, else `mesh.objects.length`, else `1` for a loaded mesh. Volume is a closed-mesh estimate and can be wrong for open shells.
+
+`data-model-preview-meta` controls strip visibility: `hover` (default), `always`, `not-hover`, or `never`. On touch devices without hover, `hover` and `not-hover` behave like `always`. Add `data-model-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array) for app-specific text.
+
+`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-home` shows a reset-view (home) control that restores the default camera fit; `data-model-preview-rendering` shows a floating **Rendering** icon dropdown (cube icon) with modes `shaded` (default), `wireframe`, `ghosted`, `xray`, and `arctic`. Set the initial mode with `data-model-preview-rendering-mode` / `renderingMode`, and use `preview.setRenderingMode()` / `getRenderingMode()` at runtime. Menu item tips stay anchored on the trigger via `data-tooltip-anchor`. `data-model-preview-animation` shows a floating play/pause control for preview animation (off by default). Default motion is slow OrbitControls auto-rotate; pass `onAnimationFrame({ delta, elapsed, model, camera, controls, scene })` (or `setOnAnimationFrame()`) for a custom tick while playing. Set `data-model-preview-animation-auto-rotate="false"` / `animationAutoRotate: false` (or `setAnimationAutoRotate(false)`) to disable the built-in orbit and use only a custom handler. When animation is enabled it starts playing unless you set `data-model-preview-animation-playing="false"` / `animationPlaying: false` (and always starts paused when `prefers-reduced-motion` is set). Use `preview.setAnimationPlaying(true|false)` / `getAnimationPlaying()` at runtime. `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Maximise maps onto expandable-surface. `data-model-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`. Call `preview.resetView()` to reset the camera from script.
+
+The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.### G-code toolpath preview
+
+`parseGcodeToolpath()` accepts ASCII G-code or binary `.bgcode`, decodes its G-code blocks, and returns line segments with `extruding` state, zero-based layer numbers, overall bounds, and decode/parser warnings. It supports `G0` / `G1`, XY-plane arcs `G2` / `G3` (I/J offsets or R radius, including helical Z), `G17` / `G90` / `G91`, `M82` / `M83`, and `G92`. Non-XY arc planes (`G18` / `G19`) and invalid arc parameters add a single `unsupported geometry` warning (the endpoint is still applied so later moves stay correct). Coordinates use the file's millimetre convention.
+
+```javascript
+import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
+import { initToolpathPreview } from "./components/toolpath-preview.js";
+
+const toolpath = await parseGcodeToolpath(await file.arrayBuffer());
+const preview = initToolpathPreview(
+  document.getElementById("my-toolpath-preview")
+);
+preview?.setToolpath(toolpath);
+preview?.setMaxLayer(3); // null shows every parsed layer
+preview?.setMetaExtra(["PETG", "0.4 mm"]); // or a single string
+```
+
+The toolpath preview reuses the `.model-preview` surface and canvas styles, and requires the same `three` import map as the model preview:
+
+```html
+<div class="model-preview toolpath-preview" id="my-toolpath-preview"
+  aria-label="G-code toolpath preview"
+  data-toolpath-preview-segments
+  data-toolpath-preview-layers
+  data-toolpath-preview-current-layer
+  data-toolpath-preview-meta="hover"
+  data-toolpath-preview-meta-extra="PETG"
+  data-toolpath-preview-maximize
+  data-toolpath-preview-home
+  data-toolpath-preview-animation
+  data-toolpath-preview-actions="hover">
+  <p class="model-preview__empty">No toolpath</p>
+</div>
+```
+
+`data-toolpath-preview-segments`, `data-toolpath-preview-layers`, and `data-toolpath-preview-current-layer` add muted counts to a bottom-right strip (`3,089 segments · 40 layers · layer 12/40`). Current layer follows `setMaxLayer()` (1-based display over the total layer count). When `parseGcodeToolpath()` reports `unsupported geometry`, that short warning is appended to the same meta strip automatically.
+
+`data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
+
+`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-home` shows a reset-view (home) control; `data-toolpath-preview-animation` shows a floating play/pause control for preview animation (off by default). Default motion is slow OrbitControls auto-rotate; pass `onAnimationFrame({ delta, elapsed, group, camera, controls, scene })` (or `setOnAnimationFrame()`) for a custom tick while playing. Set `data-toolpath-preview-animation-auto-rotate="false"` / `animationAutoRotate: false` (or `setAnimationAutoRotate(false)`) to disable the built-in orbit and use only a custom handler. When animation is enabled it starts playing unless you set `data-toolpath-preview-animation-playing="false"` / `animationPlaying: false` (and always starts paused when `prefers-reduced-motion` is set). Use `preview.setAnimationPlaying(true|false)` / `getAnimationPlaying()` at runtime. `data-toolpath-preview-layer-slider` mounts a left-aligned maximum-layer [`.slider--hover`](#slider) in the same strip (on by default; set `data-toolpath-preview-layer-slider="false"` or `layerSlider: false` to disable). The slider is **1-based** (`1…N`, matching the meta `layer K/N` readout); `setMaxLayer(n)` remains **0-based** and stays in sync with the slider. `data-toolpath-preview-travels` controls whether non-extrusion (gray) travel moves are drawn (on by default; set `"false"` or `travels: false` to hide). `data-toolpath-preview-travel-toggle` mounts a hover toggle for that (on by default; set `"false"` to hide the control). Combine `travels="false"` with the toggle left on so users can re-enable travels, or set both to `"false"` for a permanent extrusion-only view. `preview.setTravels(false)` / `getTravels()` update the same state at runtime. `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled. Call `preview.resetView()` to reset the camera from script.
+
+### G-code metadata
+
+`parseGcodeMeta()` reads slicer metadata from ASCII G-code comments or binary `.bgcode` metadata blocks. It does not simulate toolpaths or estimate duration from feed rates. The asynchronous API accepts a string, `ArrayBuffer`, or `Uint8Array`; unsupported bgcode compression is reported in `warnings`.
+
+```javascript
+import { isBgcode, parseGcodeMeta } from "./components/gcode.js";
+
+const metadata = await parseGcodeMeta(await file.arrayBuffer());
+console.log(metadata.durationSec, metadata.filamentGrams, metadata.filamentType);
+if (isBgcode(bytes)) console.log("Binary G-code");
+```
+
+The result includes `timestamp`, `durationSec`, `filamentGrams`, `filamentMm`, `filamentM`, `filamentCm3`, `filamentType`, `nozzleMm`, `nozzleHighFlow`, `bedTemperatureC`, `fillDensityPercent`, `nozzleTemperatureC`, `layerHeightMm`, `perimeters`, `objectCount`, `objects`, `wipeTowerFilamentGrams`, `slicer`, `printerModel`, recognised `raw` key/value pairs, and `warnings`. `perimeters` is the slicer's wall-line count. Missing values are `null`. Uncompressed, Deflate, and Heatshrink metadata blocks are supported; MeatPack is additionally supported for G-code blocks. Unsupported or malformed blocks are reported in `warnings`.
 
 ### Image preview
 
@@ -1687,6 +2077,7 @@ Checkerboard viewport for inline SVG, image URLs, or `Blob` / `File`. Empty plac
   data-image-preview-pixelated
   data-image-preview-maximize
   data-image-preview-expand-on-click
+  data-image-preview-actions="hover"
   data-image-preview-download
   data-image-preview-download-name="preview.svg"
   data-image-preview-dimensions
@@ -1707,7 +2098,7 @@ import { initImagePreview, initImagePreviews } from "./components/image-preview.
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
 
 const preview = initImagePreview(document.getElementById("my-preview"));
-preview?.setMetaExtra("Scale 4×");
+preview?.setMetaExtra(["Scale 4×", "PNG"]);
 preview?.setSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">…</svg>`);
 // preview?.setSrc("app/res/example.png", { alt: "Example" });
 // preview?.setBlob(file, { alt: file.name });
@@ -1718,19 +2109,19 @@ initExpandableSurfaces(document); // required when maximise attrs are used
 initImagePreviews(document); // wire every `.image-preview`
 ```
 
-`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`.
+`data-image-preview-pixelated` uses nearest-neighbour scaling. `data-image-preview-maximize` shows the floating fullscreen control; `data-image-preview-expand-on-click` toggles maximise when clicking the viewport (not controls). Either option maps onto expandable-surface (`data-expandable-surface`, optional `data-expandable-surface-click`, and `data-expandable-surface-control="false"` when only click-to-expand is on). Prefer putting `data-expandable-surface` (and `data-expandable-surface-click` when needed) in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initImagePreview()`. `data-image-preview-actions` controls when maximise / download controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons).
 
 `data-image-preview-download` adds a floating download control (same hover strip as maximise). Optional `data-image-preview-download-name` sets the default filename. Pre-existing markup `<img>` children are wired for download via their `src`. `data-image-preview-dimensions` and `data-image-preview-file-size` show muted intrinsic size (`W × H px`) and/or source byte size in the bottom-right corner. For inline SMIL SVG (including multi-frame `g#frame-N` groups), `data-image-preview-frames` shows `frame K/N` while animating and `data-image-preview-duration` shows the loop length (e.g. `1.5 s`). Frame/duration meta does not apply to GIF/APNG/WebP loaded via `<img>`.
 
 `setSvg()` sanitizes markup before injection (strips scripts, event handlers, and other active content; keeps SMIL `animate*` / `set` when otherwise clean) and returns `false` when nothing safe remains.
 
-`data-image-preview-meta` controls when that muted strip is visible: `hover` (default — show on hover like the floating buttons), `always`, or `never`. On touch devices without hover, `hover` behaves like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` to `initImagePreview()` to append app-specific text, such as a scale; `setMetaExtra(text)` updates or clears it at runtime.
+`data-image-preview-meta` controls when that muted strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-image-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array, joined with ` · `) for app-specific text.
 
 Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
 ### Panel layout
 
-Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for inline groups (layout only — does not change font size), and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
+Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them; `.panel-row--end` bottom-aligns labeled fields and optically centres bare toggles on the control line), `.panel-inline` for inline groups (layout only — does not change font size), and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
 
 ```html
 <section class="section-panel">
@@ -1745,8 +2136,27 @@ Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.pa
     <span class="panel-inline"><!-- compact status --></span>
     <button type="button" class="btn btn-primary">Save</button>
   </div>
+  <div class="panel-row panel-row--end">
+    <label class="field" for="opt-width">
+      <span class="field-label">Width</span>
+      <input type="text" id="opt-width" class="input" />
+    </label>
+    <div class="toggle" data-toggle-default="false">
+      <button type="button" class="toggle-btn" role="switch" aria-checked="false">
+        <span class="toggle-track" aria-hidden="true">
+          <span class="toggle-thumb">
+            <span data-icon="check" data-icon-class="toggle-thumb-icon" aria-hidden="true"></span>
+          </span>
+        </span>
+        <span class="toggle-label">Lock</span>
+      </button>
+      <input type="hidden" class="toggle-value" value="false" />
+    </div>
+  </div>
 </section>
 ```
+
+`.panel-row--end` uses `align-items: flex-end` for fields with a label above the control. Direct-child `.toggle`s keep their intrinsic height and get a small `margin-block-end` so the track centres on `--control-height` siblings (formula uses `--toggle-track-height`, or `--toggle-thumb-size-slim` for `.toggle--slim`). Do **not** put that margin on every toggle — stacked `.toggle-group` rows stay compact. For centred toolbars / `.panel-row` (default), no extra offset is needed.
 
 The three- and four-column grid variants collapse to one column below 900px; the four-column variant first drops to two columns below 1100px. Use `.panel-split` when columns need full-bleed dividers.
 
@@ -1940,7 +2350,7 @@ Start the badge with the initial count (or `hidden` when zero) so it does not fl
 
 ### Slider
 
-Range input with a compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing.
+Range input with an optional compact value field beside the track. Drag the thumb or type a value directly; typed values are clamped to min/max and snapped to `step` on blur or Enter. Escape restores the last committed value while editing. The thumb is centred on the track value (so at min / max it overhangs the track ends).
 
 Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; values are still stored as plain numbers, e.g. `75` for 75%).
 
@@ -1955,6 +2365,18 @@ Formats: `integer` (default), `decimal`, or `percentage` (shows a `%` suffix; va
       <span class="slider-suffix hidden" aria-hidden="true">%</span>
     </div>
     <input type="hidden" class="slider-value" name="opacity" />
+  </div>
+</div>
+```
+
+**Hover chrome** — add `.slider--hover` (or `data-slider-chrome="hover"`) for compact use inside a display-surface `.surface-actions` strip. Omit the field label, editable `.slider-input`, and form field; an optional `.slider-readout` shows the committed value. Same `initSlider` API. See [DESIGN.md — Form controls as hover chrome](DESIGN.md#form-controls-as-hover-chrome).
+
+```html
+<div class="slider slider--hover" data-slider-min="0" data-slider-max="40"
+  data-tooltip="Maximum layer" data-tooltip-position="top">
+  <div class="slider-row">
+    <input type="range" class="slider-range" aria-label="Maximum layer" />
+    <output class="slider-readout" aria-hidden="true">40</output>
   </div>
 </div>
 ```
@@ -1975,14 +2397,16 @@ const slider = initSlider(document.getElementById("my-slider"), {
 
 slider?.getValue();
 slider?.setValue(25);
+slider?.setBounds({ min: 0, max: 40, value: 40, emit: false });
 slider?.setDisabled(true);
 slider?.isDisabled();
 slider?.commitInput(); // commit typed text without blur
+slider?.destroy();
 
 initSliders(document); // all `.slider` blocks
 ```
 
-`data-slider-min`, `data-slider-max`, `data-slider-step`, `data-slider-default`, `data-slider-format`, and `data-slider-disabled` mirror the JS options. The hidden `.slider-value` field stores the numeric value for forms.
+`data-slider-min`, `data-slider-max`, `data-slider-step`, `data-slider-default`, `data-slider-format`, `data-slider-disabled`, and `data-slider-chrome` mirror the JS options. The hidden `.slider-value` field stores the numeric value for forms. `.slider-input` is optional when a `.slider-readout` (or range-only) is enough.
 
 ### Progress bar
 
@@ -2364,13 +2788,15 @@ initColorPickers(document);
 
 ### Control sizing
 
-Three different “slim” APIs — they are not interchangeable:
+Compact size / chrome variants — they are not interchangeable:
 
 | Class | Effect |
 | ----- | ------ |
 | `.btn-slim` | Compact button height via `--control-height-slim` |
 | `.segmented-control--slim` | Reduced padding on the track; does **not** use `--control-height-slim` |
+| `.segmented-control--muted` | Light selection (flush track, `code-bg` selected); standard accent hover border |
 | `.toggle--slim` | Thin track with an oversized overhanging thumb; not a height token |
+| `.slider--hover` | Compact slider chrome for `.surface-actions` (not a form-row height token) |
 
 Tabular input logical columns always use `.toggle--slim` (no standard-size toggle in that grid).
 
@@ -2459,11 +2885,15 @@ initToggles(document); // all `.toggle` blocks
 
 `data-toggle-default`, `data-toggle-tristate`, `data-toggle-tristate-cycle`, and `data-toggle-disabled` mirror the JS options. For a group of switches, wrap items in `.toggle-group`.
 
+**Inline with labeled fields** — use `.panel-row.panel-row--end` (see **Panel layout**). Track size tokens live in [`tokens.css`](app/tokens.css) (`--toggle-track-height`, `--toggle-track-width`, slim variants); do not grow toggles to `--control-height`.
+
+**Inline in a code-block toolbar** — wrap app chrome in `.code-block-toolbar__extras` (flex + centred) and append it to a toolbar group. Labels densify automatically to match `.btn-slim`; toggle height stays intrinsic.
+
 ### Segmented control
 
 Toggle button group for switching between a small set of options or views — like radio buttons in a joined control. Items use `role="radio"` and `aria-checked`; a hidden `.segmented-control-value` stores the selected value for forms.
 
-Default height matches `.btn` (`--control-height`). Add `.segmented-control--slim` for the compact size. Add `.segmented-control--full` on the root to stretch the track to the field width. Optionally pair items with panels via `aria-controls` (same pattern as tabs).
+Default height matches `.btn` (`--control-height`). Add `.segmented-control--slim` for the compact size. Add `.segmented-control--muted` for the light-selection flush variant (selected uses `code-bg`, not accent fill; hover still uses the standard accent border and exit animation). Add `.segmented-control--full` on the root to stretch the track to the field width. Optionally pair items with panels via `aria-controls` (same pattern as tabs).
 
 ```html
 <div class="segmented-control segmented-control--full" id="my-segmented" data-segmented-control-default="list">
@@ -2483,6 +2913,21 @@ Compact (previous default) size:
 
 ```html
 <div class="segmented-control segmented-control--slim" id="my-segmented-slim"
+  data-segmented-control-default="list">
+  <div class="segmented-control-list" role="radiogroup" aria-label="View mode">
+    <button type="button" class="segmented-control-item" role="radio" aria-checked="true"
+      data-segmented-control-value="list">List</button>
+    <button type="button" class="segmented-control-item" role="radio" aria-checked="false"
+      data-segmented-control-value="grid">Grid</button>
+  </div>
+  <input type="hidden" class="segmented-control-value" name="view" value="list" />
+</div>
+```
+
+Muted (light selection):
+
+```html
+<div class="segmented-control segmented-control--muted" id="my-segmented-muted"
   data-segmented-control-default="list">
   <div class="segmented-control-list" role="radiogroup" aria-label="View mode">
     <button type="button" class="segmented-control-item" role="radio" aria-checked="true"
@@ -2616,6 +3061,8 @@ const dropdown = initDropdown(document.getElementById("my-dropdown"), {
   onSelect: ({ value, label }) => { /* item chosen */ },
   gridMin: 8, // switch to grid when item count exceeds 8
   gridCols: 2, // optional; default 2
+  fixed: true, // escape overflow clipping (e.g. inside model-preview)
+  fixedAlign: "end", // optional; default "start"
 });
 
 dropdown?.setGridMin(10); // change threshold later
@@ -2624,6 +3071,8 @@ dropdown?.syncMenuGrid(); // after adding/removing items in script
 ```
 
 Markup: `.dropdown` > `.dropdown-trigger` + `ul.dropdown-menu` with `.dropdown-menu-item` buttons.
+
+Optional **fixed positioning** — when the host sits inside `overflow: hidden` (preview surfaces, table wraps), set `data-dropdown-fixed` on the `.dropdown` (or pass `fixed: true`) so the menu uses `position: fixed` and is not clipped. Optional `data-dropdown-fixed-align="end"` / `fixedAlign: "end"` lines the menu up with the trigger’s trailing edge (handy for right-side overlay toolbars).
 
 Optional **group headers** — non-interactive labels between items. Insert a `<li role="presentation">` with a `.dropdown-menu-group` div before each group’s items. Headers are skipped by keyboard navigation (`itemSelector` is `.dropdown-menu-item` only). Later groups get a top border automatically.
 
@@ -2705,6 +3154,7 @@ const toggleDropdown = initToggleDropdown(document.getElementById("my-toggle-dro
   onToggle: ({ value, label, selected, values, labels }) => {
     console.log(label, selected, values);
   },
+  // fixed / fixedAlign — same as initDropdown (overflow-safe menus)
 });
 
 toggleDropdown?.getSelected(); // [{ value, label, item }, …]
@@ -2745,6 +3195,8 @@ Start the badge as `hidden` when the initial selection count is zero so it does 
   </div>
 </div>
 ```
+
+Default expands cap at `32rem`. Add `.expand--full` for a panel-width disclosure (`max-width: none`). After a `.panel-split`, wrap following full-bleed content in `.panel-follow` (optional leading `.panel-divider`) so the split does not overlap it. Panels animate height on open/close (`--disclosure-ms`); `initExpand` clears markup `hidden` and uses `inert` when closed.
 
 ```javascript
 import { initExpand, initExpands } from "./components/expand.js";
@@ -2791,7 +3243,7 @@ const accordion = initAccordion(document.getElementById("my-accordion"), {
 // accordion.open(0), accordion.close(0), accordion.toggle(0), accordion.closeAll(), accordion.getOpenIndices()
 ```
 
-`data-accordion-default-open` sets the initially open panel index. `data-accordion-open` on an item opens it on load (use with `data-accordion-multiple` for several). Arrow Up/Down, Home, and End move focus between headers.
+`data-accordion-default-open` sets the initially open panel index. `data-accordion-open` on an item opens it on load (use with `data-accordion-multiple` for several). Arrow Up/Down, Home, and End move focus between headers. Panels animate height like expand (`--disclosure-ms`); markup may keep `hidden` until `initAccordion` runs.
 
 ### Tabs
 
@@ -3299,6 +3751,8 @@ initExpandableSurfaces(document);
 
 **Toolbar** — set `data-code-toolbar` to `top`, `bottom`, or `none`. List controls in `data-code-toolbar-actions` (comma-separated): `clear`, `copy`, `paste`, `maximize`, `highlight`, `line-numbers`. Defaults to `highlight,line-numbers` when omitted. Align any control with `data-code-toolbar-align` as `action:left|right` (comma-separated); **highlight, line-numbers, and maximize default to `right`**, everything else to `left`. Clear / Copy / Paste show icon + label; highlight, line-numbers, and maximize are icon-only with tooltips. Clear and Paste are disabled in `view` mode; Clear and Copy (toolbar and hover) are disabled when the block is empty. Maximize requires `data-expandable-surface` (uses `data-expandable-surface-open`).
 
+**Custom toolbar chrome** — append a `.code-block-toolbar__extras` host into `.code-block-toolbar__group--left` or `--right` (after `initCodeBlock`, and again after remounts such as language changes). The extras row centres children and densifies `.toggle-label` to slim toolbar type; keep toggles at intrinsic height (no `--control-height` slot).
+
 **Hover surface actions** — set `data-code-surface-actions` to `copy`, `maximize`, or both (`none` / empty / `false` hides the strip). Legacy `data-code-copy="false"` omits surface copy. When `data-expandable-surface` is present and surface actions are omitted, defaults include `copy,maximize`.
 
 Line numbers require highlighting to be on. In `select` and `edit` modes, hovering a code line or its gutter number applies the standard accent-tinted hover background; clicking a gutter number selects that line's text. Triple-clicking code text selects the whole block. Copy/paste use [`app/utils/clipboard.js`](app/utils/clipboard.js) (Clipboard API with insecure-context fallbacks).
@@ -3344,17 +3798,28 @@ HTML:
 
 ```html
 <button type="button" data-icon="light-mode" data-icon-class="theme-icon" aria-label="Light"></button>
+
+<!-- Optional hover alternate (button CSS; see Buttons) -->
+<button type="button" class="btn btn-icon" aria-label="Show"
+  data-icon="visibility" data-icon-hover="visibility-off"
+  data-icon-class="btn-icon-svg"></button>
 ```
 
 JavaScript:
 
 ```javascript
-import { createIcon, initIcons } from "./utils/icons.js";
+import { createIcon, createIconSwap, initIcons, mountIcon } from "./utils/icons.js";
 
-initIcons(document); // mounts every [data-icon] in the page
+initIcons(document); // mounts every [data-icon] (honours data-icon-hover)
 
 const svg = createIcon("lines", { className: "btn-icon-svg" });
 button.append(svg);
+
+mountIcon(host, "visibility", {
+  className: "btn-icon-svg",
+  hoverName: "visibility-off",
+});
+// or: host.append(createIconSwap("visibility", "visibility-off", { className: "btn-icon-svg" }));
 ```
 
 Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Framework catalogue changes go in `FRAMEWORK_ICONS` in `icons-framework.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.

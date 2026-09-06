@@ -10,6 +10,10 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
+- Button icons align consistently: labeled buttons use a child `data-icon` host (or `createIcon` + `.btn-icon-svg`); icon-only stays on `.btn-icon`. Shared gap, `display` / `flex-shrink`, and size rules live in `controls-buttons.css` (labeled glyphs 1rem; icon-only 1.25rem / slim 1rem). Hover alternate icons via `data-icon-hover` / `createIconSwap()` (`.btn-icon-swap`); click / pressed alternate icons via existing `initToggleButton` `data-toggle-button-icon-off` / `-on`.
+- G-code metadata now prefers exact slicer fields, so nozzle, layer height, filament quantities, and duration are not overwritten by unrelated settings; the demo also shows filament metres and perimeters.
 - Code block view/select with line numbers: horizontal scrollbar sits flush with the block (padding moved from `pre` onto `code` / gutter rows so the scrollport fills the block). Edit mode was already correct via the inset textarea.
 - Anchored popovers hide while their target is fully off-screen (instead of clamping to a viewport edge) and show again when the anchor returns.
 - Tutorial navigation (`next` / `back` / `goTo` / `start`) uses one showable-step resolver (`when` + resolvable target). Back over a missing target no longer ends the tour; `goTo(i)` jumps to the nearest showable step instead of walking a one-way ray that could stop the tour.
@@ -19,15 +23,56 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 - Combobox hosts elevate with `.is-popup-open` while the suggestion list is open (same stacking fix as dropdown / combo). Table row hover, time-picker duration mode, slim-size APIs, and tri-state cycle scope documented in `USAGE.md` / `DESIGN.md`.
 - Date / time / duration field CSS shares one trigger, popup shell, icon, and quick-action bar block in `controls-fields.css` (duration popups reuse `.time-picker-popup`).
 - Documented time-panel **00:00** / **Now** defaults per host (standalone time picker, duration mode, duration input, date+time combined picker).
-- Banner rotation requires `data-banner-expire`; `hideBanner()` resets to the first variation. `prepareButtonLabelFlash()` defaults `lockWidth` to on. Section panel inner gaps use `--panel-gap`.
+- File fullscreen overlay keeps dragover highlight for the whole file drag (CSS previously only styled `.file--large.is-dragover`), hides the browse secondary line while drag-activated, and ends the session on window leave / `dragend`. Strict `accept` shows reject chrome (`is-drag-reject`, forbidden cursor) on incompatible drags for fullscreen, large dropzones, and drop-active rows.
+- Manually shown `.file--fullscreen` overlays are dismissible by default (backdrop click + close control); opt out with `fullscreenDismissible: false` / `data-file-fullscreen-dismissible="false"`. Drag-activated sessions hide dismiss chrome.
+- Expand supports `.expand--full` for panel-width disclosures (no `max-width: 32rem` cap). Panel splits followed by `.panel-follow` no longer bleed their bottom margin into that content.
 
 ### Changed
 
+- Footer theme toggle is a muted segmented control (`.segmented-control--muted`) with Light / Dark / System tooltips, instead of bespoke `.theme-toggle` markup. Segmented control is always shipped with the shell.
+- Dialog and popover dismiss controls match the file fullscreen overlay close (bordered surface button + `clear` icon) instead of a text `×` / slim icon button.
+- About dialog demo drops Huh? / Uhh… stages; the footer link is **Repository** and shows immediately when no stages are present (`data-about-final`). Progressive stages remain optional in `initAboutDialog`.
+- Hover/focus tooltips no longer show on disabled controls by default (`disabled`, `aria-disabled="true"`, or a host `*--disabled` class). Opt in with `data-tooltip-when-disabled`. Timer and persistent tips are unchanged.
+- Slider thumb is centred on the track value (overhangs the track at min / max) instead of keeping the thumb fully inside the track ends.
+- File rows with upload enabled clear to an empty upload placeholder on remove by default (`removeMode: "clear"` / `data-file-remove-mode`); use `detach` to remove the row. Optional `emptyLabel` / `data-file-empty-label`. Cleared slots hide download / remove segments, promote the main segment to upload, and set main-segment tooltips for download / upload / remove actions. Action segments tip **Download** / **Upload** / **Replace** / **Remove**. When only one action is active, the row collapses to a single control (icon on the main).
+- Large `.file--large` hosts hide the drop prompt when the selection is full by default for single-file mode (`hidePromptWhenFull`; multi-file keeps the prompt). Set `data-file-hide-prompt-when-full` / `hidePromptWhenFull` to override.
+- **Breaking (pre-release):** `file-download` and `file-dropzone` are replaced by unified `.file` / `initFile()` — segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. `downloadFile()` and accept helpers live in [`app/components/file.js`](app/components/file.js). Old `.file-download*` / `.file-dropzone*` markup and APIs are removed.
+- Model and toolpath preview home control eases in spherical orbit space (radius / angles), matching OrbitControls motion and avoiding the mid-flight Cartesian zoom dip; snaps when `prefers-reduced-motion`.
+- Image preview meta visibility gains `not-hover` (parity with mesh / toolpath); hover action strip uses `data-image-preview-actions` (`hover` / `always` / `never`) with `:focus-visible` instead of `:focus-within`; `metaExtra` / `setMetaExtra()` accept a string array.
 - Renamed technical identifiers from `template-*` to `framework-*` (e.g. `framework.lock.json`, `FRAMEWORK_VERSION`, `npm run sync:framework`, `migrate-framework` / `release-framework` skills, `icons-framework.js`, `app/css/framework.css`).
 - Segmented control default height matches standard buttons (`--control-height`); add `.segmented-control--slim` for the previous compact size.
 
 ### Added
 
+- Field validation: simple presets (`email`, `number` + min/max, `noSpaces`, `alphanumeric`, `required`) plus `registerValidator` / function rules in [`app/utils/field-validation.js`](app/utils/field-validation.js). Opt-in via `data-validate` / `initFieldValidation(s)`; optional `.field-error` messages; format checks after blur by default. Do not also wire `initRequiredField` on the same field.
+- Input adornments: display-only muted prefix/suffix (units), uppercase transform, and fixed decimals on blur in [`app/utils/input-affix.js`](app/utils/input-affix.js) (`data-input-prefix` / `-suffix` / `-uppercase` / `-decimals`).
+- Segmented control muted variant (`.segmented-control--muted`): light selection on a flush surface track (theme-like), with standard accent hover border and exit animation.
+- Control glow: opt-in attention cue (`.control-glow`) with accent / danger / success tones, optional custom `--control-glow-color`, soft breathe + shine (static under `prefers-reduced-motion` or `.control-glow--static`). Optional `maskIcon` / `setControlGlowMask()` masks shine to a catalogue icon glyph. Core footer storage shield uses a success glyph-masked glow by default (danger when storage is disabled). Helpers in [`app/utils/control-glow.js`](app/utils/control-glow.js); styles in [`app/css/controls-glow.css`](app/css/controls-glow.css). Demo: second Copy button and slim Danger.
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
+- Dropdown / toggle-dropdown fixed positioning: `fixed` / `fixedAlign` on `initDropdown()` / `initToggleDropdown()`, or `data-dropdown-fixed` / `data-dropdown-fixed-align` on the host — escapes `overflow: hidden` (e.g. model preview overlays).
+- Tooltip placement anchor: `data-tooltip-anchor` (CSS selector), plus `openTooltip(target, { text, anchor, … })` and `updateTooltip({ text })`, so tip copy can change (e.g. menu items) while staying fixed on another control (e.g. an icon dropdown trigger).
+- Toggle track size tokens (`--toggle-track-height` / `--toggle-track-width`, slim track and thumb tokens) in [`tokens.css`](app/tokens.css). `.panel-row--end` bottom-aligns labeled fields and optically centres bare toggles on the control line without growing stacked `.toggle-group` rows. Code-block toolbar extras (`.code-block-toolbar__extras`) centre injected chrome and densify toggle labels for slim toolbar type — see `USAGE.md` / `DESIGN.md`.
+- Optional button fixed width (`.btn-fixed` + `--btn-width`), content alignment (`.btn-align-start` / `-center` / `-end`), and trailing labeled icons (`.btn-icon-end`); defaults remain content-sized, centred, and leading-icon.
+- Required fields: `.field.is-required` adds a red label asterisk; [`app/utils/required-field.js`](app/utils/required-field.js) syncs `aria-required` / empty `aria-invalid` (and optional native `required`) via `initRequiredField(s)` / `setFieldRequired()` / `syncRequiredField()`. `.input` / `.textarea` and `.btn.dropdown-trigger` pick up the shared error border. Demo multi-line input is required.
+- Tooltip layout options: `data-tooltip-max-width` (CSS length / `none` / `match` to equal the trigger width; default `16rem`), `data-tooltip-nowrap` (single line), and `data-tooltip-offset` (px gap from trigger; default `8`). Same `maxWidth` / `nowrap` / `offset` on `flashTooltip()` and `showPersistentTooltip()`.
+- Model and toolpath preview optional auto-rotate (`data-*-preview-animation`) with a floating play/pause control; off by default. `animationPlaying` / `data-*-preview-animation-playing` choose the initial state; `setAnimationPlaying()` / `getAnimationPlaying()` update it at runtime. Apps can hook custom motion with `onAnimationFrame` / `setOnAnimationFrame()` and optionally disable the built-in orbit via `animationAutoRotate` / `setAnimationAutoRotate()`. Starts paused under `prefers-reduced-motion`. Demo: mesh plays; toolpath starts paused.
+- Framework `play`, `pause`, and `stop` icons from Material Icons Round (`round-play-arrow`, `round-pause`, `round-stop`).
+- Framework `file` icon from Material Icons Round (`round-insert-drive-file`) for the leading glyph on file row mains.
+- Framework `remove-circle` icon from Material Icons Round (`round-remove-circle`) for file remove segments.
+- Toolpath preview travel-move hover toggle (on by default; `data-toolpath-preview-travels="false"` hides gray paths; `data-toolpath-preview-travel-toggle="false"` removes the control). Framework `visibility` / `visibility-off` icons from Material Icons Round.
+- G-code toolpath parser tessellates XY-plane `G2` / `G3` arcs (I/J or R, including helical Z). Unsupported arc planes or invalid arc parameters emit a single `unsupported geometry` warning, which the toolpath preview appends to the meta strip.
+- Toolpath preview maximum-layer hover slider (shared `.slider--hover`; on by default, `data-toolpath-preview-layer-slider="false"` to disable; left-aligned in the action strip). Demo uses the built-in control instead of a panel stepper.
+- File dropzone enforces `data-file-accept` by default (browse / drop / `setFiles`); set `data-file-accept-filter="soft"` for advise-only. `onError` receives `reason: "accept"` | `"max"`.
+- File dropzone `setFiles()` for programmatic selection (same path as drop / browse; triggers `onFiles`).
+- Dependency-free STL mesh helpers: create a box mesh and encode, decode, or download binary/ASCII STL files.
+- Interactive Three.js model preview with orbit controls, automatic camera fitting, responsive resizing, and theme support.
+- Model preview meta strip (size, triangles, vertices, volume, surface area, objects, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility.
+- Model and toolpath preview maximise controls via expandable-surface, with action visibility `hover` / `always` / `never`. Optional home (reset view) hover control (`data-*-home`, `resetView()`); framework `home` icon from Material Icons Round.
+- G-code and bgcode metadata parser for duration, filament, nozzle, slicer, and printer details.
+- G-code and bgcode toolpath parser and Three.js preview with extrusion/travel lines and layer filtering.
+- Toolpath preview meta strip (segments, layers, current layer, `metaExtra`) with `hover` / `always` / `not-hover` / `never` visibility, matching mesh and image preview.
+- Image and toolpath preview hover meta use `:focus-visible` instead of `:focus-within`, so mouse focus no longer leaves the strip stuck visible after the pointer leaves.
 - Dropdown auto grid: `data-dropdown-grid-min` (and related `data-dropdown-grid*` attributes) switch long menus to a multi-column layout; `data-dropdown-grid="false"` keeps a single column. Footer **also see** and **combobox** lists use the same grid (`data-combobox-grid*`, `alsoSeeMenuColumns()`).
 - Banner style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse warning, important, note, and success tokens; optional rotation via `data-banner-variations`, `data-banner-rotate`, and `setBannerVariation()`.
 - Heading links can be disabled per app (`initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`) or per heading (`data-no-heading-link`).
@@ -40,6 +85,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Dropdown and combo menus elevate their host while open so lists paint above neighbouring code-block gutter chrome (replaces the fixed-position approach in 0.12.2).
 - Fixed popup menus no longer stretch to full viewport width (`min-width: 100%` on `position: fixed`).
 
@@ -47,6 +94,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Data table row hover uses one outer accent border per row instead of a box around every cell.
 - Tabular input logical columns use the slim toggle (`.toggle--slim`) instead of a checkbox.
 
@@ -57,6 +106,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Dropdown, combo, and toggle-dropdown menus use fixed positioning so lists escape stacking and overflow clipping (e.g. above code-block gutter chrome).
 - Tabular input top-row selection spacing — header gap row replaces padding on the first body row.
 
@@ -64,12 +115,16 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Also-see links accept a theme pair (`accentLight` / `accentDark`, and the same for hover) as well as a single `accent` / `accentHover`; the pair wins and a missing side clones the other.
 
 ## [0.12.0] - 2026-08-16
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Custom time picker popup — independently wrapping hour / minute / optional second columns, block selection in the editable field, 00:00 / Now quick actions, and keyboard navigation; framework `clock` icon (`ic:round-schedule`).
 - Slim toggle variant (`.toggle--slim`) — thin track with an oversized overhanging thumb and no icon; Forms demo and USAGE docs.
 - Toggle button (`initToggleButton` / `initToggleButtons`) — `.btn-toggle` pressed state with optional next-action label/icon swapping; `data-toggle-button-always-active` keeps the default button appearance for controls where both states are actions; Actions demo shows pressed-state and swapping icon toggles at standard and slim sizes.
@@ -85,6 +140,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Time field block selection occurs on pointer press without briefly showing a text caret; quick actions close standalone popups and duration popups anchor to their fields.
 - Duration input: clicking the control background (padding or separators) focuses and selects hours, matching native `type="time"`.
 - Selected radio dots and toggle thumb glyphs no longer rest inside a transform (radio uses `transform: none` when checked; thumb icons centre with insets and `margin: auto`), so they rasterize on whole device pixels instead of drifting about a pixel off centre at some scroll positions and display scalings.
@@ -97,6 +154,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Diagrams (`initDiagram` / `initDiagrams`) — thin Mermaid (`mermaid@11.16.1`) text→SVG host; vendored ESM entry + chunks under `app/vendor/mermaid/`; light/dark theme re-render; empty `update({ source: "" })` clears the canvas; Specialised demo sequence beside the bar chart.
 - Charts (`initChart` / `initCharts`) — thin TanStack Charts (`@tanstack/charts@0.9.0`) SVG host; vendored ESM under `app/vendor/tanstack-charts/` plus `d3-scale` / `d3-shape` bundles and a demo import map; Specialised demo bar chart after Editors.
 - Agent rule [`.cursor/rules/vendor.mdc`](.cursor/rules/vendor.mdc) — vendor bytes in `app/vendor/`; components own single-consumer access; shared accessors only in `app/utils/` when two+ components need them.
@@ -108,6 +167,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Popover initial focus prefers primary / footer actions over Close; `trapFocus` option and `setTrapFocus()` so interactive tutorial steps can Tab to the spotlight target.
 - Colour picker `rgbaFromHex` / `setValue` reject invalid hex instead of falling back to brand blue; SV/SL plane supports arrow keys / Home / End and `aria-value*`.
 - Image preview sanitizes `setSvg` markup before injection; pre-existing markup `<img>` children get `sourceUrl` so download works.
@@ -118,6 +179,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Colour set (`initColorSet`) — named palette gallery (popup or embedded); built-in sets as one module each under `app/components/color-set/sets/`; shared colour math in `app/utils/color.js`; swatches use `--control-height-micro`.
 - Colour picker (`initColorPicker`) — HSV/HSL plane + hue slider, RGB/CMYK/alpha via shared `initSlider`, HEX field; format switch changes the visual; optional adjacent colour-set panel (palette icon toggle on the value row).
 - Framework icon `palette` (`ic:round-palette`).
@@ -161,6 +224,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Rich text editor toolbar icon bleed — match Toast UI’s 1px border to the toolbar/`--code-bg` hover fill and clip the sprite to the padding box.
 - Rich text editor content panes use `--input-bg` (same as `.input` / `.textarea`); toolbar stays on `--surface`.
 - Sticky site-header border disappearing under the sticky cover strip once pinned.
@@ -170,6 +235,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - App icon modes: light/dark pair or single logo via `APP_ICON_SRC` / `__MICROAPP__` (`appIcon`, `appIconLight`, `appIconDark`).
 - Improved related-links (also-see) icon handling for light/dark assets.
 
@@ -177,12 +244,16 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Remote `alsoSeeUrl` JSON for the footer related-apps menu, with local `alsoSee` fallback.
 - Also-see topic whitelist (`alsoSeeTopics`).
 - Tabular input copy/paste options (in-place and replace), wider canvas breakout, and related demo/docs/tests.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Also-see menu opening under the page body.
 - Tooltip appearing when removing tabular-input columns.
 - Missing icon placeholders for new actions.
@@ -191,6 +262,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Tabular input (editable typed grid, row/column controls, clipboard helpers, keyboard nav).
 - Badge and chips components.
 - Footer related-apps (“also see”) menu.
@@ -207,6 +280,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Sticky header blocking content and sticky interaction issues.
 - Dropdowns remaining open incorrectly.
 
@@ -214,6 +289,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Colour picker, data table, rich text editor (Toast UI + merged-cell plugin).
 - Spinner, progress bar, pagination, segmented control, toggle.
 - Slider, stepper, progress indicator.
@@ -225,6 +302,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Hover tooltips dismiss on pointer-up away from tip sources, and focus tips require `:focus-visible` so mouse / programmatic focus (e.g. closing a dropdown) does not leave a stuck tip.
+- Icon-only `.btn.btn-icon.dropdown-trigger` keeps centred glyphs (labeled triggers stay start-aligned).
 - Progress indicator buttons, table checkbox alignment, page jumps on reload.
 - Date picker calendar week start (Monday) and assorted demo polish.
 
@@ -232,6 +311,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Framework `cube` icon from Material Design Icons (`mdi:cube-outline`).
+- Model-preview **Rendering** hover dropdown (`data-model-preview-rendering`): shaded / wireframe / ghosted / x-ray / arctic modes with `setRenderingMode()` / `getRenderingMode()`.
 - Initial framework: theme toggle, layout shell, buttons, banners, tooltips, dialogs.
 - Code blocks (Prism), expandable surfaces, page navigation, heading links, external-link icons.
 - Section panel, toolbar, USAGE.md, disclaimer, SemVer `FRAMEWORK_VERSION` / `APP_VERSION`.

@@ -1,4 +1,4 @@
-import { parseBooleanAttr, setHidden } from "../utils/dom.js";
+import { hydrateDisclosure, parseBooleanAttr, syncDisclosurePanel } from "../utils/dom.js";
 
 /**
  * Vertical stack of collapsible sections. One panel open at a time by default.
@@ -14,8 +14,8 @@ import { parseBooleanAttr, setHidden } from "../utils/dom.js";
  *           <span class="accordion-label">Section one</span>
  *         </button>
  *       </h3>
- *       <div id="acc-panel-1" class="accordion-panel hidden" role="region"
- *         aria-labelledby="acc-trigger-1" hidden>
+ *       <div id="acc-panel-1" class="accordion-panel" role="region"
+ *         aria-labelledby="acc-trigger-1">
  *         <div class="accordion-body">…</div>
  *       </div>
  *     </div>
@@ -109,7 +109,7 @@ export function initAccordion(
 
     const nowOpen = openIndices.has(index);
     itemEl.classList.toggle("is-open", nowOpen);
-    setHidden(panel, !nowOpen);
+    syncDisclosurePanel(panel, nowOpen);
     trigger.setAttribute("aria-expanded", nowOpen ? "true" : "false");
     onToggle?.({ accordionEl, index, itemEl, trigger, panel, isOpen: nowOpen });
   }
@@ -155,7 +155,13 @@ export function initAccordion(
     initialOpen = [initialOpen[0]];
   }
 
+  itemParts.forEach(({ parts }) => {
+    syncDisclosurePanel(parts.panel, false);
+    parts.trigger.setAttribute("aria-expanded", "false");
+  });
+
   initialOpen.forEach((index) => setItemOpen(index, true));
+  hydrateDisclosure(accordionEl);
 
   return {
     open: (index) => setItemOpen(index, true),

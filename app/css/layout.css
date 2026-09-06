@@ -455,6 +455,24 @@ main {
   justify-content: space-between;
 }
 
+/*
+ * Bottom-align labeled fields (label + control). Bare toggles have no field
+ * label, so lift them so the track centres on adjacent `--control-height`
+ * controls — keep toggle intrinsic height (do not grow stacked `.toggle-group`).
+ */
+.panel-row--end {
+  align-items: flex-end;
+}
+
+.panel-row--end > .toggle {
+  align-self: flex-end;
+  margin-block-end: calc((var(--control-height) - var(--toggle-track-height)) / 2);
+}
+
+.panel-row--end > .toggle.toggle--slim {
+  margin-block-end: calc((var(--control-height) - var(--toggle-thumb-size-slim)) / 2);
+}
+
 .panel-inline {
   display: inline-flex;
   flex-wrap: wrap;
@@ -614,6 +632,18 @@ main {
  * is the panel gap plus that rule's own margin, so the rail meets the rule. */
 .panel-split:has(+ .panel-divider) {
   margin-bottom: calc(-1 * (var(--panel-gap, 0.75rem) + var(--panel-divider-margin, 0.35rem)));
+}
+
+/* Content after a split (e.g. full-width expand) — don't bleed into it. */
+.panel-split:has(+ .panel-follow) {
+  margin-bottom: 0;
+}
+
+.panel-follow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--panel-gap, 0.75rem);
+  min-width: 0;
 }
 
 .panel-divider + .panel-split:not(.panel-split--after-heading) {
@@ -934,15 +964,44 @@ main {
   background: transparent;
   color: var(--text);
   cursor: pointer;
+  transition: background var(--control-hover-ms) ease-out, box-shadow var(--control-hover-ms) ease-out,
+    border-color var(--control-hover-ms) ease-out;
 }
 
 .page-nav-jump-up {
   border-right: 1px solid var(--border);
+  border-radius: 4px 0 0 4px;
+}
+
+.page-nav-jump-down {
+  border-radius: 0 4px 4px 0;
+}
+
+/* Uniform inset follows radius; per-side shadows crop at corners. */
+.page-nav-jump:hover,
+.page-nav-jump:focus-visible {
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  box-shadow: inset 0 0 0 1px var(--accent);
+  transition-duration: 0s;
+}
+
+.page-nav-jump:active {
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
+  box-shadow: inset 0 0 0 1px var(--accent);
+  transition-duration: 0s;
 }
 
 .page-nav-jump:focus-visible {
   outline: none;
-  background: var(--code-bg);
+}
+
+.page-nav-jump-up:hover,
+.page-nav-jump-up:focus-visible,
+.page-nav-jump-up:active,
+.page-nav-jump-up:has(+ .page-nav-jump:hover),
+.page-nav-jump-up:has(+ .page-nav-jump:focus-visible),
+.page-nav-jump-up:has(+ .page-nav-jump:active) {
+  border-right-color: transparent;
 }
 
 .page-nav-icon-svg {
@@ -1003,6 +1062,90 @@ body > footer {
   align-self: center;
   /* Keep the menu above sticky chrome when not using fixed positioning. */
   z-index: 60;
+}
+
+.footer-storage.dropdown {
+  position: relative;
+  display: inline-flex;
+  align-self: center;
+  z-index: 60;
+}
+
+.footer-storage-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0.15em;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.footer-storage-trigger.footer-storage-trigger--disabled.control-glow {
+  /* Tone class is synced in JS; keep colour override if markup-only. */
+  --control-glow-color: var(--danger);
+}
+
+/* Match the icon’s optical nudge so the masked shine sits on the glyph */
+.footer-storage-trigger.control-glow--masked:not(.control-glow--static)::after {
+  -webkit-mask-position: center calc(50% + 0.08em);
+  mask-position: center calc(50% + 0.08em);
+}
+
+.footer-storage-trigger:hover,
+.footer-storage-trigger:focus-visible {
+  color: var(--accent);
+  outline: none;
+}
+
+.footer-storage-trigger.footer-storage-trigger--disabled {
+  color: var(--danger);
+}
+
+.footer-storage-trigger.footer-storage-trigger--disabled:hover,
+.footer-storage-trigger.footer-storage-trigger--disabled:focus-visible {
+  color: var(--danger-hover);
+}
+
+.footer-storage-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.footer-storage-trigger.footer-storage-trigger--disabled:focus-visible {
+  outline-color: var(--danger);
+}
+
+.footer-storage-icon {
+  width: 0.875em;
+  height: 0.875em;
+  display: block;
+  /* Shield glyph sits high in the Material viewBox — match footer text optically. */
+  transform: translateY(0.08em);
+}
+
+.footer-storage .footer-storage-menu {
+  top: auto;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: auto;
+  min-width: 12rem;
+  max-width: min(100vw - 2rem, 18rem);
+}
+
+.footer-storage-privacy-popover {
+  max-width: min(100vw - 2rem, 16rem);
+}
+
+.footer-storage-privacy-body .popover__text + .popover__text {
+  margin-top: 0.5rem;
 }
 
 .footer-also-see-trigger {
@@ -1113,58 +1256,17 @@ body > footer a {
   flex-shrink: 0;
 }
 
-/* Theme toggle */
+/* Theme toggle (muted segmented control in the footer) */
 
-.theme-toggle {
-  display: inline-flex;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--surface);
+#theme-toggle.segmented-control {
+  max-width: none;
+  gap: 0;
 }
 
-.theme-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#theme-toggle .segmented-control-item {
+  flex: 0 0 var(--control-height);
   width: var(--control-height);
-  height: var(--control-height);
   padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.theme-toggle-btn:not(:last-child) {
-  border-right: 1px solid var(--border);
-}
-
-.theme-toggle-btn:hover {
-  color: var(--text);
-  background: var(--code-bg);
-}
-
-.theme-toggle-btn:active:not(:disabled) {
-  color: var(--text);
-  background: color-mix(in srgb, var(--text) var(--control-selected-mix), var(--code-bg));
-  transition-duration: 0s;
-}
-
-.theme-toggle-btn[aria-pressed="true"] {
-  color: var(--text);
-  background: var(--code-bg);
-}
-
-.theme-toggle-btn[aria-pressed="true"]:active:not(:disabled) {
-  background: color-mix(in srgb, var(--text) var(--control-press-mix), var(--code-bg));
-  transition-duration: 0s;
-}
-
-.theme-toggle-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-  z-index: 1;
 }
 
 .theme-icon {

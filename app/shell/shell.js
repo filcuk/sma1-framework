@@ -1,5 +1,6 @@
 import { renderPageShell } from "./render-shell.js";
 import { initAlsoSee } from "./also-see.js";
+import { initAppStorageUi } from "./app-storage-ui.js";
 import { initIcons } from "../utils/icons.js";
 import { initTheme, initThemeToggle } from "./theme.js";
 import { initPageNavPanel } from "./page-nav.js";
@@ -12,6 +13,8 @@ import {
 import { initTitleNumbering } from "./title-numbering.js";
 import { initStickyChrome } from "./sticky.js";
 import { showBanner } from "../components/banner.js";
+import { APP_CONFIG } from "../config.js";
+import { initAppStorage } from "../utils/app-storage.js";
 
 let errorHandlersBound = false;
 
@@ -59,6 +62,11 @@ function bindGlobalErrorHandlers(onError) {
  *   An object is passed through to {@link initHeadingLinks}. Page-level HTML
  *   opt-out: `data-no-heading-links` on `<html>`. Per heading: `data-no-heading-link`.
  *   Explicit `true` (or `{ enabled: true }`) overrides the HTML opt-out.
+ * @param {boolean} [options.storage=true]
+ *   When `false`, omit the footer shield entirely.
+ * @param {string} [options.storageId] Override `APP_CONFIG.storageId`.
+ *   Non-empty enables managed storage + clear/disable menu; empty = privacy shield only.
+ * @param {number} [options.storageVersion] Override `APP_CONFIG.storageVersion`
  * @param {boolean} [options.showErrors=true] Show `.banner[data-app-error]` on uncaught errors
  * @param {(detail: object) => void} [options.onError] Called before the error banner is shown
  */
@@ -73,6 +81,9 @@ export function initShell(options = {}) {
     alsoSeeTopics,
     alsoSeeIncludeLocal,
     appUrl,
+    storage = true,
+    storageId,
+    storageVersion,
     ...shellOptions
   } = options;
   // Only forward also-see overrides when the caller set them — passing
@@ -86,7 +97,19 @@ export function initShell(options = {}) {
   }
   if ("appUrl" in options) alsoSeeOptions.appUrl = appUrl;
 
-  renderPageShell({ ...shellOptions, pageNav, ...alsoSeeOptions });
+  const storageEnabled = storage !== false;
+  const resolvedStorageId = (
+    typeof storageId === "string" ? storageId : APP_CONFIG.storageId ?? ""
+  ).trim();
+  const storageManage = storageEnabled && Boolean(resolvedStorageId);
+
+  renderPageShell({
+    ...shellOptions,
+    pageNav,
+    ...alsoSeeOptions,
+    storage: storageEnabled,
+    storageManage,
+  });
   initIcons();
   initExternalLinks(document);
   const noHeadingLinks = document.documentElement.hasAttribute(
@@ -99,6 +122,18 @@ export function initShell(options = {}) {
   }
   initTitleNumbering();
   void initAlsoSee(document, alsoSeeOptions);
+  if (storageEnabled) {
+    if (storageManage) {
+      initAppStorage({
+        storageId: resolvedStorageId,
+        storageVersion:
+          typeof storageVersion === "number"
+            ? storageVersion
+            : APP_CONFIG.storageVersion,
+      });
+    }
+    initAppStorageUi(document, { manage: storageManage });
+  }
   initTheme();
   initThemeToggle(document.getElementById("theme-toggle"));
   initStickyChrome();

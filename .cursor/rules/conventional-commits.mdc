@@ -1,0 +1,44 @@
+---
+description: Suggest a Conventional Commits message after every change; do not invent a parallel commit style
+alwaysApply: true
+---
+
+# Conventional commits
+
+This repo uses **[Conventional Commits](https://www.conventionalcommits.org/)**. After every completed change (feature, fix, docs, chore, etc.), **suggest** a commit message in that format. Do **not** create the git commit unless the user explicitly asks.
+
+## Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+- **type** (required): `feat` | `fix` | `docs` | `style` | `refactor` | `perf` | `test` | `chore` | `ci` | `build` | `revert`
+- **scope** (optional): short area — component/id (`tooltip`, `file`), surface (`demo`, `manifest`), or comma-separated when one commit spans peers (`mesh, toolpath`)
+- **description**: imperative, lowercase start, no trailing period; focus on **why** / outcome, not a file list
+- **body** (optional): markdown-friendly detail; when suggesting in chat, a short bullet list is fine for the body
+- **breaking**: `feat(scope)!: …` or a `BREAKING CHANGE:` footer
+
+## Examples (match existing history)
+
+```
+feat: implement required fields
+feat(tooltip): configurable width and wrap
+fix(file): dropzone file gap
+fix(mesh, toolpath): home view interrupts animation
+style(page-nav): add hover/click styles
+chore(manifest): regen
+docs(usage): document required fields
+```
+
+## Agent behaviour
+
+1. Finish the change, then propose **one** subject line (and body bullets only if useful).
+2. Prefer a single coherent commit per logical change; split only when the user asks or the work clearly spans unrelated concerns.
+3. Use `chore(manifest): regen` (or similar) when the only follow-up is regenerating `framework-manifest.json`.
+4. Never invent a non-conventional subject style (`Updated X`, `WIP`, etc.) in suggestions.
+5. For multi-step plans, suggest a commit after **each** step and wait for `continue` — see [plan-execution](plan-execution.mdc).

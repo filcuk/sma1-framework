@@ -119,6 +119,36 @@ export function resolveListGridConfig(containerEl, { gridMin, gridCols } = {}) {
 /** @deprecated Alias for {@link resolveListGridConfig}. */
 export const resolveDropdownGridConfig = resolveListGridConfig;
 
+/**
+ * Resolve fixed popup positioning for a dropdown (or similar) host.
+ *
+ * Markup: `data-dropdown-fixed` / `data-dropdown-fixed="true"` enables;
+ * `data-dropdown-fixed="false"` keeps absolute positioning.
+ * `data-dropdown-fixed-align="end"` right-aligns to the toggle when fixed.
+ * JS `fixed` / `fixedAlign` override markup when provided.
+ *
+ * @param {HTMLElement | null | undefined} containerEl
+ * @param {{ fixed?: boolean; fixedAlign?: "start" | "end" }} [options]
+ * @returns {{ fixed: boolean; fixedAlign: "start" | "end" }}
+ */
+export function resolvePopupFixedOptions(containerEl, { fixed, fixedAlign } = {}) {
+  let useFixed = false;
+  if (typeof fixed === "boolean") {
+    useFixed = fixed;
+  } else if (containerEl?.dataset.dropdownFixed !== undefined) {
+    useFixed = containerEl.dataset.dropdownFixed !== "false";
+  }
+
+  let align = "start";
+  if (fixedAlign === "start" || fixedAlign === "end") {
+    align = fixedAlign;
+  } else if (containerEl?.dataset.dropdownFixedAlign === "end") {
+    align = "end";
+  }
+
+  return { fixed: useFixed, fixedAlign: align };
+}
+
 function countListGridItems(listEl, itemSelector) {
   return [...listEl.querySelectorAll(itemSelector)].filter((item) => {
     if (item.disabled) return false;
@@ -875,6 +905,7 @@ export function initPopupMenu({
   function onMenuClick(e) {
     const item = e.target.closest(itemSelector);
     if (!item) return;
+    if (item.disabled || item.getAttribute("aria-disabled") === "true") return;
 
     if (item instanceof HTMLAnchorElement) {
       // Modified clicks: let the browser open a new tab; only close the menu.

@@ -282,6 +282,7 @@ function nodesFromBody(body) {
  *   dismissible?: boolean,
  *   closeOnOutsideClick?: boolean,
  *   trapFocus?: boolean,
+ *   focusOnOpen?: boolean,
  *   className?: string,
  *   gap?: number,
  *   notchSize?: number,
@@ -305,6 +306,7 @@ export function initPopover(options = {}) {
       ? Boolean(options.closeOnOutsideClick)
       : dismissible;
   let trapFocus = options.trapFocus !== false;
+  const focusOnOpen = options.focusOnOpen !== false;
 
   /** @type {HTMLElement | null} */
   let anchorEl = resolveAnchor(options.anchor);
@@ -341,10 +343,10 @@ export function initPopover(options = {}) {
   if (dismissible) {
     closeBtn = document.createElement("button");
     closeBtn.type = "button";
-    closeBtn.className = "popover__close btn btn-slim btn-icon";
+    closeBtn.className = "popover__close";
     closeBtn.setAttribute("aria-label", "Close");
     closeBtn.append(
-      createIcon("clear", { className: "btn-icon-svg popover__close-icon" }),
+      createIcon("clear", { className: "popover__close-icon" }),
     );
   }
 
@@ -540,17 +542,28 @@ export function initPopover(options = {}) {
     /* Second pass after layout settles (actions / wrapping can change size). */
     applyPlacement();
 
-    resolveInitialFocus().focus({ preventScroll: true });
+    if (focusOnOpen) {
+      resolveInitialFocus().focus({ preventScroll: true });
+    }
   }
 
-  function close() {
+  /**
+   * @param {{ restoreFocus?: boolean }} [options]
+   */
+  function close(options = {}) {
     if (!isOpen) return;
+
+    const restoreFocus = options.restoreFocus !== false;
 
     setHidden(el, true);
     el.classList.remove("is-open");
     isOpen = false;
 
-    if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
+    if (
+      restoreFocus &&
+      previouslyFocused instanceof HTMLElement &&
+      previouslyFocused.isConnected
+    ) {
       previouslyFocused.focus({ preventScroll: true });
     }
     previouslyFocused = null;

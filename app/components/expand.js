@@ -1,4 +1,4 @@
-import { setHidden } from "../utils/dom.js";
+import { hydrateDisclosure, syncDisclosurePanel } from "../utils/dom.js";
 
 export function initExpand(expandEl, { defaultOpen = false, onToggle } = {}) {
   if (!expandEl) return null;
@@ -16,7 +16,7 @@ export function initExpand(expandEl, { defaultOpen = false, onToggle } = {}) {
   function setOpen(open) {
     isOpen = open;
     expandEl.classList.toggle("is-open", isOpen);
-    setHidden(panel, !isOpen);
+    syncDisclosurePanel(panel, isOpen);
     trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
     onToggle?.({ expandEl, isOpen });
   }
@@ -26,6 +26,7 @@ export function initExpand(expandEl, { defaultOpen = false, onToggle } = {}) {
   });
 
   setOpen(defaultOpen);
+  hydrateDisclosure(expandEl);
 
   return {
     open: () => setOpen(true),

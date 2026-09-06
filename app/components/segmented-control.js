@@ -22,7 +22,8 @@
  * data-segmented-control-disabled — disable the whole control
  *
  * Default height matches `.btn` (`--control-height`). Add `.segmented-control--slim`
- * for the compact size.
+ * for the compact size. Add `.segmented-control--muted` for the light-selection
+ * (flush track) variant — standard accent hover border and exit animation.
  */
 
 import { parseBooleanAttr, setHidden } from "../utils/dom.js";

@@ -1,24 +1,59 @@
 /**
  * Tooltips: hover (default), timer (reaction flash), and persistent (tutorial).
  * See DESIGN.md — hover/timer share one slot; persistent tips are separate.
+ *
+ * Hover/focus tips skip disabled controls by default (`disabled`,
+ * `aria-disabled="true"`, or a host class ending in `--disabled`). Opt in with
+ * `data-tooltip-when-disabled`. Timer / persistent APIs are unaffected.
+ *
+ * Placement defaults to the content element. Set `data-tooltip-anchor` (CSS
+ * selector) or pass `anchor` to `openTooltip()` / `updateTooltip()` to keep the
+ * tip fixed on another control while the copy comes from the hovered source
+ * (e.g. dropdown menu items previewing labels above an icon trigger).
  */
 
+import { parseBooleanAttr } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 
-const GAP = 8;
+const DEFAULT_OFFSET = 8;
 const TOOLTIP_ID = "tooltip";
 const TONE_CLASSES = ["tooltip--success", "tooltip--error"];
 
 /** @typedef {"info" | "success" | "error"} TooltipTone */
 /** @typedef {"hover" | "timer"} SharedSlotMode */
+/** @typedef {{ maxWidth: string | null, nowrap: boolean, offset: number }} TipLayout */
+/** @typedef {"top" | "bottom" | "left" | "right"} TooltipPosition */
+
+/**
+ * @typedef {{
+ *   text?: string,
+ *   tone?: TooltipTone,
+ *   anchor?: HTMLElement | null,
+ *   position?: TooltipPosition,
+ *   maxWidth?: string | null,
+ *   nowrap?: boolean,
+ *   offset?: number,
+ * }} TooltipShowOptions
+ */
 
 let tooltipEl = null;
+/** Content source (reads `data-tooltip` / owns `aria-describedby`). */
 /** @type {HTMLElement | null} */
 let activeTarget = null;
+/** Placement target (defaults to `activeTarget`). */
+/** @type {HTMLElement | null} */
+let activeAnchor = null;
+/** @type {TooltipPosition | null} */
+let activePosition = null;
+/** Last tip copy shown in the shared slot (survives when not mirrored on `dataset`). */
+/** @type {string | null} */
+let activeText = null;
 /** @type {SharedSlotMode | null} */
 let slotMode = null;
 /** @type {string | null} */
 let savedDescribedBy = null;
+/** @type {TipLayout | null} */
+let activeLayout = null;
 
 /**
  * @type {{
@@ -36,6 +71,7 @@ let timerState = null;
  *   el: HTMLElement,
  *   target: HTMLElement,
  *   position: "top" | "bottom" | "left" | "right",
+ *   layout: TipLayout,
  *   savedDescribedBy: string | null,
  * }>}
  */
@@ -117,7 +153,7 @@ function fillTipContent(el, text, tone) {
 
 /**
  * @param {string | undefined} value
- * @returns {"top" | "bottom" | "left" | "right"}
+ * @returns {TooltipPosition}
  */
 function normalizePosition(value) {
   if (value === "bottom" || value === "left" || value === "right") {
@@ -128,18 +164,170 @@ function normalizePosition(value) {
 
 /**
  * @param {HTMLElement} target
- * @returns {"top" | "bottom" | "left" | "right"}
+ * @returns {TooltipPosition}
  */
 function getPosition(target) {
   return normalizePosition(target.dataset.tooltipPosition);
 }
 
 /**
+ * Resolve the placement element for a tooltip content source.
+ * `data-tooltip-anchor` is a document CSS selector; invalid / missing → content.
+ *
+ * @param {HTMLElement} contentEl
+ * @returns {HTMLElement}
+ */
+export function resolveTooltipAnchor(contentEl) {
+  const sel = contentEl?.dataset?.tooltipAnchor?.trim?.();
+  if (!sel) return contentEl;
+  try {
+    const root = typeof document !== "undefined" ? document : null;
+    const found = root?.querySelector?.(sel);
+    if (found) return /** @type {HTMLElement} */ (found);
+  } catch {
+    /* invalid selector */
+  }
+  return contentEl;
+}
+
+/**
+ * Side preference: explicit override → content → anchor → top.
+ *
+ * @param {HTMLElement} contentEl
+ * @param {HTMLElement} anchorEl
+ * @param {TooltipPosition | undefined} override
+ * @returns {TooltipPosition}
+ */
+function resolveTipPosition(contentEl, anchorEl, override) {
+  if (override !== undefined) return normalizePosition(override);
+  if (contentEl.dataset.tooltipPosition !== undefined) {
+    return getPosition(contentEl);
+  }
+  if (anchorEl !== contentEl && anchorEl.dataset.tooltipPosition !== undefined) {
+    return getPosition(anchorEl);
+  }
+  return "top";
+}
+
+/**
+ * @typedef {{
+ *   maxWidth?: string | null,
+ *   nowrap?: boolean,
+ *   offset?: number | string | null,
+ * }} TooltipLayoutOptions
+ */
+
+/** Special `data-tooltip-max-width` / `maxWidth` value: tip width = trigger width. */
+const MAX_WIDTH_MATCH = "match";
+
+/**
+ * @param {string | null | undefined} value
+ * @returns {string | null}
+ */
+function normalizeMaxWidth(value) {
+  if (value === null || value === undefined) return null;
+  const trimmed = String(value).trim();
+  if (!trimmed) return null;
+  if (trimmed.toLowerCase() === MAX_WIDTH_MATCH) return MAX_WIDTH_MATCH;
+  return trimmed;
+}
+
+/**
+ * Gap in px between tip and trigger. Invalid values fall back to default.
+ * @param {number | string | null | undefined} value
+ * @returns {number}
+ */
+function normalizeOffset(value) {
+  if (value === null || value === undefined || value === "") return DEFAULT_OFFSET;
+  const n = typeof value === "number" ? value : Number(String(value).trim());
+  return Number.isFinite(n) ? n : DEFAULT_OFFSET;
+}
+
+/**
+ * @param {HTMLElement} target
+ * @param {TooltipLayoutOptions} [overrides]
+ * @returns {TipLayout}
+ */
+function resolveTipLayout(target, overrides = {}) {
+  const maxWidth =
+    overrides.maxWidth !== undefined
+      ? normalizeMaxWidth(overrides.maxWidth)
+      : normalizeMaxWidth(target.dataset.tooltipMaxWidth);
+  const nowrap =
+    overrides.nowrap !== undefined
+      ? Boolean(overrides.nowrap)
+      : Boolean(parseBooleanAttr(target.dataset.tooltipNowrap));
+  const offset =
+    overrides.offset !== undefined
+      ? normalizeOffset(overrides.offset)
+      : normalizeOffset(target.dataset.tooltipOffset);
+  return { maxWidth, nowrap, offset };
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {TipLayout} layout
+ * @param {HTMLElement} [target]
+ */
+function applyTipLayout(el, layout, target) {
+  el.classList.toggle("tooltip--nowrap", layout.nowrap);
+  el.style.removeProperty("width");
+
+  if (layout.maxWidth === MAX_WIDTH_MATCH && target) {
+    const widthPx = `${Math.round(target.getBoundingClientRect().width)}px`;
+    el.style.setProperty("--tooltip-max-width", widthPx);
+    el.style.width = widthPx;
+  } else if (layout.maxWidth) {
+    el.style.setProperty("--tooltip-max-width", layout.maxWidth);
+  } else if (layout.nowrap) {
+    /* Single-line tips should grow with content unless a max-width is set. */
+    el.style.setProperty("--tooltip-max-width", "none");
+  } else {
+    el.style.removeProperty("--tooltip-max-width");
+  }
+}
+
+/**
+ * @param {HTMLElement} el
+ */
+function clearTipLayout(el) {
+  el.classList.remove("tooltip--nowrap");
+  el.style.removeProperty("--tooltip-max-width");
+  el.style.removeProperty("width");
+}
+
+/**
+ * @param {HTMLElement} target
+ * @returns {boolean}
+ */
+function isDisabledTooltipTarget(target) {
+  if ("disabled" in target && Boolean(/** @type {{ disabled?: boolean }} */ (target).disabled)) {
+    return true;
+  }
+  if (target.getAttribute("aria-disabled") === "true") return true;
+  for (const name of target.classList) {
+    if (name.endsWith("--disabled")) return true;
+  }
+  return false;
+}
+
+/**
+ * Hover/focus tips are suppressed on disabled controls unless opted in.
+ * @param {HTMLElement} target
+ * @returns {boolean}
+ */
+function shouldSuppressHoverTooltip(target) {
+  if (parseBooleanAttr(target.dataset.tooltipWhenDisabled)) return false;
+  return isDisabledTooltipTarget(target);
+}
+
+/**
  * @param {HTMLElement} el
  * @param {HTMLElement} target
  * @param {"top" | "bottom" | "left" | "right"} position
+ * @param {number} [offset]
  */
-function placeTip(el, target, position) {
+function placeTip(el, target, position, offset = DEFAULT_OFFSET) {
   if (el === tooltipEl) {
     cancelHideCleanup();
   }
@@ -153,26 +341,26 @@ function placeTip(el, target, position) {
 
   switch (position) {
     case "bottom":
-      top = rect.bottom + GAP;
+      top = rect.bottom + offset;
       left = rect.left + rect.width / 2 - tipRect.width / 2;
       break;
     case "left":
       top = rect.top + rect.height / 2 - tipRect.height / 2;
-      left = rect.left - tipRect.width - GAP;
+      left = rect.left - tipRect.width - offset;
       break;
     case "right":
       top = rect.top + rect.height / 2 - tipRect.height / 2;
-      left = rect.right + GAP;
+      left = rect.right + offset;
       break;
     default:
-      top = rect.top - tipRect.height - GAP;
+      top = rect.top - tipRect.height - offset;
       left = rect.left + rect.width / 2 - tipRect.width / 2;
   }
 
-  const maxLeft = window.innerWidth - tipRect.width - GAP;
-  const maxTop = window.innerHeight - tipRect.height - GAP;
-  left = Math.max(GAP, Math.min(left, maxLeft));
-  top = Math.max(GAP, Math.min(top, maxTop));
+  const maxLeft = window.innerWidth - tipRect.width - DEFAULT_OFFSET;
+  const maxTop = window.innerHeight - tipRect.height - DEFAULT_OFFSET;
+  left = Math.max(DEFAULT_OFFSET, Math.min(left, maxLeft));
+  top = Math.max(DEFAULT_OFFSET, Math.min(top, maxTop));
 
   el.style.top = `${top}px`;
   el.style.left = `${left}px`;
@@ -239,6 +427,7 @@ function finishHideSharedSlot() {
   if (!tooltipEl || tooltipEl.classList.contains("is-visible")) return;
 
   tooltipEl.classList.remove(...TONE_CLASSES);
+  clearTipLayout(tooltipEl);
   tooltipEl.hidden = true;
   tooltipEl.replaceChildren();
 }
@@ -248,13 +437,18 @@ function hideSharedSlot() {
     unlinkDescribedBy(activeTarget);
     activeTarget = null;
   }
+  activeAnchor = null;
+  activePosition = null;
+  activeText = null;
   slotMode = null;
+  activeLayout = null;
 
   if (!tooltipEl) return;
 
   /* Already fully dismissed. */
   if (tooltipEl.hidden) {
     tooltipEl.classList.remove("is-visible", ...TONE_CLASSES);
+    clearTipLayout(tooltipEl);
     tooltipEl.replaceChildren();
     return;
   }
@@ -282,14 +476,37 @@ function cancelSharedSlot() {
 }
 
 /**
- * @param {HTMLElement} target
+ * @param {HTMLElement} target Content source
  * @param {SharedSlotMode} mode
+ * @param {TooltipShowOptions} [overrides]
  */
-function showSharedSlot(target, mode) {
-  const text = target.dataset.tooltip;
+function showSharedSlot(target, mode, overrides = {}) {
+  const text =
+    overrides.text !== undefined ? overrides.text : target.dataset.tooltip;
   if (!text) return;
 
-  if (activeTarget && activeTarget !== target) {
+  const anchor =
+    overrides.anchor instanceof HTMLElement
+      ? overrides.anchor
+      : resolveTooltipAnchor(target);
+  const tone =
+    overrides.tone !== undefined
+      ? normalizeTone(overrides.tone)
+      : toneFromTarget(target);
+  const position = resolveTipPosition(target, anchor, overrides.position);
+  const layoutOverrides = {
+    maxWidth: overrides.maxWidth,
+    nowrap: overrides.nowrap,
+    offset: overrides.offset,
+  };
+
+  const sameAnchorUpdate =
+    activeTarget &&
+    activeTarget !== target &&
+    activeAnchor === anchor &&
+    slotMode === mode;
+
+  if (activeTarget && activeTarget !== target && !sameAnchorUpdate) {
     hideSharedSlot();
   } else if (activeTarget === target && slotMode === "timer" && mode === "hover") {
     /* Keep timer tip when re-entering the same control. */
@@ -297,21 +514,34 @@ function showSharedSlot(target, mode) {
   }
 
   const el = ensureTooltipElement();
-  const tone = toneFromTarget(target);
   fillTipContent(el, text, tone);
+  activeLayout = resolveTipLayout(target, layoutOverrides);
+  applyTipLayout(el, activeLayout, anchor);
 
   if (activeTarget !== target) {
+    if (activeTarget) unlinkDescribedBy(activeTarget);
     activeTarget = target;
     linkDescribedBy(target, TOOLTIP_ID);
   }
+  activeAnchor = anchor;
+  activePosition = position;
+  activeText = text;
   slotMode = mode;
-  placeTip(el, target, getPosition(target));
+  placeTip(el, anchor, position, activeLayout.offset);
 }
 
 /**
  * @param {HTMLElement} target
+ * @param {TooltipShowOptions} [overrides]
  */
-function showHover(target) {
+function showHover(target, overrides = {}) {
+  if (shouldSuppressHoverTooltip(target)) {
+    if (slotMode === "hover" && activeTarget === target) {
+      hideSharedSlot();
+    }
+    return;
+  }
+
   if (timerState && timerState.target !== target) {
     restoreTimerTarget();
     hideSharedSlot();
@@ -321,13 +551,55 @@ function showHover(target) {
     hideSharedSlot();
   }
 
-  showSharedSlot(target, "hover");
+  showSharedSlot(target, "hover", overrides);
 }
 
 function handlePointerOver(e) {
   const target = e.target.closest("[data-tooltip]");
   if (!target || !e.currentTarget.contains(target)) return;
   showHover(target);
+}
+
+/**
+ * True when the pointer is over the active tip’s content source, its placement
+ * anchor, or another `[data-tooltip]` that shares that anchor.
+ * @param {number} clientX
+ * @param {number} clientY
+ */
+function isPointerOverActiveTipSource(clientX, clientY) {
+  if (!activeTarget) return false;
+  const under = document.elementFromPoint(clientX, clientY);
+  if (!under) return false;
+  if (activeTarget === under || activeTarget.contains(under)) return true;
+  if (activeAnchor && (activeAnchor === under || activeAnchor.contains(under))) {
+    return true;
+  }
+  const tipSource = under.closest("[data-tooltip]");
+  if (
+    tipSource &&
+    activeAnchor &&
+    resolveTooltipAnchor(tipSource) === activeAnchor
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Dragging off a tip source (e.g. menu item → outside) can skip a clean
+ * mouseout; menu close may also focus the trigger. Clear the hover tip when
+ * the pointer is no longer over a valid source.
+ * @param {PointerEvent | MouseEvent} e
+ */
+function handlePointerUp(e) {
+  if (slotMode !== "hover" || !activeTarget) return;
+  if (typeof e.clientX !== "number" || typeof e.clientY !== "number") {
+    hideSharedSlot();
+    return;
+  }
+  if (!isPointerOverActiveTipSource(e.clientX, e.clientY)) {
+    hideSharedSlot();
+  }
 }
 
 function handlePointerOut(e) {
@@ -339,6 +611,11 @@ function handlePointerOut(e) {
   const to = e.relatedTarget?.closest?.("[data-tooltip]");
   if (to === from) return;
 
+  /* Moving between sources that share a placement anchor — keep tip, let over update. */
+  if (to && activeAnchor && resolveTooltipAnchor(to) === activeAnchor) {
+    return;
+  }
+
   if (activeTarget === from) {
     hideSharedSlot();
   }
@@ -347,6 +624,11 @@ function handlePointerOut(e) {
 function handleFocusIn(e) {
   const target = e.target.closest?.("[data-tooltip]");
   if (!target || !e.currentTarget.contains(target)) return;
+  /* Mouse / programmatic focus (e.g. menu close restoring the trigger) must
+     not stick a tip; keyboard :focus-visible still gets one. */
+  if (typeof target.matches === "function" && !target.matches(":focus-visible")) {
+    return;
+  }
   showHover(target);
 }
 
@@ -359,6 +641,10 @@ function handleFocusOut(e) {
   const to = e.relatedTarget?.closest?.("[data-tooltip]");
   if (to === from) return;
 
+  if (to && activeAnchor && resolveTooltipAnchor(to) === activeAnchor) {
+    return;
+  }
+
   if (activeTarget === from) {
     hideSharedSlot();
   }
@@ -370,13 +656,28 @@ function repositionShared() {
     cancelSharedSlot();
     return;
   }
-  const text = activeTarget.dataset.tooltip;
+  const anchor = activeAnchor?.isConnected ? activeAnchor : activeTarget;
+  if (slotMode === "hover" && shouldSuppressHoverTooltip(activeTarget)) {
+    hideSharedSlot();
+    return;
+  }
+  const text =
+    activeTarget.dataset.tooltip !== undefined && activeTarget.dataset.tooltip !== ""
+      ? activeTarget.dataset.tooltip
+      : activeText;
   if (!text) {
     cancelSharedSlot();
     return;
   }
   fillTipContent(tooltipEl, text, toneFromTarget(activeTarget));
-  placeTip(tooltipEl, activeTarget, getPosition(activeTarget));
+  activeText = text;
+  if (slotMode === "hover" || !activeLayout) {
+    activeLayout = resolveTipLayout(activeTarget);
+  }
+  applyTipLayout(tooltipEl, activeLayout, anchor);
+  const position =
+    activePosition || resolveTipPosition(activeTarget, anchor, undefined);
+  placeTip(tooltipEl, anchor, position, activeLayout.offset);
 }
 
 function repositionPersistent() {
@@ -385,7 +686,8 @@ function repositionPersistent() {
       dismissPersistentTooltip(entry.id);
       continue;
     }
-    placeTip(entry.el, entry.target, entry.position);
+    applyTipLayout(entry.el, entry.layout, entry.target);
+    placeTip(entry.el, entry.target, entry.position, entry.layout.offset);
   }
 }
 
@@ -394,9 +696,62 @@ function repositionAll() {
   repositionPersistent();
 }
 
-/** Show tooltip for `target` in hover mode (reads `data-tooltip`). */
-export function openTooltip(target) {
-  showHover(target);
+/**
+ * Show the shared-slot tip in hover mode.
+ *
+ * Without options, reads `data-tooltip` on `target` and places on
+ * `resolveTooltipAnchor(target)` (or `target` itself).
+ *
+ * Pass `text` and/or `anchor` to drive copy and placement independently — e.g.
+ * keep the tip above a dropdown trigger while menu items supply the label.
+ *
+ * @param {HTMLElement} target Content source (and default anchor)
+ * @param {TooltipShowOptions} [options]
+ */
+export function openTooltip(target, options = {}) {
+  showHover(target, options);
+}
+
+/**
+ * Update the active shared-slot tip’s copy (and optional tone / layout) without
+ * changing the placement anchor. No-op when no tip is showing.
+ *
+ * @param {{
+ *   text: string,
+ *   tone?: TooltipTone,
+ *   maxWidth?: string | null,
+ *   nowrap?: boolean,
+ *   offset?: number,
+ * }} options
+ * @returns {boolean} Whether an active tip was updated
+ */
+export function updateTooltip(options) {
+  if (!activeTarget || !tooltipEl || !options?.text) return false;
+  const anchor = activeAnchor?.isConnected ? activeAnchor : activeTarget;
+  const tone =
+    options.tone !== undefined
+      ? normalizeTone(options.tone)
+      : toneFromTarget(activeTarget);
+  fillTipContent(tooltipEl, options.text, tone);
+  activeText = options.text;
+  if (
+    options.maxWidth !== undefined ||
+    options.nowrap !== undefined ||
+    options.offset !== undefined
+  ) {
+    activeLayout = resolveTipLayout(activeTarget, {
+      maxWidth: options.maxWidth,
+      nowrap: options.nowrap,
+      offset: options.offset,
+    });
+  } else if (!activeLayout) {
+    activeLayout = resolveTipLayout(activeTarget);
+  }
+  applyTipLayout(tooltipEl, activeLayout, anchor);
+  const position =
+    activePosition || resolveTipPosition(activeTarget, anchor, undefined);
+  placeTip(tooltipEl, anchor, position, activeLayout.offset);
+  return true;
 }
 
 /** Hide the shared hover/timer tooltip, restoring any in-flight timer flash. */
@@ -415,6 +770,9 @@ export function closeTooltip() {
  *   restoreText?: string | null,
  *   restoreTone?: string | null,
  *   durationMs?: number,
+ *   maxWidth?: string | null,
+ *   nowrap?: boolean,
+ *   offset?: number,
  * }} options
  */
 export function flashTooltip(target, options) {
@@ -424,6 +782,9 @@ export function flashTooltip(target, options) {
     restoreText,
     restoreTone,
     durationMs = 2000,
+    maxWidth,
+    nowrap,
+    offset,
   } = options;
 
   const prevText = Object.hasOwn(target.dataset, "tooltip")
@@ -451,7 +812,7 @@ export function flashTooltip(target, options) {
     }
   }
 
-  showSharedSlot(target, "timer");
+  showSharedSlot(target, "timer", { maxWidth, nowrap, offset });
 
   timerState = {
     target,
@@ -479,16 +840,28 @@ export function flashTooltip(target, options) {
  *   tone?: TooltipTone,
  *   id?: string,
  *   position?: "top" | "bottom" | "left" | "right",
+ *   maxWidth?: string | null,
+ *   nowrap?: boolean,
+ *   offset?: number,
  * }} options
  * @returns {string} Tip id for `dismissPersistentTooltip`
  */
 export function showPersistentTooltip(target, options) {
-  const { text, tone = "info", id, position: positionOpt } = options;
+  const {
+    text,
+    tone = "info",
+    id,
+    position: positionOpt,
+    maxWidth,
+    nowrap,
+    offset,
+  } = options;
   const tipId = id || `tooltip-persistent-${++persistentSeq}`;
   const position =
     positionOpt !== undefined
       ? normalizePosition(positionOpt)
       : getPosition(target);
+  const layout = resolveTipLayout(target, { maxWidth, nowrap, offset });
 
   dismissPersistentTooltip(tipId);
 
@@ -497,6 +870,7 @@ export function showPersistentTooltip(target, options) {
   el.className = "tooltip tooltip--persistent";
   el.setAttribute("role", "tooltip");
   fillTipContent(el, text, normalizeTone(tone));
+  applyTipLayout(el, layout, target);
   document.body.append(el);
 
   const prevDescribedBy = target.getAttribute("aria-describedby");
@@ -504,13 +878,14 @@ export function showPersistentTooltip(target, options) {
   ids.add(tipId);
   target.setAttribute("aria-describedby", [...ids].join(" "));
 
-  placeTip(el, target, position);
+  placeTip(el, target, position, layout.offset);
 
   persistentById.set(tipId, {
     id: tipId,
     el,
     target,
     position,
+    layout,
     savedDescribedBy: prevDescribedBy,
   });
 
@@ -556,6 +931,8 @@ export function initTooltips(root = document) {
   if (!globalListenersBound) {
     window.addEventListener("scroll", repositionAll, true);
     window.addEventListener("resize", repositionAll);
+    window.addEventListener("pointerup", handlePointerUp, true);
+    window.addEventListener("pointercancel", handlePointerUp, true);
     globalListenersBound = true;
   }
 

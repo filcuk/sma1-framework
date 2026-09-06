@@ -6,7 +6,7 @@
  * For third-party icons, set `name` to the collection id (e.g. `round-info`).
  * To reuse an existing framework icon under another id, set `ref` to the target key.
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, upload, download, calendar, clock, check, minus, plus, delete, remove, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, play, pause, stop, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette, cube, shield
  */
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
@@ -19,6 +19,8 @@ export const ICON_ATTRIBUTIONS = {
     "Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE",
   materialSymbols:
     "Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE",
+  materialDesignIcons:
+    "Icon from Material Design Icons by Pictogrammers - https://github.com/Templarian/MaterialDesign/blob/master/LICENSE",
 };
 
 /** @type {Record<string, IconDef>} */
@@ -150,6 +152,24 @@ export const FRAMEWORK_ICONS = {
     attribution: ICON_ATTRIBUTIONS.materialSymbols,
     name: "fullscreen-exit-rounded",
   },
+  home: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-home",
+  },
+  visibility: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M12 4C7 4 2.73 7.11 1 11.5C2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4m0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-visibility",
+  },
+  "visibility-off": {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M12 6.5c2.76 0 5 2.24 5 5c0 .51-.1 1-.24 1.46l3.06 3.06c1.39-1.23 2.49-2.77 3.18-4.53C21.27 7.11 17 4 12 4c-1.27 0-2.49.2-3.64.57l2.17 2.17c.47-.14.96-.24 1.47-.24M2.71 3.16a.996.996 0 0 0 0 1.41l1.97 1.97A11.9 11.9 0 0 0 1 11.5C2.73 15.89 7 19 12 19c1.52 0 2.97-.3 4.31-.82l2.72 2.72a.996.996 0 1 0 1.41-1.41L4.13 3.16c-.39-.39-1.03-.39-1.42 0M12 16.5c-2.76 0-5-2.24-5-5c0-.77.18-1.5.49-2.14l1.57 1.57c-.03.18-.06.37-.06.57c0 1.66 1.34 3 3 3c.2 0 .38-.03.57-.07L14.14 16c-.65.32-1.37.5-2.14.5m2.97-5.33a2.97 2.97 0 0 0-2.64-2.64z"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-visibility-off",
+  },
   upload: {
     viewBox: "0 0 24 24",
     markup: `<path fill="currentColor" d="M6 20q-.825 0-1.412-.587T4 18v-2q0-.425.288-.712T5 15t.713.288T6 16v2h12v-2q0-.425.288-.712T19 15t.713.288T20 16v2q0 .825-.587 1.413T18 20zm5-12.15L9.125 9.725q-.3.3-.712.288T7.7 9.7q-.275-.3-.288-.7t.288-.7l3.6-3.6q.15-.15.325-.212T12 4.425t.375.063t.325.212l3.6 3.6q.3.3.288.7t-.288.7q-.3.3-.712.313t-.713-.288L13 7.85V15q0 .425-.288.713T12 16t-.712-.288T11 15z"/>`,
@@ -161,6 +181,30 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M11.625 15.513q-.175-.063-.325-.213l-3.6-3.6q-.3-.3-.288-.7t.288-.7q.3-.3.713-.312t.712.287L11 12.15V5q0-.425.288-.712T12 4t.713.288T13 5v7.15l1.875-1.875q.3-.3.713-.288t.712.313q.275.3.288.7t-.288.7l-3.6 3.6q-.15.15-.325.213t-.375.062t-.375-.062M6 20q-.825 0-1.412-.587T4 18v-2q0-.425.288-.712T5 15t.713.288T6 16v2h12v-2q0-.425.288-.712T19 15t.713.288T20 16v2q0 .825-.587 1.413T18 20z"/>`,
     attribution: ICON_ATTRIBUTIONS.materialSymbols,
     name: "download-rounded",
+  },
+  file: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8.83c0-.53-.21-1.04-.59-1.41l-4.83-4.83c-.37-.38-.88-.59-1.41-.59zm7 6V3.5L18.5 9H14c-.55 0-1-.45-1-1"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-insert-drive-file",
+  },
+  play: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-play-arrow",
+  },
+  pause: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2m6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-pause",
+  },
+  stop: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M8 6h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-stop",
   },
   calendar: {
     viewBox: "0 0 24 24",
@@ -203,6 +247,12 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M5 13v-2h14v2z"/>`,
     attribution: ICON_ATTRIBUTIONS.materialSymbols,
     name: "remove",
+  },
+  "remove-circle": {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m4 11H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-remove-circle",
   },
   "type-text": {
     viewBox: "0 0 24 24",
@@ -257,5 +307,17 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10a2.5 2.5 0 0 0 2.5-2.5c0-.61-.23-1.2-.64-1.67a.53.53 0 0 1-.13-.33c0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6c0-4.96-4.49-9-10-9m5.5 11c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5m-3-4c-.83 0-1.5-.67-1.5-1.5S13.67 6 14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9M5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S7.33 13 6.5 13S5 12.33 5 11.5m6-4c0 .83-.67 1.5-1.5 1.5S8 8.33 8 7.5S8.67 6 9.5 6s1.5.67 1.5 1.5"/>`,
     attribution: ICON_ATTRIBUTIONS.materialIcons,
     name: "round-palette",
+  },
+  cube: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.99.99 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88zM12 4.15L6.04 7.5L12 10.85l5.96-3.35zM5 15.91l6 3.38v-6.71L5 9.21zm14 0v-6.7l-6 3.37v6.71z"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialDesignIcons,
+    name: "cube-outline",
+  },
+  shield: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="m11.3 2.26l-6 2.25C4.52 4.81 4 5.55 4 6.39v4.7c0 4.83 3.13 9.37 7.43 10.75c.37.12.77.12 1.14 0c4.3-1.38 7.43-5.91 7.43-10.75v-4.7a2 2 0 0 0-1.3-1.87l-6-2.25c-.45-.18-.95-.18-1.4-.01"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-shield",
   },
 };

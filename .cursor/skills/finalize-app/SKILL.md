@@ -16,7 +16,7 @@ Remove unused catalogue pieces after the app’s feature set is stable. Read [..
 
 1. List root HTML entry points and their `type="module"` scripts.
 2. Trace transitive imports under `app/`.
-3. Scan markup for feature hooks (classes / `data-*`): e.g. `.tabs`, `.modal`, `.dropdown`, `.file-dropzone`, `.code-block`, `data-expandable-surface`, `.banner`, `.date-picker`, etc.
+3. Scan markup for feature hooks (classes / `data-*`): e.g. `.tabs`, `.modal`, `.dropdown`, `.file`, `.file--large`, `.code-block`, `data-expandable-surface`, `.banner`, `.date-picker`, etc.
 4. Mark each component-map `id` as **used** or **unused**. Shell-pulled `tooltip` and `banner` stay **used** while `initShell` remains.
 
 ### 2. Propose deletion plan
