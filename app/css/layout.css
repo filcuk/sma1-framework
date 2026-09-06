@@ -946,15 +946,44 @@ main {
   background: transparent;
   color: var(--text);
   cursor: pointer;
+  transition: background var(--control-hover-ms) ease-out, box-shadow var(--control-hover-ms) ease-out,
+    border-color var(--control-hover-ms) ease-out;
 }
 
 .page-nav-jump-up {
   border-right: 1px solid var(--border);
+  border-radius: 4px 0 0 4px;
+}
+
+.page-nav-jump-down {
+  border-radius: 0 4px 4px 0;
+}
+
+/* Uniform inset follows radius; per-side shadows crop at corners. */
+.page-nav-jump:hover,
+.page-nav-jump:focus-visible {
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  box-shadow: inset 0 0 0 1px var(--accent);
+  transition-duration: 0s;
+}
+
+.page-nav-jump:active {
+  background: color-mix(in srgb, var(--accent) var(--control-selected-mix), var(--surface));
+  box-shadow: inset 0 0 0 1px var(--accent);
+  transition-duration: 0s;
 }
 
 .page-nav-jump:focus-visible {
   outline: none;
-  background: var(--code-bg);
+}
+
+.page-nav-jump-up:hover,
+.page-nav-jump-up:focus-visible,
+.page-nav-jump-up:active,
+.page-nav-jump-up:has(+ .page-nav-jump:hover),
+.page-nav-jump-up:has(+ .page-nav-jump:focus-visible),
+.page-nav-jump-up:has(+ .page-nav-jump:active) {
+  border-right-color: transparent;
 }
 
 .page-nav-icon-svg {
