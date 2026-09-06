@@ -824,11 +824,48 @@ export function mountAlsoSee(root, sections) {
   return host;
 }
 
+/** Privacy tip on the footer local-storage shield (hover tooltip). */
+export const FOOTER_STORAGE_TOOLTIP =
+  "This is a static site. All data remains on your device. No tracking or fingerprinting is used. Click to manage local storage.";
+
+/**
+ * Footer · + shield control for local storage (after also-see host).
+ *
+ * @returns {string}
+ */
+export function renderFooterStorageMarkup() {
+  const tip = escapeAttr(FOOTER_STORAGE_TOOLTIP);
+  return `<span class="footer-meta-sep" aria-hidden="true">·</span>
+        <span class="footer-storage dropdown" id="footer-storage">
+          <button type="button" class="footer-storage-trigger" id="footer-storage-trigger" aria-label="Local storage" aria-haspopup="menu" aria-expanded="false" aria-controls="footer-storage-menu" data-icon="shield" data-icon-class="footer-storage-icon" data-tooltip="${tip}" data-tooltip-position="top" data-tooltip-max-width="16rem"></button>
+          <ul id="footer-storage-menu" class="dropdown-menu footer-storage-menu hidden" role="menu" hidden>
+            <li role="none">
+              <button type="button" class="dropdown-menu-item" role="menuitem" data-storage-action="clear">
+                <span class="dropdown-menu-item-text">
+                  <span class="dropdown-menu-item-label">Clear stored data</span>
+                </span>
+              </button>
+            </li>
+            <li role="none">
+              <button type="button" class="dropdown-menu-item" role="menuitem" data-storage-action="toggle">
+                <span class="dropdown-menu-item-text">
+                  <span class="dropdown-menu-item-label" data-storage-toggle-label>Disable local storage</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </span>`;
+}
+
 /**
  * Inject shared page chrome: footer (links + theme toggle) and page navigation.
  *
- * @param {{ pageNav?: false | import("./page-nav.js").PageNavOptions }} [options]
+ * @param {{
+ *   pageNav?: false | import("./page-nav.js").PageNavOptions,
+ *   storage?: boolean,
+ * }} [options]
  *   Set `pageNav` to `false` to omit page navigation.
+ *   Set `storage` to `false` to omit the footer local-storage shield control.
  * Skips if `#app-page-footer` already exists.
  */
 export function renderPageShell(options = {}) {
@@ -852,6 +889,7 @@ export function renderPageShell(options = {}) {
     appVersion,
     frameworkVersion,
     pageNav,
+    storage = true,
   } = {
     ...DEFAULTS,
     ...overrides,
@@ -861,6 +899,7 @@ export function renderPageShell(options = {}) {
     ? normalizeAlsoSee(alsoSee, appUrl, ["*"])
     : [];
   const alsoSeeMarkup = renderAlsoSeeMarkup(alsoSeeSections);
+  const storageMarkup = storage !== false ? renderFooterStorageMarkup() : "";
 
   document.body.insertAdjacentHTML(
     "beforeend",
@@ -873,7 +912,7 @@ export function renderPageShell(options = {}) {
           <a href="${issuesUrl}" target="_blank" rel="noopener noreferrer">issue</a></span>
           <span class="footer-meta-sep" aria-hidden="true">·</span>
           <span data-tooltip="show your support" data-tooltip-position="top" tabindex="0">star on
-          <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">GitHub</a></span><span id="footer-also-see-host">${alsoSeeMarkup}</span>
+          <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">GitHub</a></span><span id="footer-also-see-host">${alsoSeeMarkup}</span>${storageMarkup}
         </div>
       </div>
       <div id="theme-toggle" class="theme-toggle" role="group" aria-label="Theme">
