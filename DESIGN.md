@@ -34,7 +34,7 @@ Pointer-down press feedback uses `:active` colour-mix tints: hover uses a lighte
 
 **Also in-place:** clipboard paste-arming (prompting “Press Ctrl+V” / showing `Ctrl+V` on the button for up to ~15s) is a waiting state on the control, not only a one-shot flash.
 
-Success and error **tooltips** (when used) use bold green / red styling (banner success/error tokens) and a small leading icon: check for success, clear (×) for error. Info tooltips stay neutral with text only.
+Success and error **tooltips** (when used) use green / red styling (banner success/error tokens) and a small leading icon: check for success, clear (×) for error. Font weight matches neutral info tooltips. Info tooltips stay colour-neutral with text only.
 
 ## Tooltip modes
 
@@ -80,6 +80,17 @@ Two selection highlight styles. Prefer **standard** for selectable items in cont
 **Table row hover** is pointer feedback, not selection: body rows use an accent-tinted background and one outer accent border on hover (same border/fill language as standard, but only while the pointer is over the row). Selected rows are indicated by the checkbox column only — do not add a third *selection* look.
 
 Do not invent a third selection look for new catalogue controls — pick **standard** or **light** and match an existing control’s CSS.
+
+### Typography and selection
+
+**Navigation-style** controls may bump label weight on the active item: idle **500** (medium), selected / current **600** (semibold). Selection still uses colour and fill (accent bar, filled segment, and so on); weight is an extra cue for this set only.
+
+| In scope (idle 500 → selected / current 600) | Out of scope (no weight bump) |
+| -------------------------------------------- | ----------------------------- |
+| Tabs, segmented control, pagination page buttons, progress-indicator current step | Chips, toggles, checkboxes, buttons, menu / combobox options |
+| Rich-text editor mode segmented control and Markdown Write / Preview tabs | Expand / accordion triggers (stay at 600 as disclosure headers) |
+
+Do not add selected-state `font-weight` changes to chips, toggles, checkboxes, or similar filter / boolean controls — their selection is colour and fill only (standard or light recipes above).
 
 ## Complex display surfaces
 
