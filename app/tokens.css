@@ -17,6 +17,12 @@
   --control-height: 2.625rem;
   --control-height-slim: 2.25rem;
   --control-height-micro: 1.3125rem;
+  /* Toggle switch track (not a control-height slot — stacks stay content-sized). */
+  --toggle-track-width: 2.5rem;
+  --toggle-track-height: 1.375rem;
+  --toggle-track-width-slim: 2rem;
+  --toggle-track-height-slim: 0.75rem;
+  --toggle-thumb-size-slim: 1.125rem;
   --accent: #0969da;
   --accent-hover: color-mix(in srgb, var(--accent) 80%, #ffffff);
   --accent-fg: #ffffff;

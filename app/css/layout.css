@@ -455,6 +455,24 @@ main {
   justify-content: space-between;
 }
 
+/*
+ * Bottom-align labeled fields (label + control). Bare toggles have no field
+ * label, so lift them so the track centres on adjacent `--control-height`
+ * controls — keep toggle intrinsic height (do not grow stacked `.toggle-group`).
+ */
+.panel-row--end {
+  align-items: flex-end;
+}
+
+.panel-row--end > .toggle {
+  align-self: flex-end;
+  margin-block-end: calc((var(--control-height) - var(--toggle-track-height)) / 2);
+}
+
+.panel-row--end > .toggle.toggle--slim {
+  margin-block-end: calc((var(--control-height) - var(--toggle-thumb-size-slim)) / 2);
+}
+
 .panel-inline {
   display: inline-flex;
   flex-wrap: wrap;

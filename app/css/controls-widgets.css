@@ -40,8 +40,8 @@
 .toggle-track {
   position: relative;
   flex-shrink: 0;
-  width: 2.5rem;
-  height: 1.375rem;
+  width: var(--toggle-track-width);
+  height: var(--toggle-track-height);
   border-radius: 999px;
   background: var(--border);
   transition: background 0.15s ease;
@@ -54,8 +54,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(1.375rem - 4px);
-  height: calc(1.375rem - 4px);
+  width: calc(var(--toggle-track-height) - 4px);
+  height: calc(var(--toggle-track-height) - 4px);
   border-radius: 999px;
   background: var(--surface);
   box-shadow: 0 1px 2px rgba(31, 35, 40, 0.18);
@@ -105,11 +105,11 @@
 }
 
 .toggle-btn[aria-checked="true"] .toggle-thumb {
-  transform: translateX(calc(2.5rem - 1.375rem));
+  transform: translateX(calc(var(--toggle-track-width) - var(--toggle-track-height)));
 }
 
 .toggle-btn[aria-checked="mixed"] .toggle-thumb {
-  transform: translateX(calc((2.5rem - 1.375rem) / 2));
+  transform: translateX(calc((var(--toggle-track-width) - var(--toggle-track-height)) / 2));
 }
 
 .toggle-label {
@@ -122,16 +122,16 @@
 
 /* Slim: thin track with an oversized thumb that overhangs the slot (no icon) */
 .toggle--slim .toggle-track {
-  width: 2rem;
-  height: 0.75rem;
+  width: var(--toggle-track-width-slim);
+  height: var(--toggle-track-height-slim);
   overflow: visible;
 }
 
 .toggle--slim .toggle-thumb {
-  top: calc((0.75rem - 1.125rem) / 2);
+  top: calc((var(--toggle-track-height-slim) - var(--toggle-thumb-size-slim)) / 2);
   left: 0;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: var(--toggle-thumb-size-slim);
+  height: var(--toggle-thumb-size-slim);
   border: 1px solid var(--border);
   box-sizing: border-box;
 }
@@ -141,11 +141,11 @@
 }
 
 .toggle--slim .toggle-btn[aria-checked="true"] .toggle-thumb {
-  transform: translateX(calc(2rem - 1.125rem));
+  transform: translateX(calc(var(--toggle-track-width-slim) - var(--toggle-thumb-size-slim)));
 }
 
 .toggle--slim .toggle-btn[aria-checked="mixed"] .toggle-thumb {
-  transform: translateX(calc((2rem - 1.125rem) / 2));
+  transform: translateX(calc((var(--toggle-track-width-slim) - var(--toggle-thumb-size-slim)) / 2));
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -39,6 +39,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Toggle track size tokens (`--toggle-track-height` / `--toggle-track-width`, slim track and thumb tokens) in [`tokens.css`](app/tokens.css). `.panel-row--end` bottom-aligns labeled fields and optically centres bare toggles on the control line without growing stacked `.toggle-group` rows. Code-block toolbar extras (`.code-block-toolbar__extras`) centre injected chrome and densify toggle labels for slim toolbar type — see `USAGE.md` / `DESIGN.md`.
 - Optional button fixed width (`.btn-fixed` + `--btn-width`), content alignment (`.btn-align-start` / `-center` / `-end`), and trailing labeled icons (`.btn-icon-end`); defaults remain content-sized, centred, and leading-icon.
 - Required fields: `.field.is-required` adds a red label asterisk; [`app/utils/required-field.js`](app/utils/required-field.js) syncs `aria-required` / empty `aria-invalid` (and optional native `required`) via `initRequiredField(s)` / `setFieldRequired()` / `syncRequiredField()`. `.input` / `.textarea` and `.btn.dropdown-trigger` pick up the shared error border. Demo multi-line input is required.
 - Tooltip layout options: `data-tooltip-max-width` (CSS length / `none` / `match` to equal the trigger width; default `16rem`), `data-tooltip-nowrap` (single line), and `data-tooltip-offset` (px gap from trigger; default `8`). Same `maxWidth` / `nowrap` / `offset` on `flashTooltip()` and `showPersistentTooltip()`.

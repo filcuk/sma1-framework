@@ -12,6 +12,16 @@ Filled accent surfaces — **primary buttons** (`.btn-primary`), and other contr
 
 Fork brand colour and contrast checks live in the **`manage-color`** skill and [`USAGE.md`](USAGE.md); keep `--accent-fg` at WCAG AA (≥ 4.5:1) against `--accent`.
 
+## Control composition
+
+Keep toggle switches at their **intrinsic** track size (`--toggle-track-height` in [`tokens.css`](app/tokens.css)) — do not stretch them to `--control-height` (stacked `.toggle-group` spacing must stay consistent).
+
+| Context | Pattern |
+| ------- | ------- |
+| Labeled fields + bare toggle (shared bottom line) | `.panel-row.panel-row--end` — flex-end row; direct-child toggles get an optical margin so the track centres on adjacent controls |
+| Centred toolbars / default `.panel-row` | Host `align-items: center` is enough |
+| Code-block toolbar extras | `.code-block-toolbar__extras` — centred flex host; denser toggle labels to match slim toolbar chrome |
+
 ## Action feedback
 
 When a control reacts to a user action (copy succeeded, save failed, and similar):

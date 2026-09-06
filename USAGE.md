@@ -456,7 +456,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 
 | Feature | Description |
 | -------- | ----------- |
-| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`framework.css`](app/css/framework.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
+| **Design tokens** | CSS custom properties in [`app/tokens.css`](app/tokens.css) for background, surface, section panels, `--input-bg` (form fields — lighter than page/section chrome), `--table-header-bg`, `--control-height` / `--control-height-slim` / `--control-height-micro` (standard, compact, and micro single-line controls — micro is half of standard), toggle track sizes (`--toggle-track-height`, `--toggle-track-width`, slim track / thumb tokens), text, borders, accent (`--accent`, derived `--accent-hover`, `--accent-fg` on accent fills), banners, and code blocks. Light and dark values via `[data-theme="dark"]`. Override brand accent in fork-owned [`app/css/app.css`](app/css/app.css) (never edit `tokens.css` in a fork for colour — sync can overwrite it); keep `--accent-fg` at WCAG AA ≥ 4.5:1 against `--accent` (see **`manage-color`**). Component styles in [`app/css/`](app/css/) partials (indexed by [`framework.css`](app/css/framework.css); [`app/styles.css`](app/styles.css) also pulls fork-owned [`app.css`](app/css/app.css)). |
 | **Press feedback** | Enabled click reactions use `:active` colour-mix (`--control-hover-mix` / `--control-selected-mix` / `--control-press-mix`) and filled button darkening (`--accent-active` / `--danger-active`). |
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
@@ -473,7 +473,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **G-code toolpath** | Parses G-code and bgcode motion into extrusion/travel segments, layers, bounds, and warnings, then previews them with Three.js (optional hover meta strip). [`app/components/gcode-toolpath.js`](app/components/gcode-toolpath.js), [`app/components/toolpath-preview.js`](app/components/toolpath-preview.js). |
 | **G-code metadata** | Reads common ASCII G-code comments and bgcode metadata blocks, including Deflate, Heatshrink, and MeatPack payloads. [`app/components/gcode.js`](app/components/gcode.js). |
 | **Section panel** | Reusable padded surface (`.section-panel`) with optional compact-form grid rows, divider, submit row, and expiring banner. See **Panel layout** and **Section panel**. |
-| **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
+| **Panel layout** | Titles, hints, flex rows, inline groups, responsive 2/3/4-column grids, stacks, splits, and full-bleed dividers inside panels (`.panel-title`, `.panel-hint`, `.panel-row`, `.panel-row--spread`, `.panel-row--end`, `.panel-inline`, `.panel-grid`, `.panel-stack`, `.panel-split`, `.panel-divider`). See **Panel layout** and **Panel split**. |
 | **Combo button** | Split `.combo-btn` with main action + chevron menu; behaviour from [`app/components/combo.js`](app/components/combo.js). |
 | **Combobox** | Text input with filterable suggestion list; optional multi-select (`data-combobox-multi`) with comma-separated summary and selection badge; optional auto grid list (`data-combobox-grid*`). [`app/components/combobox.js`](app/components/combobox.js). |
 | **Slider** | Range control with editable value field; integer, decimal, percentage; optional disabled; `.slider--hover` compact chrome for surface action strips. [`app/components/slider.js`](app/components/slider.js). |
@@ -2009,7 +2009,7 @@ Object URLs from `setBlob` are revoked on replace, `clear()`, and `destroy()`.
 
 ### Panel layout
 
-Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them), `.panel-inline` for inline groups (layout only — does not change font size), and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
+Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.panel-hint` for its heading, `.panel-row` for wrapping controls (`.panel-row--spread` distributes them; `.panel-row--end` bottom-aligns labeled fields and optically centres bare toggles on the control line), `.panel-inline` for inline groups (layout only — does not change font size), and `.panel-grid` with `.panel-grid-2`, `.panel-grid-3`, or `.panel-grid-4` for responsive columns.
 
 ```html
 <section class="section-panel">
@@ -2024,8 +2024,27 @@ Use `.section-panel` as the reusable padded surface. Add `.panel-title` and `.pa
     <span class="panel-inline"><!-- compact status --></span>
     <button type="button" class="btn btn-primary">Save</button>
   </div>
+  <div class="panel-row panel-row--end">
+    <label class="field" for="opt-width">
+      <span class="field-label">Width</span>
+      <input type="text" id="opt-width" class="input" />
+    </label>
+    <div class="toggle" data-toggle-default="false">
+      <button type="button" class="toggle-btn" role="switch" aria-checked="false">
+        <span class="toggle-track" aria-hidden="true">
+          <span class="toggle-thumb">
+            <span data-icon="check" data-icon-class="toggle-thumb-icon" aria-hidden="true"></span>
+          </span>
+        </span>
+        <span class="toggle-label">Lock</span>
+      </button>
+      <input type="hidden" class="toggle-value" value="false" />
+    </div>
+  </div>
 </section>
 ```
+
+`.panel-row--end` uses `align-items: flex-end` for fields with a label above the control. Direct-child `.toggle`s keep their intrinsic height and get a small `margin-block-end` so the track centres on `--control-height` siblings (formula uses `--toggle-track-height`, or `--toggle-thumb-size-slim` for `.toggle--slim`). Do **not** put that margin on every toggle — stacked `.toggle-group` rows stay compact. For centred toolbars / `.panel-row` (default), no extra offset is needed.
 
 The three- and four-column grid variants collapse to one column below 900px; the four-column variant first drops to two columns below 1100px. Use `.panel-split` when columns need full-bleed dividers.
 
@@ -2752,6 +2771,10 @@ initToggles(document); // all `.toggle` blocks
 ```
 
 `data-toggle-default`, `data-toggle-tristate`, `data-toggle-tristate-cycle`, and `data-toggle-disabled` mirror the JS options. For a group of switches, wrap items in `.toggle-group`.
+
+**Inline with labeled fields** — use `.panel-row.panel-row--end` (see **Panel layout**). Track size tokens live in [`tokens.css`](app/tokens.css) (`--toggle-track-height`, `--toggle-track-width`, slim variants); do not grow toggles to `--control-height`.
+
+**Inline in a code-block toolbar** — wrap app chrome in `.code-block-toolbar__extras` (flex + centred) and append it to a toolbar group. Labels densify automatically to match `.btn-slim`; toggle height stays intrinsic.
 
 ### Segmented control
 
@@ -3594,6 +3617,8 @@ initExpandableSurfaces(document);
 ```
 
 **Toolbar** — set `data-code-toolbar` to `top`, `bottom`, or `none`. List controls in `data-code-toolbar-actions` (comma-separated): `clear`, `copy`, `paste`, `maximize`, `highlight`, `line-numbers`. Defaults to `highlight,line-numbers` when omitted. Align any control with `data-code-toolbar-align` as `action:left|right` (comma-separated); **highlight, line-numbers, and maximize default to `right`**, everything else to `left`. Clear / Copy / Paste show icon + label; highlight, line-numbers, and maximize are icon-only with tooltips. Clear and Paste are disabled in `view` mode; Clear and Copy (toolbar and hover) are disabled when the block is empty. Maximize requires `data-expandable-surface` (uses `data-expandable-surface-open`).
+
+**Custom toolbar chrome** — append a `.code-block-toolbar__extras` host into `.code-block-toolbar__group--left` or `--right` (after `initCodeBlock`, and again after remounts such as language changes). The extras row centres children and densifies `.toggle-label` to slim toolbar type; keep toggles at intrinsic height (no `--control-height` slot).
 
 **Hover surface actions** — set `data-code-surface-actions` to `copy`, `maximize`, or both (`none` / empty / `false` hides the strip). Legacy `data-code-copy="false"` omits surface copy. When `data-expandable-surface` is present and surface actions are omitted, defaults include `copy,maximize`.
 
