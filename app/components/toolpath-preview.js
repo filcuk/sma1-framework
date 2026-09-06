@@ -10,6 +10,7 @@
  *     data-toolpath-preview-meta-extra="PETG"
  *     data-toolpath-preview-maximize
  *     data-toolpath-preview-home
+ *     data-toolpath-preview-animation
  *     data-toolpath-preview-layer-slider
  *     data-toolpath-preview-travel-toggle
  *     data-toolpath-preview-travels
@@ -26,6 +27,10 @@
  * data-toolpath-preview-meta-extra — append app-specific text to the meta strip
  * data-toolpath-preview-maximize — floating fullscreen control via expandable-surface
  * data-toolpath-preview-home — floating reset-view (home) control
+ * data-toolpath-preview-animation — floating play/pause for slow auto-rotate (off by default)
+ * data-toolpath-preview-animation-playing — start playing when animation is on
+ *   (default on; set `"false"` to start paused). Honours `prefers-reduced-motion`
+ *   by starting paused.
  * data-toolpath-preview-layer-slider — floating maximum-layer slider (default on;
  *   set `"false"` to disable). Uses the shared `.slider--hover` chrome.
  * data-toolpath-preview-travels — show non-extrusion (travel) moves; default on.
@@ -45,6 +50,8 @@
  *   preview.setMaxLayer(3);
  *   preview.setTravels(false);
  *   preview.resetView();
+ *   preview.setAnimationPlaying(true);
+ *   preview.getAnimationPlaying();
  *   preview.setMetaExtra("PETG · 0.4 mm");
  *   preview.clear();
  */
@@ -62,6 +69,8 @@ import { UNSUPPORTED_GEOMETRY_WARNING } from "./gcode-toolpath.js";
 const DEFAULT_ARIA_LABEL = "G-code toolpath preview";
 const MAX_PIXEL_RATIO = 2;
 const EPSILON = 1e-5;
+/** OrbitControls autoRotateSpeed; 1 ≈ one full turn per minute at 60fps. */
+const AUTO_ROTATE_SPEED = 1;
 
 /**
  * @param {string | null | undefined} value
@@ -159,7 +168,7 @@ function resolveTravelsVisible(el, options) {
 }
 
 /**
- * Map maximise / home / layer-slider / travel-toggle options onto
+ * Map maximise / home / animation / layer-slider / travel-toggle options onto
  * expandable-surface and surface-actions chrome.
  * Call `initExpandableSurfaces()` after init (or on the page) to activate maximise.
  *
@@ -168,6 +177,7 @@ function resolveTravelsVisible(el, options) {
  *   maximize?: boolean,
  *   expandOnClick?: boolean,
  *   home?: boolean,
+ *   animation?: boolean,
  *   layerSlider?: boolean,
  *   travelToggle?: boolean,
  *   travels?: boolean,
@@ -187,6 +197,10 @@ function syncExpandableAttrs(el, options) {
     typeof options.home === "boolean"
       ? options.home
       : el.hasAttribute("data-toolpath-preview-home");
+  const animation =
+    typeof options.animation === "boolean"
+      ? options.animation
+      : el.hasAttribute("data-toolpath-preview-animation");
   const layerSlider = resolveLayerSliderEnabled(el, options);
   const travelToggle = resolveTravelToggleEnabled(el, options);
   const travels = resolveTravelsVisible(el, options);
@@ -205,6 +219,9 @@ function syncExpandableAttrs(el, options) {
   if (home) el.setAttribute("data-toolpath-preview-home", "");
   else el.removeAttribute("data-toolpath-preview-home");
 
+  if (animation) el.setAttribute("data-toolpath-preview-animation", "");
+  else el.removeAttribute("data-toolpath-preview-animation");
+
   if (layerSlider) el.setAttribute("data-toolpath-preview-layer-slider", "");
   else el.setAttribute("data-toolpath-preview-layer-slider", "false");
 
@@ -214,7 +231,7 @@ function syncExpandableAttrs(el, options) {
   if (travels) el.setAttribute("data-toolpath-preview-travels", "");
   else el.setAttribute("data-toolpath-preview-travels", "false");
 
-  if (!maximize && !expandOnClick && !home && !layerSlider && !travelToggle) {
+  if (!maximize && !expandOnClick && !home && !animation && !layerSlider && !travelToggle) {
     el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
     delete el.dataset.toolpathPreviewActions;
@@ -222,6 +239,7 @@ function syncExpandableAttrs(el, options) {
       maximize: false,
       expandOnClick: false,
       home: false,
+      animation: false,
       layerSlider: false,
       travelToggle: false,
       travels,
@@ -246,7 +264,7 @@ function syncExpandableAttrs(el, options) {
     el.removeAttribute("data-expandable-surface-control");
   }
 
-  if (maximize || home || layerSlider || travelToggle) {
+  if (maximize || home || animation || layerSlider || travelToggle) {
     let actionsHost = el.querySelector(":scope > .surface-actions");
     if (!actionsHost) {
       actionsHost = document.createElement("div");
@@ -262,11 +280,27 @@ function syncExpandableAttrs(el, options) {
     maximize,
     expandOnClick,
     home,
+    animation,
     layerSlider,
     travelToggle,
     travels,
     actionsVisibility,
   };
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {{ animationPlaying?: boolean }} options
+ * @param {boolean} animationEnabled
+ */
+function resolveAnimationPlaying(el, options, animationEnabled) {
+  if (!animationEnabled) return false;
+  if (typeof options.animationPlaying === "boolean") {
+    return options.animationPlaying;
+  }
+  const raw = el.getAttribute("data-toolpath-preview-animation-playing");
+  if (raw === null) return true;
+  return parseBooleanAttr(raw) ?? true;
 }
 
 function readCssColor(name, fallback) {
@@ -391,6 +425,8 @@ function fitCameraToObject(camera, controls, object) {
  *   maximize?: boolean,
  *   expandOnClick?: boolean,
  *   home?: boolean,
+ *   animation?: boolean,
+ *   animationPlaying?: boolean,
  *   layerSlider?: boolean,
  *   travelToggle?: boolean,
  *   travels?: boolean,
@@ -402,6 +438,8 @@ function fitCameraToObject(camera, controls, object) {
  *   setTravels: (visible: boolean) => void,
  *   getTravels: () => boolean,
  *   resetView: () => void,
+ *   setAnimationPlaying: (playing: boolean) => void,
+ *   getAnimationPlaying: () => boolean,
  *   setMetaExtra: (text: string | string[] | null | undefined) => void,
  *   clear: () => void,
  *   destroy: () => void,
@@ -449,9 +487,22 @@ export function initToolpathPreview(previewEl, options = {}) {
 
   const expandState = syncExpandableAttrs(previewEl, options);
   const showHome = expandState.home;
+  const showAnimation = expandState.animation;
   const showLayerSlider = expandState.layerSlider;
   const showTravelToggle = expandState.travelToggle;
   let showTravels = expandState.travels;
+  let animationPlaying =
+    resolveAnimationPlaying(previewEl, options, showAnimation) &&
+    !prefersReducedMotion();
+
+  if (showAnimation) {
+    previewEl.setAttribute(
+      "data-toolpath-preview-animation-playing",
+      animationPlaying ? "true" : "false"
+    );
+  } else {
+    previewEl.removeAttribute("data-toolpath-preview-animation-playing");
+  }
 
   if (showSegments) previewEl.setAttribute("data-toolpath-preview-segments", "");
   else previewEl.removeAttribute("data-toolpath-preview-segments");
@@ -476,6 +527,8 @@ export function initToolpathPreview(previewEl, options = {}) {
   let metaEl = null;
   /** @type {HTMLButtonElement | null} */
   let homeBtn = null;
+  /** @type {HTMLButtonElement | null} */
+  let animationBtn = null;
   /** @type {HTMLButtonElement | null} */
   let travelToggleBtn = null;
   /** @type {ReturnType<typeof initToggleButton> | null} */
@@ -539,6 +592,40 @@ export function initToolpathPreview(previewEl, options = {}) {
     homeBtn.disabled = !hasToolpath || !(extrusionLines || travelLines);
   }
 
+  function syncAnimationControls() {
+    if (!showAnimation) {
+      controls.autoRotate = false;
+      return;
+    }
+    const hasContent = hasToolpath && Boolean(extrusionLines || travelLines);
+    controls.autoRotate = animationPlaying && hasContent;
+    controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
+    previewEl.setAttribute(
+      "data-toolpath-preview-animation-playing",
+      animationPlaying ? "true" : "false"
+    );
+    if (!animationBtn) return;
+    animationBtn.disabled = !hasContent;
+    const label = animationPlaying ? "Pause rotation" : "Play rotation";
+    animationBtn.dataset.tooltip = label;
+    animationBtn.setAttribute("aria-label", label);
+    animationBtn.replaceChildren(
+      createIcon(animationPlaying ? "pause" : "play", {
+        className: "btn-icon-svg",
+      })
+    );
+  }
+
+  function setAnimationPlaying(playing) {
+    if (!showAnimation) return;
+    animationPlaying = Boolean(playing);
+    syncAnimationControls();
+  }
+
+  function getAnimationPlaying() {
+    return showAnimation ? animationPlaying : false;
+  }
+
   function syncTravelToggle() {
     if (!travelToggleBtn || !travelToggle) return;
     const hasTravelSegments = segments.some((segment) => !segment.extruding);
@@ -572,6 +659,30 @@ export function initToolpathPreview(previewEl, options = {}) {
     }
     syncHomeButton();
     return homeBtn;
+  }
+
+  function ensureAnimationButton() {
+    if (!showAnimation) return null;
+    if (animationBtn?.isConnected) return animationBtn;
+    const host = ensureActionsHost();
+    animationBtn = host.querySelector(".toolpath-preview__animation");
+    if (!(animationBtn instanceof HTMLButtonElement)) {
+      animationBtn = document.createElement("button");
+      animationBtn.type = "button";
+      animationBtn.className =
+        "toolpath-preview__animation btn btn-slim btn-icon";
+      animationBtn.dataset.tooltipPosition = "top";
+      animationBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setAnimationPlaying(!animationPlaying);
+      });
+      // `.surface-actions` is row-reverse; last icon before the left slider is leftmost.
+      const slider = host.querySelector(".toolpath-preview__layer-slider");
+      if (slider) host.insertBefore(animationBtn, slider);
+      else host.append(animationBtn);
+    }
+    syncAnimationControls();
+    return animationBtn;
   }
 
   function ensureTravelToggle() {
@@ -755,6 +866,10 @@ export function initToolpathPreview(previewEl, options = {}) {
         return showTravels;
       },
       resetView() {},
+      setAnimationPlaying() {},
+      getAnimationPlaying() {
+        return false;
+      },
       setMetaExtra(text) {
         metaExtra = resolveMetaExtra(text);
         syncMetaVisibilityAttr();
@@ -784,6 +899,8 @@ export function initToolpathPreview(previewEl, options = {}) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.screenSpacePanning = true;
+  controls.autoRotate = false;
+  controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
   controls.addEventListener("start", () => {
     homeAnim = null;
   });
@@ -815,6 +932,8 @@ export function initToolpathPreview(previewEl, options = {}) {
   ensureHomeButton();
   ensureTravelToggle();
   ensureLayerSlider();
+  ensureAnimationButton();
+  syncAnimationControls();
 
   function applyTheme() {
     const background = readCssColor("--surface", "#ffffff");
@@ -924,6 +1043,7 @@ export function initToolpathPreview(previewEl, options = {}) {
       setHidden(emptyEl, !hasToolpath);
     }
     syncHomeButton();
+    syncAnimationControls();
     syncTravelToggle();
     syncLayerSlider();
     syncMeta();
@@ -981,6 +1101,7 @@ export function initToolpathPreview(previewEl, options = {}) {
     disposeLines();
     if (emptyEl) setHidden(emptyEl, false);
     syncHomeButton();
+    syncAnimationControls();
     syncTravelToggle();
     syncLayerSlider();
     syncMeta();
@@ -1038,6 +1159,8 @@ export function initToolpathPreview(previewEl, options = {}) {
     setTravels,
     getTravels,
     resetView,
+    setAnimationPlaying,
+    getAnimationPlaying,
     setMetaExtra,
     clear,
     destroy() {
@@ -1051,6 +1174,7 @@ export function initToolpathPreview(previewEl, options = {}) {
       controls.dispose();
       renderer.dispose();
       canvas.remove();
+      animationBtn?.remove();
       homeBtn?.remove();
       travelToggle?.destroy();
       travelToggleBtn?.remove();

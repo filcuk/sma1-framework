@@ -13,6 +13,7 @@
  *     data-model-preview-meta-extra="PETG"
  *     data-model-preview-maximize
  *     data-model-preview-home
+ *     data-model-preview-animation
  *     data-model-preview-actions="hover"
  *     aria-label="3D model preview">
  *     <p class="model-preview__empty">No preview</p>
@@ -30,6 +31,10 @@
  * data-model-preview-meta-extra — append app-specific text to the meta strip
  * data-model-preview-maximize — floating fullscreen control via expandable-surface
  * data-model-preview-home — floating reset-view (home) control
+ * data-model-preview-animation — floating play/pause for slow auto-rotate (off by default)
+ * data-model-preview-animation-playing — start playing when animation is on
+ *   (default on; set `"false"` to start paused). Honours `prefers-reduced-motion`
+ *   by starting paused.
  * data-model-preview-expand-on-click — toggle maximise when clicking the canvas host
  * data-model-preview-actions — hover control visibility: `hover` (default),
  *   `always`, or `never`
@@ -40,6 +45,8 @@
  *   const preview = initModelPreview(element);
  *   preview.setMesh({ positions, indices });
  *   preview.resetView();
+ *   preview.setAnimationPlaying(true);
+ *   preview.getAnimationPlaying();
  *   preview.setMetaExtra("PETG");
  *   preview.clear();
  */
@@ -47,7 +54,7 @@
 import * as THREE from "../vendor/three/three.module.min.js";
 import { OrbitControls } from "../vendor/three/OrbitControls.js";
 import { APP_CONFIG } from "../config.js";
-import { setHidden, prefersReducedMotion } from "../utils/dom.js";
+import { setHidden, prefersReducedMotion, parseBooleanAttr } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 import { createOrbitHomeAnim, tickOrbitHomeAnim } from "../utils/orbit-home.js";
 
@@ -56,6 +63,8 @@ export const THREE_VERSION = "0.185.1";
 
 const DEFAULT_ARIA_LABEL = "3D model preview";
 const MAX_PIXEL_RATIO = 2;
+/** OrbitControls autoRotateSpeed; 1 ≈ one full turn per minute at 60fps. */
+const AUTO_ROTATE_SPEED = 1;
 
 /**
  * @param {string | null | undefined} value
@@ -105,11 +114,11 @@ function resolveActionsVisibility(value) {
 }
 
 /**
- * Map maximise / home options onto expandable-surface and surface-actions chrome.
+ * Map maximise / home / animation options onto expandable-surface and surface-actions chrome.
  * Call `initExpandableSurfaces()` after init (or on the page) to activate maximise.
  *
  * @param {HTMLElement} el
- * @param {{ maximize?: boolean, expandOnClick?: boolean, home?: boolean, actions?: string }} options
+ * @param {{ maximize?: boolean, expandOnClick?: boolean, home?: boolean, animation?: boolean, actions?: string }} options
  */
 function syncExpandableAttrs(el, options) {
   const maximize =
@@ -124,6 +133,10 @@ function syncExpandableAttrs(el, options) {
     typeof options.home === "boolean"
       ? options.home
       : el.hasAttribute("data-model-preview-home");
+  const animation =
+    typeof options.animation === "boolean"
+      ? options.animation
+      : el.hasAttribute("data-model-preview-animation");
   const actionsVisibility = resolveActionsVisibility(
     typeof options.actions === "string"
       ? options.actions
@@ -139,11 +152,20 @@ function syncExpandableAttrs(el, options) {
   if (home) el.setAttribute("data-model-preview-home", "");
   else el.removeAttribute("data-model-preview-home");
 
-  if (!maximize && !expandOnClick && !home) {
+  if (animation) el.setAttribute("data-model-preview-animation", "");
+  else el.removeAttribute("data-model-preview-animation");
+
+  if (!maximize && !expandOnClick && !home && !animation) {
     el.removeAttribute("data-expandable-surface-click");
     el.removeAttribute("data-expandable-surface-control");
     delete el.dataset.modelPreviewActions;
-    return { maximize: false, expandOnClick: false, home: false, actionsVisibility };
+    return {
+      maximize: false,
+      expandOnClick: false,
+      home: false,
+      animation: false,
+      actionsVisibility,
+    };
   }
 
   if (maximize || expandOnClick) {
@@ -163,7 +185,7 @@ function syncExpandableAttrs(el, options) {
     el.removeAttribute("data-expandable-surface-control");
   }
 
-  if (maximize || home) {
+  if (maximize || home || animation) {
     let actionsHost = el.querySelector(":scope > .surface-actions");
     if (!actionsHost) {
       actionsHost = document.createElement("div");
@@ -175,7 +197,22 @@ function syncExpandableAttrs(el, options) {
     delete el.dataset.modelPreviewActions;
   }
 
-  return { maximize, expandOnClick, home, actionsVisibility };
+  return { maximize, expandOnClick, home, animation, actionsVisibility };
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {{ animationPlaying?: boolean }} options
+ * @param {boolean} animationEnabled
+ */
+function resolveAnimationPlaying(el, options, animationEnabled) {
+  if (!animationEnabled) return false;
+  if (typeof options.animationPlaying === "boolean") {
+    return options.animationPlaying;
+  }
+  const raw = el.getAttribute("data-model-preview-animation-playing");
+  if (raw === null) return true;
+  return parseBooleanAttr(raw) ?? true;
 }
 
 /**
@@ -391,6 +428,8 @@ function fitCameraToModel(el, camera, controls, model) {
  *   maximize?: boolean,
  *   expandOnClick?: boolean,
  *   home?: boolean,
+ *   animation?: boolean,
+ *   animationPlaying?: boolean,
  *   actions?: string,
  * }} [options]
  * @returns {{
@@ -401,6 +440,8 @@ function fitCameraToModel(el, camera, controls, model) {
  *     objects?: unknown[],
  *   }) => void,
  *   resetView: () => void,
+ *   setAnimationPlaying: (playing: boolean) => void,
+ *   getAnimationPlaying: () => boolean,
  *   setMetaExtra: (text: string | string[] | null | undefined) => void,
  *   clear: () => void,
  *   destroy: () => void,
@@ -463,6 +504,19 @@ export function initModelPreview(previewEl, options = {}) {
 
   const expandState = syncExpandableAttrs(previewEl, options);
   const showHome = expandState.home;
+  const showAnimation = expandState.animation;
+  let animationPlaying =
+    resolveAnimationPlaying(previewEl, options, showAnimation) &&
+    !prefersReducedMotion();
+
+  if (showAnimation) {
+    previewEl.setAttribute(
+      "data-model-preview-animation-playing",
+      animationPlaying ? "true" : "false"
+    );
+  } else {
+    previewEl.removeAttribute("data-model-preview-animation-playing");
+  }
 
   if (showSize) previewEl.setAttribute("data-model-preview-size", "");
   else previewEl.removeAttribute("data-model-preview-size");
@@ -490,6 +544,8 @@ export function initModelPreview(previewEl, options = {}) {
   let metaEl = null;
   /** @type {HTMLButtonElement | null} */
   let homeBtn = null;
+  /** @type {HTMLButtonElement | null} */
+  let animationBtn = null;
   /** @type {ReturnType<typeof computeMeshStats> | null} */
   let meshStats = null;
   /** @type {number | null} */
@@ -579,6 +635,39 @@ export function initModelPreview(previewEl, options = {}) {
     homeBtn.disabled = !model;
   }
 
+  function syncAnimationControls() {
+    if (!showAnimation) {
+      controls.autoRotate = false;
+      return;
+    }
+    controls.autoRotate = animationPlaying && Boolean(model);
+    controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
+    previewEl.setAttribute(
+      "data-model-preview-animation-playing",
+      animationPlaying ? "true" : "false"
+    );
+    if (!animationBtn) return;
+    animationBtn.disabled = !model;
+    const label = animationPlaying ? "Pause rotation" : "Play rotation";
+    animationBtn.dataset.tooltip = label;
+    animationBtn.setAttribute("aria-label", label);
+    animationBtn.replaceChildren(
+      createIcon(animationPlaying ? "pause" : "play", {
+        className: "btn-icon-svg",
+      })
+    );
+  }
+
+  function setAnimationPlaying(playing) {
+    if (!showAnimation) return;
+    animationPlaying = Boolean(playing);
+    syncAnimationControls();
+  }
+
+  function getAnimationPlaying() {
+    return showAnimation ? animationPlaying : false;
+  }
+
   function ensureHomeButton() {
     if (!showHome) return null;
     if (homeBtn?.isConnected) return homeBtn;
@@ -600,6 +689,27 @@ export function initModelPreview(previewEl, options = {}) {
     }
     syncHomeButton();
     return homeBtn;
+  }
+
+  function ensureAnimationButton() {
+    if (!showAnimation) return null;
+    if (animationBtn?.isConnected) return animationBtn;
+    const host = ensureActionsHost();
+    animationBtn = host.querySelector(".model-preview__animation");
+    if (!(animationBtn instanceof HTMLButtonElement)) {
+      animationBtn = document.createElement("button");
+      animationBtn.type = "button";
+      animationBtn.className = "model-preview__animation btn btn-slim btn-icon";
+      animationBtn.dataset.tooltipPosition = "top";
+      animationBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setAnimationPlaying(!animationPlaying);
+      });
+      // `.surface-actions` is row-reverse; last icon before any left slider is leftmost.
+      host.append(animationBtn);
+    }
+    syncAnimationControls();
+    return animationBtn;
   }
 
   let renderer;
@@ -655,6 +765,10 @@ export function initModelPreview(previewEl, options = {}) {
     return {
       setMesh() {},
       resetView() {},
+      setAnimationPlaying() {},
+      getAnimationPlaying() {
+        return false;
+      },
       setMetaExtra(text) {
         metaExtra = resolveMetaExtra(text);
         syncMetaVisibilityAttr();
@@ -684,6 +798,8 @@ export function initModelPreview(previewEl, options = {}) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.screenSpacePanning = true;
+  controls.autoRotate = false;
+  controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
   controls.addEventListener("start", () => {
     homeAnim = null;
   });
@@ -692,6 +808,8 @@ export function initModelPreview(previewEl, options = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   ensureHomeButton();
+  ensureAnimationButton();
+  syncAnimationControls();
 
   function applyTheme() {
     const background = readCssColor("--surface", "#ffffff");
@@ -783,6 +901,7 @@ export function initModelPreview(previewEl, options = {}) {
     fitCameraToModel(previewEl, camera, controls, model);
     if (emptyEl) setHidden(emptyEl, true);
     syncHomeButton();
+    syncAnimationControls();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -800,6 +919,7 @@ export function initModelPreview(previewEl, options = {}) {
     objectCount = null;
     if (emptyEl) setHidden(emptyEl, false);
     syncHomeButton();
+    syncAnimationControls();
     syncMeta();
     renderer.render(scene, camera);
   }
@@ -822,6 +942,8 @@ export function initModelPreview(previewEl, options = {}) {
   return {
     setMesh,
     resetView,
+    setAnimationPlaying,
+    getAnimationPlaying,
     setMetaExtra,
     clear,
     destroy() {
@@ -833,6 +955,7 @@ export function initModelPreview(previewEl, options = {}) {
       controls.dispose();
       renderer.dispose();
       canvas.remove();
+      animationBtn?.remove();
       homeBtn?.remove();
       metaEl?.remove();
       delete previewEl.dataset.modelPreviewInit;

@@ -1762,6 +1762,7 @@ Pages using the preview must include an import map before module scripts:
   data-model-preview-meta-extra="PETG"
   data-model-preview-maximize
   data-model-preview-home
+  data-model-preview-animation
   data-model-preview-actions="hover">
   <p class="model-preview__empty">No preview</p>
 </div>
@@ -1784,7 +1785,7 @@ Optional built-in meta flags (off unless set): `data-model-preview-size` (`W × 
 
 `data-model-preview-meta` controls strip visibility: `hover` (default), `always`, `not-hover`, or `never`. On touch devices without hover, `hover` and `not-hover` behave like `always`. Add `data-model-preview-meta-extra` or pass `metaExtra` / call `setMetaExtra()` (string or string array) for app-specific text.
 
-`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-home` shows a reset-view (home) control that restores the default camera fit; `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Maximise maps onto expandable-surface. `data-model-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`. Call `preview.resetView()` to reset the camera from script.
+`data-model-preview-maximize` shows the floating fullscreen control; `data-model-preview-home` shows a reset-view (home) control that restores the default camera fit; `data-model-preview-animation` shows a floating play/pause control for slow OrbitControls auto-rotate (off by default). When animation is enabled it starts playing unless you set `data-model-preview-animation-playing="false"` / `animationPlaying: false` (and always starts paused when `prefers-reduced-motion` is set). Use `preview.setAnimationPlaying(true|false)` / `getAnimationPlaying()` at runtime. `data-model-preview-expand-on-click` toggles maximise when clicking the host (not controls). Maximise maps onto expandable-surface. `data-model-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never` (there is no `not-hover` mode for buttons). Prefer putting maximise attrs in HTML before `initExpandableSurfaces()`, or call `initExpandableSurfaces()` after `initModelPreview()`. Call `preview.resetView()` to reset the camera from script.
 
 The Three.js runtime and `OrbitControls` are vendored under `app/vendor/three/`. The preview falls back to an unavailable message when WebGL cannot be created.### G-code toolpath preview
 
@@ -1815,6 +1816,7 @@ The toolpath preview reuses the `.model-preview` surface and canvas styles, and 
   data-toolpath-preview-meta-extra="PETG"
   data-toolpath-preview-maximize
   data-toolpath-preview-home
+  data-toolpath-preview-animation
   data-toolpath-preview-actions="hover">
   <p class="model-preview__empty">No toolpath</p>
 </div>
@@ -1824,7 +1826,7 @@ The toolpath preview reuses the `.model-preview` surface and canvas styles, and 
 
 `data-toolpath-preview-meta` controls when that strip is visible: `hover` (default), `always`, `not-hover` (visible until hover/focus), or `never`. On touch devices without hover, both `hover` and `not-hover` behave like `always`. Add `data-toolpath-preview-meta-extra` or pass `metaExtra` to `initToolpathPreview()` to append app-specific text; `setMetaExtra(text)` accepts a string or an array of strings (joined with ` · `) and updates or clears the extra at runtime.
 
-`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-home` shows a reset-view (home) control; `data-toolpath-preview-layer-slider` mounts a left-aligned maximum-layer [`.slider--hover`](#slider) in the same strip (on by default; set `data-toolpath-preview-layer-slider="false"` or `layerSlider: false` to disable). The slider is **1-based** (`1…N`, matching the meta `layer K/N` readout); `setMaxLayer(n)` remains **0-based** and stays in sync with the slider. `data-toolpath-preview-travels` controls whether non-extrusion (gray) travel moves are drawn (on by default; set `"false"` or `travels: false` to hide). `data-toolpath-preview-travel-toggle` mounts a hover toggle for that (on by default; set `"false"` to hide the control). Combine `travels="false"` with the toggle left on so users can re-enable travels, or set both to `"false"` for a permanent extrusion-only view. `preview.setTravels(false)` / `getTravels()` update the same state at runtime. `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled. Call `preview.resetView()` to reset the camera from script.
+`data-toolpath-preview-maximize` shows the floating fullscreen control; `data-toolpath-preview-home` shows a reset-view (home) control; `data-toolpath-preview-animation` shows a floating play/pause control for slow OrbitControls auto-rotate (off by default). When animation is enabled it starts playing unless you set `data-toolpath-preview-animation-playing="false"` / `animationPlaying: false` (and always starts paused when `prefers-reduced-motion` is set). Use `preview.setAnimationPlaying(true|false)` / `getAnimationPlaying()` at runtime. `data-toolpath-preview-layer-slider` mounts a left-aligned maximum-layer [`.slider--hover`](#slider) in the same strip (on by default; set `data-toolpath-preview-layer-slider="false"` or `layerSlider: false` to disable). The slider is **1-based** (`1…N`, matching the meta `layer K/N` readout); `setMaxLayer(n)` remains **0-based** and stays in sync with the slider. `data-toolpath-preview-travels` controls whether non-extrusion (gray) travel moves are drawn (on by default; set `"false"` or `travels: false` to hide). `data-toolpath-preview-travel-toggle` mounts a hover toggle for that (on by default; set `"false"` to hide the control). Combine `travels="false"` with the toggle left on so users can re-enable travels, or set both to `"false"` for a permanent extrusion-only view. `preview.setTravels(false)` / `getTravels()` update the same state at runtime. `data-toolpath-preview-expand-on-click` toggles maximise when clicking the host (not controls). `data-toolpath-preview-actions` controls when those hover controls are visible: `hover` (default), `always`, or `never`. Call `initExpandableSurfaces()` after `initToolpathPreview()` when maximise is enabled. Call `preview.resetView()` to reset the camera from script.
 
 ### G-code metadata
 

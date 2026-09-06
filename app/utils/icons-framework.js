@@ -6,7 +6,7 @@
  * For third-party icons, set `name` to the collection id (e.g. `round-info`).
  * To reuse an existing framework icon under another id, set `ref` to the target key.
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, help, experiment, format-quote, tip, chevron-up, chevron-down, chevron-right, chevron-left, arrow-outward, link, fullscreen, fullscreen-exit, home, visibility, visibility-off, upload, download, file, play, pause, stop, calendar, clock, check, minus, plus, delete, remove, remove-circle, type-text, type-number, type-logical, copy, paste, paste-special, clear, highlight, palette
  */
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
@@ -185,6 +185,24 @@ export const FRAMEWORK_ICONS = {
     markup: `<path fill="currentColor" d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8.83c0-.53-.21-1.04-.59-1.41l-4.83-4.83c-.37-.38-.88-.59-1.41-.59zm7 6V3.5L18.5 9H14c-.55 0-1-.45-1-1"/>`,
     attribution: ICON_ATTRIBUTIONS.materialIcons,
     name: "round-insert-drive-file",
+  },
+  play: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-play-arrow",
+  },
+  pause: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2m6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-pause",
+  },
+  stop: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M8 6h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-stop",
   },
   calendar: {
     viewBox: "0 0 24 24",
