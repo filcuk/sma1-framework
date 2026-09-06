@@ -245,16 +245,18 @@
                     data-toggle-button-icon-off="fullscreen" data-toggle-button-icon-on="fullscreen-exit"
                     data-toggle-button-aria-label-off="Enter fullscreen"
                     data-toggle-button-aria-label-on="Exit fullscreen"
-                    data-tooltip="Icon toggle that swaps the next-action icon"
+                    data-tooltip="Click swaps the next-action icon"
                     data-icon-class="btn-icon-svg"></button>
                   <button type="button" class="btn-link">Link button</button>
                 </div>
-                <p class="panel-hint">Label flash with optional static width.</p>
+                <p class="panel-hint">Labeled icon + label flash (shift vs locked width).</p>
                 <div class="panel-row">
-                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-shift">
+                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-shift" aria-label="Copy">
+                    <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
                     <span class="btn-label-flash__label">Copy</span>
                   </button>
-                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-fixed">
+                  <button type="button" class="btn btn-label-flash" id="demo-label-flash-fixed" aria-label="Copy">
+                    <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
                     <span class="btn-label-flash__label">Copy</span>
                   </button>
                 </div>
@@ -265,8 +267,8 @@
                 <p class="panel-hint">Slim version for toolbar, icon-only, in-element embedded buttons.</p>
                 <div class="panel-row">
                   <button type="button" class="btn btn-slim">Slim</button>
-                  <button type="button" class="btn btn-primary btn-slim">Slim primary</button>
-                  <button type="button" class="btn btn-slim" disabled>Slim disabled</button>
+                  <button type="button" class="btn btn-primary btn-slim">Primary</button>
+                  <button type="button" class="btn btn-slim" disabled>Disabled</button>
                   <button type="button" class="btn btn-slim btn-icon btn-toggle" aria-pressed="false"
                     data-toggle-button aria-label="Slim icon toggle"
                     data-tooltip="Slim icon button" data-icon="lines"
@@ -276,9 +278,30 @@
                     data-toggle-button-icon-off="fullscreen" data-toggle-button-icon-on="fullscreen-exit"
                     data-toggle-button-aria-label-off="Enter fullscreen"
                     data-toggle-button-aria-label-on="Exit fullscreen"
-                    data-tooltip="Slim icon toggle that swaps the next-action icon"
+                    data-tooltip="Slim click-swap next-action icon"
                     data-icon-class="btn-icon-svg"></button>
-                  <button type="button" class="btn btn-slim btn-danger">Slim danger</button>
+                  <button type="button" class="btn btn-slim btn-icon" aria-label="Show"
+                    data-tooltip="Slim hover-swap icon"
+                    data-icon="visibility" data-icon-hover="visibility-off"
+                    data-icon-class="btn-icon-svg"></button>
+                  <button type="button" class="btn btn-slim btn-danger">Danger</button>
+                </div>
+                <p class="panel-hint">Slim labeled icon hover + click (toggle) swaps.</p>
+                <div class="panel-row">
+                  <button type="button" class="btn btn-slim" aria-label="Show password"
+                    data-tooltip="Slim hover swaps the leading icon">
+                    <span data-icon="visibility" data-icon-hover="visibility-off"
+                      data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+                    Show
+                  </button>
+                  <button type="button" class="btn btn-slim btn-toggle" aria-pressed="false"
+                    data-toggle-button
+                    data-toggle-button-icon-off="visibility" data-toggle-button-icon-on="visibility-off"
+                    data-toggle-button-label-off="Show" data-toggle-button-label-on="Hide"
+                    data-toggle-button-aria-label-off="Show details"
+                    data-toggle-button-aria-label-on="Hide details"
+                    data-toggle-button-icon-class="btn-icon-svg"
+                    data-tooltip="Slim click swaps icon and label"></button>
                 </div>
               </div>
             </div>

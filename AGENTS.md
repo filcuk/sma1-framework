@@ -166,6 +166,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 ### Icons
 
 - Declare icons with `data-icon="name"` and optional `data-icon-class="…"` in HTML
+- Optional `data-icon-hover="name"` mounts a stacked hover alternate (`.btn-icon-swap`); click/pressed swaps use `initToggleButton` icon-off/on
 - Call `initIcons()` (via `initShell()`) to inject SVGs
 - **Agents must not invent or generate SVG paths** — see [`.cursor/rules/icons.mdc`](.cursor/rules/icons.mdc). If an icon is missing, reuse an existing id / `{ ref }`, or follow the [`add-icon`](.cursor/skills/add-icon/SKILL.md) skill to pull from Icônes (ask for app id + framework catalogue vs app if needed). Blank stubs via [`handle-assets`](.cursor/skills/handle-assets/SKILL.md) when the user will supply custom artwork.
 - Users / agents add icon entries in `icons-app.js` / `icons-framework.js` only — `icons.js` merges them; do not duplicate SVG paths in HTML

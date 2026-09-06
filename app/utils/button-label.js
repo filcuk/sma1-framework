@@ -1,7 +1,8 @@
 /**
  * In-place button label flashes (Copy → Copied / Failed).
  *
- * Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional).
+ * Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional —
+ * use the labeled button icon pattern: child `data-icon` + `.btn-icon-svg`).
  * Call `prepareButtonLabelFlash()` once, then `flashButtonLabel()` on action.
  * Use `setButtonLabelFlash()` for other temporary labels (e.g. Ctrl+V).
  */

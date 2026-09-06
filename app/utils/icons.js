@@ -8,6 +8,12 @@
  *
  *   <button type="button" data-icon="light-mode" data-icon-class="theme-icon"></button>
  *
+ * Optional hover alternate (button CSS swaps via `.btn-icon-swap`):
+ *
+ *   <button type="button" class="btn btn-icon"
+ *     data-icon="visibility" data-icon-hover="visibility-off"
+ *     data-icon-class="btn-icon-svg" aria-label="Show"></button>
+ *
  * Or in JS: import { createIcon } from "./icons.js";
  *           button.append(createIcon("light-mode", { className: "theme-icon" }));
  *
@@ -24,6 +30,11 @@ import { APP_ICONS } from "./icons-app.js";
 export { ICON_ATTRIBUTIONS };
 
 const SVG_NS = "http://www.w3.org/2000/svg";
+
+/** Stacked idle / hover icon host used when `data-icon-hover` is set. */
+export const BUTTON_ICON_SWAP_CLASS = "btn-icon-swap";
+export const BUTTON_ICON_SWAP_IDLE_CLASS = "btn-icon-swap__idle";
+export const BUTTON_ICON_SWAP_HOVER_CLASS = "btn-icon-swap__hover";
 
 /** @typedef {{ viewBox: string, markup: string, attribution?: string, name?: string }} IconSvgDef */
 /** @typedef {{ ref: string }} IconRefDef */
@@ -82,21 +93,59 @@ export function createIcon(name, { className = "", includeAttribution = true } =
 }
 
 /**
+ * Build a stacked idle / hover icon pair for `.btn-icon-swap` CSS.
+ * @param {string} name
+ * @param {string} hoverName
+ * @param {{ className?: string, includeAttribution?: boolean }} [options]
+ */
+export function createIconSwap(name, hoverName, { className = "", includeAttribution = true } = {}) {
+  const swap = document.createElement("span");
+  swap.className = BUTTON_ICON_SWAP_CLASS;
+  swap.setAttribute("aria-hidden", "true");
+
+  const idle = document.createElement("span");
+  idle.className = BUTTON_ICON_SWAP_IDLE_CLASS;
+  idle.append(createIcon(name, { className, includeAttribution }));
+
+  const hover = document.createElement("span");
+  hover.className = BUTTON_ICON_SWAP_HOVER_CLASS;
+  hover.append(createIcon(hoverName, { className, includeAttribution }));
+
+  swap.append(idle, hover);
+  return swap;
+}
+
+/**
  * @param {Element} element
  * @param {string} name
- * @param {{ className?: string, replace?: boolean, includeAttribution?: boolean }} [options]
+ * @param {{
+ *   className?: string,
+ *   replace?: boolean,
+ *   includeAttribution?: boolean,
+ *   hoverName?: string,
+ * }} [options]
  */
-export function mountIcon(element, name, { className = "", replace = true, includeAttribution = true } = {}) {
+export function mountIcon(
+  element,
+  name,
+  { className = "", replace = true, includeAttribution = true, hoverName = "" } = {},
+) {
   const iconClass = className || element.dataset.iconClass || "";
-  const svg = createIcon(name, { className: iconClass, includeAttribution });
+  const hover =
+    hoverName ||
+    (element instanceof HTMLElement ? element.dataset.iconHover || "" : "");
+
+  const node = hover
+    ? createIconSwap(name, hover, { className: iconClass, includeAttribution })
+    : createIcon(name, { className: iconClass, includeAttribution });
 
   if (replace) {
-    element.replaceChildren(svg);
+    element.replaceChildren(node);
   } else {
-    element.append(svg);
+    element.append(node);
   }
 
-  return svg;
+  return node;
 }
 
 /**
@@ -125,11 +174,12 @@ export function ensureCheckboxFace(inputEl) {
   control.append(face);
 }
 
-/** Mount icons on elements with `data-icon` (optional `data-icon-class`). */
+/** Mount icons on elements with `data-icon` (optional `data-icon-class` / `data-icon-hover`). */
 export function initIcons(root = document) {
   root.querySelectorAll("[data-icon]").forEach((element) => {
     mountIcon(element, element.dataset.icon, {
       className: element.dataset.iconClass || "",
+      hoverName: element.dataset.iconHover || "",
     });
   });
 

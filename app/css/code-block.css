@@ -61,12 +61,6 @@
   border-top: 1px solid var(--border);
 }
 
-.code-block-toolbar__btn--labeled .btn-icon-svg {
-  width: 1rem;
-  height: 1rem;
-  flex-shrink: 0;
-}
-
 .code-block-body {
   position: relative;
   background: var(--input-bg);

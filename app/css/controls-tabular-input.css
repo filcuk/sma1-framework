@@ -51,15 +51,6 @@
   box-sizing: border-box;
 }
 
-.tabular-input-breakout-toggle .btn-icon-svg,
-.tabular-input-copy .btn-icon-svg,
-.tabular-input-paste .btn-icon-svg,
-.tabular-input-paste-headers .btn-icon-svg {
-  width: 1rem;
-  height: 1rem;
-  flex-shrink: 0;
-}
-
 .tabular-input-wrap {
   max-width: 100%;
 }

@@ -461,7 +461,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Theme toggle** | Footer control (injected by `initShell()`): light, dark, or system (`auto`). Stored in `localStorage` under `microapp-theme`. `app/theme-init.js` runs in `<head>` to avoid flash of wrong theme. |
 | **Layout shell** | Semantic `header` / `main` / `footer` (footer rendered by JS), max-width 1200px, flex column page. Content grouping via `.content-section` and optional `.content-tier` bands (sticky with `.section-title` / `.segment-title` — see **Sticky chrome**). Outline: site `h1`; with tiers use `h2.segment-title` then `h3.section-title`; without tiers, `h2.section-title` is fine. App version in footer; framework version on hover. Optional footer **also see** related-apps menu in a responsive topic grid (`APP_CONFIG.alsoSee` / `alsoSeeUrl` / `alsoSeeTopics` / `alsoSeeIncludeLocal`, optional `order`, `accent` / `accentLight` / `accentDark` (and hover), and `iconSvg*`, or `initShell({ alsoSee, alsoSeeUrl, alsoSeeTopics, alsoSeeIncludeLocal })`; `[]` / `false` disables when there is no remote list). Optional sticky site header (`data-sticky-header`) and sticky section headings (`data-sticky-section-headings`) — see **Sticky chrome**. Optional hierarchical title numbering (`data-title-numbering`) — see **Title numbering**. |
 | **Title numbering** | Optional `1.` / `1.1.` / `1.2.1.` prefixes on outline headings (`main :is(h2, h3, h4)[id]`). Off by default. [`app/shell/title-numbering.js`](app/shell/title-numbering.js). |
-| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
+| **Buttons** | `.btn` (default / standard height), `.btn-slim` (compact `--control-height-slim`; works with labeled and icon buttons), `.btn-primary`, `.btn-danger` (destructive primary), `.btn-icon` (icon-only), labeled icons via child `data-icon` + `.btn-icon-svg` (`.btn-icon-end` for trailing), hover swap via `data-icon-hover`, click/pressed swap via `initToggleButton`, optional `.btn-fixed` + `--btn-width` and `.btn-align-start` / `-center` / `-end`, `.btn-toggle` (`aria-pressed` — accent border when on), `.btn-link`, disabled state. Click press feedback uses `:active` mix tint. Optional `initToggleButton` for label/icon swapping and an always-active variant that keeps the default button appearance — see **Toggle button**. |
 | **Badge** | Corner indicator on a control or text: normal readout or small `.badge--sm` dot. [`app/components/badge.js`](app/components/badge.js). |
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
@@ -1149,20 +1149,91 @@ Calling `initShell({ headingLinks: false })` **after** `initHeadingLinks(documen
 
 Standard height uses `--control-height`. Add `.btn-slim` for the compact `--control-height-slim` size (labeled or icon-only).
 
+**Icon-only** — square `.btn.btn-icon` with `data-icon` on the button:
+
 ```html
-<button type="button" class="btn">Standard</button>
-<button type="button" class="btn btn-slim">Slim</button>
-<button type="button" class="btn btn-primary btn-slim">Slim primary</button>
+<button type="button" class="btn btn-icon" aria-label="More options"
+  data-icon="lines" data-icon-class="btn-icon-svg"></button>
 <button type="button" class="btn btn-slim btn-icon" aria-label="More options"
   data-icon="lines" data-icon-class="btn-icon-svg"></button>
 ```
 
+**Labeled with icon** — put a child icon host before the label text (or `.btn-label-flash__label`). Use `data-icon-class="btn-icon-svg"` so size and alignment follow the button:
+
+```html
+<button type="button" class="btn">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Copy
+</button>
+<button type="button" class="btn btn-slim">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Copy
+</button>
+```
+
+In JS, prepend `createIcon("copy", { className: "btn-icon-svg" })` instead of a `data-icon` host. Icon-only glyphs are 1.25rem (1rem when slim); labeled glyphs are 1rem so they sit with the type.
+
+**Trailing icon** — keep icon-then-label markup and add `.btn-icon-end` (`flex-direction: row-reverse`). Works with `initToggleButton` content too (icon is mounted before the label).
+
+```html
+<button type="button" class="btn btn-icon-end">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Copy
+</button>
+```
+
+**Hover icon swap** — add `data-icon-hover` beside `data-icon` (on the button or a labeled child host). `initIcons()` mounts a stacked `.btn-icon-swap` pair; pointer devices with hover show the alternate glyph (`@media (hover: hover)`). Touch keeps the idle icon. For JS-built markup, use `createIconSwap()` / `mountIcon(…, { hoverName })`.
+
+```html
+<button type="button" class="btn btn-icon" aria-label="Show"
+  data-icon="visibility" data-icon-hover="visibility-off"
+  data-icon-class="btn-icon-svg"></button>
+
+<button type="button" class="btn">
+  <span data-icon="visibility" data-icon-hover="visibility-off"
+    data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Show
+</button>
+```
+
+**Click / pressed icon swap** — use `initToggleButton` with `data-toggle-button-icon-off` / `-on` (and optional labels). See **Toggle button**.
+
+**Fixed width** — add `.btn-fixed` and set `--btn-width` (inline or on a parent). Width is independent of the label; content still centres by default. Distinct from label-flash `lockWidth`, which measures flash strings.
+
+```html
+<button type="button" class="btn btn-fixed" style="--btn-width: 8rem">Save</button>
+```
+
+**Content alignment** — optional `.btn-align-start` / `.btn-align-center` / `.btn-align-end` (`justify-content`). Default without these classes remains centred.
+
+```html
+<button type="button" class="btn btn-fixed btn-align-start" style="--btn-width: 8rem">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  Start
+</button>
+<button type="button" class="btn btn-fixed btn-icon-end btn-align-end" style="--btn-width: 8rem">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  End
+</button>
+```
+
+```html
+<button type="button" class="btn">Standard</button>
+<button type="button" class="btn btn-slim">Slim</button>
+<button type="button" class="btn btn-primary btn-slim">Slim primary</button>
+```
+
 ### Button label flash
 
-In-place **Copy** → **Copied** / **Failed** feedback on labeled buttons. Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional). Icon-only controls should keep using timer `flashTooltip()` instead.
+In-place **Copy** → **Copied** / **Failed** feedback on labeled buttons. Pair `.btn-label-flash` with a `.btn-label-flash__label` span (icon optional — same labeled-icon pattern as above). Icon-only controls should keep using timer `flashTooltip()` instead.
 
 ```html
 <button type="button" class="btn btn-label-flash" aria-label="Copy">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
+  <span class="btn-label-flash__label">Copy</span>
+</button>
+<button type="button" class="btn btn-slim btn-label-flash" aria-label="Copy">
+  <span data-icon="copy" data-icon-class="btn-icon-svg" aria-hidden="true"></span>
   <span class="btn-label-flash__label">Copy</span>
 </button>
 ```
@@ -1201,7 +1272,7 @@ copyBtn.addEventListener("click", async () => {
 
 ### Toggle button
 
-Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/icon swapping. By default the pressed state shows the accent on/off appearance. Add `data-toggle-button-always-active` when both states are equally valid actions rather than on/off: the accent pressed styling is suppressed so the control keeps the default button appearance, and the swapped label/icon describes the **next action** (e.g. Enter fullscreen ↔ Exit fullscreen).
+Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/icon swapping on **click**. By default the pressed state shows the accent on/off appearance. Add `data-toggle-button-always-active` when both states are equally valid actions rather than on/off: the accent pressed styling is suppressed so the control keeps the default button appearance, and the swapped label/icon describes the **next action** (e.g. Enter fullscreen ↔ Exit fullscreen). For pointer-only hover icon changes (no pressed state), use `data-icon-hover` instead — see **Buttons**.
 
 ```html
 <button type="button" class="btn btn-icon btn-toggle" aria-pressed="false"
@@ -1210,6 +1281,12 @@ Pressed-state button (`.btn.btn-toggle` + `aria-pressed`) with optional label/ic
   data-toggle-button-aria-label-off="Enter fullscreen"
   data-toggle-button-aria-label-on="Exit fullscreen"
   data-icon-class="btn-icon-svg"></button>
+
+<button type="button" class="btn btn-toggle" aria-pressed="false"
+  data-toggle-button
+  data-toggle-button-icon-off="visibility" data-toggle-button-icon-on="visibility-off"
+  data-toggle-button-label-off="Show" data-toggle-button-label-on="Hide"
+  data-toggle-button-icon-class="btn-icon-svg"></button>
 
 <button type="button" class="btn btn-toggle" aria-pressed="false"
   data-toggle-button
@@ -1230,7 +1307,7 @@ btn?.toggle();
 initToggleButtons(document); // all [data-toggle-button]
 ```
 
-`data-toggle-button-label-off` / `-on`, `data-toggle-button-aria-label-off` / `-on`, `data-toggle-button-icon-off` / `-on`, `data-toggle-button-icon-class`, and `data-toggle-button-always-active` mirror the JS options. Actions in [`demo.html`](demo.html) shows both variants at standard and slim sizes.
+`data-toggle-button-label-off` / `-on`, `data-toggle-button-aria-label-off` / `-on`, `data-toggle-button-icon-off` / `-on`, `data-toggle-button-icon-class`, and `data-toggle-button-always-active` mirror the JS options. Actions in [`demo.html`](demo.html) shows icon-only and labeled click-swap toggles at standard and slim sizes.
 
 ### Toolbar
 
@@ -3563,17 +3640,28 @@ HTML:
 
 ```html
 <button type="button" data-icon="light-mode" data-icon-class="theme-icon" aria-label="Light"></button>
+
+<!-- Optional hover alternate (button CSS; see Buttons) -->
+<button type="button" class="btn btn-icon" aria-label="Show"
+  data-icon="visibility" data-icon-hover="visibility-off"
+  data-icon-class="btn-icon-svg"></button>
 ```
 
 JavaScript:
 
 ```javascript
-import { createIcon, initIcons } from "./utils/icons.js";
+import { createIcon, createIconSwap, initIcons, mountIcon } from "./utils/icons.js";
 
-initIcons(document); // mounts every [data-icon] in the page
+initIcons(document); // mounts every [data-icon] (honours data-icon-hover)
 
 const svg = createIcon("lines", { className: "btn-icon-svg" });
 button.append(svg);
+
+mountIcon(host, "visibility", {
+  className: "btn-icon-svg",
+  hoverName: "visibility-off",
+});
+// or: host.append(createIconSwap("visibility", "visibility-off", { className: "btn-icon-svg" }));
 ```
 
 Add fork / app icons to `APP_ICONS` in [`app/utils/icons-app.js`](app/utils/icons-app.js). Framework catalogue changes go in `FRAMEWORK_ICONS` in `icons-framework.js`. App logo supports a light/dark pair (`app/res/app-light.svg`, `app/res/app-dark.svg`) or a single `app/res/app.svg` — see **Branding** and [`app/utils/brand-icon.js`](app/utils/brand-icon.js). Favicon syncs in `brand-icon.js`.

@@ -10,6 +10,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Fixed
 
+- Button icons align consistently: labeled buttons use a child `data-icon` host (or `createIcon` + `.btn-icon-svg`); icon-only stays on `.btn-icon`. Shared gap, `display` / `flex-shrink`, and size rules live in `controls-buttons.css` (labeled glyphs 1rem; icon-only 1.25rem / slim 1rem). Hover alternate icons via `data-icon-hover` / `createIconSwap()` (`.btn-icon-swap`); click / pressed alternate icons via existing `initToggleButton` `data-toggle-button-icon-off` / `-on`.
 - G-code metadata now prefers exact slicer fields, so nozzle, layer height, filament quantities, and duration are not overwritten by unrelated settings; the demo also shows filament metres and perimeters.
 - Code block view/select with line numbers: horizontal scrollbar sits flush with the block (padding moved from `pre` onto `code` / gutter rows so the scrollport fills the block). Edit mode was already correct via the inset textarea.
 - Anchored popovers hide while their target is fully off-screen (instead of clamping to a viewport edge) and show again when the anchor returns.
@@ -38,6 +39,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Optional button fixed width (`.btn-fixed` + `--btn-width`), content alignment (`.btn-align-start` / `-center` / `-end`), and trailing labeled icons (`.btn-icon-end`); defaults remain content-sized, centred, and leading-icon.
 - Required fields: `.field.is-required` adds a red label asterisk; [`app/utils/required-field.js`](app/utils/required-field.js) syncs `aria-required` / empty `aria-invalid` (and optional native `required`) via `initRequiredField(s)` / `setFieldRequired()` / `syncRequiredField()`. `.input` / `.textarea` and `.btn.dropdown-trigger` pick up the shared error border. Demo multi-line input is required.
 - Tooltip layout options: `data-tooltip-max-width` (CSS length / `none` / `match` to equal the trigger width; default `16rem`), `data-tooltip-nowrap` (single line), and `data-tooltip-offset` (px gap from trigger; default `8`). Same `maxWidth` / `nowrap` / `offset` on `flashTooltip()` and `showPersistentTooltip()`.
 - Model and toolpath preview optional auto-rotate (`data-*-preview-animation`) with a floating play/pause control; off by default. `animationPlaying` / `data-*-preview-animation-playing` choose the initial state; `setAnimationPlaying()` / `getAnimationPlaying()` update it at runtime. Apps can hook custom motion with `onAnimationFrame` / `setOnAnimationFrame()` and optionally disable the built-in orbit via `animationAutoRotate` / `setAnimationAutoRotate()`. Starts paused under `prefers-reduced-motion`. Demo: mesh plays; toolpath starts paused.

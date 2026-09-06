@@ -25,7 +25,6 @@
 
 /* Anchors styled as buttons — including the external-link icon they may gain */
 a.btn {
-  gap: 0.375rem;
   text-decoration: none;
   color: var(--text);
 }
@@ -40,6 +39,34 @@ a.btn:hover {
   height: var(--control-height-slim);
   padding: 0 0.75rem;
   font-size: 0.8125rem;
+}
+
+/*
+ * Optional fixed width — set `--btn-width` (e.g. 8rem). Without `.btn-fixed`,
+ * width still follows content (and label-flash `lockWidth` remains separate).
+ */
+.btn-fixed {
+  width: var(--btn-width);
+  min-width: var(--btn-width);
+  flex-shrink: 0;
+}
+
+/* Optional content alignment (default `.btn` stays `justify-content: center`) */
+.btn-align-start {
+  justify-content: flex-start;
+}
+
+.btn-align-center {
+  justify-content: center;
+}
+
+.btn-align-end {
+  justify-content: flex-end;
+}
+
+/* Trailing icon — keep icon-then-label markup; reverse the flex row visually */
+.btn-icon-end {
+  flex-direction: row-reverse;
 }
 
 .btn:hover:not(:disabled) {
@@ -194,18 +221,71 @@ a.btn.btn-danger:hover {
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
 }
 
-.btn-toggle:has(.btn-toggle-label) {
+/*
+ * Button icons
+ * - Icon-only: `.btn.btn-icon` + `data-icon` / `data-icon-class="btn-icon-svg"` on the button
+ * - Labeled: child host `<span data-icon="…" data-icon-class="btn-icon-svg">` before the label
+ *   (or `createIcon(…, { className: "btn-icon-svg" })` as a direct child)
+ * - Hover alternate: add `data-icon-hover="…"` (mounts `.btn-icon-swap`; pointer hover only)
+ * - Click / pressed alternate: `initToggleButton` + `data-toggle-button-icon-off` / `-on`
+ * Icon-only glyphs are 1.25rem (1rem slim); labeled glyphs are 1rem so they sit with the type.
+ */
+.btn:has(> .btn-icon-svg),
+.btn:has(> .btn-icon-swap),
+.btn:has(> [data-icon]),
+.btn-label-flash,
+.btn-toggle:has(.btn-toggle-label),
+a.btn {
   gap: 0.375rem;
 }
 
-.btn-icon-svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.btn-slim .btn-icon-svg {
+.btn > [data-icon] {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
   width: 1rem;
   height: 1rem;
+  line-height: 0;
+}
+
+.btn-icon-svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.btn-slim .btn-icon-svg,
+.btn:not(.btn-icon) .btn-icon-svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Idle / hover stacked pair — see `data-icon-hover` / `createIconSwap()` */
+.btn-icon-swap {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.btn-icon-swap > * {
+  grid-area: 1 / 1;
+}
+
+.btn-icon-swap__hover {
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .btn:hover:not(:disabled) .btn-icon-swap__idle {
+    opacity: 0;
+  }
+
+  .btn:hover:not(:disabled) .btn-icon-swap__hover {
+    opacity: 1;
+  }
 }
 
 .help-icon {
@@ -241,10 +321,6 @@ a.btn.btn-danger:hover {
 }
 
 /* In-place label flash (Copy → Copied) — pair with button-label.js helpers */
-.btn-label-flash {
-  gap: 0.375rem;
-}
-
 .btn-label-flash__label {
   line-height: 1;
 }

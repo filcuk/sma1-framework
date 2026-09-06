@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T15:20:35.030Z",
+  "generatedAt": "2026-09-06T15:42:24.653Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -213,13 +213,13 @@
       "sha256": "0ad1c22cc4bf19cc69e66a557f53f4fd2e53f9daaef7903c536f02e38d3e8d2b"
     },
     "app/css/code-block.css": {
-      "sha256": "c137d67e18e0c7ed5da85b70cc8696dfd3ce3024bef159fead800d8c1af3dad3"
+      "sha256": "22df539e0f3608e92e771fc7294d2f8e2e9fae1cfae8afbdafd7483838c2cbf5"
     },
     "app/css/controls-badges.css": {
       "sha256": "74d52ca34230dc95f2f7557eb863e02df07651585bdec3d0632951a77d5ec928"
     },
     "app/css/controls-buttons.css": {
-      "sha256": "4083a1213934b023064b6d82ce03b8bfd13e9f979d13fa1f7bdedc980b68c130"
+      "sha256": "5b437ba8704a9049fcfba909c862cf7722f16de0c8f0bcbbc41e3a51ddbc0955"
     },
     "app/css/controls-charts.css": {
       "sha256": "a4d28adb3794666a0cf34928c5adc1809cd780ff102a5245ed5813faf70e2189"
@@ -255,7 +255,7 @@
       "sha256": "cd7bc1274a5c8a06b2b50024104038a43add7b960aa34a38335aec06e676baef"
     },
     "app/css/controls-tabular-input.css": {
-      "sha256": "d4b0ccfdf46e566813bfcd1fa4e2b5a060a3d18e4f8abcc975753bd79dc5b2bd"
+      "sha256": "01075e8f4829a1e0553f6160282f479ff5147648852a95810acb896c17dee133"
     },
     "app/css/controls-widgets.css": {
       "sha256": "0701ca2984641e4f39e34a7534b4a1d8e83c2b6ffa63d87b4024bfc22e993697"
@@ -321,7 +321,7 @@
       "sha256": "8d639a2da4e1538534dedc42305150a0158d7d12703f017b7d568a8a73d70c13"
     },
     "app/utils/button-label.js": {
-      "sha256": "f85c2d36168a4d3f6cf4cd3449b02b337dae05b5b6608047bbca535fe59e82fe"
+      "sha256": "9f99799d27a3601d45bad368f7fb0a9ca3fd0a4b5faaef1748486d796adbc381"
     },
     "app/utils/clipboard.js": {
       "sha256": "b8821da634ea9c1eb85771e1f2d3fd54f3085cf64116040adc449cd342f12def"
@@ -339,7 +339,7 @@
       "sha256": "5eee64aa3678bcd94acab95a2d10b0937645c7335a594da3d28bd759f47e47e7"
     },
     "app/utils/icons.js": {
-      "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
+      "sha256": "da29c6129f26ac21c6612e66a2ba9ce9216bbe8a7182ed936f3d6be6e9c2107f"
     },
     "app/utils/menu.js": {
       "sha256": "2f9ccfa57eebf7530d8968705a65fa5a3018cd3f2fd5f92f656862fa51dd4e4a"
