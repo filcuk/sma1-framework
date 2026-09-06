@@ -490,7 +490,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Tri-state checkbox** | Checkbox that cycles unchecked → checked → mixed (`indeterminate`). [`app/components/checkbox.js`](app/components/checkbox.js). |
 | **Segmented control** | Toggle button group for single selection; optional linked panels. Default height matches `.btn`; add `.segmented-control--slim` for the compact size. [`app/components/segmented-control.js`](app/components/segmented-control.js). |
 | **Progress indicator** | Linear multi-step wizard; horizontal (default) or vertical step list. [`app/components/progress-indicator.js`](app/components/progress-indicator.js). |
-| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, and auto grid layout (`data-dropdown-grid*`). Behaviour from [`app/components/dropdown.js`](app/components/dropdown.js). |
+| **Dropdown** | `.dropdown` with `.dropdown-trigger` and `.dropdown-menu`; optional `.dropdown-menu-group` headers, `.dropdown-menu-item-subtitle` context lines, leading `.dropdown-menu-item-icon-wrap` icons, auto grid layout (`data-dropdown-grid*`), and fixed positioning (`data-dropdown-fixed` / `fixed`) to escape overflow clipping. Behaviour from [`app/components/dropdown.js`](app/components/dropdown.js). |
 | **Toggle dropdown** | Multi-select dropdown; items toggle with `aria-checked`, menu stays open; selection count via badge. [`app/components/dropdown-toggle.js`](app/components/dropdown-toggle.js). |
 | **Expand** | `.expand` disclosure with chevron + label trigger and collapsible `.expand-panel`; behaviour from [`app/components/expand.js`](app/components/expand.js). |
 | **Accordion** | `.accordion` vertical stack of collapsible sections; one open at a time by default. [`app/components/accordion.js`](app/components/accordion.js). |
@@ -503,7 +503,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **About dialog** | Tagline “What?” opener with progressive Huh? / Uhh… simplification stages. Optional first-visit popover hint + Guided tour. [`app/components/about-dialog.js`](app/components/about-dialog.js) (wraps dialog). |
 | **Heading links** | Hover a `main :is(h2, h3)[id]` heading to reveal a link icon; tooltip says “Get link”; click copies the URL and shows a timer success/error tip (icon-only — no in-place label). Disable with `initShell({ headingLinks: false })` or `data-no-heading-links` on `<html>`; skip one heading with `data-no-heading-link`. [`app/shell/heading-link.js`](app/shell/heading-link.js). |
 | **External links** | Outgoing `http(s)` links get an arrow-outward icon via `initShell()` / [`app/shell/external-link.js`](app/shell/external-link.js). Opt out with `data-no-external-icon`. |
-| **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-tone="success\|error"`, `data-tooltip-max-width`, `data-tooltip-nowrap`, `data-tooltip-offset`. Hover/focus tips skip disabled controls unless `data-tooltip-when-disabled`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
+| **Tooltips** | Hover (default), timer (`flashTooltip` when in-place feedback is not possible), and persistent modes. `data-tooltip`, optional `data-tooltip-position`, `data-tooltip-anchor` (CSS selector — place on another element while this one supplies the copy), `data-tooltip-tone="success\|error"`, `data-tooltip-max-width`, `data-tooltip-nowrap`, `data-tooltip-offset`. Hover/focus tips skip disabled controls unless `data-tooltip-when-disabled`. See [`DESIGN.md`](DESIGN.md) and [`app/components/tooltip.js`](app/components/tooltip.js). |
 | **Popovers** | Anchored speech-bubble card with a notch, title, body, and actions. [`app/components/popover.js`](app/components/popover.js). Prefer over tooltips when the tip needs buttons or rich content. |
 | **Tutorials** | Guided spotlight tour over a JS step script (back / next / close). Dims the page except the target; optional interactive steps and `when` / nested `steps` branches. [`app/components/tutorial.js`](app/components/tutorial.js) (uses popover). |
 | **Banners** | `.banner.banner-*` variants with `data-icon`. Optional style variations (`banner-question`, `banner-example`, `banner-quote`, `banner-tip`) reuse existing tokens. Optional rotation via `data-banner-variations` + `data-banner-rotate`. Auto-hide via `data-banner-expire` (ms) and [`app/components/banner.js`](app/components/banner.js) (`showBanner` / `hideBanner` / `setBannerVariation`). Expire overlay + fade-out. |
@@ -764,7 +764,9 @@ if (aboutOpenBtn instanceof HTMLElement && !hasSeenAboutHint()) {
 
 Hover tips (default): add `data-tooltip` and optional `data-tooltip-position="top|bottom|left|right"`. Optional `data-tooltip-tone="success|error"` for bold green/red tips with check / × icons (info is the default, text only).
 
-Optional layout: `data-tooltip-max-width` accepts any CSS length (default `16rem`), `none` for uncapped, or `match` to set the tip width to the trigger control’s width. `data-tooltip-nowrap` keeps the tip on one line (and clears the default max-width unless you also set `data-tooltip-max-width`). `data-tooltip-offset` sets the gap in pixels between tip and trigger (default `8`; negatives overlap). The same `maxWidth` / `nowrap` / `offset` options are available on `flashTooltip()` and `showPersistentTooltip()`.
+Optional **anchor** — place the tip on a different element while this one supplies the copy. Set `data-tooltip-anchor` to a document CSS selector (e.g. `#view-style-trigger`), or pass `anchor` to `openTooltip()` / keep updating copy with `updateTooltip({ text })`. Sources that share the same resolved anchor can be swept without the tip jumping (ideal for icon-only dropdown triggers with menu-item labels).
+
+Optional layout: `data-tooltip-max-width` accepts any CSS length (default `16rem`), `none` for uncapped, or `match` to set the tip width to the **placement** control’s width. `data-tooltip-nowrap` keeps the tip on one line (and clears the default max-width unless you also set `data-tooltip-max-width`). `data-tooltip-offset` sets the gap in pixels between tip and trigger (default `8`; negatives overlap). The same `maxWidth` / `nowrap` / `offset` options are available on `flashTooltip()`, `openTooltip()`, `updateTooltip()`, and `showPersistentTooltip()`.
 
 Hover and focus tips do **not** show on disabled controls (`disabled`, `aria-disabled="true"`, or a host class ending in `--disabled`, e.g. `.slider--disabled`). Add `data-tooltip-when-disabled` to keep the tip (for example to explain why the control is unavailable). Timer (`flashTooltip`) and persistent tips are unaffected.
 
@@ -778,17 +780,35 @@ Hover and focus tips do **not** show on disabled controls (`disabled`, `aria-dis
 <button type="button" data-tooltip="Farther from the control" data-tooltip-offset="20">Offset</button>
 <button type="button" disabled data-tooltip="Unavailable until you save"
   data-tooltip-when-disabled>Save</button>
+
+<!-- Icon dropdown: tip stays on the trigger while menu items change the copy -->
+<button type="button" id="view-style-trigger" class="btn btn-slim btn-icon dropdown-trigger"
+  data-tooltip="View style" data-tooltip-position="top" aria-label="View style"></button>
+<button type="button" class="dropdown-menu-item" role="menuitem" data-value="shaded"
+  data-tooltip="Shaded" data-tooltip-anchor="#view-style-trigger">Shaded</button>
 ```
 
 ```javascript
 import {
   initTooltips,
+  openTooltip,
+  updateTooltip,
+  closeTooltip,
   flashTooltip,
   showPersistentTooltip,
   dismissPersistentTooltip,
 } from "./components/tooltip.js";
 
 initTooltips(document);
+
+// Imperative: place on the trigger, copy from elsewhere
+openTooltip(menuItem, {
+  text: "Shaded",
+  anchor: triggerBtn,
+  position: "top",
+});
+updateTooltip({ text: "Wireframe" }); // same anchor; tip does not jump
+closeTooltip();
 
 // Timer mode — reaction feedback when the control cannot flash in-place
 // (e.g. icon-only). Prefer rewriting a visible label (Copy → Copied) when possible.
@@ -2933,6 +2953,8 @@ const dropdown = initDropdown(document.getElementById("my-dropdown"), {
   onSelect: ({ value, label }) => { /* item chosen */ },
   gridMin: 8, // switch to grid when item count exceeds 8
   gridCols: 2, // optional; default 2
+  fixed: true, // escape overflow clipping (e.g. inside model-preview)
+  fixedAlign: "end", // optional; default "start"
 });
 
 dropdown?.setGridMin(10); // change threshold later
@@ -2941,6 +2963,8 @@ dropdown?.syncMenuGrid(); // after adding/removing items in script
 ```
 
 Markup: `.dropdown` > `.dropdown-trigger` + `ul.dropdown-menu` with `.dropdown-menu-item` buttons.
+
+Optional **fixed positioning** — when the host sits inside `overflow: hidden` (preview surfaces, table wraps), set `data-dropdown-fixed` on the `.dropdown` (or pass `fixed: true`) so the menu uses `position: fixed` and is not clipped. Optional `data-dropdown-fixed-align="end"` / `fixedAlign: "end"` lines the menu up with the trigger’s trailing edge (handy for right-side overlay toolbars).
 
 Optional **group headers** — non-interactive labels between items. Insert a `<li role="presentation">` with a `.dropdown-menu-group` div before each group’s items. Headers are skipped by keyboard navigation (`itemSelector` is `.dropdown-menu-item` only). Later groups get a top border automatically.
 
@@ -3022,6 +3046,7 @@ const toggleDropdown = initToggleDropdown(document.getElementById("my-toggle-dro
   onToggle: ({ value, label, selected, values, labels }) => {
     console.log(label, selected, values);
   },
+  // fixed / fixedAlign — same as initDropdown (overflow-safe menus)
 });
 
 toggleDropdown?.getSelected(); // [{ value, label, item }, …]

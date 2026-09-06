@@ -39,6 +39,8 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
+- Dropdown / toggle-dropdown fixed positioning: `fixed` / `fixedAlign` on `initDropdown()` / `initToggleDropdown()`, or `data-dropdown-fixed` / `data-dropdown-fixed-align` on the host — escapes `overflow: hidden` (e.g. model preview overlays).
+- Tooltip placement anchor: `data-tooltip-anchor` (CSS selector), plus `openTooltip(target, { text, anchor, … })` and `updateTooltip({ text })`, so tip copy can change (e.g. menu items) while staying fixed on another control (e.g. an icon dropdown trigger).
 - Toggle track size tokens (`--toggle-track-height` / `--toggle-track-width`, slim track and thumb tokens) in [`tokens.css`](app/tokens.css). `.panel-row--end` bottom-aligns labeled fields and optically centres bare toggles on the control line without growing stacked `.toggle-group` rows. Code-block toolbar extras (`.code-block-toolbar__extras`) centre injected chrome and densify toggle labels for slim toolbar type — see `USAGE.md` / `DESIGN.md`.
 - Optional button fixed width (`.btn-fixed` + `--btn-width`), content alignment (`.btn-align-start` / `-center` / `-end`), and trailing labeled icons (`.btn-icon-end`); defaults remain content-sized, centred, and leading-icon.
 - Required fields: `.field.is-required` adds a red label asterisk; [`app/utils/required-field.js`](app/utils/required-field.js) syncs `aria-required` / empty `aria-invalid` (and optional native `required`) via `initRequiredField(s)` / `setFieldRequired()` / `syncRequiredField()`. `.input` / `.textarea` and `.btn.dropdown-trigger` pick up the shared error border. Demo multi-line input is required.

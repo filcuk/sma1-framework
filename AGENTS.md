@@ -90,7 +90,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initCodeBlocks(root)` / `initCodeBlock(el)` | Prism code blocks with toolbar/surface actions, modes, copy/paste |
 | `initExpandableSurfaces(root)` | Maximize `[data-expandable-surface]` to page-width overlay |
 | `showBanner()` / `hideBanner()` | Show or hide `.banner` elements; respects `data-banner-expire` |
-| `initTooltips()` / `flashTooltip()` / `showPersistentTooltip()` / `dismissPersistentTooltip()` | Hover tips; timer reaction when in-place is not possible; persistent tips — see [`DESIGN.md`](DESIGN.md) |
+| `initTooltips()` / `openTooltip()` / `updateTooltip()` / `closeTooltip()` / `flashTooltip()` / `showPersistentTooltip()` / `dismissPersistentTooltip()` | Hover tips (optional `data-tooltip-anchor` / `anchor` to place on another element); timer reaction when in-place is not possible; persistent tips — see [`DESIGN.md`](DESIGN.md) |
 | `initPopover()` | Anchored speech-bubble card with notch, title, body, and actions |
 | `initTutorial()` | Guided spotlight tour over a JS step script (uses popover); optional `when` / nested `steps` branches; multiple scripts per page, one active |
 | `initPageNav()` / `initPageNavPanel()` | Page nav only — requires `PAGE_NAV_MARKUP` from `app/shell/render-shell.js` |
