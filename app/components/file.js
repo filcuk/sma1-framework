@@ -2076,7 +2076,7 @@ function initFileFullscreen(fileEl, options = {}) {
   function onDocumentDragLeave(event) {
     if (!activateOnDrag || !dragSession || !isFileDragEvent(event)) return;
     // relatedTarget null ≈ left the browser window
-    if (event.relatedTarget == null) {
+    if (event.relatedTarget === null) {
       endDragSession();
     }
   }
