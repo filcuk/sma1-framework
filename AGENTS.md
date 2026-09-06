@@ -6,6 +6,10 @@ Rules for AI agents working in the SMA1 Framework repository and its app forks.
 
 The always-applied [framework ownership rule](.cursor/rules/framework-ownership.mdc) defines which files app agents must treat as read-only. Follow it before editing an app fork.
 
+Commit messages follow [Conventional Commits](.cursor/rules/conventional-commits.mdc). Agents should suggest a correctly formatted commit after every change and only create a git commit when asked.
+
+Multi-step plans run [one step at a time](.cursor/rules/plan-execution.mdc): after each step, suggest a commit, pause for review, and wait for the user to say `continue` before the next step (unless told otherwise).
+
 ## Lifecycle skills
 
 Multi-step workflows live under [`.cursor/skills/`](.cursor/skills/). Read the matching `SKILL.md` when the task fits; shared rules and the feature dependency inventory are in [`.cursor/skills/_shared/`](.cursor/skills/_shared/).

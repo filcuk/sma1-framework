@@ -655,9 +655,11 @@ export const AGENT_SKILLS = {
 
 /** Framework-owned Cursor rules (always synced with the agent set). */
 export const AGENT_RULES = [
+  ".cursor/rules/conventional-commits.mdc",
   ".cursor/rules/demo-isolation.mdc",
   ".cursor/rules/framework-ownership.mdc",
   ".cursor/rules/icons.mdc",
+  ".cursor/rules/plan-execution.mdc",
   ".cursor/rules/usage-docs.mdc",
   ".cursor/rules/vendor.mdc",
 ];
