@@ -392,7 +392,7 @@ app/
     controls-section-panel.css # Section panel grid
     controls-menus.css    # Combo, dropdown
     controls-disclosure.css # Expand, accordion, tabs, progress indicator
-    controls-file.css     # Segmented file rows, large dropzone host
+    controls-file.css     # Segmented file rows, large dropzone, fullscreen overlay
     controls-color.css    # Colour set / colour picker
     controls-charts.css   # TanStack Charts host
     controls-diagram.css  # Mermaid diagram host
@@ -466,7 +466,7 @@ A custom popup joins in by calling `registerOpenPopup(close)` when it opens and 
 | **Chips** | Selectable filter tags and removable input chips. [`app/components/chip.js`](app/components/chip.js). |
 | **Legend** | Coloured category chips for charts, code highlights, and similar; optional toggle + tooltips. [`app/components/legend.js`](app/components/legend.js). |
 | **Inputs** | `.field` / `.field-label` with `.input`, `.textarea`, `.checkbox`, `.radio`, `.toggle`, `.segmented-control`, `.progress-bar`, `.spinner`, `.date-picker`, `.time-picker`, `.duration-input`, `.slider`, `.stepper`, `.color-input`, and `.combobox`. |
-| **File** | `.file` segmented rows and `.file--large` dropzone host (download / upload / remove). [`app/components/file.js`](app/components/file.js). |
+| **File** | `.file` segmented rows, `.file--large` dropzone, and `.file--fullscreen` page-drop overlay. [`app/components/file.js`](app/components/file.js). |
 | **Image preview** | Checkerboard `.image-preview` host for SVG / image URLs / Blob; optional maximise, download, and size meta (visibility modes match mesh / toolpath). [`app/components/image-preview.js`](app/components/image-preview.js). |
 | **STL export** | Dependency-free parametric mesh and binary/ASCII STL helpers; millimetres by convention. [`app/components/stl.js`](app/components/stl.js). |
 | **3D model preview** | Interactive indexed-mesh preview with Three.js orbit, zoom, pan, resizing, theme support, and optional meta strip. [`app/components/model-preview.js`](app/components/model-preview.js). |
@@ -1603,7 +1603,7 @@ initDurationInputs(document);
 
 ### File
 
-Segmented combo-style rows and an optional large dropzone host (`.file--large`).
+Segmented combo-style rows, a large dropzone host (`.file--large`), and a fullscreen page-drop overlay (`.file--fullscreen`).
 
 **Rows** — optional download, upload/replace, and remove segments; extension and size meta are hidden until the filename segment is hovered (each can be set to `always` or `never`). Content for download is generated on demand.
 
@@ -1643,6 +1643,21 @@ Segmented combo-style rows and an optional large dropzone host (`.file--large`).
 </div>
 ```
 
+**Fullscreen overlay** — fixed viewport capture. By default it activates when a file drag enters the document, fires `onFiles` on drop, and hides again (no persistent list in the overlay). Set `data-file-fullscreen-activate-on-drag="false"` (or `fullscreenActivateOnDrag: false`) to control visibility yourself via `show()` / `hide()` / `setActive()`. Escape is not wired — dismiss by drop, leave, or `hide()`. Overlay `z-index` is `180` (above modals, below tooltips).
+
+```html
+<div class="file file--fullscreen hidden" hidden id="my-fullscreen" data-file-accept="image/*">
+  <input type="file" class="file-input" hidden />
+  <button type="button" class="file-prompt">
+    <span data-icon="upload" data-icon-class="file-prompt-icon"></span>
+    <span class="file-prompt-text">
+      <span class="file-prompt-primary">Drop files anywhere</span>
+      <span class="file-prompt-secondary">or select to browse</span>
+    </span>
+  </button>
+</div>
+```
+
 ```javascript
 import { downloadFile, initFile, initFiles } from "./components/file.js";
 
@@ -1674,20 +1689,26 @@ dropzone?.getFiles();
 dropzone?.setFiles([file]); // programmatic selection (triggers onFiles)
 dropzone?.clear();
 
+const fullscreen = initFile(document.getElementById("my-fullscreen"), {
+  onFiles: ({ files }) => console.log("captured", files),
+});
+fullscreen?.show();
+fullscreen?.hide();
+
 // Or trigger a download directly:
 await downloadFile({
   filename: "notes.txt",
   content: "Plain text body",
 });
 
-initFiles(document); // wire every `.file` (rows and large hosts)
+initFiles(document); // wire every `.file` (rows, large, and fullscreen hosts)
 ```
 
-Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
+Row defaults: download **on**, remove **off**, upload **off**; name action `none`; ext and size visibility `hover`. Large defaults: remove **on**, download / upload **off**; size visibility `always`. Fullscreen defaults: activate-on-drag **on**. Enable row upload with `data-file-upload` (or `upload: true`); pair with `data-file-drop-active` to highlight the row as a drop target.
 
 `data-file-accept` maps to the hidden input's `accept` and is **enforced by default** for browse, drop, and `setFiles` (extensions such as `.gcode` and MIME tokens such as `image/*`). Non-matching files are omitted and `onError` is called with `reason: "accept"`. Set `data-file-accept-filter="soft"` (or `acceptFilter: "soft"`) to keep advise-only behaviour. `data-file-multiple` enables multi-select. `data-file-max` caps how many files can be added (extra files are trimmed; `onError` is called with `reason: "max"`).
 
-On large init, the prompt shows a `.file-prompt-meta` line when there is something non-default to communicate: allowed types and/or a multi-file count. A plain single-file host with no `accept` shows no meta line. The element is created if missing.
+On large / fullscreen init, the prompt shows a `.file-prompt-meta` line when there is something non-default to communicate: allowed types and/or a multi-file count. A plain single-file host with no `accept` shows no meta line. The element is created if missing.
 
 ### STL export
 

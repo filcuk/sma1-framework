@@ -331,6 +331,30 @@ initFile(document.getElementById("demo-file-dropzone-single"));
 
 initFile(document.getElementById("demo-file-dropzone-multi"));
 
+const demoFileFullscreenStatus = document.getElementById("demo-file-fullscreen-status");
+const demoFileFullscreen = initFile(document.getElementById("demo-file-fullscreen"), {
+  onFiles: ({ files }) => {
+    if (!demoFileFullscreenStatus) return;
+    if (!files.length) {
+      demoFileFullscreenStatus.textContent = "No fullscreen drop yet.";
+      return;
+    }
+    const names = files.map((file) => file.name).join(", ");
+    demoFileFullscreenStatus.textContent =
+      files.length === 1 ? `Captured ${names}.` : `Captured ${files.length} files: ${names}.`;
+  },
+  onError: ({ message }) => {
+    if (demoFileFullscreenStatus) demoFileFullscreenStatus.textContent = message;
+  },
+});
+
+document.getElementById("demo-file-fullscreen-show")?.addEventListener("click", () => {
+  demoFileFullscreen?.show();
+});
+document.getElementById("demo-file-fullscreen-hide")?.addEventListener("click", () => {
+  demoFileFullscreen?.hide();
+});
+
 initFile(document.getElementById("demo-file-download"), {
   files: [
     {

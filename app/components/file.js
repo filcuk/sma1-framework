@@ -2,7 +2,8 @@ import { parseBooleanAttr, setHidden } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 
 /**
- * Segmented file control (combo-style) and large dropzone host.
+ * Segmented file control (combo-style), large dropzone host, and fullscreen
+ * page-drop overlay.
  *
  * Row markup (default):
  *   <div class="file" data-file-download …>
@@ -16,8 +17,15 @@ import { createIcon } from "../utils/icons.js";
  *     <ul class="file-list hidden" hidden></ul>
  *   </div>
  *
+ * Fullscreen overlay:
+ *   <div class="file file--fullscreen hidden" hidden data-file-accept="image/*">
+ *     <input type="file" class="file-input" hidden />
+ *     <button type="button" class="file-prompt">…</button>
+ *   </div>
+ *
  * Row defaults: download on, remove off, upload off.
  * Large defaults: remove on, download off, upload off; size meta always visible.
+ * Fullscreen defaults: activate on document file-drag (hide after drop); `onFiles` only.
  * Name action: none | download | upload | remove | custom (via onNameAction).
  * Ext / size visibility: hover | always | never (independent).
  */
@@ -420,8 +428,7 @@ export function initFile(fileEl, options = {}) {
   if (!fileEl) return null;
   const variant = resolveVariant(options.variant, fileEl);
   if (variant === "large") return initFileLarge(fileEl, options);
-  // fullscreen lands in a later step
-  if (variant === "fullscreen") return null;
+  if (variant === "fullscreen") return initFileFullscreen(fileEl, options);
   return initFileRows(fileEl, options);
 }
 
@@ -1235,6 +1242,287 @@ function initFileLarge(fileEl, options = {}) {
       fileEl.removeEventListener("dragleave", onDragLeave);
       fileEl.removeEventListener("drop", onDrop);
       dragDepth = 0;
+      setDragover(false);
+    },
+  };
+}
+
+function isFileDragEvent(event) {
+  const types = event.dataTransfer?.types;
+  if (!types) return false;
+  return [...types].includes("Files");
+}
+
+/**
+ * Fullscreen page drop overlay (`.file.file--fullscreen`).
+ * Default: activate when a file drag enters the document, fire `onFiles` on drop,
+ * and hide again (no persistent list in the overlay).
+ *
+ * @param {HTMLElement} fileEl
+ * @param {object} [options]
+ */
+function initFileFullscreen(fileEl, options = {}) {
+  const input = fileEl.querySelector(".file-input");
+  const prompt = fileEl.querySelector(".file-prompt");
+  if (!prompt) return null;
+
+  const { onFiles, onError } = options;
+
+  const acceptTypes = options.accept ?? fileEl.dataset.fileAccept ?? "";
+  const acceptTokens = parseAcceptTokens(acceptTypes);
+  const acceptFilterMode = resolveAcceptFilter(
+    typeof options.acceptFilter === "string"
+      ? options.acceptFilter
+      : fileEl.dataset.fileAcceptFilter
+  );
+  const isMultiple =
+    options.multiple ?? parseBooleanAttr(fileEl.dataset.fileMultiple) ?? false;
+  const max =
+    options.maxFiles ??
+    (fileEl.dataset.fileMax ? Number(fileEl.dataset.fileMax) : undefined);
+  const activateOnDrag =
+    options.fullscreenActivateOnDrag ??
+    parseBooleanAttr(fileEl.dataset.fileFullscreenActivateOnDrag) ??
+    true;
+
+  if (input) {
+    if (acceptTypes) input.accept = acceptTypes;
+    input.multiple = isMultiple;
+  }
+  if (acceptFilterMode === "soft") {
+    fileEl.dataset.fileAcceptFilter = "soft";
+  } else {
+    delete fileEl.dataset.fileAcceptFilter;
+  }
+
+  const constraintsLabel = formatConstraintsLabel(acceptTypes, isMultiple, max);
+  const text = prompt.querySelector(".file-prompt-text") ?? prompt;
+  let meta = text.querySelector(".file-prompt-meta");
+  if (constraintsLabel) {
+    if (!meta) {
+      meta = document.createElement("span");
+      meta.className = "file-prompt-meta";
+      text.append(meta);
+    }
+    meta.textContent = constraintsLabel;
+    setHidden(meta, false);
+  } else if (meta) {
+    meta.textContent = "";
+    setHidden(meta, true);
+  }
+
+  let active = false;
+  let docDragDepth = 0;
+  let overlayDragDepth = 0;
+
+  function setDragover(on) {
+    fileEl.classList.toggle("is-dragover", on);
+  }
+
+  function setActive(next, { fromDrag = false } = {}) {
+    const want = Boolean(next);
+    if (want === active) {
+      if (want) setDragover(fromDrag || overlayDragDepth > 0);
+      return;
+    }
+    active = want;
+    fileEl.classList.toggle("is-active", active);
+    setHidden(fileEl, !active);
+    if (!active) {
+      docDragDepth = 0;
+      overlayDragDepth = 0;
+      setDragover(false);
+    } else if (fromDrag) {
+      setDragover(true);
+    }
+  }
+
+  function partitionByAccept(incoming) {
+    if (!acceptTokens.length || acceptFilterMode === "soft") {
+      return { accepted: incoming, rejected: [] };
+    }
+    /** @type {File[]} */
+    const accepted = [];
+    /** @type {File[]} */
+    const rejected = [];
+    for (const file of incoming) {
+      if (fileMatchesAccept(file, acceptTokens)) accepted.push(file);
+      else rejected.push(file);
+    }
+    return { accepted, rejected };
+  }
+
+  function reportRejected(rejected) {
+    if (!rejected.length) return;
+    const message =
+      rejected.length === 1
+        ? `"${rejected[0].name}" is not an accepted file type.`
+        : `${rejected.length} files were not an accepted type.`;
+    onError?.({
+      fileEl,
+      message,
+      files: rejected,
+      reason: "accept",
+    });
+  }
+
+  function trimToMax(candidateFiles) {
+    if (!max || !Number.isFinite(max) || max <= 0) return candidateFiles;
+    if (candidateFiles.length <= max) return candidateFiles;
+
+    onError?.({
+      fileEl,
+      message: `You can add at most ${max} file${max === 1 ? "" : "s"}.`,
+      files: candidateFiles,
+      reason: "max",
+    });
+    return candidateFiles.slice(0, max);
+  }
+
+  /**
+   * @param {File[]} incoming
+   */
+  function acceptIncoming(incoming) {
+    if (!incoming.length) return;
+    const { accepted, rejected } = partitionByAccept(incoming);
+    reportRejected(rejected);
+    if (!accepted.length) return;
+
+    const next = isMultiple
+      ? trimToMax(accepted)
+      : accepted.slice(0, 1);
+    onFiles?.({ fileEl, files: next });
+  }
+
+  function openPicker() {
+    if (!input) return;
+    input.value = "";
+    input.click();
+  }
+
+  function onPromptClick() {
+    openPicker();
+  }
+
+  function onInputChange() {
+    if (!input) return;
+    const incoming = [...input.files];
+    if (!incoming.length) return;
+    acceptIncoming(incoming);
+    if (activateOnDrag) setActive(false);
+  }
+
+  function onOverlayDragEnter(event) {
+    if (!isFileDragEvent(event)) return;
+    event.preventDefault();
+    overlayDragDepth += 1;
+    setDragover(true);
+  }
+
+  function onOverlayDragOver(event) {
+    if (!isFileDragEvent(event)) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+  }
+
+  function onOverlayDragLeave(event) {
+    if (!isFileDragEvent(event)) return;
+    event.preventDefault();
+    overlayDragDepth -= 1;
+    if (overlayDragDepth <= 0) {
+      overlayDragDepth = 0;
+      setDragover(false);
+      if (activateOnDrag) setActive(false);
+    }
+  }
+
+  function onOverlayDrop(event) {
+    event.preventDefault();
+    overlayDragDepth = 0;
+    docDragDepth = 0;
+    setDragover(false);
+
+    const incoming = [...(event.dataTransfer?.files ?? [])];
+    acceptIncoming(incoming);
+    if (activateOnDrag) setActive(false);
+  }
+
+  function onDocumentDragEnter(event) {
+    if (!activateOnDrag || !isFileDragEvent(event)) return;
+    event.preventDefault();
+    docDragDepth += 1;
+    setActive(true, { fromDrag: true });
+  }
+
+  function onDocumentDragOver(event) {
+    if (!activateOnDrag || !isFileDragEvent(event)) return;
+    event.preventDefault();
+  }
+
+  function onDocumentDragLeave(event) {
+    if (!activateOnDrag || !isFileDragEvent(event)) return;
+    docDragDepth -= 1;
+    if (docDragDepth <= 0) {
+      docDragDepth = 0;
+      // Leave to the overlay itself — keep showing; leave the window — hide.
+      if (!fileEl.contains(/** @type {Node | null} */ (event.relatedTarget))) {
+        setActive(false);
+      }
+    }
+  }
+
+  function onDocumentDrop(event) {
+    if (!activateOnDrag) return;
+    // Overlay drop handler owns accepted drops; reset counters if drop lands elsewhere.
+    if (!fileEl.contains(/** @type {Node | null} */ (event.target))) {
+      docDragDepth = 0;
+      setActive(false);
+    }
+  }
+
+  // Start hidden when drag-activation is on; otherwise leave author visibility as-is.
+  if (activateOnDrag) {
+    setActive(false);
+  } else {
+    active = !fileEl.hidden && !fileEl.classList.contains("hidden");
+    fileEl.classList.toggle("is-active", active);
+  }
+
+  prompt.addEventListener("click", onPromptClick);
+  input?.addEventListener("change", onInputChange);
+  fileEl.addEventListener("dragenter", onOverlayDragEnter);
+  fileEl.addEventListener("dragover", onOverlayDragOver);
+  fileEl.addEventListener("dragleave", onOverlayDragLeave);
+  fileEl.addEventListener("drop", onOverlayDrop);
+
+  if (activateOnDrag) {
+    document.addEventListener("dragenter", onDocumentDragEnter);
+    document.addEventListener("dragover", onDocumentDragOver);
+    document.addEventListener("dragleave", onDocumentDragLeave);
+    document.addEventListener("drop", onDocumentDrop);
+  }
+
+  return {
+    openPicker,
+    show: () => setActive(true),
+    hide: () => setActive(false),
+    setActive: (next) => setActive(next),
+    isActive: () => active,
+    destroy: () => {
+      prompt.removeEventListener("click", onPromptClick);
+      input?.removeEventListener("change", onInputChange);
+      fileEl.removeEventListener("dragenter", onOverlayDragEnter);
+      fileEl.removeEventListener("dragover", onOverlayDragOver);
+      fileEl.removeEventListener("dragleave", onOverlayDragLeave);
+      fileEl.removeEventListener("drop", onOverlayDrop);
+      if (activateOnDrag) {
+        document.removeEventListener("dragenter", onDocumentDragEnter);
+        document.removeEventListener("dragover", onDocumentDragOver);
+        document.removeEventListener("dragleave", onDocumentDragLeave);
+        document.removeEventListener("drop", onDocumentDrop);
+      }
+      docDragDepth = 0;
+      overlayDragDepth = 0;
       setDragover(false);
     },
   };

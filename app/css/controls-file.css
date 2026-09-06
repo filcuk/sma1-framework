@@ -231,3 +231,48 @@ button.file-item-main:not([aria-disabled="true"]) {
   opacity: 0;
   pointer-events: none;
 }
+
+/* Fullscreen page-drop overlay */
+
+.file--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 2rem;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.file--fullscreen[hidden] {
+  display: none !important;
+}
+
+.file--fullscreen .file-prompt {
+  max-width: 28rem;
+  min-height: 10rem;
+  box-shadow: 0 8px 28px rgba(31, 35, 40, 0.16);
+}
+
+:root[data-theme="dark"] .file--fullscreen .file-prompt {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .file--fullscreen.is-active {
+    animation: file-fullscreen-in 160ms ease-out;
+  }
+}
+
+@keyframes file-fullscreen-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
