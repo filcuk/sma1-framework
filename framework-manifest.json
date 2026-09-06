@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T08:04:49.922Z",
+  "generatedAt": "2026-09-06T08:53:23.628Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -129,7 +129,7 @@
       "sha256": "568a84db76db965ffbd092f6ee6706969302d140e8a82f939cf14977e07182f2"
     },
     "app/components/file.js": {
-      "sha256": "8c69ef9a5e6e0e9f33310d6358d4801b446f74e971388d023163539b00c3ca90"
+      "sha256": "38dea0f51e29ecdfc2e5871667eb135f9137898275d7d7366dfe3da6ccb271f9"
     },
     "app/components/gcode-toolpath.js": {
       "sha256": "57ca80587de8b701a5780624e8dd7e2424a661f7e3431699b946ba0f58a58f2a"
@@ -234,13 +234,13 @@
       "sha256": "fab5be1880d5ec4004035474183a4b461ae72232819d67f9aaa7c14f504efa1d"
     },
     "app/css/controls-disclosure.css": {
-      "sha256": "98a961b3a44750c9b7492c0e73b36c82a979aefd437fe0b5f1271d1e3f9d9a96"
+      "sha256": "5ffe088437760b57023b2ddbfe2a7b91eb5d0b8de13849992e6a9bef26ccdfbf"
     },
     "app/css/controls-fields.css": {
       "sha256": "7fa37f92dc2c15d949b5d9b04fc7e594d96aca86335b5eae386d3adc65b910c7"
     },
     "app/css/controls-file.css": {
-      "sha256": "dc9bbc51ecf1b7094ecef1ade1583e01d6d095f668e5c3256475b8c9cb275f06"
+      "sha256": "63a11b2ed941d98ad3cfc4dbf06207638d8747c42d342a8c9571ac81c615cec0"
     },
     "app/css/controls-image.css": {
       "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
@@ -261,7 +261,7 @@
       "sha256": "4a3602e937b6d6487d991607e9697d125ded7dd8b7740ffe926aac6488616c8d"
     },
     "app/css/layout.css": {
-      "sha256": "6d1a934ee76f4572ea3dbb62b13ad1c2948205f9ff75658d9855ca76f6869c51"
+      "sha256": "94e9ac5c7d9e864622ac757180ea438a5e2d387784a81a87c2ef7822bcb64427"
     },
     "app/css/overlays.css": {
       "sha256": "4996f03cf5b44330d2509cb52f16d718389f639ba25bfb4ec23569766a015f2b"
@@ -336,7 +336,7 @@
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "d1f3d93574816d6e8ed7532f311d5a1dde82016b6619cf3c5ac5aa2234e3a2f9"
+      "sha256": "7d62e96d2990d2b6a87e75279c01e9cd2bb875683ecdf628f949bd720adb531d"
     },
     "app/utils/icons.js": {
       "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
@@ -1215,7 +1215,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "0e6ca6df924c7a424b77782af78cd5fec99bc7780f9dc59c8f1366a28f3482a0"
+      "sha256": "e0a5c13afe2cd91c0d94a30c56dc8984b63df4760f4b387079d41cb6c89b8e4a"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
