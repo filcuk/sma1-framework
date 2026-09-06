@@ -27,7 +27,7 @@ import {
 import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
 import { initFileDropzone } from "./components/file-dropzone.js";
-import { initFileDownload } from "./components/file-download.js";
+import { initFile } from "./components/file.js";
 import { initImagePreview } from "./components/image-preview.js";
 import { initDatePicker } from "./components/date-picker/index.js";
 import { initTimePicker } from "./components/time-picker.js";
@@ -332,7 +332,7 @@ initFileDropzone(document.getElementById("demo-file-dropzone-single"));
 
 initFileDropzone(document.getElementById("demo-file-dropzone-multi"));
 
-initFileDownload(document.getElementById("demo-file-download"), {
+initFile(document.getElementById("demo-file-download"), {
   files: [
     {
       filename: "hello.txt",
@@ -349,7 +349,7 @@ initFileDownload(document.getElementById("demo-file-download"), {
   ],
 });
 
-initFileDownload(document.getElementById("demo-stl-download"), {
+initFile(document.getElementById("demo-stl-download"), {
   getContent: () => encodeStl(createBoxMesh(demoStlDimensions)),
 });
 

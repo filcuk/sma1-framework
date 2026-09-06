@@ -41,7 +41,7 @@
 import { setHidden } from "../utils/dom.js";
 import { createIcon } from "../utils/icons.js";
 import { sanitizeSvgMarkup } from "../utils/sanitize-svg.js";
-import { downloadFile } from "./file-download.js";
+import { downloadFile } from "./file.js";
 
 const SVG_PARSER = typeof DOMParser === "undefined" ? null : new DOMParser();
 

@@ -14,7 +14,7 @@
  * triangle records and computes outward-facing normals from winding.
  */
 
-import { downloadFile } from "./file-download.js";
+import { downloadFile } from "./file.js";
 
 const BINARY_HEADER_BYTES = 80;
 const BINARY_COUNT_BYTES = 4;
