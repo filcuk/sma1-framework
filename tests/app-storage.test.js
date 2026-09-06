@@ -69,7 +69,15 @@ describe("app-storage", () => {
     assert.equal(getAppStorage("sel"), undefined);
     assert.equal(setAppStorage("sel", "b"), false);
     assert.equal(setAppStorageEnabled(true), true);
-    assert.deepEqual(getAppStorage("sel"), "a");
+    assert.equal(getAppStorage("sel"), undefined);
+  });
+
+  it("disabling clears stored data", () => {
+    setAppStorage("keep", 1);
+    assert.equal(setAppStorageEnabled(false), true);
+    assert.equal(getAppStorageSnapshot().keyCount, 0);
+    assert.equal(setAppStorageEnabled(true), true);
+    assert.equal(getAppStorage("keep"), undefined);
   });
 
   it("clear removes data but keeps enabled meta", () => {

@@ -905,6 +905,7 @@ export function initPopupMenu({
   function onMenuClick(e) {
     const item = e.target.closest(itemSelector);
     if (!item) return;
+    if (item.disabled || item.getAttribute("aria-disabled") === "true") return;
 
     if (item instanceof HTMLAnchorElement) {
       // Modified clicks: let the browser open a new tab; only close the menu.

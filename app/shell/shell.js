@@ -63,8 +63,9 @@ function bindGlobalErrorHandlers(onError) {
  *   opt-out: `data-no-heading-links` on `<html>`. Per heading: `data-no-heading-link`.
  *   Explicit `true` (or `{ enabled: true }`) overrides the HTML opt-out.
  * @param {boolean} [options.storage=true]
- *   When `false`, omit the footer storage shield and skip `initAppStorage`.
- * @param {string} [options.storageId] Override `APP_CONFIG.storageId`
+ *   When `false`, omit the footer shield entirely.
+ * @param {string} [options.storageId] Override `APP_CONFIG.storageId`.
+ *   Non-empty enables managed storage + clear/disable menu; empty = privacy shield only.
  * @param {number} [options.storageVersion] Override `APP_CONFIG.storageVersion`
  * @param {boolean} [options.showErrors=true] Show `.banner[data-app-error]` on uncaught errors
  * @param {(detail: object) => void} [options.onError] Called before the error banner is shown
@@ -97,12 +98,17 @@ export function initShell(options = {}) {
   if ("appUrl" in options) alsoSeeOptions.appUrl = appUrl;
 
   const storageEnabled = storage !== false;
+  const resolvedStorageId = (
+    typeof storageId === "string" ? storageId : APP_CONFIG.storageId ?? ""
+  ).trim();
+  const storageManage = storageEnabled && Boolean(resolvedStorageId);
 
   renderPageShell({
     ...shellOptions,
     pageNav,
     ...alsoSeeOptions,
     storage: storageEnabled,
+    storageManage,
   });
   initIcons();
   initExternalLinks(document);
@@ -117,15 +123,16 @@ export function initShell(options = {}) {
   initTitleNumbering();
   void initAlsoSee(document, alsoSeeOptions);
   if (storageEnabled) {
-    initAppStorage({
-      storageId:
-        typeof storageId === "string" ? storageId : APP_CONFIG.storageId,
-      storageVersion:
-        typeof storageVersion === "number"
-          ? storageVersion
-          : APP_CONFIG.storageVersion,
-    });
-    initAppStorageUi(document);
+    if (storageManage) {
+      initAppStorage({
+        storageId: resolvedStorageId,
+        storageVersion:
+          typeof storageVersion === "number"
+            ? storageVersion
+            : APP_CONFIG.storageVersion,
+      });
+    }
+    initAppStorageUi(document, { manage: storageManage });
   }
   initTheme();
   initThemeToggle(document.getElementById("theme-toggle"));

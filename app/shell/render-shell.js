@@ -824,22 +824,18 @@ export function mountAlsoSee(root, sections) {
   return host;
 }
 
-/** Privacy tip on the footer local-storage shield (hover tooltip). */
-export const FOOTER_STORAGE_TOOLTIP =
-  "This is a static site. All data remains on your device. No tracking or fingerprinting is used. Click to manage local storage.";
-
 /**
- * Footer · + shield control for local storage (after also-see host).
+ * Footer · + shield control (after also-see host).
  *
+ * @param {{ manage?: boolean }} [options]
+ *   When `manage` is false, privacy shield only (no clear/disable menu).
  * @returns {string}
  */
-export function renderFooterStorageMarkup() {
-  const tip = escapeAttr(FOOTER_STORAGE_TOOLTIP);
-  return `<span class="footer-meta-sep" aria-hidden="true">·</span>
-        <span class="footer-storage dropdown" id="footer-storage">
-          <button type="button" class="footer-storage-trigger" id="footer-storage-trigger" aria-label="Local storage" aria-haspopup="menu" aria-expanded="false" aria-controls="footer-storage-menu" data-icon="shield" data-icon-class="footer-storage-icon" data-tooltip="${tip}" data-tooltip-position="top" data-tooltip-max-width="16rem"></button>
+export function renderFooterStorageMarkup({ manage = true } = {}) {
+  const menu = manage
+    ? `
           <ul id="footer-storage-menu" class="dropdown-menu footer-storage-menu hidden" role="menu" hidden>
-            <li role="none">
+            <li role="none" data-storage-clear-item>
               <button type="button" class="dropdown-menu-item" role="menuitem" data-storage-action="clear">
                 <span class="dropdown-menu-item-text">
                   <span class="dropdown-menu-item-label">Clear stored data</span>
@@ -853,7 +849,15 @@ export function renderFooterStorageMarkup() {
                 </span>
               </button>
             </li>
-          </ul>
+          </ul>`
+    : "";
+  const triggerAttrs = manage
+    ? `aria-label="Local storage" aria-haspopup="menu" aria-expanded="false" aria-controls="footer-storage-menu"`
+    : `aria-label="Privacy"`;
+
+  return `<span class="footer-meta-sep" aria-hidden="true">·</span>
+        <span class="footer-storage${manage ? " dropdown" : ""}" id="footer-storage">
+          <button type="button" class="footer-storage-trigger" id="footer-storage-trigger" ${triggerAttrs} data-icon="shield" data-icon-class="footer-storage-icon"></button>${menu}
         </span>`;
 }
 
@@ -863,9 +867,11 @@ export function renderFooterStorageMarkup() {
  * @param {{
  *   pageNav?: false | import("./page-nav.js").PageNavOptions,
  *   storage?: boolean,
+ *   storageManage?: boolean,
  * }} [options]
  *   Set `pageNav` to `false` to omit page navigation.
- *   Set `storage` to `false` to omit the footer local-storage shield control.
+ *   Set `storage` to `false` to omit the footer shield entirely.
+ *   Set `storageManage` to `false` for privacy shield only (no clear/disable menu).
  * Skips if `#app-page-footer` already exists.
  */
 export function renderPageShell(options = {}) {
@@ -890,6 +896,7 @@ export function renderPageShell(options = {}) {
     frameworkVersion,
     pageNav,
     storage = true,
+    storageManage = true,
   } = {
     ...DEFAULTS,
     ...overrides,
@@ -899,7 +906,10 @@ export function renderPageShell(options = {}) {
     ? normalizeAlsoSee(alsoSee, appUrl, ["*"])
     : [];
   const alsoSeeMarkup = renderAlsoSeeMarkup(alsoSeeSections);
-  const storageMarkup = storage !== false ? renderFooterStorageMarkup() : "";
+  const storageMarkup =
+    storage !== false
+      ? renderFooterStorageMarkup({ manage: storageManage !== false })
+      : "";
 
   document.body.insertAdjacentHTML(
     "beforeend",

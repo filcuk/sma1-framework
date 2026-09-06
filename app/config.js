@@ -7,13 +7,15 @@ export const APP_CONFIG = {
   themeChangeEvent: "microapp-theme-change",
   /**
    * Stable id for app-scoped localStorage (`sma1:{storageId}:meta|data`).
-   * Change per fork so apps on the same origin (e.g. GitHub Pages) do not
-   * collide. Theme preference uses `themeStorageKey` and is separate.
+   * Set a non-empty id to enable the managed bag + footer clear/disable menu.
+   * Leave `""` for the privacy shield only (static-site notice; no manage UI).
+   * Theme preference uses `themeStorageKey` and is always separate.
    */
   storageId: "sma1-framework",
   /**
    * Bump when stored drafts/selections are incompatible. On boot, if the
-   * stored meta version is lower, the data bag is cleared.
+   * stored meta version is lower, the data bag is cleared. Ignored when
+   * `storageId` is empty.
    */
   storageVersion: 1,
   /**

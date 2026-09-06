@@ -129,16 +129,25 @@ svg.dropdown-menu-item-icon {
   overflow: visible;
 }
 
-.combo-menu-item:hover,
-.combo-menu-item:focus-visible,
-.dropdown-menu-item:hover,
-.dropdown-menu-item:focus-visible {
+.combo-menu-item:hover:not(:disabled):not([aria-disabled="true"]),
+.combo-menu-item:focus-visible:not(:disabled):not([aria-disabled="true"]),
+.dropdown-menu-item:hover:not(:disabled):not([aria-disabled="true"]),
+.dropdown-menu-item:focus-visible:not(:disabled):not([aria-disabled="true"]) {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   /* Beat `a:hover` / footer link accent so highlighted text stays --text. */
   color: var(--text);
   outline: none;
   transition-duration: 0s;
+}
+
+.combo-menu-item:disabled,
+.combo-menu-item[aria-disabled="true"],
+.dropdown-menu-item:disabled,
+.dropdown-menu-item[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--muted);
 }
 
 .combo-menu-item:active:not(:disabled):not([aria-disabled="true"]),

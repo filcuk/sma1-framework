@@ -264,17 +264,19 @@ export function isAppStorageEnabled() {
 
 /**
  * When disabled, `get` returns `undefined` and `set` / `remove` no-op.
- * Existing data is left in place so re-enabling can restore it.
+ * Disabling also clears the data bag (theme storage is never touched).
  *
  * @param {boolean} enabled
  * @returns {boolean}
  */
 export function setAppStorageEnabled(enabled) {
   if (!isReady()) return false;
+  const next = Boolean(enabled);
+  if (!next) clearDataBag();
   const meta = readMeta();
   return writeMeta({
     version: meta.version || storageVersion,
-    enabled: Boolean(enabled),
+    enabled: next,
   });
 }
 

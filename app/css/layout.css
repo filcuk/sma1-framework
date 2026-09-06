@@ -1092,16 +1092,31 @@ body > footer {
   outline: none;
 }
 
+.footer-storage-trigger.footer-storage-trigger--disabled {
+  color: var(--danger);
+}
+
+.footer-storage-trigger.footer-storage-trigger--disabled:hover,
+.footer-storage-trigger.footer-storage-trigger--disabled:focus-visible {
+  color: var(--danger-hover);
+}
+
 .footer-storage-trigger:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
+.footer-storage-trigger.footer-storage-trigger--disabled:focus-visible {
+  outline-color: var(--danger);
+}
+
 .footer-storage-icon {
   width: 0.875em;
   height: 0.875em;
   display: block;
+  /* Shield glyph sits high in the Material viewBox — match footer text optically. */
+  transform: translateY(0.08em);
 }
 
 .footer-storage .footer-storage-menu {
@@ -1111,6 +1126,14 @@ body > footer {
   right: auto;
   min-width: 12rem;
   max-width: min(100vw - 2rem, 18rem);
+}
+
+.footer-storage-privacy-popover {
+  max-width: min(100vw - 2rem, 16rem);
+}
+
+.footer-storage-privacy-body .popover__text + .popover__text {
+  margin-top: 0.5rem;
 }
 
 .footer-also-see-trigger {
