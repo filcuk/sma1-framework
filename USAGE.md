@@ -416,7 +416,7 @@ app/
     sticky.js           # Optional sticky header / section headings
     title-numbering.js  # Optional hierarchical outline title prefixes
   utils/
-    dom.js              # setHidden(), parseBooleanAttr(), focus helpers
+    dom.js              # setHidden(), syncDisclosurePanel(), parseBooleanAttr(), focus helpers
     document-listeners.js # Outside click, Escape, one-popup-at-a-time registry
     menu.js             # Shared popup menu logic
     icons.js            # Inline SVG icon registry
@@ -2963,7 +2963,7 @@ Start the badge as `hidden` when the initial selection count is zero so it does 
 </div>
 ```
 
-Default expands cap at `32rem`. Add `.expand--full` for a panel-width disclosure (`max-width: none`). After a `.panel-split`, wrap following full-bleed content in `.panel-follow` (optional leading `.panel-divider`) so the split does not overlap it.
+Default expands cap at `32rem`. Add `.expand--full` for a panel-width disclosure (`max-width: none`). After a `.panel-split`, wrap following full-bleed content in `.panel-follow` (optional leading `.panel-divider`) so the split does not overlap it. Panels animate height on open/close (`--disclosure-ms`); `initExpand` clears markup `hidden` and uses `inert` when closed.
 
 ```javascript
 import { initExpand, initExpands } from "./components/expand.js";
@@ -3010,7 +3010,7 @@ const accordion = initAccordion(document.getElementById("my-accordion"), {
 // accordion.open(0), accordion.close(0), accordion.toggle(0), accordion.closeAll(), accordion.getOpenIndices()
 ```
 
-`data-accordion-default-open` sets the initially open panel index. `data-accordion-open` on an item opens it on load (use with `data-accordion-multiple` for several). Arrow Up/Down, Home, and End move focus between headers.
+`data-accordion-default-open` sets the initially open panel index. `data-accordion-open` on an item opens it on load (use with `data-accordion-multiple` for several). Arrow Up/Down, Home, and End move focus between headers. Panels animate height like expand (`--disclosure-ms`); markup may keep `hidden` until `initAccordion` runs.
 
 ### Tabs
 

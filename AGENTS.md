@@ -97,7 +97,7 @@ Optional `renderPageShell({ repoUrl, appUrl, alsoSee, alsoSeeUrl, alsoSeeTopics,
 | `initStickyChrome()` / `setStickyHeader()` / `setStickySectionHeadings()` | Optional sticky site header and section headings (`data-sticky-header`, `data-sticky-section-headings`) |
 | `initTitleNumbering()` / `setTitleNumbering()` / `syncTitleNumbering()` | Optional hierarchical outline prefixes (`data-title-numbering`) |
 | `initTab()` / `initTabs()` | Single tabbed section vs every `.tabs` block |
-| `setHidden()` / `parseBooleanAttr()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values |
+| `setHidden()` / `parseBooleanAttr()` / `syncDisclosurePanel()` / `hydrateDisclosure()` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute; parse HTML boolean `data-*` values; disclosure panels (expand / accordion) stay in layout for height animation via `inert` + `aria-hidden`, wrap padded body in `.disclosure-clip`, then hydrate transitions after the initial open state |
 | `initRequiredField()` / `initRequiredFields()` / `setFieldRequired()` / `syncRequiredField()` | Required field chrome (`.field.is-required` asterisk + empty `aria-invalid`) — see [`required-field.js`](app/utils/required-field.js) |
 | `prepareButtonLabelFlash()` / `setButtonLabelFlash()` / `flashButtonLabel()` / `cancelButtonLabelFlash()` | In-place labeled button flashes (Copy → Copied); `lockWidth` defaults on — see [`button-label.js`](app/utils/button-label.js) |
 | `initPopupMenu()` | Anchored popup menus (combo chevron, dropdown) |
@@ -161,7 +161,7 @@ Triggers call `stopPropagation`, so outside-click alone cannot close peers — n
 
 ### Visibility
 
-Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements programmatically. Do not toggle `.hidden` alone.
+Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements programmatically. Do not toggle `.hidden` alone. Expand and accordion panels are the exception: use `syncDisclosurePanel()` so height can animate (do not `setHidden` those panels).
 
 ### Icons
 

@@ -159,7 +159,7 @@ const MAX_WIDTH_MATCH = "match";
  * @returns {string | null}
  */
 function normalizeMaxWidth(value) {
-  if (value == null) return null;
+  if (value === null || value === undefined) return null;
   const trimmed = String(value).trim();
   if (!trimmed) return null;
   if (trimmed.toLowerCase() === MAX_WIDTH_MATCH) return MAX_WIDTH_MATCH;
@@ -172,7 +172,7 @@ function normalizeMaxWidth(value) {
  * @returns {number}
  */
 function normalizeOffset(value) {
-  if (value == null || value === "") return DEFAULT_OFFSET;
+  if (value === null || value === undefined || value === "") return DEFAULT_OFFSET;
   const n = typeof value === "number" ? value : Number(String(value).trim());
   return Number.isFinite(n) ? n : DEFAULT_OFFSET;
 }

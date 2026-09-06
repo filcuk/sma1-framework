@@ -51,6 +51,46 @@ export function setHidden(el, hidden) {
   el.hidden = hidden;
 }
 
+/**
+ * Keep a disclosure panel in layout for CSS height animation.
+ * Clears `.hidden` / `hidden`, and uses `inert` + `aria-hidden` when closed.
+ * Ensures a padding-free clip wrapper so `0fr` can collapse to zero height.
+ */
+export function syncDisclosurePanel(panel, open) {
+  if (!panel) return;
+  ensureDisclosureClip(panel);
+  panel.classList.remove("hidden");
+  panel.hidden = false;
+  panel.inert = !open;
+  panel.setAttribute("aria-hidden", open ? "false" : "true");
+}
+
+/**
+ * Grid `0fr` only collapses a direct child with `overflow: hidden` and no padding.
+ * Wrap `.expand-body` / `.accordion-body` (which carry padding) when missing.
+ */
+export function ensureDisclosureClip(panel) {
+  if (!panel || panel.querySelector(":scope > .disclosure-clip")) return;
+
+  const body = panel.querySelector(":scope > .expand-body, :scope > .accordion-body");
+  if (!body) return;
+
+  const clip = document.createElement("div");
+  clip.className = "disclosure-clip";
+  panel.insertBefore(clip, body);
+  clip.append(body);
+}
+
+/** Enable disclosure panel transitions after the initial open state is applied. */
+export function hydrateDisclosure(root) {
+  if (!root) return;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      root.classList.add("is-hydrated");
+    });
+  });
+}
+
 /** Whether the user prefers reduced motion. */
 export function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
