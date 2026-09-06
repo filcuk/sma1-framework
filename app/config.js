@@ -6,6 +6,17 @@ export const APP_CONFIG = {
   themeStorageKey: "microapp-theme",
   themeChangeEvent: "microapp-theme-change",
   /**
+   * Stable id for app-scoped localStorage (`sma1:{storageId}:meta|data`).
+   * Change per fork so apps on the same origin (e.g. GitHub Pages) do not
+   * collide. Theme preference uses `themeStorageKey` and is separate.
+   */
+  storageId: "sma1-framework",
+  /**
+   * Bump when stored drafts/selections are incompatible. On boot, if the
+   * stored meta version is lower, the data bag is cleared.
+   */
+  storageVersion: 1,
+  /**
    * Remote JSON for the footer “also see” menu.
    * Top-level array of `{ topic, items, order? }` sections and/or flat link objects.
    * Optional `order` on topics/links; `accent` / `accentHover` hex colours, or
