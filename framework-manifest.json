@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-04T20:01:12.203Z",
+  "generatedAt": "2026-09-06T07:12:41.367Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -128,11 +128,8 @@
     "app/components/expandable-surface.js": {
       "sha256": "568a84db76db965ffbd092f6ee6706969302d140e8a82f939cf14977e07182f2"
     },
-    "app/components/file-download.js": {
-      "sha256": "a059ed3f44f61a53fd7035688f0cac0796050e240645caeca6d65a8232d32b81"
-    },
-    "app/components/file-dropzone.js": {
-      "sha256": "6e36e23a37cc1a942fff35242df6c6e859fdcbcea35ddd26472df260cd81ab84"
+    "app/components/file.js": {
+      "sha256": "fa8a7bc62fe71402e29282e80c61c256aebf9553b2965ef9de3983ef5d42bb02"
     },
     "app/components/gcode-toolpath.js": {
       "sha256": "57ca80587de8b701a5780624e8dd7e2424a661f7e3431699b946ba0f58a58f2a"
@@ -141,7 +138,7 @@
       "sha256": "17278ae5160b492b084510ee2e0965a7cd72ce3b9f4b11500c46049230d20c8b"
     },
     "app/components/image-preview.js": {
-      "sha256": "0a6c5172ad2aedce96ab38f1adcb3791fddf69e7b1619d1fd4f8ff2b8de91f14"
+      "sha256": "f9675e54eafa58d5c48361a361af8484ba7824c6990e86213c5b44358014d482"
     },
     "app/components/legend.js": {
       "sha256": "ee74a433af15e03283650c54775a8ae3e8ea12b17e89d45dbf9414a78e081773"
@@ -177,7 +174,7 @@
       "sha256": "0d3fcada4160cc4a912607b341d946bc18a02511dfcd9e47d478ac7cb28f22df"
     },
     "app/components/stl.js": {
-      "sha256": "0a33a2d5ba0b4f8c829dbd236151df1895bf4bfb3dd92b22d91e5658a78f12aa"
+      "sha256": "2561dc700d84997384cd26bd66c10f7ae213bd92db5fd2b4afe03cd87adeed6b"
     },
     "app/components/table.js": {
       "sha256": "8ac06a8b91a68bd93b0741bbfa82ce993bdf35765b7c2d0bdbf331577b335194"
@@ -243,7 +240,7 @@
       "sha256": "7fa37f92dc2c15d949b5d9b04fc7e594d96aca86335b5eae386d3adc65b910c7"
     },
     "app/css/controls-file.css": {
-      "sha256": "f5d134acfc7b0553ccbd9a643768d7623ea5983b56b819d5dd21ac65255bad33"
+      "sha256": "e7adaec6706a4214351241f65d017a4ebcbd7a055229661cdef9f630e6aeb294"
     },
     "app/css/controls-image.css": {
       "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
@@ -339,7 +336,7 @@
       "sha256": "634496f84e49d4691f091de0effa74653d5c6f972532977d0e3adbee3975cc9b"
     },
     "app/utils/icons-framework.js": {
-      "sha256": "c64809839d65c50512452528d966039ac25b9268e4f29e5aca0d1157bee7e9fe"
+      "sha256": "d1f3d93574816d6e8ed7532f311d5a1dde82016b6619cf3c5ac5aa2234e3a2f9"
     },
     "app/utils/icons.js": {
       "sha256": "47b5c773b043995bfd5a2b08c26e0f18453aed5051bba3f9546b70e32a708195"
@@ -1218,7 +1215,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "595c536111e44dac2feb5634b1baa9dc1ef5d92561c3324bf79eea725a5e08e7"
+      "sha256": "0e6ca6df924c7a424b77782af78cd5fec99bc7780f9dc59c8f1366a28f3482a0"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -1233,7 +1230,7 @@
       "sha256": "9abc20e53ce7dbe999b5ab8993ecf362b57ed4cadc888bc202cd19d661f3f5b9"
     },
     ".cursor/skills/finalize-app/SKILL.md": {
-      "sha256": "f1f1295637714e38ab2e0f9969104093744bea9fea04edd127e3c273cc54229f"
+      "sha256": "46cd1aa2e716b7c9829764dca931d74b8d0ec1e6ef56863c865c7323b1f7f632"
     },
     ".cursor/skills/handle-assets/SKILL.md": {
       "sha256": "3ec92bb78776fd2a883c189a820b7a4566187fd012bd5ce9352a5a79c0894f84"
@@ -1899,9 +1896,9 @@
         "dom"
       ]
     },
-    "file-dropzone": {
+    "file": {
       "files": [
-        "app/components/file-dropzone.js"
+        "app/components/file.js"
       ],
       "css": [
         "controls-file.css"
@@ -1909,27 +1906,12 @@
       "vendor": [],
       "vendorFiles": [],
       "icons": [
+        "download",
         "upload",
-        "error"
+        "remove-circle"
       ],
       "infra": [
         "dom",
-        "icons"
-      ]
-    },
-    "file-download": {
-      "files": [
-        "app/components/file-download.js"
-      ],
-      "css": [
-        "controls-file.css"
-      ],
-      "vendor": [],
-      "vendorFiles": [],
-      "icons": [
-        "upload"
-      ],
-      "infra": [
         "icons"
       ]
     },
@@ -2396,7 +2378,7 @@
       "vendorFiles": [],
       "icons": [],
       "infra": [
-        "file-download"
+        "file"
       ],
       "notes": "Dependency-free indexed mesh and binary/ASCII STL export helpers"
     },
@@ -2674,8 +2656,7 @@
       "progress-indicator"
     ],
     "controls-file.css": [
-      "file-dropzone",
-      "file-download"
+      "file"
     ],
     "controls-image.css": [
       "image-preview"

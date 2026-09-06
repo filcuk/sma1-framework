@@ -187,7 +187,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 | `app/css/controls-section-panel.css` | Section panel grid rows |
 | `app/css/controls-menus.css` | Combo button, dropdown menus |
 | `app/css/controls-disclosure.css` | Expand, accordion, tabs, progress indicator |
-| `app/css/controls-file.css` | File dropzone, file download |
+| `app/css/controls-file.css` | Segmented file rows, large dropzone, fullscreen overlay |
 | `app/css/controls-image.css` | Image preview (checkerboard host) |
 | `app/css/controls-color.css` | Color set gallery and color picker |
 | `app/css/controls-charts.css` | TanStack Charts host |
