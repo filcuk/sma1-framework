@@ -27,10 +27,14 @@
  * data-toolpath-preview-meta-extra — append app-specific text to the meta strip
  * data-toolpath-preview-maximize — floating fullscreen control via expandable-surface
  * data-toolpath-preview-home — floating reset-view (home) control
- * data-toolpath-preview-animation — floating play/pause for slow auto-rotate (off by default)
+ * data-toolpath-preview-animation — floating play/pause for preview animation (off by default).
+ *   Default motion is slow OrbitControls auto-rotate; pass `onAnimationFrame` for a
+ *   custom tick (and/or set `animationAutoRotate: false` / `data-toolpath-preview-animation-auto-rotate="false"`).
  * data-toolpath-preview-animation-playing — start playing when animation is on
  *   (default on; set `"false"` to start paused). Honours `prefers-reduced-motion`
  *   by starting paused.
+ * data-toolpath-preview-animation-auto-rotate — built-in orbit auto-rotate when animation
+ *   is on (default on; set `"false"` for custom-only motion)
  * data-toolpath-preview-layer-slider — floating maximum-layer slider (default on;
  *   set `"false"` to disable). Uses the shared `.slider--hover` chrome.
  * data-toolpath-preview-travels — show non-extrusion (travel) moves; default on.
@@ -45,13 +49,18 @@
  * Call `initExpandableSurfaces()` after init when maximise attrs are used.
  *
  * API:
- *   const preview = initToolpathPreview(element);
+ *   const preview = initToolpathPreview(element, {
+ *     animation: true,
+ *     onAnimationFrame: ({ delta, elapsed, group, camera, controls, scene }) => { … },
+ *   });
  *   preview.setToolpath({ segments, layerCount, bounds, warnings });
  *   preview.setMaxLayer(3);
  *   preview.setTravels(false);
  *   preview.resetView();
  *   preview.setAnimationPlaying(true);
  *   preview.getAnimationPlaying();
+ *   preview.setAnimationAutoRotate(false);
+ *   preview.setOnAnimationFrame(handler);
  *   preview.setMetaExtra("PETG · 0.4 mm");
  *   preview.clear();
  */
@@ -303,6 +312,19 @@ function resolveAnimationPlaying(el, options, animationEnabled) {
   return parseBooleanAttr(raw) ?? true;
 }
 
+/**
+ * @param {HTMLElement} el
+ * @param {{ animationAutoRotate?: boolean }} options
+ */
+function resolveAnimationAutoRotate(el, options) {
+  if (typeof options.animationAutoRotate === "boolean") {
+    return options.animationAutoRotate;
+  }
+  const raw = el.getAttribute("data-toolpath-preview-animation-auto-rotate");
+  if (raw === null) return true;
+  return parseBooleanAttr(raw) ?? true;
+}
+
 function readCssColor(name, fallback) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
@@ -427,6 +449,16 @@ function fitCameraToObject(camera, controls, object) {
  *   home?: boolean,
  *   animation?: boolean,
  *   animationPlaying?: boolean,
+ *   animationAutoRotate?: boolean,
+ *   onAnimationFrame?: ((ctx: {
+ *     delta: number,
+ *     elapsed: number,
+ *     playing: boolean,
+ *     group: THREE.Group,
+ *     camera: THREE.PerspectiveCamera,
+ *     controls: OrbitControls,
+ *     scene: THREE.Scene,
+ *   }) => void) | null,
  *   layerSlider?: boolean,
  *   travelToggle?: boolean,
  *   travels?: boolean,
@@ -440,6 +472,17 @@ function fitCameraToObject(camera, controls, object) {
  *   resetView: () => void,
  *   setAnimationPlaying: (playing: boolean) => void,
  *   getAnimationPlaying: () => boolean,
+ *   setAnimationAutoRotate: (enabled: boolean) => void,
+ *   getAnimationAutoRotate: () => boolean,
+ *   setOnAnimationFrame: (handler: ((ctx: {
+ *     delta: number,
+ *     elapsed: number,
+ *     playing: boolean,
+ *     group: THREE.Group,
+ *     camera: THREE.PerspectiveCamera,
+ *     controls: OrbitControls,
+ *     scene: THREE.Scene,
+ *   }) => void) | null) => void,
  *   setMetaExtra: (text: string | string[] | null | undefined) => void,
  *   clear: () => void,
  *   destroy: () => void,
@@ -494,14 +537,33 @@ export function initToolpathPreview(previewEl, options = {}) {
   let animationPlaying =
     resolveAnimationPlaying(previewEl, options, showAnimation) &&
     !prefersReducedMotion();
+  let animationAutoRotate = resolveAnimationAutoRotate(previewEl, options);
+  /** @type {((ctx: {
+   *   delta: number,
+   *   elapsed: number,
+   *   playing: boolean,
+   *   group: THREE.Group,
+   *   camera: THREE.PerspectiveCamera,
+   *   controls: OrbitControls,
+   *   scene: THREE.Scene,
+   * }) => void) | null} */
+  let onAnimationFrame =
+    typeof options.onAnimationFrame === "function" ? options.onAnimationFrame : null;
+  let animationElapsed = 0;
+  let lastAnimationFrameTime = performance.now();
 
   if (showAnimation) {
     previewEl.setAttribute(
       "data-toolpath-preview-animation-playing",
       animationPlaying ? "true" : "false"
     );
+    previewEl.setAttribute(
+      "data-toolpath-preview-animation-auto-rotate",
+      animationAutoRotate ? "true" : "false"
+    );
   } else {
     previewEl.removeAttribute("data-toolpath-preview-animation-playing");
+    previewEl.removeAttribute("data-toolpath-preview-animation-auto-rotate");
   }
 
   if (showSegments) previewEl.setAttribute("data-toolpath-preview-segments", "");
@@ -598,15 +660,20 @@ export function initToolpathPreview(previewEl, options = {}) {
       return;
     }
     const hasContent = hasToolpath && Boolean(extrusionLines || travelLines);
-    controls.autoRotate = animationPlaying && hasContent;
+    controls.autoRotate =
+      animationPlaying && animationAutoRotate && hasContent;
     controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
     previewEl.setAttribute(
       "data-toolpath-preview-animation-playing",
       animationPlaying ? "true" : "false"
     );
+    previewEl.setAttribute(
+      "data-toolpath-preview-animation-auto-rotate",
+      animationAutoRotate ? "true" : "false"
+    );
     if (!animationBtn) return;
     animationBtn.disabled = !hasContent;
-    const label = animationPlaying ? "Pause rotation" : "Play rotation";
+    const label = animationPlaying ? "Pause animation" : "Play animation";
     animationBtn.dataset.tooltip = label;
     animationBtn.setAttribute("aria-label", label);
     animationBtn.replaceChildren(
@@ -619,11 +686,43 @@ export function initToolpathPreview(previewEl, options = {}) {
   function setAnimationPlaying(playing) {
     if (!showAnimation) return;
     animationPlaying = Boolean(playing);
+    lastAnimationFrameTime = performance.now();
     syncAnimationControls();
   }
 
   function getAnimationPlaying() {
     return showAnimation ? animationPlaying : false;
+  }
+
+  function setAnimationAutoRotate(enabled) {
+    animationAutoRotate = Boolean(enabled);
+    syncAnimationControls();
+  }
+
+  function getAnimationAutoRotate() {
+    return animationAutoRotate;
+  }
+
+  function setOnAnimationFrame(handler) {
+    onAnimationFrame = typeof handler === "function" ? handler : null;
+  }
+
+  function tickCustomAnimation() {
+    if (!showAnimation || !animationPlaying) return;
+    const now = performance.now();
+    const delta = Math.min(Math.max((now - lastAnimationFrameTime) / 1000, 0), 0.1);
+    lastAnimationFrameTime = now;
+    if (!onAnimationFrame) return;
+    animationElapsed += delta;
+    onAnimationFrame({
+      delta,
+      elapsed: animationElapsed,
+      playing: true,
+      group,
+      camera,
+      controls,
+      scene,
+    });
   }
 
   function syncTravelToggle() {
@@ -870,6 +969,11 @@ export function initToolpathPreview(previewEl, options = {}) {
       getAnimationPlaying() {
         return false;
       },
+      setAnimationAutoRotate() {},
+      getAnimationAutoRotate() {
+        return animationAutoRotate;
+      },
+      setOnAnimationFrame() {},
       setMetaExtra(text) {
         metaExtra = resolveMetaExtra(text);
         syncMetaVisibilityAttr();
@@ -1131,7 +1235,9 @@ export function initToolpathPreview(previewEl, options = {}) {
     if (homeAnim) {
       tickHomeAnim();
       syncControlsAfterHomeStep();
+      lastAnimationFrameTime = performance.now();
     } else {
+      tickCustomAnimation();
       controls.update();
     }
     renderer.render(scene, camera);
@@ -1161,6 +1267,9 @@ export function initToolpathPreview(previewEl, options = {}) {
     resetView,
     setAnimationPlaying,
     getAnimationPlaying,
+    setAnimationAutoRotate,
+    getAnimationAutoRotate,
+    setOnAnimationFrame,
     setMetaExtra,
     clear,
     destroy() {

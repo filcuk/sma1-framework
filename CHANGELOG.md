@@ -36,7 +36,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Added
 
-- Model and toolpath preview optional auto-rotate (`data-*-preview-animation`) with a floating play/pause control; off by default. `animationPlaying` / `data-*-preview-animation-playing` choose the initial state; `setAnimationPlaying()` / `getAnimationPlaying()` update it at runtime. Starts paused under `prefers-reduced-motion`. Demo: mesh plays; toolpath starts paused.
+- Model and toolpath preview optional auto-rotate (`data-*-preview-animation`) with a floating play/pause control; off by default. `animationPlaying` / `data-*-preview-animation-playing` choose the initial state; `setAnimationPlaying()` / `getAnimationPlaying()` update it at runtime. Apps can hook custom motion with `onAnimationFrame` / `setOnAnimationFrame()` and optionally disable the built-in orbit via `animationAutoRotate` / `setAnimationAutoRotate()`. Starts paused under `prefers-reduced-motion`. Demo: mesh plays; toolpath starts paused.
 - Framework `play`, `pause`, and `stop` icons from Material Icons Round (`round-play-arrow`, `round-pause`, `round-stop`).
 - Framework `file` icon from Material Icons Round (`round-insert-drive-file`) for the leading glyph on file row mains.
 - Framework `remove-circle` icon from Material Icons Round (`round-remove-circle`) for file remove segments.
