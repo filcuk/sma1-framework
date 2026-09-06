@@ -556,7 +556,6 @@ initToggle(document.getElementById("demo-toggle-slim-off"));
 initToggle(document.getElementById("demo-toggle-slim-on"));
 
 initSegmentedControl(document.getElementById("demo-segmented-view"));
-initSegmentedControl(document.getElementById("demo-segmented-slim"));
 initSegmentedControl(document.getElementById("demo-segmented-muted"));
 
 const demoChipFilterResults = document.getElementById("demo-chip-filter-results");

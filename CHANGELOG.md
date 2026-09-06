@@ -29,6 +29,7 @@ for `FRAMEWORK_VERSION` in `app/version.js`.
 
 ### Changed
 
+- Footer theme toggle is a muted segmented control (`.segmented-control--muted`) with Light / Dark / System tooltips, instead of bespoke `.theme-toggle` markup. Segmented control is always shipped with the shell.
 - Dialog and popover dismiss controls match the file fullscreen overlay close (bordered surface button + `clear` icon) instead of a text `×` / slim icon button.
 - About dialog demo drops Huh? / Uhh… stages; the footer link is **Repository** and shows immediately when no stages are present (`data-about-final`). Progressive stages remain optional in `initAboutDialog`.
 - Hover/focus tooltips no longer show on disabled controls by default (`disabled`, `aria-disabled="true"`, or a host `*--disabled` class). Opt in with `data-tooltip-when-disabled`. Timer and persistent tips are unchanged.

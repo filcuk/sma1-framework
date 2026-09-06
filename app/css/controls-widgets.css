@@ -280,12 +280,22 @@
   gap: 0;
   padding: 0;
   background: var(--surface);
-  overflow: hidden;
 }
 
 .segmented-control--muted .segmented-control-item {
   border-radius: 0;
   min-width: var(--control-height);
+}
+
+/* Match track inner radius (6px outer − 1px border) so hover borders are not clipped */
+.segmented-control--muted .segmented-control-item:first-child {
+  border-start-start-radius: 5px;
+  border-end-start-radius: 5px;
+}
+
+.segmented-control--muted .segmented-control-item:last-child {
+  border-start-end-radius: 5px;
+  border-end-end-radius: 5px;
 }
 
 .segmented-control--muted .segmented-control-item:not(:last-child) {

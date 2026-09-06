@@ -13,8 +13,8 @@ When trimming: delete a feature’s JS only if unused; remove a **shared** CSS p
 | Entry | `app/theme-init.js`, `app/config.js`, `app/version.js`, `app/main.js` (or other page modules), `app/styles.css` (fork entry), `app/css/framework.css` (generated index), `app/css/app.css` (fork-owned) |
 | Shell | `app/shell/shell.js`, `render-shell.js`, `theme.js`, `page-nav.js`, `sticky.js`, `heading-link.js`, `external-link.js`, `also-see.js`, `title-numbering.js`, `app-storage-ui.js` |
 | Infra | `app/utils/dom.js`, `document-listeners.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `brand-icon.js`, `button-label.js`, `required-field.js`, `control-glow.js`, `app-storage.js` |
-| Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js`, `app/components/dialog.js`, `app/components/popover.js` (imported by `shell.js` / `app-storage-ui.js`) |
-| Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/controls-glow.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
+| Shell-pulled components | `app/components/tooltip.js`, `app/components/banner.js`, `app/components/dialog.js`, `app/components/popover.js`, `app/components/segmented-control.js` (imported by `shell.js` / `app-storage-ui.js` / `theme.js`) |
+| Core CSS | `app/tokens.css`, `app/css/layout.css`, `app/css/controls-buttons.css`, `app/css/controls-widgets.css`, `app/css/controls-glow.css`, `app/css/overlays.css` (tooltips + banners + modals styles) |
 | Brand | `app/res/` logos as wired in HTML / `__MICROAPP__` |
 
 Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-toggle, tabular-input type menu).
@@ -32,7 +32,7 @@ Keep `app/utils/menu.js` if any popup menu remains (combo, dropdown, dropdown-to
 | `controls-badges.css` | badge |
 | `controls-chips.css` | chip, legend |
 | `controls-fields.css` | field/input (CSS-only), combobox, date-picker, time-picker, duration-input |
-| `controls-widgets.css` | toggle, checkbox, segmented-control, pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
+| `controls-widgets.css` | toggle, checkbox, segmented-control (always with shell theme), pagination, progress-bar, spinner, slider, stepper, color-input, color-picker (channel sliders) |
 | `controls-section-panel.css` | section-panel (CSS-only pattern) |
 | `controls-menus.css` | combo, dropdown, dropdown-toggle, color-picker (format menu) |
 | `controls-disclosure.css` | expand, accordion, tabs, progress-indicator |
@@ -73,7 +73,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | toggle | `app/components/toggle.js` | `controls-widgets.css` | — | Markup: `check`; tristate also `remove` | `dom`, `icons` | |
 | toggle-button | `app/components/toggle-button.js` | `controls-buttons.css` | — | Optional: `fullscreen`, `fullscreen-exit` (or any pair) | `dom`, `icons` | Pressed `.btn-toggle`; optional next-action label/icon swap; `data-toggle-button-always-active` drops the pressed accent styling |
 | checkbox | `app/components/checkbox.js` | `controls-fields.css` | — | — | `dom`, `icons` | Tri-state checkbox; inset face via `initIcons` / `ensureCheckboxFace` |
-| segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | |
+| segmented-control | `app/components/segmented-control.js` | `controls-widgets.css` | — | — | `dom` | Always with shell (theme toggle); optional `.segmented-control--slim` / `.segmented-control--muted` |
 | pagination | `app/components/pagination.js` | `controls-widgets.css` | — | `chevron-left`, `chevron-right` | `dom` | |
 | progress-bar | `app/components/progress-bar.js` | `controls-widgets.css` | — | — | `dom` | |
 | spinner | `app/components/spinner.js` | `controls-widgets.css` | — | — | `dom` | |
@@ -115,7 +115,7 @@ Icons listed are **required by the component JS or typical markup**. Banner/stat
 | heading-link | `app/shell/heading-link.js` | Icon: `link`; opt out with `initShell({ headingLinks: false })`, `data-no-heading-links`, or `data-no-heading-link` |
 | external-link | `app/shell/external-link.js` | Icon: `arrow-outward` |
 | also-see | `app/shell/also-see.js` | Icon: `arrow-outward` |
-| theme-toggle | `app/shell/theme.js` + render-shell | Icons: `light-mode`, `dark-mode`, `auto-mode` |
+| theme-toggle | `app/shell/theme.js` + render-shell | Muted segmented control; icons: `light-mode`, `dark-mode`, `auto-mode` |
 | sticky | `app/shell/sticky.js` | Optional `data-sticky-*` |
 | title-numbering | `app/shell/title-numbering.js` | Optional `data-title-numbering`; CSS `.title-number` in `layout.css` |
 

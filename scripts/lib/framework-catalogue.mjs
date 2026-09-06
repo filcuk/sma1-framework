@@ -82,8 +82,15 @@ export const CORE = {
     "app/utils/app-storage.js",
     "app/components/tooltip.js",
     "app/components/banner.js",
+    "app/components/segmented-control.js",
   ],
-  css: ["layout.css", "controls-buttons.css", "controls-glow.css", "overlays.css"],
+  css: [
+    "layout.css",
+    "controls-buttons.css",
+    "controls-widgets.css",
+    "controls-glow.css",
+    "overlays.css",
+  ],
   icons: [
     "light-mode",
     "dark-mode",
@@ -317,6 +324,8 @@ export const COMPONENTS = {
     vendor: [],
     icons: [],
     infra: ["dom"],
+    always: true,
+    notes: "Pulled by shell theme toggle (muted segmented)",
   },
   pagination: {
     files: ["app/components/pagination.js"],

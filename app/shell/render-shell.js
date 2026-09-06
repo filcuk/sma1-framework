@@ -925,10 +925,22 @@ export function renderPageShell(options = {}) {
           <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">GitHub</a></span><span id="footer-also-see-host">${alsoSeeMarkup}</span>${storageMarkup}
         </div>
       </div>
-      <div id="theme-toggle" class="theme-toggle" role="group" aria-label="Theme">
-        <button type="button" class="theme-toggle-btn" data-theme-mode="light" data-icon="light-mode" data-icon-class="theme-icon" aria-label="Light theme" aria-pressed="false" title="Light"></button>
-        <button type="button" class="theme-toggle-btn" data-theme-mode="dark" data-icon="dark-mode" data-icon-class="theme-icon" aria-label="Dark theme" aria-pressed="false" title="Dark"></button>
-        <button type="button" class="theme-toggle-btn" data-theme-mode="auto" data-icon="auto-mode" data-icon-class="theme-icon" aria-label="System theme" aria-pressed="false" title="System"></button>
+      <div id="theme-toggle" class="segmented-control segmented-control--muted"
+        data-segmented-control-default="auto">
+        <div class="segmented-control-list" role="radiogroup" aria-label="Theme">
+          <button type="button" class="segmented-control-item" role="radio"
+            data-segmented-control-value="light" data-icon="light-mode"
+            data-icon-class="theme-icon" aria-label="Light theme"
+            data-tooltip="Light theme" data-tooltip-position="top"></button>
+          <button type="button" class="segmented-control-item" role="radio"
+            data-segmented-control-value="dark" data-icon="dark-mode"
+            data-icon-class="theme-icon" aria-label="Dark theme"
+            data-tooltip="Dark theme" data-tooltip-position="top"></button>
+          <button type="button" class="segmented-control-item" role="radio"
+            data-segmented-control-value="auto" data-icon="auto-mode"
+            data-icon-class="theme-icon" aria-label="System theme"
+            data-tooltip="System theme" data-tooltip-position="top"></button>
+        </div>
       </div>
     </footer>
     ${pageNav === false ? "" : PAGE_NAV_MARKUP}`

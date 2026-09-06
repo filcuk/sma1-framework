@@ -1256,58 +1256,17 @@ body > footer a {
   flex-shrink: 0;
 }
 
-/* Theme toggle */
+/* Theme toggle (muted segmented control in the footer) */
 
-.theme-toggle {
-  display: inline-flex;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--surface);
+#theme-toggle.segmented-control {
+  max-width: none;
+  gap: 0;
 }
 
-.theme-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#theme-toggle .segmented-control-item {
+  flex: 0 0 var(--control-height);
   width: var(--control-height);
-  height: var(--control-height);
   padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.theme-toggle-btn:not(:last-child) {
-  border-right: 1px solid var(--border);
-}
-
-.theme-toggle-btn:hover {
-  color: var(--text);
-  background: var(--code-bg);
-}
-
-.theme-toggle-btn:active:not(:disabled) {
-  color: var(--text);
-  background: color-mix(in srgb, var(--text) var(--control-selected-mix), var(--code-bg));
-  transition-duration: 0s;
-}
-
-.theme-toggle-btn[aria-pressed="true"] {
-  color: var(--text);
-  background: var(--code-bg);
-}
-
-.theme-toggle-btn[aria-pressed="true"]:active:not(:disabled) {
-  background: color-mix(in srgb, var(--text) var(--control-press-mix), var(--code-bg));
-  transition-duration: 0s;
-}
-
-.theme-toggle-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-  z-index: 1;
 }
 
 .theme-icon {

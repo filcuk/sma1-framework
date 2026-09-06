@@ -1,9 +1,13 @@
 import { APP_CONFIG } from "../config.js";
 import { syncBrandIcons } from "../utils/brand-icon.js";
+import { initSegmentedControl } from "../components/segmented-control.js";
 
 const STORAGE_KEY = APP_CONFIG.themeStorageKey;
 const THEME_CHANGE_EVENT = APP_CONFIG.themeChangeEvent;
 const MODES = ["auto", "light", "dark"];
+
+/** @type {ReturnType<typeof initSegmentedControl> | null} */
+let themeToggle = null;
 
 function getStoredPreference() {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -40,22 +44,19 @@ function setThemePreference(preference) {
 }
 
 function syncThemeToggle(preference) {
-  document.querySelectorAll("[data-theme-mode]").forEach((button) => {
-    const active = button.dataset.themeMode === preference;
-    button.setAttribute("aria-pressed", active ? "true" : "false");
-  });
+  themeToggle?.selectValue(preference, { emit: false });
 }
 
 export function initThemeToggle(container) {
   if (!container) return;
 
-  container.querySelectorAll("[data-theme-mode]").forEach((button) => {
-    button.addEventListener("click", () => {
-      setThemePreference(button.dataset.themeMode);
-    });
+  themeToggle = initSegmentedControl(container, {
+    defaultValue: getStoredPreference(),
+    onChange: ({ value, source }) => {
+      if (source === "init") return;
+      setThemePreference(value);
+    },
   });
-
-  syncThemeToggle(getStoredPreference());
 
   window
     .matchMedia("(prefers-color-scheme: dark)")

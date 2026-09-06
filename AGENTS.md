@@ -61,7 +61,7 @@ Prose in documentation (`USAGE.md`, `README.md`, `CHANGELOG.md`, `DESIGN.md`, de
 
 - Use CSS custom properties from `app/tokens.css` (`--bg`, `--surface`, `--input-bg`, `--accent`, `--accent-hover`, `--accent-fg`, etc.)
 - Fork brand colour: override `--accent` (and `--accent-fg` when needed) in `app/css/app.css` — see **`manage-color`**; do not edit `tokens.css` in a fork for primary colour
-- Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.callout`, `.popover`, `.section-panel`, `.code-block`, `.theme-toggle`
+- Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.callout`, `.popover`, `.section-panel`, `.code-block`, `.segmented-control`
 - Add or edit inline UI icons in `app/utils/icons-framework.js` (catalogue) or `app/utils/icons-app.js` (fork) only — do not duplicate SVG paths in HTML
 - Do not introduce parallel styling systems (Tailwind, CSS-in-JS, component libraries)
 
@@ -266,7 +266,7 @@ Follow [`DESIGN.md`](DESIGN.md): prefer **in-place** label flashes when the cont
 
 ### Selection highlights
 
-Two styles ([`DESIGN.md`](DESIGN.md)): **standard** (accent border + tinted background; neighbouring selected items join under one outer border — default for controls/lists) and **light** (lighter background only — theme switch). Match an existing control; do not invent a third look.
+Two styles ([`DESIGN.md`](DESIGN.md)): **standard** (accent border + tinted background; neighbouring selected items join under one outer border — default for controls/lists) and **light** (lighter background only — muted segmented / theme switch). Match an existing control; do not invent a third look.
 
 ## Accessibility
 

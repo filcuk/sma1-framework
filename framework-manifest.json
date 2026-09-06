@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T18:10:35.647Z",
+  "generatedAt": "2026-09-06T18:22:42.789Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -162,7 +162,7 @@
       "sha256": "8f6c491c0dc9bd7257761cc8c796271ae6d441a994e14d210b76317206d1de76"
     },
     "app/components/segmented-control.js": {
-      "sha256": "a47c40e4063c9e60ed6b0db6eccb77954bb11557cfbbc0e2a70548edcae41af6"
+      "sha256": "637e9141f956b6e33d706d191191dc4bd717f872b2f6f75567f33a73195c29f1"
     },
     "app/components/slider.js": {
       "sha256": "7a16c0940e0e93eb09826175c6424809987a3e5a97de6603d5da8576fa442091"
@@ -261,10 +261,10 @@
       "sha256": "01075e8f4829a1e0553f6160282f479ff5147648852a95810acb896c17dee133"
     },
     "app/css/controls-widgets.css": {
-      "sha256": "6b67a50320b0231c284d4d05c1f267b10819f6f0353f10f9850e537b587ee45c"
+      "sha256": "7cb593e7e90fd9b68307770253db3ff0297cce1f8b47e03aacb7762cf80d48a7"
     },
     "app/css/layout.css": {
-      "sha256": "3f18ae6a08cfd3de41680404c2c884b0557f23cec2d0044c9deec2b173cec691"
+      "sha256": "52f21793f87fd03e19ff27eedfc742b9e9fa1a95db96c7db9c972f44e6b3d93f"
     },
     "app/css/overlays.css": {
       "sha256": "60edaa6fc873ed19ad694ec9246b91dee798fab1679f945608e9240796fc2510"
@@ -297,7 +297,7 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "b80cefea37697976123ed17f41050be493effc85296763a39c6929d8331e2887"
+      "sha256": "784d66c3039cfbfbeebc87f11767522e602a7312658214916fa164d22f9765f3"
     },
     "app/shell/shell.js": {
       "sha256": "5567c13ea517a12a69c295f78b4a025f4a254f7f81a873debab29a9b558e8d8b"
@@ -306,7 +306,7 @@
       "sha256": "4fbe8284625f6a7865bae63153aeced7ed46221f498875dc9e18e7e054bbe77a"
     },
     "app/shell/theme.js": {
-      "sha256": "3b992e024cb2af8673730e9ab8cd8c100bd71fb7b4e6f549c0c8c161a8aee6aa"
+      "sha256": "ac4138f2e34fa1903b5c5b32eab7b123d94cba77c0d0e5b4c291fa4ccc860678"
     },
     "app/shell/title-numbering.js": {
       "sha256": "71f81d3e79c02e755243aafedd79a05bcd369d74317739fdf412ca6dbe26320c"
@@ -1236,10 +1236,10 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "2485491b4e6b3418ba94268d2fcd736f1951368a7e73b5847daaa74b5e622d05"
+      "sha256": "5c5f63a960c62c584d8f2026edac5a3e6448b63496e97f2c408fda231a7b69e6"
     },
     ".cursor/skills/_shared/invariants.md": {
-      "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
+      "sha256": "c1b1abdc5f20b2340048b921d4b1874821d85398d8a4dbb37006d5e4980be728"
     },
     ".cursor/skills/add-icon/SKILL.md": {
       "sha256": "c0446c94badf9983b52f10c0fd3f3fc0eb83e911f918360973920b30845edd23"
@@ -1309,11 +1309,13 @@
       "app/utils/menu.js",
       "app/utils/app-storage.js",
       "app/components/tooltip.js",
-      "app/components/banner.js"
+      "app/components/banner.js",
+      "app/components/segmented-control.js"
     ],
     "css": [
       "layout.css",
       "controls-buttons.css",
+      "controls-widgets.css",
       "controls-glow.css",
       "overlays.css"
     ],
@@ -1758,7 +1760,9 @@
       "icons": [],
       "infra": [
         "dom"
-      ]
+      ],
+      "always": true,
+      "notes": "Pulled by shell theme toggle (muted segmented)"
     },
     "pagination": {
       "files": [
