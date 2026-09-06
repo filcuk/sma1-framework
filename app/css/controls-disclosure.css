@@ -6,6 +6,7 @@
   border-radius: 6px;
   background: var(--surface);
   overflow: hidden;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
 .expand.expand--full {
@@ -32,12 +33,20 @@
 }
 
 .expand.is-open .expand-trigger {
-  border-radius: 5px 5px 0 0;
+  border-radius: 0;
 }
 
-.expand-trigger:hover {
+/* Closed: hover chrome on the trigger only */
+.expand:not(.is-open) .expand-trigger:hover {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  transition-duration: 0s;
+}
+
+/* Open: one shared outline + fill over trigger + panel */
+.expand.is-open:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
 }
 
@@ -73,8 +82,6 @@
 .expand-panel {
   display: grid;
   grid-template-rows: 0fr;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
 }
 
 .expand.is-hydrated .expand-panel {
@@ -83,10 +90,6 @@
 
 .expand.is-open .expand-panel {
   grid-template-rows: 1fr;
-}
-
-.expand:not(.is-open) .expand-panel {
-  border-top: none;
 }
 
 .expand-panel > * {
@@ -161,10 +164,37 @@
   border-bottom-right-radius: 5px;
 }
 
-.accordion-trigger:hover {
+.accordion-item {
+  transition: background var(--control-hover-ms) ease-out, box-shadow var(--control-hover-ms) ease-out;
+}
+
+/* Match shell corners so open-item inset hover isn’t clipped square */
+.accordion-item.is-open:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.accordion-item.is-open:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* Closed: hover chrome on the trigger only */
+.accordion-item:not(.is-open) .accordion-trigger:hover {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
   transition-duration: 0s;
+}
+
+/* Open: one shared outline + fill over trigger + panel */
+.accordion-item.is-open:hover {
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--control-hover-mix), var(--surface));
+  transition-duration: 0s;
+}
+
+.accordion-item.is-open .accordion-trigger {
+  border-radius: 0;
 }
 
 .accordion-trigger:focus-visible {
@@ -199,8 +229,6 @@
 .accordion-panel {
   display: grid;
   grid-template-rows: 0fr;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
 }
 
 .accordion.is-hydrated .accordion-panel {
@@ -209,10 +237,6 @@
 
 .accordion-item.is-open .accordion-panel {
   grid-template-rows: 1fr;
-}
-
-.accordion-item:not(.is-open) .accordion-panel {
-  border-top: none;
 }
 
 .accordion-panel > * {
