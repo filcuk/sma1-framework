@@ -1860,10 +1860,23 @@
               <hr class="panel-divider panel-divider--vertical" aria-hidden="true" />
               <div class="panel-stack">
                 <h3 class="panel-title">Fullscreen capture</h3>
-                <p class="panel-hint">Drag a file anywhere onto the page to open the overlay.</p>
-                <div class="panel-inline">
+                <p class="panel-hint">
+                  Drag a file anywhere onto the page to open the overlay. Turn Overlay off to exercise
+                  other drop zones on this page.
+                </p>
+                <div class="panel-inline" style="gap: 0.75rem">
                   <button type="button" class="btn" id="demo-file-fullscreen-show">Show overlay</button>
-                  <button type="button" class="btn" id="demo-file-fullscreen-hide">Hide</button>
+                  <div class="toggle" id="demo-file-fullscreen-overlay" data-toggle-default="true">
+                    <button type="button" class="toggle-btn" role="switch" aria-checked="true">
+                      <span class="toggle-track" aria-hidden="true">
+                        <span class="toggle-thumb">
+                          <span data-icon="check" data-icon-class="toggle-thumb-icon" aria-hidden="true"></span>
+                        </span>
+                      </span>
+                      <span class="toggle-label">Overlay</span>
+                    </button>
+                    <input type="hidden" class="toggle-value" value="true" />
+                  </div>
                 </div>
                 <p class="panel-hint" id="demo-file-fullscreen-status" aria-live="polite">No files dropped yet.</p>
               </div>
