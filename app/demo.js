@@ -27,6 +27,7 @@ import {
 import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
 import { initFile } from "./components/file.js";
+import { initIcons } from "./utils/icons.js";
 import { initImagePreview } from "./components/image-preview.js";
 import { initDatePicker } from "./components/date-picker/index.js";
 import { initTimePicker } from "./components/time-picker.js";
@@ -52,7 +53,7 @@ import { tooltip } from "./vendor/tanstack-charts/tooltip.js";
 import { scaleBand } from "./vendor/tanstack-charts/scales/band.js";
 import { scaleLinear } from "./vendor/tanstack-charts/scales/linear.js";
 import { initDiagrams } from "./components/diagram.js";
-import { createBoxMesh, encodeStl } from "./components/stl.js";
+import { createBoxMesh, decodeStl, encodeStl } from "./components/stl.js";
 import { initModelPreview } from "./components/model-preview.js";
 import { parseGcodeMeta } from "./components/gcode.js";
 import { parseGcodeToolpath } from "./components/gcode-toolpath.js";
@@ -161,9 +162,98 @@ const demoStlDimensions = {
   height: 10,
 };
 
+/** @type {"parametric" | "custom" | "empty"} */
+let demoStlSource = "parametric";
+/** @type {ArrayBuffer | null} */
+let demoStlCustomBytes = null;
+/** @type {ReturnType<typeof initFile> | null} */
+let demoStlFileApi = null;
+
+const demoStlFileEl = document.getElementById("demo-stl-file");
+const demoModelPreviewEl = document.getElementById("demo-model-preview");
+
+const DEMO_STL_BOX_ROW = `
+  <li>
+    <div class="file-item">
+      <div class="btn file-item-main" data-file-name="box.stl">
+        <span class="file-item-name">box</span>
+        <span class="file-item-ext">.stl</span>
+        <span class="file-item-meta"></span>
+      </div>
+      <button type="button" class="btn file-item-download" aria-label="Download box.stl">
+        <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+      </button>
+      <button type="button" class="btn file-item-upload" aria-label="Replace box.stl">
+        <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+      </button>
+      <button type="button" class="btn file-item-remove" aria-label="Remove box.stl">
+        <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
+      </button>
+    </div>
+  </li>
+`;
+
+function setDemoModelPreviewLabel(label) {
+  demoModelPreviewEl?.setAttribute("aria-label", label);
+}
+
+function showDemoParametricMesh() {
+  demoStlSource = "parametric";
+  demoStlCustomBytes = null;
+  demoModelPreview?.setMesh(createBoxMesh(demoStlDimensions));
+  setDemoModelPreviewLabel("Generated box preview");
+}
+
+function wireDemoStlFile() {
+  if (!(demoStlFileEl instanceof HTMLElement)) return;
+
+  demoStlFileApi?.destroy();
+  const list = demoStlFileEl.querySelector(".file-list");
+  if (list) list.innerHTML = DEMO_STL_BOX_ROW;
+  initIcons(demoStlFileEl);
+
+  demoStlFileApi = initFile(demoStlFileEl, {
+    getContent: () => {
+      if (demoStlSource === "custom" && demoStlCustomBytes) {
+        return demoStlCustomBytes;
+      }
+      return encodeStl(createBoxMesh(demoStlDimensions));
+    },
+    onUpload: async ({ file }) => {
+      try {
+        const buffer = await file.arrayBuffer();
+        const mesh = decodeStl(buffer);
+        demoStlCustomBytes = buffer.slice(0);
+        demoStlSource = "custom";
+        demoModelPreview?.setMesh(mesh);
+        setDemoModelPreviewLabel(`${file.name} preview`);
+      } catch {
+        flashTooltip(demoStlFileEl, {
+          text: "Could not read that STL",
+          tone: "error",
+        });
+        demoStlFileApi?.remove();
+        demoStlSource = "empty";
+        demoStlCustomBytes = null;
+        demoModelPreview?.clear();
+        setDemoModelPreviewLabel("3D model preview");
+      }
+    },
+    onRemove: () => {
+      demoStlSource = "empty";
+      demoStlCustomBytes = null;
+      demoModelPreview?.clear();
+      setDemoModelPreviewLabel("3D model preview");
+    },
+  });
+}
+
 function updateDemoStlDimension(name, value) {
   demoStlDimensions[name] = value;
-  demoModelPreview?.setMesh(createBoxMesh(demoStlDimensions));
+  const needsFileRestore =
+    demoStlSource === "empty" || demoStlFileApi?.getFilename() !== "box.stl";
+  showDemoParametricMesh();
+  if (needsFileRestore) wireDemoStlFile();
 }
 
 const demoGcodeDropzone = document.getElementById("demo-gcode-dropzone");
@@ -394,9 +484,7 @@ initFile(document.getElementById("demo-file-manage"), {
   ],
 });
 
-initFile(document.getElementById("demo-stl-download"), {
-  getContent: () => encodeStl(createBoxMesh(demoStlDimensions)),
-});
+wireDemoStlFile();
 
 initStepper(document.getElementById("demo-stl-width"), {
   onChange: ({ value }) => updateDemoStlDimension("width", value),

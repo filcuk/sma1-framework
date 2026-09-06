@@ -2158,7 +2158,7 @@ A      <div class="content-tier-body">
             <div class="panel-split">
               <div class="panel-stack">
                 <h3 class="panel-title">Parametric STL</h3>
-                <p class="panel-hint">Generate a simple rectangular box. Dimensions are in millimetres.</p>
+                <p class="panel-hint">Generate a rectangular box (mm), or clear and upload your own <code>.stl</code>.</p>
                 <div class="panel-grid panel-grid-3">
                   <div class="stepper" id="demo-stl-width" data-stepper-min="0.1" data-stepper-max="200"
                     data-stepper-step="0.1" data-stepper-default="40" data-stepper-format="decimal">
@@ -2200,7 +2200,8 @@ A      <div class="content-tier-body">
                     </div>
                   </div>
                 </div>
-                <div class="file" id="demo-stl-download">
+                <div class="file" id="demo-stl-file" data-file-upload data-file-remove data-file-drop-active
+                  data-file-accept=".stl">
                   <ul class="file-list">
                     <li>
                       <div class="file-item">
@@ -2211,6 +2212,12 @@ A      <div class="content-tier-body">
                         </div>
                         <button type="button" class="btn file-item-download" aria-label="Download box.stl">
                           <span data-icon="download" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                        <button type="button" class="btn file-item-upload" aria-label="Replace box.stl">
+                          <span data-icon="upload" data-icon-class="btn-icon-svg"></span>
+                        </button>
+                        <button type="button" class="btn file-item-remove" aria-label="Remove box.stl">
+                          <span data-icon="remove-circle" data-icon-class="btn-icon-svg"></span>
                         </button>
                       </div>
                     </li>
