@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "frameworkVersion": "0.13.6",
-  "generatedAt": "2026-09-06T17:49:24.473Z",
+  "generatedAt": "2026-09-06T18:10:35.647Z",
   "source": "filcuk/sma1-framework",
   "appOwned": [
     "app/main.js",
@@ -22,7 +22,7 @@
   "derived": {
     "app/css/framework.css": {
       "generator": "css-index",
-      "sha256": "1f7854b149a81bdfcb0416ceceb919cce6f17565f9c3e34404058b44a8b8e6ba"
+      "sha256": "871abb1f462cfec2a3dbbd426ec536693b7b3cff2127329b216ed6984dfab3f7"
     }
   },
   "files": {
@@ -242,6 +242,9 @@
     "app/css/controls-file.css": {
       "sha256": "63a11b2ed941d98ad3cfc4dbf06207638d8747c42d342a8c9571ac81c615cec0"
     },
+    "app/css/controls-glow.css": {
+      "sha256": "9f20cbd3c17949758285e9c0bbf6071649cfaea24ce4439a467a4d050f2fc275"
+    },
     "app/css/controls-image.css": {
       "sha256": "3f0dbd3b2fb69babcc04f0dd5b59d2a872300604c587b1ac473ee474970664fe"
     },
@@ -261,7 +264,7 @@
       "sha256": "6b67a50320b0231c284d4d05c1f267b10819f6f0353f10f9850e537b587ee45c"
     },
     "app/css/layout.css": {
-      "sha256": "a2daf18ad06a9b395d8497230a3833d0f5d99495b64c4d02bcca76b7ec42cb23"
+      "sha256": "3f18ae6a08cfd3de41680404c2c884b0557f23cec2d0044c9deec2b173cec691"
     },
     "app/css/overlays.css": {
       "sha256": "60edaa6fc873ed19ad694ec9246b91dee798fab1679f945608e9240796fc2510"
@@ -282,7 +285,7 @@
       "sha256": "e0035e39329ed2ace5b85e754ca8c02db77a3d607bdf8465a219e4c718bd9a4e"
     },
     "app/shell/app-storage-ui.js": {
-      "sha256": "0e9856532d1c072d2341e1142356caa6e07dc280947277010b9fc5505b6a4da3"
+      "sha256": "c75c8dac55a0b5fac1eb21773fc2fa0564c6e9f08bc35210f4fdb3a581a85d61"
     },
     "app/shell/external-link.js": {
       "sha256": "6a1e0d52b04d6f115419de2bac85b2e5581a7e0212fa6d6a32c64a8d0bb45fdc"
@@ -294,7 +297,7 @@
       "sha256": "aef37fd63efd4589457bdbd1e859e980c73835dadcb4af752c99c4a8ea004ee9"
     },
     "app/shell/render-shell.js": {
-      "sha256": "d99c75178b8f83324607618e7f9bdf90bd2a48a9b463e40a219fcbdd63f29927"
+      "sha256": "b80cefea37697976123ed17f41050be493effc85296763a39c6929d8331e2887"
     },
     "app/shell/shell.js": {
       "sha256": "5567c13ea517a12a69c295f78b4a025f4a254f7f81a873debab29a9b558e8d8b"
@@ -335,6 +338,9 @@
     "app/utils/color.js": {
       "sha256": "b17da2f325d37b2719d374dd2ab1f0f68c2a7232317fb17d19ab6cb52a60447a"
     },
+    "app/utils/control-glow.js": {
+      "sha256": "443709293ff19bb3b57ff62044363893a40398073d01599f18cb71ceed138de3"
+    },
     "app/utils/document-listeners.js": {
       "sha256": "af0b66fc6147906c9049c7425cec5b735dea048ce182ca28a55e34598c173c57"
     },
@@ -345,7 +351,7 @@
       "sha256": "502258d7a4e95870b0f1c19c36d34d43a48d1a169db77ae6e426f68360bfa78a"
     },
     "app/utils/icons.js": {
-      "sha256": "da29c6129f26ac21c6612e66a2ba9ce9216bbe8a7182ed936f3d6be6e9c2107f"
+      "sha256": "feb7fd54db5c7ad40b00a9e0e93fc6cb3071f986806c0382ffb355110bb8febe"
     },
     "app/utils/menu.js": {
       "sha256": "c9bfa427a04ab873b370a2bed3648a8bd8b6370ca220c8b7fef708ccf03c3414"
@@ -1230,7 +1236,7 @@
       "sha256": "6df4c2368c82441e11302d599a274de6812c9eed1c16e3d0e7785e54a319040f"
     },
     ".cursor/skills/_shared/component-map.md": {
-      "sha256": "53b5502ec5431fc85fec4a0d09c98c9efcced6d5ce75dac601b02acaf95a21d2"
+      "sha256": "2485491b4e6b3418ba94268d2fcd736f1951368a7e73b5847daaa74b5e622d05"
     },
     ".cursor/skills/_shared/invariants.md": {
       "sha256": "d188cd61541bc03e0379145755b2244f14633287b70f357403e734ee86acc150"
@@ -1295,6 +1301,7 @@
       "app/utils/clipboard.js",
       "app/utils/button-label.js",
       "app/utils/required-field.js",
+      "app/utils/control-glow.js",
       "app/utils/icons.js",
       "app/utils/icons-framework.js",
       "app/utils/brand-icon.js",
@@ -1307,6 +1314,7 @@
     "css": [
       "layout.css",
       "controls-buttons.css",
+      "controls-glow.css",
       "overlays.css"
     ],
     "icons": [
@@ -1335,6 +1343,9 @@
     ],
     "required-field": [
       "app/utils/required-field.js"
+    ],
+    "control-glow": [
+      "app/utils/control-glow.js"
     ],
     "color": [
       "app/utils/color.js"
@@ -2595,6 +2606,12 @@
       ],
       "always": true
     },
+    "control-glow": {
+      "css": [
+        "controls-glow.css"
+      ],
+      "always": true
+    },
     "fields": {
       "css": [
         "controls-fields.css"
@@ -2624,6 +2641,9 @@
       "buttons",
       "toolbar",
       "toggle-button"
+    ],
+    "controls-glow.css": [
+      "control-glow"
     ],
     "overlays.css": [
       "tooltip",
@@ -2724,6 +2744,7 @@
     "controls-chips.css",
     "controls-fields.css",
     "controls-widgets.css",
+    "controls-glow.css",
     "controls-section-panel.css",
     "controls-menus.css",
     "controls-disclosure.css",
